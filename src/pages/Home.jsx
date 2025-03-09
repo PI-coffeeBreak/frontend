@@ -15,7 +15,7 @@ export default function Home(){
                         place. Simple tools, smart features, and a seamless experience for great events.
                     </p>
                     <div className="mt-10 flex items-center justify-center gap-x-6">
-                        <NavLink to="/signup" className="btn btn-primary">Get Started</NavLink>
+                        <NavLink to="/signup" className="btn btn-primary rounded-xl">Get Started</NavLink>
                         <NavLink to="/about" className="text-sm/6 font-semibold text-gray-900"> Learn more <span
                             aria-hidden="true">→</span></NavLink>
                     </div>
@@ -52,8 +52,8 @@ export default function Home(){
                     our newsletter.</h1>
                 <div className="flex-col w-1/2">
                     <div className="flex gap-2 w-full">
-                        <input className="text-white w-full bg-neutral p-2 rounded-xl" placeholder="Enter your email"/>
-                        <button className="btn btn-primary rounded-xl">Notify me</button>
+                        <input className="text-white w-full bg-neutral pl-4 rounded-xl" placeholder="Enter your email"/>
+                        <button className="btn btn-primary rounded-xl p-4">Notify me</button>
                     </div>
                     <p>We care about your data. Read our
                         <span className="text-primary font-bold hover:underline">
