@@ -52,7 +52,7 @@ export default function Home(){
                     our newsletter.</h1>
                 <div className="flex-col w-1/2">
                     <div className="flex gap-2 w-full">
-                        <input className="text-white w-full bg-neutral pl-4 rounded-xl" placeholder="Enter your email"/>
+                        <input className="text-white w-full bg-secondary pl-4 rounded-xl" placeholder="Enter your email"/>
                         <button className="btn btn-primary rounded-xl p-4">Notify me</button>
                     </div>
                     <p>We care about your data. Read our
@@ -63,7 +63,7 @@ export default function Home(){
                 </div>
             </div>
 
-            <footer className="footer sm:footer-horizontal bg-neutral rounded-xl text-base-content p-10">
+            <footer className="footer sm:footer-horizontal bg-secondary rounded-xl text-base-content p-10">
                 <aside>
                     <img src="/giant_white_bean.svg" alt="giant white bean" width="90" height="90"/>
                     <p>
