@@ -1,11 +1,5 @@
 import {NavLink} from "react-router-dom";
 import {useEffect, useState} from "react";
-import {
-    InputOTP,
-    InputOTPGroup,
-    InputOTPSeparator,
-    InputOTPSlot,
-} from "@/components/ui/input-otp"
 
 
 export default function Register(){
@@ -23,7 +17,6 @@ export default function Register(){
 
 
     const [timeLeft, setTimeLeft] = useState(30);
-    const [enteredCode, setEnteredCode] = useState("");
 
     useEffect(() => {
         if (timeLeft === 0) return;
@@ -108,20 +101,6 @@ export default function Register(){
                                 Please enter the 6-digit code below to continue.
                             </p>
 
-                            <InputOTP maxLength={6} onChange={(code) => setEnteredCode(code)} className="text-2xl">
-                                <InputOTPGroup>
-                                    <InputOTPSlot index={0} className="w-12 h-12 text-3xl text-center border-2 border-primary rounded-md" />
-                                    <InputOTPSlot index={1} className="w-12 h-12 mx-2 text-3xl text-center border-2 border-primary rounded-md" />
-                                    <InputOTPSlot index={2} className="w-12 h-12 text-3xl text-center border-2 border-primary rounded-md" />
-                                </InputOTPGroup>
-                                <InputOTPSeparator />
-                                <InputOTPGroup>
-                                    <InputOTPSlot index={3} className="w-12 h-12 text-3xl text-center border-2 border-primary rounded-md" />
-                                    <InputOTPSlot index={4} className="w-12 h-12 mx-2 text-3xl text-center border-2 border-primary rounded-md" />
-                                    <InputOTPSlot index={5} className="w-12 h-12 text-3xl text-center border-2 border-primary rounded-md" />
-                                </InputOTPGroup>
-                            </InputOTP>
-
                             <p className="text-sm text-gray-500 mt-2">
                                 Didn't receive the code? {timeLeft > 0 ? (
                                 <span className="text-gray-400">Resend in {timeLeft}s</span>
@@ -135,7 +114,12 @@ export default function Register(){
                             </p>
                         </>
                     )}
+                    {step === 4 &&(
+                        <NavLink to="/homeinst"><button className="w-2/3 h-10 btn btn-primary text-white mt-8 rounded-xl">Continue</button></NavLink>
+                        )}
+                    {step !== 4 &&(
                     <button onClick={nextStep} className="w-2/3 h-10 btn btn-primary text-white mt-8 rounded-xl">Continue</button>
+                    )}
                     {step === 1 &&(
                         <p className="mt-4">Already have an account?<NavLink to="/login"><span className="text-primary font-bold hover:underline">Sign In</span></NavLink></p>
                     )}
