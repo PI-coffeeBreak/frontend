@@ -15,7 +15,7 @@ export default function Sidebar() {
 
     return (
         <>
-            <div className={`bg-primary text-white rounded-r-xl min-h-screen fixed top-0 left-0 transition-all duration-300 ${isVisible ? "w-64" : "w-20"}`}>
+            <div className={`bg-secondary text-white rounded-r-xl min-h-screen fixed top-0 left-0 transition-all duration-300 ${isVisible ? "w-64" : "w-20"}`}>
                 <div className={`flex flex-col items-center p-4 ${isVisible ? "gap-4" : "gap-0"}`}>
                     <img src="/stu@deti.png" width="50" height="50" alt="Logo"/>
                     <span className={`overflow-hidden transition-all duration-300 ${isVisible ? "opacity-100 w-auto" : "opacity-0 w-0"}`}>
@@ -64,7 +64,7 @@ export default function Sidebar() {
 
             <button
                 onClick={toggleSidebar}
-                className="btn btn-primary rounded-xl ml-4 fixed top-4 transition-all duration-300"
+                className="btn btn-secondary rounded-xl ml-4 fixed top-4 transition-all duration-300"
                 style={{
                     left: isVisible ? "16rem" : "5rem",
                 }}
