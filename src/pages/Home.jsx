@@ -15,7 +15,7 @@ export default function Home(){
                         place. Simple tools, smart features, and a seamless experience for great events.
                     </p>
                     <div className="mt-10 flex items-center justify-center gap-x-6">
-                        <NavLink to="/signup" className="btn btn-primary rounded-xl">Get Started</NavLink>
+                        <NavLink to="/register" className="btn btn-primary rounded-xl">Get Started</NavLink>
                         <NavLink to="/about" className="text-sm/6 font-semibold text-gray-900"> Learn more <span
                             aria-hidden="true">→</span></NavLink>
                     </div>

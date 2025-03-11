@@ -16,7 +16,7 @@ export default function App() {
           <Route index element={<Home />} />
         </Route>
         <Route element={<LayoutAuth/>}>
-           <Route  path="/signup" element={<Register />}/>
+           <Route  path="/register" element={<Register />}/>
            <Route  path="/login" element={<Login />}/>
         </Route>
           <Route element={<LayoutInstantiate/>}>

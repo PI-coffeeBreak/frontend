@@ -68,7 +68,6 @@ export default function Register(){
                                     <input id="lname" type="text" placeholder="Enter your Last Name"
                                            className="p-4 w-full bg-base-200 h-16 rounded-xl"/>
                                 </div>
-
                             </div>
 
                             <div className="w-full">
@@ -115,7 +114,7 @@ export default function Register(){
                         </>
                     )}
                     {step === 4 &&(
-                        <NavLink to="/homeinst"><button className="w-2/3 h-10 btn btn-primary text-white mt-8 rounded-xl">Continue</button></NavLink>
+                        <button className="w-2/3 h-10 btn btn-primary text-white mt-8 rounded-xl"><NavLink to="/homeinst">Continue</NavLink></button>
                         )}
                     {step !== 4 &&(
                     <button onClick={nextStep} className="w-2/3 h-10 btn btn-primary text-white mt-8 rounded-xl">Continue</button>
