@@ -114,7 +114,7 @@ export default function Register(){
                         </>
                     )}
                     {step === 4 &&(
-                        <button className="w-2/3 h-10 btn btn-primary text-white mt-8 rounded-xl"><NavLink to="/homeinst">Continue</NavLink></button>
+                        <button className="w-2/3 h-10 btn btn-primary text-white mt-8 rounded-xl"><NavLink to="/instantiate">Continue</NavLink></button>
                         )}
                     {step !== 4 &&(
                     <button onClick={nextStep} className="w-2/3 h-10 btn btn-primary text-white mt-8 rounded-xl">Continue</button>

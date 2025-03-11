@@ -5,8 +5,11 @@ import Layout from "./components/Layout";
 import LayoutAuth from "./components/LayoutAuth"
 import Register from "./pages/Register.jsx";
 import Login from "./pages/Login.jsx";
-import InstantiateHome from "./pages/InstantiateHome.jsx"
 import LayoutInstantiate from "./components/LayoutInstantiate.jsx";
+import Users from "./pages/Users.jsx";
+import Alerts from "./pages/Alerts.jsx";
+import Activities from "./pages/Activities.jsx";
+import Schedule from "./pages/Schedule.jsx";
 
 export default function App() {
   return (
@@ -16,12 +19,18 @@ export default function App() {
           <Route index element={<Home />} />
         </Route>
         <Route element={<LayoutAuth/>}>
-           <Route  path="/register" element={<Register />}/>
-           <Route  path="/login" element={<Login />}/>
+           <Route  path="register" element={<Register />}/>
+           <Route  path="login" element={<Login />}/>
         </Route>
-          <Route element={<LayoutInstantiate/>}>
-              <Route path="/homeinst" element={<InstantiateHome />}/>
-          </Route>
+        <Route path="instantiate" element={<LayoutInstantiate/>}>
+            <Route path="home">
+                <Route path="users" element={<Users />}/>
+                <Route path="activities" element={<Activities/>}/>
+                <Route path="alerts" element={<Alerts/>}/>
+            </Route>
+            <Route path="schedule" element={<Schedule/>}></Route>
+        </Route>
+
       </Routes>
     </Router>
   );
