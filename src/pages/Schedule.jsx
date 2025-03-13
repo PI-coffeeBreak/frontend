@@ -10,23 +10,30 @@ export default function DragDropCalendar() {
     const draggableRef = useRef(null);
 
     useEffect(() => {
-    if (typeof window !== "undefined" && draggableRef.current) {
-            new Draggable(draggableRef.current, {
-                itemSelector: '.fc-event',
-                eventData: function(eventEl) {
-                    return {
-                        title: eventEl.getAttribute('data-title'),
-                        duration: "02:00"
-                    };
-                }
-            });
+        if (typeof window !== "undefined" && calendarRef.current) {
+            const timer = setTimeout(() => {
+                const draggable = new Draggable(draggableRef.current, {
+                    itemSelector: ".fc-event",
+                    eventData: function(eventEl) {
+                        return {
+                            title: eventEl.getAttribute("data-title"),
+                            duration: "02:00"
+                        };
+                    }
+                });
+
+                // Cleanup
+                return () => draggable.destroy();
+            }, 1000); // 1 segundo de delay (ajuste conforme necessário)
+
+            return () => clearTimeout(timer);
         }
     }, []);
 
     return (
         <div className="container mx-auto">
             <h3 className="font-bold mb-2">Atividades</h3>
-            <div id="mydraggable" ref={draggableRef} className="w-full p-4 grid md:grid-cols-3 grid-cols-1 gap-4">
+            <div className="w-full grid grid-cols-3 gap-4 overflow-hidden" ref={draggableRef}>
                 <Activity
                     title="Innovation and Technology: Shaping the Future"
                     description="Exploring how innovation and technology are transforming."
@@ -48,8 +55,14 @@ export default function DragDropCalendar() {
                     category="Sustainability"
                     type="Lecture"
                 />
+                <Activity
+                    title="The Future of Mobility"
+                    description="Exploring the future of transportation and mobility."
+                    image="/15.jpg"
+                    category="Transportation"
+                    type="Panel"
+                />
             </div>
-
             <div className="w-full lg:w-3/4 overflow-auto">
                 <FullCalendar
                     ref={calendarRef}
