@@ -7,7 +7,7 @@ export default function Layout() {
         if (window.particlesJS) {
             window.particlesJS("particles-js", {
                 particles: {
-                    number: { value: 100, density: { enable: true, value_area: 800 } },
+                    number: { value: 70, density: { enable: true, value_area: 700 } },
                     color: { value: "#4F2B1D" },
                     shape: {
                         type: "image",
