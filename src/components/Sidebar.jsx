@@ -1,7 +1,7 @@
 import { useState } from "react";
 import {Link, useLocation} from "react-router-dom";
 import { VscLayoutSidebarLeft, VscLayoutSidebarLeftOff } from "react-icons/vsc";
-import { FaHome, FaCalendarAlt, FaPen } from "react-icons/fa";
+import { FaHome, FaCalendarAlt, FaPen, FaUserPlus } from "react-icons/fa";
 import DropdownMenu from "./DropdownMenu.jsx";
 
 export default function Sidebar() {
@@ -50,6 +50,12 @@ export default function Sidebar() {
                                 <Link to="schedule" className={`flex ${isVisible ? "items-center gap-3 p-3" : "justify-center items-center p-4"} hover:bg-secondary rounded-md transition-all`}>
                                     <FaCalendarAlt className="text-xl" />
                                     <span className={`overflow-hidden transition-all duration-300 ${isVisible ? "w-auto opacity-100" : "w-0 opacity-0"}`}>Schedule</span>
+                                </Link>
+                            </li>
+                            <li>
+                                <Link to="register" className={`flex ${isVisible ? "items-center gap-3 p-3" : "justify-center items-center p-4"} hover:bg-secondary rounded-md transition-all`}>
+                                    <FaUserPlus className="text-xl" />
+                                    <span className={`overflow-hidden transition-all duration-300 ${isVisible ? "w-auto opacity-100" : "w-0 opacity-0"}`}>Register</span>
                                 </Link>
                             </li>
                         </ul>

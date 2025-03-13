@@ -21,10 +21,8 @@ export default function DragDropCalendar() {
                         };
                     }
                 });
-
-                // Cleanup
                 return () => draggable.destroy();
-            }, 1000); // 1 segundo de delay (ajuste conforme necessário)
+            }, 1000);
 
             return () => clearTimeout(timer);
         }
@@ -78,6 +76,11 @@ export default function DragDropCalendar() {
                             return;
                         }
                         console.log("Evento Adicionado:", info.event.title);
+                    }}
+                    eventClick={(info) => {
+                        if (confirm(`Remover a atividade \"${info.event.title}\" do calendário?`)) {
+                            info.event.remove();
+                        }
                     }}
                     slotMinTime="08:00:00"
                     slotMaxTime="18:00:00"

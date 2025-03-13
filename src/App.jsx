@@ -10,6 +10,7 @@ import Users from "./pages/Users.jsx";
 import Alerts from "./pages/Alerts.jsx";
 import Activities from "./pages/Activities.jsx";
 import Schedule from "./pages/Schedule.jsx";
+import ManualRegister from "./pages/ManualRegister.jsx";
 
 export default function App() {
   return (
@@ -29,6 +30,7 @@ export default function App() {
                 <Route path="alerts" element={<Alerts/>}/>
             </Route>
             <Route path="schedule" element={<Schedule/>}></Route>
+            <Route path="register" element={<ManualRegister/>}></Route>
         </Route>
 
       </Routes>
