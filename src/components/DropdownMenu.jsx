@@ -19,7 +19,7 @@ export default function DropdownMenu({ icon: Icon, title, links, isVisible }) {
                 <ul className="ml-6 mt-2 space-y-2">
                     {links.map((link, index) => (
                         <li key={index}>
-                            <Link to={`home/${link.path}`} className="block px-4 py-2 text-sm hover:bg-primary rounded-md">{link.label}</Link>
+                            <Link to={`${link.path}`} className="block px-4 py-2 text-sm hover:bg-primary rounded-md">{link.label}</Link>
                         </li>
                     ))}
                 </ul>

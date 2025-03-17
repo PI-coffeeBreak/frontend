@@ -31,9 +31,9 @@ export default function Sidebar() {
                                 title="Home"
                                 isVisible={isVisible}
                                 links={[
-                                    { label: "Users", path: "users" },
-                                    { label: "Activities", path: "activities" },
-                                    { label: "Alerts", path: "alerts" }
+                                    { label: "Users", path: "home/users" },
+                                    { label: "Activities", path: "home/activities" },
+                                    { label: "Alerts", path: "home/alerts" }
                                 ]}
                             />
                             <DropdownMenu
@@ -41,9 +41,9 @@ export default function Sidebar() {
                                 title="Event Maker"
                                 isVisible={isVisible}
                                 links={[
-                                    { label: "Colors", path: "/eventmaker/colors" },
-                                    { label: "Base Configurations", path: "/eventmaker/base-configurations" },
-                                    { label: "Plugins", path: "/eventmaker/plugins" }
+                                    { label: "Colors", path: "eventmaker/colors" },
+                                    { label: "Base Configurations", path: "eventmaker/base-configurations" },
+                                    { label: "Plugins", path: "eventmaker/plugins" }
                                 ]}
                             />
                             <li>
