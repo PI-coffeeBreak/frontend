@@ -10,15 +10,20 @@ export default function Plugins() {
         {name: "Floor Plan", description: "This plugin allows you to manage the floor plan of the event.", enable: false},
         {name: "Sponsors Promotion", description: "This plugin allows you to manage the promotion of sponsors.", enable: false},
         {name: "Activities Scheduler", description: "This plugin allows you to manage the schedule of activities.", enable: false},
-    ])
+    ]);
 
+    const [searchTerm, setSearchTerm] = useState("");
     const [currentPage, setCurrentPage] = useState(1);
     const pluginsPerPage = 4;
 
-    const totalPages = Math.ceil(plugins.length / pluginsPerPage);
+    const filteredPlugins = plugins.filter(plugin => 
+        plugin.name.toLowerCase().includes(searchTerm.toLowerCase())
+    );
+
+    const totalPages = Math.ceil(filteredPlugins.length / pluginsPerPage);
     const indexOfLastPlugin = currentPage * pluginsPerPage;
     const indexOfFirstPlugin = indexOfLastPlugin - pluginsPerPage;
-    const currentPlugins = plugins.slice(indexOfFirstPlugin, indexOfLastPlugin);
+    const currentPlugins = filteredPlugins.slice(indexOfFirstPlugin, indexOfLastPlugin);
 
     const togglePlugin = (index) => {
         setPlugins(prevPlugins => 
@@ -35,6 +40,11 @@ export default function Plugins() {
                 <input
                     type="text"
                     placeholder="Search..."
+                    value={searchTerm}
+                    onChange={(e) => {
+                        setSearchTerm(e.target.value);
+                        setCurrentPage(1);
+                    }}
                     className="p-2 border rounded-lg shadow-sm w-full md:w-1/3"
                 />
             </div>
@@ -80,12 +90,15 @@ export default function Plugins() {
                     </tbody>
                 </table>
             </div>
-            <Pagination
-                className="align-end"
-                currentPage={currentPage}
-                totalPages={totalPages}
-                onPageChange={setCurrentPage}
-            />
+
+            {filteredPlugins.length > pluginsPerPage && (
+                <Pagination
+                    className="align-start"
+                    currentPage={currentPage}
+                    totalPages={totalPages}
+                    onPageChange={setCurrentPage}
+                />
+            )}
         </div>
     );
 }
