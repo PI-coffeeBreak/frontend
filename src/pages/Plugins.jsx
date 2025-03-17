@@ -51,7 +51,7 @@ export default function Plugins() {
                     </thead>
 
                     <tbody>
-                        {plugins.map((plugin, index) => (
+                        {currentPlugins.map((plugin, index) => (
                             <tr key={index} className="hover:bg-gray-50">
                                 <td className="p-3">{plugin.name}</td>
                                 <td className="p-3">{plugin.description}</td>
