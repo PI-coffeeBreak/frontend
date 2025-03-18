@@ -32,7 +32,7 @@ export default function Sidebar() {
                                 isVisible={isVisible}
                                 links={[
                                     { label: "Users", path: "home/users" },
-                                    { label: "Activities", path: "home/activities" },
+                                    { label: "Activities", path: "home/sessions" },
                                     { label: "Alerts", path: "home/alerts" }
                                 ]}
                             />
