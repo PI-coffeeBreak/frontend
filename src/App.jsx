@@ -11,6 +11,9 @@ import Alerts from "./pages/Alerts.jsx";
 import Activities from "./pages/Activities.jsx";
 import Schedule from "./pages/Schedule.jsx";
 import ManualRegister from "./pages/ManualRegister.jsx";
+import Plugins from "./pages/Plugins.jsx";
+import Colors from "./pages/Colors.jsx";
+import BaseConfiguration from "./pages/BaseConfiguration.jsx";
 
 export default function App() {
   return (
@@ -28,6 +31,12 @@ export default function App() {
                 <Route path="users" element={<Users />}/>
                 <Route path="activities" element={<Activities/>}/>
                 <Route path="alerts" element={<Alerts/>}/>
+            </Route>
+
+            <Route path="eventmaker">
+                <Route path="colors" element={<Colors/>}></Route>
+                <Route path="base-configurations" element={<BaseConfiguration/>}></Route>
+                <Route path="plugins" element={<Plugins/>}></Route>
             </Route>
             <Route path="schedule" element={<Schedule/>}></Route>
             <Route path="register" element={<ManualRegister/>}></Route>
