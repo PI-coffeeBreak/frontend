@@ -4,6 +4,7 @@ import { FaFileExcel } from "react-icons/fa6";
 import { FaTrash } from "react-icons/fa";
 import CreateCard from "../components/CreateCard.jsx";
 import {useState} from "react";
+import Activity from "../components/Activity.jsx";
 
 export default function Activities() {
     const [feedbackMessage, setFeedbackMessage] = useState("");
@@ -100,6 +101,36 @@ export default function Activities() {
                     />
                 </div>
                 <h1 className="text-3xl font-bold mt-8">Sessions</h1>
+                <div className="w-full grid grid-cols-3 gap-4 overflow-hidden mt-8" >
+                    <Activity
+                        title="Innovation and Technology: Shaping the Future"
+                        description="Exploring how innovation and technology are transforming."
+                        image="/12.jpg"
+                        category="Technology"
+                        type="Talk"
+                    />
+                    <Activity
+                        title="AI and the Future of Work"
+                        description="How artificial intelligence is reshaping job markets and skill requirements."
+                        image="/13.jpg"
+                        category="AI"
+                        type="Workshop"
+                    />
+                    <Activity
+                        title="Sustainable Tech Solutions"
+                        description="Innovations driving a more sustainable and eco-friendly future."
+                        image="/14.jpg"
+                        category="Sustainability"
+                        type="Lecture"
+                    />
+                    <Activity
+                        title="The Future of Mobility"
+                        description="Exploring the future of transportation and mobility."
+                        image="/15.jpg"
+                        category="Transportation"
+                        type="Panel"
+                    />
+                </div>
             </div>
 
             <dialog id="excel_modal" className="modal">
@@ -183,6 +214,15 @@ export default function Activities() {
                     </form>
                     <h3 className="text-lg font-bold">Create New Session</h3>
                     <p className="py-4">Fill in the details to create a new session.</p>
+                    <form>
+
+                            <label>Title</label>
+                            <input type="text" className="input w-full h-12 bg-secondary rounded-xl"></input>
+                            <label>Title</label>
+                            <input type="text" className="input w-full h-12 bg-secondary rounded-xl"></input>
+
+
+                    </form>
                 </div>
                 <form method="dialog" className="modal-backdrop bg-none bg-opacity-10">
                     <button>close</button>
