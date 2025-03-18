@@ -215,19 +215,50 @@ export default function Activities() {
                     <h3 className="text-lg font-bold">Create New Session</h3>
                     <p className="py-4">Fill in the details to create a new session.</p>
                     <form>
-
-                            <label>Title</label>
-                            <input type="text" className="input w-full h-12 bg-secondary rounded-xl"></input>
-                            <label>Title</label>
-                            <input type="text" className="input w-full h-12 bg-secondary rounded-xl"></input>
-
-
+                        <div>
+                            <label form="title">Title</label>
+                            <input type="text" id="title" placeholder="Enter the session title" className="text-base-100 input w-full h-12 bg-secondary rounded-xl"></input>
+                        </div>
+                        <div className="flex w-full gap-4 mt-4">
+                            <div className="w-1/2">
+                                <label htmlFor="sdate" className="block">Start Date</label>
+                                <input type="datetime-local" id="sdate" className="text-base-100 input w-full h-12 bg-secondary rounded-xl"></input>
+                            </div>
+                            <div className="w-1/2">
+                                <label htmlFor="edate" className="block">End Date</label>
+                                <input type="datetime-local" id="edate" className="text-base-100 input w-full h-12 bg-secondary rounded-xl"></input>
+                            </div>
+                        </div>
+                        <div className="flex w-full gap-4 mt-4">
+                            <div className="w-1/2">
+                                <label htmlFor="location" className="block">Location</label>
+                                <input type="text" id="location" placeholder="Enter the session location" className="text-base-100 input h-12 bg-secondary rounded-xl"></input>
+                            </div>
+                            <div className="w-1/2">
+                                <label htmlFor="speaker" className="block">Speaker</label>
+                                <input type="text" id="speaker" placeholder="Enter the session speaker" className="text-base-100 input h-12 bg-secondary rounded-xl"></input>
+                            </div>
+                        </div>
+                        <div className="mt-4">
+                            <label htmlFor="description" className="block">Description</label>
+                            <textarea id="description" className="text-base-100 input w-full h-24 bg-secondary rounded-xl"></textarea>
+                        </div>
+                        <div className="mt-4">
+                            <label htmlFor="img">Image</label>
+                            <fieldset className="fieldset rounded-xl">
+                                <input type="file" id="img" accept="image/*" className="file-input rounded-xl h-12 w-full bg-secondary text-base-100 border-2 focus:outline-none focus:ring-2 focus:ring-primary"/>
+                            </fieldset>
+                        </div>
+                        <button className="btn btn-primary mt-4 mx-auto w-1/3 flex items-center justify-center">
+                            Submit
+                        </button>
                     </form>
                 </div>
                 <form method="dialog" className="modal-backdrop bg-none bg-opacity-10">
                     <button>close</button>
                 </form>
             </dialog>
+
         </>
     );
 }
