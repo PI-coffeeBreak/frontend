@@ -29,7 +29,7 @@ export default function App() {
         <Route path="instantiate" element={<LayoutInstantiate/>}>
             <Route path="home">
                 <Route path="users" element={<Users />}/>
-                <Route path="activities" element={<Activities/>}/>
+                <Route path="sessions" element={<Activities/>}/>
                 <Route path="alerts" element={<Alerts/>}/>
             </Route>
 
