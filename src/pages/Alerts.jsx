@@ -5,12 +5,23 @@ import React, { useState } from "react";
 
 export default function Alerts() {
     const [template, setTemplate] = useState("");
+    const [templateTitle, setTemplateTitle] = useState("");  // Adicionar estado para o título do template
+    const [templateMessage, setTemplateMessage] = useState("");  // Adicionar estado para a mensagem do template
 
     const openAlertModal = () => {
         document.getElementById('alert_modal').showModal();
     };
     const openTemplateModal = () => {
         document.getElementById('template_modal').showModal();
+    };
+
+    const handleTemplateSubmit = (e) => {
+        e.preventDefault();
+        // Enviar os dados ou processar o template
+        console.log("Template Created:", { title: templateTitle, message: templateMessage });
+        // Aqui podes limpar o formulário ou mostrar uma mensagem de sucesso
+        setTemplateTitle("");  // Limpar após enviar
+        setTemplateMessage("");  // Limpar após enviar
     };
     return (
         <div className="w-full min-h-svh p-8">
@@ -25,10 +36,11 @@ export default function Alerts() {
                 <CreateCard
                     icon={HiTemplate}
                     title="Create a Template"
-                    description="Create a to send alerts more efficiently."
+                    description="Create a template to send alerts more efficiently."
                     onClick={openTemplateModal}
                 />
             </div>
+            <h1 className="text-3xl font-bold mt-8">Existing Templates</h1>
 
             <h1 className="text-3xl font-bold mt-8">Scheduled Alerts</h1>
 
@@ -122,6 +134,31 @@ export default function Alerts() {
                     </form>
                     <h3 className="text-lg font-bold">Create New Template</h3>
                     <p className="py-4">Fill in the details to create a new template.</p>
+                    <form onSubmit={handleTemplateSubmit}>
+                        <div>
+                            <label htmlFor="templateTitle">Title</label>
+                            <input
+                                type="text"
+                                id="templateTitle"
+                                placeholder="Enter template title"
+                                className="text-base-100 input w-full h-12 bg-secondary rounded-xl"
+                                value={templateTitle}
+                                onChange={(e) => setTemplateTitle(e.target.value)}
+                            />
+                        </div>
+                        <div className="mt-4">
+                            <label htmlFor="templateMessage" className="block">Template Message</label>
+                            <textarea
+                                id="templateMessage"
+                                className="text-base-100 input w-full h-24 bg-secondary rounded-xl"
+                                value={templateMessage}
+                                onChange={(e) => setTemplateMessage(e.target.value)}
+                            ></textarea>
+                        </div>
+                        <button type="submit" className="btn btn-primary mt-4 mx-auto w-1/3 flex items-center justify-center">
+                            Create Template
+                        </button>
+                    </form>
                 </div>
                 <form method="dialog" className="modal-backdrop bg-none bg-opacity-10">
                     <button>close</button>
