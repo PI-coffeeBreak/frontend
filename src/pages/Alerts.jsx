@@ -5,8 +5,8 @@ import React, { useState } from "react";
 
 export default function Alerts() {
     const [template, setTemplate] = useState("");
-    const [templateTitle, setTemplateTitle] = useState("");  // Adicionar estado para o título do template
-    const [templateMessage, setTemplateMessage] = useState("");  // Adicionar estado para a mensagem do template
+    const [templateTitle, setTemplateTitle] = useState("");
+    const [templateMessage, setTemplateMessage] = useState("");
 
     const openAlertModal = () => {
         document.getElementById('alert_modal').showModal();
@@ -15,14 +15,6 @@ export default function Alerts() {
         document.getElementById('template_modal').showModal();
     };
 
-    const handleTemplateSubmit = (e) => {
-        e.preventDefault();
-        // Enviar os dados ou processar o template
-        console.log("Template Created:", { title: templateTitle, message: templateMessage });
-        // Aqui podes limpar o formulário ou mostrar uma mensagem de sucesso
-        setTemplateTitle("");  // Limpar após enviar
-        setTemplateMessage("");  // Limpar após enviar
-    };
     return (
         <div className="w-full min-h-svh p-8">
             <h1 className="text-3xl font-bold">Create Alerts</h1>
@@ -66,7 +58,6 @@ export default function Alerts() {
                                 <option value="">Select a template</option>
                                 <option value="template1">Template 1</option>
                                 <option value="template2">Template 2</option>
-                                {/* Adicione mais templates conforme necessário */}
                             </select>
                         </div>
                         {template ? (
@@ -134,7 +125,7 @@ export default function Alerts() {
                     </form>
                     <h3 className="text-lg font-bold">Create New Template</h3>
                     <p className="py-4">Fill in the details to create a new template.</p>
-                    <form onSubmit={handleTemplateSubmit}>
+                    <form>
                         <div>
                             <label htmlFor="templateTitle">Title</label>
                             <input
