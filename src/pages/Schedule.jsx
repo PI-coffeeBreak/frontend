@@ -109,19 +109,49 @@ export default function DragDropCalendar() {
         }
     };
 
-    const handleEventClick = (info) => {
+    const handleEventClick = async (info) => {
         if (confirm(`Remover a atividade "${info.event.title}" do calendário?`)) {
-            // Remove from calendar_activities when event is removed
             const activityId = parseInt(info.event.extendedProps["data-id"]);
-            setCalendarActivities((prev) => prev.filter((act) => act.id !== activityId));
-            // Optionally, add back to outside_activities if you want
             const activity = activities.find((activity) => activity.id === activityId);
+    
             if (activity) {
-                setOutsideActivities((prev) => [...prev, activity]);
+                // Create an updated activity with date set to null
+                const updatedActivity = {
+                    ...activity,
+                    date: null,  // Set the date to null when the event is removed
+                };
+    
+                try {
+                    // Send a PUT request to update the activity with the new date (null)
+                    const response = await fetch(`http://localhost:8000/activities/${activityId}`, {
+                        method: 'PUT',
+                        headers: {
+                            'Content-Type': 'application/json',
+                        },
+                        body: JSON.stringify(updatedActivity),  // Send the updated activity data
+                    });
+    
+                    if (!response.ok) {
+                        throw new Error('Failed to update activity');
+                    }
+    
+                    console.log("Activity updated:", updatedActivity);
+    
+                    // Remove the activity from calendar_activities
+                    setCalendarActivities((prev) => prev.filter((act) => act.id !== activityId));
+                    
+                    // Optionally, add the activity back to the outside_activities if you want
+                    setOutsideActivities((prev) => [...prev, activity]);
+                    info.event.remove();  // Remove the event from FullCalendar
+    
+                } catch (error) {
+                    console.error("Error updating activity:", error);
+                }
+            } else {
+                console.error("Activity not found for ID:", activityId);
             }
-            info.event.remove();
         }
-    };
+    };    
 
     return (
         <div className="container mx-auto">
