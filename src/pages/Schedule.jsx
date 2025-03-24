@@ -8,7 +8,7 @@ import Activity from "../components/Activity.jsx";
 export default function DragDropCalendar() {
     const calendarRef = useRef(null);
     const draggableRef = useRef(null);
-    const [activity_types, setActivityTypes] = useState([]);
+    const [activityTypes, setActivityTypes] = useState([]);
     const [activities, setActivities] = useState([]);
     const [calendar_activities, setCalendarActivities] = useState([]);  // Activities already in the calendar
     const [outside_activities, setOutsideActivities] = useState([]);  // Activities not yet added to the calendar
@@ -253,7 +253,7 @@ export default function DragDropCalendar() {
                         description={activity.description}
                         image={activity.image}
                         category={activity.topic}
-                        type={activity_types.find(type => type.id === activity.type_id).type}
+                        type={activityTypes.find(type => type.id === activity.type_id).type}
                     />
                 ))}
 

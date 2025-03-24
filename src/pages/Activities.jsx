@@ -3,34 +3,137 @@ import { FaPlus, FaFile } from "react-icons/fa";
 import { FaFileExcel } from "react-icons/fa6";
 import { FaTrash } from "react-icons/fa";
 import CreateCard from "../components/CreateCard.jsx";
-import {useState} from "react";
+import {useState, useEffect} from "react";
 import Activity from "../components/Activity.jsx";
 
 export default function Activities() {
+    const [newSession, setNewSession] = useState({
+        name: "",
+        description: "",
+        image: "",
+        date: "",
+        duration: 30,
+        type_id: 1, // Default to the first type for now, can be changed later
+        topic: "",
+        speaker: "",
+        facilitator: ""
+    });
+    const [errorMessage, setErrorMessage] = useState("");
+    const [imagePreview, setImagePreview] = useState(null);
     const [feedbackMessage, setFeedbackMessage] = useState("");
     const [selectedFile, setSelectedFile] = useState(null);
     const [uploadProgress, setUploadProgress] = useState(0);
+    const [activityTypes, setActivityTypes] = useState([]);
+    const [activities, setActivities] = useState([]);
     const MAX_FILE_SIZE = 1024 * 1024; // temos que escolher quanto queremos depois
+
+    const fetchActivityTypes = async () => {
+            const response = await fetch('http://localhost:8000/activity-types/');
+            const data = await response.json();
+            console.log("Tipos de Atividades:", data);
+            setActivityTypes(data);
+        }
+    
+    const fetchActivities = async () => {
+        const response = await fetch('http://localhost:8000/activities/');
+        const data = await response.json();
+        console.log("Atividades:", data);
+        setActivities(data);
+    }
+
+    useEffect(() => {
+        fetchActivityTypes();
+        fetchActivities();
+    }, []);
+
+    const handleInputChange = (e) => {
+        const { name, value } = e.target;
+        setNewSession((prev) => ({
+            ...prev,
+            [name]: value
+        }));
+    };
+
+    const handleFileChange = (e) => {
+        const file = e.target.files[0];
+        if (file) {
+            setNewSession((prev) => ({
+                ...prev,
+                image: file
+            }));
+            setImagePreview(URL.createObjectURL(file));
+        }
+    };
+
+    const handleSubmit = async (e) => {
+        e.preventDefault();
+
+        // Validate required fields
+        if (!newSession.name || !newSession.description || !newSession.type_id) {
+            setErrorMessage("Name, Description, and Type are required.");
+            return;
+        }
+
+        const formData = new FormData();
+        formData.append("name", newSession.name);
+        formData.append("description", newSession.description);
+        formData.append("image", newSession.image);
+        formData.append("date", newSession.date);
+        formData.append("duration", newSession.duration);
+        formData.append("type_id", newSession.type_id);
+        formData.append("topic", newSession.topic);
+        formData.append("speaker", newSession.speaker);
+        formData.append("facilitator", newSession.facilitator);
+
+        try {
+            const response = await fetch("http://localhost:8000/activities/", {
+                method: "POST",
+                body: formData
+            });
+
+            if (response.ok) {
+                // Clear form and display success message
+                setNewSession({
+                    name: "",
+                    description: "",
+                    image: "",
+                    date: "",
+                    duration: 30,
+                    type_id: 1,
+                    topic: "",
+                    speaker: "",
+                    facilitator: ""
+                });
+                setImagePreview(null);
+                setErrorMessage("");
+                alert("Activity created successfully!");
+            } else {
+                setErrorMessage("Error creating activity.");
+            }
+        } catch (error) {
+            setErrorMessage("Error creating activity.");
+        }
+    };
 
     const handleBrowseClick = () => {
         document.getElementById('file-input').click();
     };
 
-    const handleFileChange = (event) => {
-        const file = event.target.files[0];
+    // const handleFileChange = (event) => {
+    //     const file = event.target.files[0];
 
-        if (file) {
-            if (file.size > MAX_FILE_SIZE) {
-                setFeedbackMessage("File size exceeds the 5MB limit. Please select a smaller file.");
-            } else if (file.type !== "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet") {
-                setFeedbackMessage("Please select a valid Excel file.");
-            } else {
-                setSelectedFile(file);
-                setFeedbackMessage("File selected successfully!");
-                simulateUpload();
-            }
-        }
-    };
+    //     if (file) {
+    //         if (file.size > MAX_FILE_SIZE) {
+    //             setFeedbackMessage("File size exceeds the 5MB limit. Please select a smaller file.");
+    //         } else if (file.type !== "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet") {
+    //             setFeedbackMessage("Please select a valid Excel file.");
+    //         } else {
+    //             setSelectedFile(file);
+    //             setFeedbackMessage("File selected successfully!");
+    //             simulateUpload();
+    //         }
+    //     }
+    // };
 
     const simulateUpload = () => {
         let progress = 0;
@@ -102,34 +205,17 @@ export default function Activities() {
                 </div>
                 <h1 className="text-3xl font-bold mt-8">Sessions</h1>
                 <div className="w-full grid grid-cols-3 gap-4 overflow-hidden mt-8" >
-                    <Activity
-                        title="Innovation and Technology: Shaping the Future"
-                        description="Exploring how innovation and technology are transforming."
-                        image="/12.jpg"
-                        category="Technology"
-                        type="Talk"
-                    />
-                    <Activity
-                        title="AI and the Future of Work"
-                        description="How artificial intelligence is reshaping job markets and skill requirements."
-                        image="/13.jpg"
-                        category="AI"
-                        type="Workshop"
-                    />
-                    <Activity
-                        title="Sustainable Tech Solutions"
-                        description="Innovations driving a more sustainable and eco-friendly future."
-                        image="/14.jpg"
-                        category="Sustainability"
-                        type="Lecture"
-                    />
-                    <Activity
-                        title="The Future of Mobility"
-                        description="Exploring the future of transportation and mobility."
-                        image="/15.jpg"
-                        category="Transportation"
-                        type="Panel"
-                    />
+                    {activities.map((activity) => (
+                        <Activity
+                            key={activity.id}
+                            id={activity.id}
+                            title={activity.name}
+                            description={activity.description}
+                            image={activity.image}
+                            category={activity.topic}
+                            type={activityTypes.find(type => type.id === activity.type_id).type}
+                        />
+                    ))}
                 </div>
             </div>
 
@@ -214,47 +300,133 @@ export default function Activities() {
                     </form>
                     <h3 className="text-lg font-bold">Create New Session</h3>
                     <p className="py-4">Fill in the details to create a new session.</p>
-                    <form>
+                    <form onSubmit={handleSubmit}>
                         <div>
-                            <label form="title">Title</label>
-                            <input type="text" id="title" placeholder="Enter the session title" className="text-base-100 input w-full h-12 bg-secondary rounded-xl"></input>
+                            <label htmlFor="name">Name</label>
+                            <input
+                                type="text"
+                                id="name"
+                                name="name"
+                                value={newSession.name}
+                                onChange={handleInputChange}
+                                placeholder="Enter the session title"
+                                className="input w-full h-12 bg-secondary rounded-xl"
+                            />
                         </div>
-                        <div className="flex w-full gap-4 mt-4">
-                            <div className="w-1/2">
-                                <label htmlFor="sdate" className="block">Start Date</label>
-                                <input type="datetime-local" id="sdate" className="text-base-100 input w-full h-12 bg-secondary rounded-xl"></input>
-                            </div>
-                            <div className="w-1/2">
-                                <label htmlFor="edate" className="block">End Date</label>
-                                <input type="datetime-local" id="edate" className="text-base-100 input w-full h-12 bg-secondary rounded-xl"></input>
-                            </div>
+                        <div className="mt-4">
+                            <label htmlFor="description">Description</label>
+                            <textarea
+                                id="description"
+                                name="description"
+                                value={newSession.description}
+                                onChange={handleInputChange}
+                                placeholder="Enter the session description"
+                                className="input w-full h-24 bg-secondary rounded-xl"
+                            />
                         </div>
-                        <div className="flex w-full gap-4 mt-4">
+                        <div className="mt-4">
+                            <label htmlFor="type_id" className="select w-full h-12 bg-secondary rounded-xl">
+                                <span className="label">Type</span>
+                                <select
+                                    id="type_id"
+                                    name="type_id"
+                                    value={newSession.type_id}
+                                    onChange={handleInputChange}
+                                >
+                                    {activityTypes.map((type) => (
+                                        <option key={type.id} value={type.id}>
+                                            {type.type}
+                                        </option>
+                                    ))}
+                                </select>
+                            </label>
+                        </div>
+                        <div className="flex gap-4 mt-4">
                             <div className="w-1/2">
-                                <label htmlFor="location" className="block">Location</label>
-                                <input type="text" id="location" placeholder="Enter the session location" className="text-base-100 input h-12 bg-secondary rounded-xl"></input>
+                                <label htmlFor="date">Date</label>
+                                <input
+                                    type="datetime-local"
+                                    id="date"
+                                    name="date"
+                                    value={newSession.date}
+                                    onChange={handleInputChange}
+                                    className="input w-full h-12 bg-secondary rounded-xl"
+                                />
                             </div>
                             <div className="w-1/2">
-                                <label htmlFor="speaker" className="block">Speaker</label>
-                                <input type="text" id="speaker" placeholder="Enter the session speaker" className="text-base-100 input h-12 bg-secondary rounded-xl"></input>
+                                <label htmlFor="duration">Duration (minutes)</label>
+                                <input
+                                    type="number"
+                                    id="duration"
+                                    name="duration"
+                                    value={newSession.duration}
+                                    onChange={handleInputChange}
+                                    className="input w-full h-12 bg-secondary rounded-xl"
+                                />
                             </div>
                         </div>
                         <div className="mt-4">
-                            <label htmlFor="description" className="block">Description</label>
-                            <textarea id="description" className="text-base-100 input w-full h-24 bg-secondary rounded-xl"></textarea>
+                            <label htmlFor="topic">Topic</label>
+                            <input
+                                type="text"
+                                id="topic"
+                                name="topic"
+                                value={newSession.topic}
+                                onChange={handleInputChange}
+                                placeholder="Enter the session topic"
+                                className="input w-full h-12 bg-secondary rounded-xl"
+                            />
                         </div>
                         <div className="mt-4">
-                            <label htmlFor="img">Image</label>
-                            <fieldset className="fieldset rounded-xl">
-                                <input type="file" id="img" accept="image/*" className="file-input rounded-xl h-12 w-full bg-secondary text-base-100 border-2 focus:outline-none focus:ring-2 focus:ring-primary"/>
-                            </fieldset>
+                            <label htmlFor="speaker">Speaker</label>
+                            <input
+                                type="text"
+                                id="speaker"
+                                name="speaker"
+                                value={newSession.speaker}
+                                onChange={handleInputChange}
+                                placeholder="Enter the speaker's name"
+                                className="input w-full h-12 bg-secondary rounded-xl"
+                            />
                         </div>
-                        <button className="btn btn-primary mt-4 mx-auto w-1/3 flex items-center justify-center">
-                            Submit
-                        </button>
+                        <div className="mt-4">
+                            <label htmlFor="facilitator">Facilitator</label>
+                            <input
+                                type="text"
+                                id="facilitator"
+                                name="facilitator"
+                                value={newSession.facilitator}
+                                onChange={handleInputChange}
+                                placeholder="Enter the facilitator's name"
+                                className="input w-full h-12 bg-secondary rounded-xl"
+                            />
+                        </div>
+                        <div className="mt-4">
+                            <label htmlFor="image">Image</label>
+                            <input
+                                type="file"
+                                id="image"
+                                accept="image/*"
+                                onChange={handleFileChange}
+                                className="file-input w-full h-12 bg-secondary rounded-xl"
+                            />
+                        </div>
+
+                        {imagePreview && (
+                            <div className="mt-4">
+                                <img src={imagePreview} alt="Preview" className="w-full h-32 object-cover rounded-xl" />
+                            </div>
+                        )}
+
+                        {errorMessage && (
+                            <div className="text-red-500 mt-4">{errorMessage}</div>
+                        )}
+
+                        <button className="btn btn-primary mt-4 w-full">Create Session</button>
                     </form>
                 </div>
-                <form method="dialog" className="modal-backdrop bg-none bg-opacity-10">
+
+                <form method="dialog" className="modal-backdrop bg-opacity-10">
                     <button>close</button>
                 </form>
             </dialog>
