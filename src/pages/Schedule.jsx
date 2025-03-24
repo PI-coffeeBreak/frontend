@@ -10,8 +10,8 @@ export default function DragDropCalendar() {
     const draggableRef = useRef(null);
     const [activity_types, setActivityTypes] = useState([]);
     const [activities, setActivities] = useState([]);
-    const [calendar_activities, setCalendarActivities] = useState([]);  // Store activities added to the calendar
-    const [outside_activities, setOutsideActivities] = useState([]);  // Store activities not yet added to the calendar
+    const [calendar_activities, setCalendarActivities] = useState([]);  // Activities already in the calendar
+    const [outside_activities, setOutsideActivities] = useState([]);  // Activities not yet added to the calendar
 
     const fetchActivityTypes = async () => {
         const response = await fetch('http://localhost:8000/activity-types/');
@@ -24,8 +24,14 @@ export default function DragDropCalendar() {
         const response = await fetch('http://localhost:8000/activities/');
         const data = await response.json();
         console.log("Atividades:", data);
+        
+        // Separate activities based on whether they already have a valid date
+        const calendarEvents = data.filter(activity => activity.date && new Date(activity.date).getTime() > 0);
+        const outsideEvents = data.filter(activity => !activity.date || new Date(activity.date).getTime() <= 0);
+        
         setActivities(data);
-        setOutsideActivities(data);
+        setCalendarActivities(calendarEvents);  // Activities with a valid date
+        setOutsideActivities(outsideEvents);    // Activities without a valid date
     }
 
     useEffect(() => {
@@ -34,20 +40,16 @@ export default function DragDropCalendar() {
     }, []);
 
     useEffect(() => {
-        console.log("Fetched Activities:", activities);
         if (activities.length > 0 && calendarRef.current) {
             const timer = setTimeout(() => {
                 const draggable = new Draggable(draggableRef.current, {
                     itemSelector: ".fc-event",
                     eventData: function(eventEl) {
                         const activityId = eventEl.getAttribute("data-id");
-                        console.log("ID da Atividade:", activityId);
-                        
                         const activity = activities.find((activity) => activity.id === parseInt(activityId));
-                        console.log("Evento Arrastado:", activity);
                 
                         if (!activity) {
-                            console.error("Activity not found for ID:", activityId);  // Error if activity is undefined
+                            console.error("Activity not found for ID:", activityId);
                         }
                 
                         return {
@@ -66,7 +68,6 @@ export default function DragDropCalendar() {
         }
     }, [activities]);
 
-
     const handleEventReceive = async (info) => {
         const activityId = parseInt(info.event.extendedProps["data-id"]);
         const activity = activities.find((activity) => activity.id === activityId);
@@ -78,10 +79,8 @@ export default function DragDropCalendar() {
             setOutsideActivities((prev) => prev.filter((act) => act.id !== activityId));
             console.log("Evento Adicionado:", info.event.title);
     
-            // Calculate the new start time (date) from FullCalendar's event start
-            const newStartTime = info.event.start.toISOString(); // Start time from FullCalendar
+            const newStartTime = info.event.start.toISOString();
     
-            // Create an updated activity object with the new date (start_time)
             const updatedActivity = {
                 ...activity,
                 date: newStartTime,  // Update the date with the new start time
@@ -108,7 +107,7 @@ export default function DragDropCalendar() {
         } else {
             console.error("Activity not found for ID:", activityId);
         }
-    };    
+    };
 
     const handleEventClick = (info) => {
         if (confirm(`Remover a atividade "${info.event.title}" do calendário?`)) {
@@ -155,6 +154,21 @@ export default function DragDropCalendar() {
                     slotMinTime="08:00:00"
                     slotMaxTime="18:00:00"
                     allDaySlot={false}
+                    events={calendar_activities.map((activity) => {
+                        const durationInMs = activity.duration * 60000;  // Convert duration from minutes to milliseconds
+                        const endTime = new Date(new Date(activity.date).getTime() + durationInMs); // Calculate the end time
+                        
+                        return {
+                            id: activity.id,
+                            title: activity.name,
+                            start: activity.date,
+                            end: endTime.toISOString(),  // Set the end time based on duration
+                            extendedProps: {
+                                "data-id": activity.id,
+                                "data-title": activity.name,
+                            },
+                        };
+                    })}
                 />
             </div>
         </div>
