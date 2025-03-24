@@ -71,13 +71,12 @@ export default function DragDropCalendar() {
     const handleEventReceive = async (info) => {
         const activityId = parseInt(info.event.extendedProps["data-id"]);
         const activity = activities.find((activity) => activity.id === activityId);
-    
+        
         if (activity) {
             // Add the activity to the calendar_activities state
             setCalendarActivities((prev) => [...prev, activity]);
             // Remove the activity from outside_activities
             setOutsideActivities((prev) => prev.filter((act) => act.id !== activityId));
-            console.log("Evento Adicionado:", info.event.title);
     
             const newStartTime = info.event.start.toISOString();
     
@@ -93,7 +92,7 @@ export default function DragDropCalendar() {
                     headers: {
                         'Content-Type': 'application/json',
                     },
-                    body: JSON.stringify(updatedActivity),  // Send the updated activity data with the new date
+                    body: JSON.stringify(updatedActivity),
                 });
     
                 if (!response.ok) {
@@ -101,16 +100,101 @@ export default function DragDropCalendar() {
                 }
     
                 console.log("Activity updated:", updatedActivity);
+    
+                fetchActivities();
+    
             } catch (error) {
                 console.error("Error updating activity:", error);
             }
         } else {
             console.error("Activity not found for ID:", activityId);
         }
+    };    
+
+    // Handle resizing event (when duration is changed by resizing the event)
+    const handleEventResize = async (info) => {
+        const activityId = parseInt(info.event.extendedProps["data-id"]);
+        const activity = activities.find((activity) => activity.id === activityId);
+
+        if (activity) {
+            // Calculate new duration (in minutes) based on start and end times
+            const newDuration = Math.round((info.event.end - info.event.start) / 60000);
+
+            const updatedActivity = {
+                ...activity,
+                duration: newDuration,
+            };
+
+            try {
+                // Send a PUT request to update the activity with the new duration
+                const response = await fetch(`http://localhost:8000/activities/${activityId}`, {
+                    method: 'PUT',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify(updatedActivity),
+                });
+
+                if (!response.ok) {
+                    throw new Error('Failed to update activity');
+                }
+
+                console.log("Activity duration updated:", updatedActivity);
+
+                setCalendarActivities((prev) =>
+                    prev.map((act) =>
+                        act.id === activityId ? { ...act, duration: newDuration } : act
+                    )
+                );
+
+            } catch (error) {
+                console.error("Error updating activity:", error);
+            }
+        }
     };
 
+    const handleEventDrop = async (info) => {
+        const activityId = parseInt(info.event.extendedProps["data-id"]);
+        const activity = activities.find((activity) => activity.id === activityId);
+    
+        if (activity) {
+            // Create an updated activity with the new start time (from event drop)
+            const updatedActivity = {
+                ...activity,
+                date: info.event.start.toISOString(),
+            };
+    
+            try {
+                // Send a PUT request to update the activity with the new date
+                const response = await fetch(`http://localhost:8000/activities/${activityId}`, {
+                    method: 'PUT',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify(updatedActivity),
+                });
+    
+                if (!response.ok) {
+                    throw new Error('Failed to update activity');
+                }
+    
+                console.log("Activity moved and updated:", updatedActivity);
+    
+                setCalendarActivities((prev) =>
+                    prev.map((act) =>
+                        act.id === activityId ? { ...act, date: updatedActivity.date } : act
+                    )
+                );
+    
+            } catch (error) {
+                console.error("Error updating activity:", error);
+            }
+        }
+    };
+    
+
     const handleEventClick = async (info) => {
-        if (confirm(`Remover a atividade "${info.event.title}" do calendário?`)) {
+        if (confirm(`Remove activity "${info.event.title}" from the schedule?`)) {
             const activityId = parseInt(info.event.extendedProps["data-id"]);
             const activity = activities.find((activity) => activity.id === activityId);
     
@@ -118,7 +202,7 @@ export default function DragDropCalendar() {
                 // Create an updated activity with date set to null
                 const updatedActivity = {
                     ...activity,
-                    date: null,  // Set the date to null when the event is removed
+                    date: null,
                 };
     
                 try {
@@ -139,10 +223,12 @@ export default function DragDropCalendar() {
     
                     // Remove the activity from calendar_activities
                     setCalendarActivities((prev) => prev.filter((act) => act.id !== activityId));
-                    
-                    // Optionally, add the activity back to the outside_activities if you want
+    
                     setOutsideActivities((prev) => [...prev, activity]);
-                    info.event.remove();  // Remove the event from FullCalendar
+                    info.event.remove();
+    
+                    // Refetch activities
+                    fetchActivities();
     
                 } catch (error) {
                     console.error("Error updating activity:", error);
@@ -151,7 +237,7 @@ export default function DragDropCalendar() {
                 console.error("Activity not found for ID:", activityId);
             }
         }
-    };    
+    };
 
     return (
         <div className="container mx-auto">
@@ -180,6 +266,8 @@ export default function DragDropCalendar() {
                     editable={true}
                     droppable={true}
                     eventReceive={handleEventReceive}
+                    eventDrop={handleEventDrop}  // Handle event drop (dragging to a new time slot)
+                    eventResize={handleEventResize}  // Handle event resize (changing duration)
                     eventClick={handleEventClick}
                     slotMinTime="08:00:00"
                     slotMaxTime="18:00:00"
