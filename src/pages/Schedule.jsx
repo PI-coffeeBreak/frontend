@@ -67,21 +67,48 @@ export default function DragDropCalendar() {
     }, [activities]);
 
 
-    const handleEventReceive = (info) => {
+    const handleEventReceive = async (info) => {
         const activityId = parseInt(info.event.extendedProps["data-id"]);
         const activity = activities.find((activity) => activity.id === activityId);
-        console.log("Evento Recebido:", info.event.title);
-        console.log("ID da Atividade:", activityId);
-        console.log("Atividade:", activity);
-
+    
         if (activity) {
             // Add the activity to the calendar_activities state
             setCalendarActivities((prev) => [...prev, activity]);
             // Remove the activity from outside_activities
             setOutsideActivities((prev) => prev.filter((act) => act.id !== activityId));
             console.log("Evento Adicionado:", info.event.title);
+    
+            // Calculate the new start time (date) from FullCalendar's event start
+            const newStartTime = info.event.start.toISOString(); // Start time from FullCalendar
+    
+            // Create an updated activity object with the new date (start_time)
+            const updatedActivity = {
+                ...activity,
+                date: newStartTime,  // Update the date with the new start time
+            };
+    
+            try {
+                // Send a PUT request to update the activity with the new date
+                const response = await fetch(`http://localhost:8000/activities/${activityId}`, {
+                    method: 'PUT',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify(updatedActivity),  // Send the updated activity data with the new date
+                });
+    
+                if (!response.ok) {
+                    throw new Error('Failed to update activity');
+                }
+    
+                console.log("Activity updated:", updatedActivity);
+            } catch (error) {
+                console.error("Error updating activity:", error);
+            }
+        } else {
+            console.error("Activity not found for ID:", activityId);
         }
-    };
+    };    
 
     const handleEventClick = (info) => {
         if (confirm(`Remover a atividade "${info.event.title}" do calendário?`)) {
