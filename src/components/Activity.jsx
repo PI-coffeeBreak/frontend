@@ -1,11 +1,11 @@
 export default function Activity({id, title, description, image, category, type }) {
     return (
         <div
-            className="fc-event cursor-pointer flex items-center w-full h-36 p-4 bg-white shadow-md rounded-md"
+            className="fc-event cursor-pointer flex items-center w-full gap-4 h-36 p-4 bg-white shadow-md rounded-md"
             data-id={id}
             data-title={title}
         >
-            <div className="w-1/3 h-full flex items-center justify-center">
+            <div className="w-1/3 h-full items-center justify-center hidden sm:block">
             {image ? (
                 <img src={image} alt="Activity" className="w-full h-full object-cover rounded-md"/>
                 ) : (
@@ -15,14 +15,14 @@ export default function Activity({id, title, description, image, category, type 
                 )
             }
             </div>
-            <div className="w-2/3 pl-4">
+            <div className="w-2/3">
                 <h1 className="font-bold text-secondary text-sm">{title}</h1>
                 <p className="text-sm mt-2 text-gray-600">{description}</p>
                 <div className="mt-1 flex">
+                    <span className="badge badge-secondary">{type}</span>
                     {category &&
-                        <span className="badge badge-primary">{category}</span>
+                        <span className="badge ml-2 badge-primary">{category}</span>
                     }
-                    <span className="badge badge-secondary ml-2">{type}</span>
                 </div>
             </div>
         </div>

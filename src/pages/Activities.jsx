@@ -23,6 +23,8 @@ export default function Activities() {
         speaker: "",
         facilitator:  ""
     });
+    const [searchQuery, setSearchQuery] = useState("");
+    const [selectedType, setSelectedType] = useState("");
     const [errorMessage, setErrorMessage] = useState("");
     const [imagePreview, setImagePreview] = useState(null);
     const [feedbackMessage, setFeedbackMessage] = useState("");
@@ -31,6 +33,47 @@ export default function Activities() {
     const [activityTypes, setActivityTypes] = useState([]);
     let [activities, setActivities] = useState([]);
     const MAX_FILE_SIZE = 1024 * 1024;
+
+    const fetchActivityTypes = async () => {
+        try {
+            const response = await axios.get('http://localhost:8000/api/v1/activity-types/');
+            console.log("Activity Types:", response.data);
+            setActivityTypes(response.data);
+        } catch (error) {
+            console.error("Error fetching activity types:", error);
+        }
+    }
+
+    const fetchActivities = async () => {
+        try {
+            const response = await axios.get('http://localhost:8000/api/v1/activities/');
+            console.log("Activities:", response.data);
+            setActivities(response.data);
+        } catch (error) {
+            console.error("Error fetching activities:", error);
+        }
+    }
+
+
+
+    //FILTERS
+    const handleSearchChange = (e) => {
+        setSearchQuery(e.target.value);
+    };
+
+    const handleTypeChange = (e) => {
+        setSelectedType(e.target.value);
+    };
+
+    const filteredActivities = activities.filter((activity) => {
+        const matchesSearch = activity.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
+            activity.description.toLowerCase().includes(searchQuery.toLowerCase());
+
+        const matchesType = selectedType ? activity.type_id === parseInt(selectedType) : true;
+
+        return matchesSearch && matchesType;
+    });
+
 
 
     const getActivityTypeID = (type) => {
@@ -80,32 +123,20 @@ export default function Activities() {
     };
 
 
-    const fetchActivityTypes = async () => {
-            const response = await fetch('http://localhost:8000/api/v1/activity-types/');
-            const data = await response.json();
-            console.log("Activity Types:", data);
-            setActivityTypes(data);
-        }
-    
-    const fetchActivities = async () => {
-        const response = await fetch('http://localhost:8000/api/v1/activities/');
-        const data = await response.json();
-        console.log("Activities:", data);
-        setActivities(data);
-    }
+
 
     var ExcelToJSON = function() {
         this.parseExcel = function(file) {
             return new Promise((resolve, reject) => {
-                var reader = new FileReader();
+                const reader = new FileReader();
                 reader.onload = function(e) {
-                    var data = e.target.result;
-                    var workbook = XLSX.read(data, { type: 'binary' });
+                    const data = e.target.result;
+                    const workbook = XLSX.read(data, {type: 'binary'});
 
                     let jsonData = [];
 
                     workbook.SheetNames.forEach(function(sheetName) {
-                        var XL_row_object = XLSX.utils.sheet_to_row_object_array(workbook.Sheets[sheetName]);
+                        const XL_row_object = XLSX.utils.sheet_to_row_object_array(workbook.Sheets[sheetName]);
                         console.log(`Data from sheet: ${sheetName}`);
                         console.log(XL_row_object);
 
@@ -137,17 +168,15 @@ export default function Activities() {
 
     const handleExcelFileChange = (e) => {
         const file = e.target.files[0];
+
         if (file) {
             const excelToJson = new ExcelToJSON();
             excelToJson.parseExcel(file).then(jsonData => {
                 activities = prepareDataForPost(jsonData);
-                console.log(activities)
-
-
+                setSelectedFile(file);
             }).catch(error => {
                 console.error("Error processing excel file:", error);
-        }
-
+            }
         );
 
         return activities
@@ -158,13 +187,27 @@ export default function Activities() {
 
     };
 
+    const handleExcelFileChangeDrop = (file) => {
+        if (file) {
+            const excelToJson = new ExcelToJSON();
+            excelToJson.parseExcel(file).then(jsonData => {
+                activities = prepareDataForPost(jsonData);
+                console.log(activities);
+            }).catch(error => {
+                console.error("Error processing excel file:", error);
+            });
+        } else {
+            console.log("No file selected.");
+        }
+    };
+
     const handleExcelSubmit = async (e) => {
         e.preventDefault()
         try {
             const response = await axios.post('http://localhost:8000/api/v1/activities/batch', activities);
             console.log('Data sent successfully', response);
             setFeedbackMessage("Activities added successfully!");
-            setErrorMessage("");  // Limpa qualquer erro anterior
+            setErrorMessage("");
             document.getElementById("excel_modal").close();
         } catch (error) {
             console.error('Error sending the data:', error);
@@ -206,25 +249,27 @@ export default function Activities() {
             return;
         }
 
-        const formData = new FormData();
-        formData.append("name", newSession.name);
-        formData.append("description", newSession.description);
-        formData.append("image", newSession.image);
-        formData.append("date", newSession.date);
-        formData.append("duration", newSession.duration);
-        formData.append("type_id", newSession.type_id);
-        formData.append("topic", newSession.topic);
-        formData.append("speaker", newSession.speaker);
-        formData.append("facilitator", newSession.facilitator);
+        console.log(newSession.date)
+
+        const activity = {
+            name: newSession.name,
+            description: newSession.description,
+            image: newSession.image,
+            date: newSession.date,
+            duration: newSession.duration,
+            type_id: newSession.type_id,
+            topic: newSession.topic,
+            speaker: newSession.speaker,
+            facilitator: newSession.facilitator
+        }
+
 
         try {
-            const response = await fetch("http://localhost:8000/activities/", {
-                method: "POST",
-                body: formData
-            });
-
+            const response = await axios.post('http://localhost:8000/api/v1/activities', activity);
+            setFeedbackMessage("Activities added successfully!");
+            setErrorMessage("");
+            document.getElementById("excel_modal").close();
             if (response.ok) {
-                // Clear form and display success message
                 setNewSession({
                     name: "",
                     description: "",
@@ -239,10 +284,11 @@ export default function Activities() {
                 setImagePreview(null);
                 setErrorMessage("");
                 alert("Activity created successfully!");
+                fetchActivities();
             } else {
                 setErrorMessage("Error creating activity.");
             }
-        } catch (error) {
+        } catch{
             setErrorMessage("Error creating activity.");
         }
     };
@@ -270,6 +316,7 @@ export default function Activities() {
     const handleDrop = (event) => {
         event.preventDefault();
         event.stopPropagation();
+
         const files = event.dataTransfer.files;
 
         if (files.length > 0) {
@@ -281,8 +328,12 @@ export default function Activities() {
                 setFeedbackMessage("Please drop a valid Excel file.");
             } else {
                 setSelectedFile(file);
+                console.log(selectedFile)
                 setFeedbackMessage("File dropped successfully!");
                 simulateUpload();
+
+
+                handleExcelFileChangeDrop(file);
             }
         }
     };
@@ -303,7 +354,7 @@ export default function Activities() {
 
     return (
         <>
-            <div className="w-full min-h-svh p-8">
+            <div className="w-full min-h-svh p-2 lg:p-8">
                 <h1 className="text-3xl font-bold">Create Sessions</h1>
 
                 <div className="grid grid-cols-3 gap-4 mt-8">
@@ -321,6 +372,7 @@ export default function Activities() {
                     />
                 </div>
                 <h1 className="text-3xl font-bold mt-8">Sessions</h1>
+
                 {feedbackMessage && (
                     <div role="alert" className="alert alert-success my-4 w-1/2">
                         <span className="flex gap-4"><FaCheck className="text-white text-xl"/>{feedbackMessage}</span>
@@ -328,23 +380,63 @@ export default function Activities() {
                 )}
                 {errorMessage && (
                     <div role="alert" className="alert alert-error my-4 w-1/2">
-                        <span className="flex gap-4"><FaExclamationTriangle className="text-white text-xl"/>{errorMessage}</span>
+                        <span className="flex gap-4"><FaExclamationTriangle
+                            className="text-white text-xl"/>{errorMessage}</span>
                     </div>
                 )}
 
-                <div className="w-full grid grid-cols-3 gap-4 overflow-hidden mt-8">
-                    {activities.map((activity) => (
-                        <Activity
-                            key={activity.id}
-                            id={activity.id}
-                            title={activity.name}
-                            description={activity.description}
-                            image={activity.image}
-                            category={activity.topic}
-                            type={getActivityType(activity.type_id)}
-                        />
-                    ))}
+                <div className="flex gap-8 mt-4">
+                    <div className="flex gap-4">
+                        <label className="input">
+                            <svg className="h-[1em] opacity-50" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
+                                <g strokeLinejoin="round" strokeLinecap="round" strokeWidth="2.5" fill="none"
+                                   stroke="currentColor">
+                                    <circle cx="11" cy="11" r="8"></circle>
+                                    <path d="m21 21-4.3-4.3"></path>
+                                </g>
+                            </svg>
+                            <input
+                                type="text"
+                                className="grow"
+                                placeholder="Search activities"
+                                value={searchQuery}
+                                onChange={handleSearchChange}/>
+                        </label>
+                    </div>
+
+
+                    <form className="filter">
+                        <input className="btn btn-square" type="reset" value="×" onClick={() => setSelectedType("")} />
+                        {activityTypes.map((type) => (
+                            <input
+                                key={type.id}
+                                type="radio"
+                                name="frameworks"
+                                value={type.id}
+                                onChange={handleTypeChange}
+                                className="btn btn-primary"
+                                aria-label={type.type}
+                            />
+                        ))}
+                    </form>
                 </div>
+                {filteredActivities.length > 0 ? (
+                    <div className="w-full grid grid-cols-1 gap-4 overflow-hidden mt-6 md:grid-cols-2 lg:grid-cols-3">
+                        {filteredActivities.map((activity) => (
+                            <Activity
+                                key={activity.id}
+                                id={activity.id}
+                                title={activity.name}
+                                description={activity.description}
+                                image={activity.image}
+                                category={activity.topic}
+                                type={getActivityType(activity.type_id)}
+                            />
+                        ))}
+                    </div>
+                ) : (
+                    <p className="text-7xl flex justify-center items-center text-center">No activities found.</p>
+                )}
 
             </div>
 
