@@ -2,9 +2,14 @@ import { FiUpload } from "react-icons/fi";
 import { FaPlus, FaFile } from "react-icons/fa";
 import { FaFileExcel } from "react-icons/fa6";
 import { FaTrash } from "react-icons/fa";
+import { FaExclamationTriangle } from "react-icons/fa";
+import { FaCheck } from "react-icons/fa";
 import CreateCard from "../components/CreateCard.jsx";
 import {useState, useEffect} from "react";
 import Activity from "../components/Activity.jsx";
+import { MdError } from "react-icons/md";
+import * as XLSX from "xlsx";
+import axios from 'axios';
 
 export default function Activities() {
     const [newSession, setNewSession] = useState({
@@ -13,10 +18,10 @@ export default function Activities() {
         image: "",
         date: "",
         duration: 30,
-        type_id: 1, // Default to the first type for now, can be changed later
+        type_id: 1,
         topic: "",
         speaker: "",
-        facilitator: ""
+        facilitator:  ""
     });
     const [errorMessage, setErrorMessage] = useState("");
     const [imagePreview, setImagePreview] = useState(null);
@@ -24,22 +29,98 @@ export default function Activities() {
     const [selectedFile, setSelectedFile] = useState(null);
     const [uploadProgress, setUploadProgress] = useState(0);
     const [activityTypes, setActivityTypes] = useState([]);
-    const [activities, setActivities] = useState([]);
-    const MAX_FILE_SIZE = 1024 * 1024; // temos que escolher quanto queremos depois
+    let [activities, setActivities] = useState([]);
+    const MAX_FILE_SIZE = 1024 * 1024;
+
+
+    const getActivityTypeID = (type) => {
+        const normalizedType = type.trim().toLowerCase();
+
+        for (let i = 0; i < activityTypes.length; i++) {
+            if (activityTypes[i].type.toLowerCase() === normalizedType) {
+                return activityTypes[i].id;
+            }
+        }
+
+        return "Type not found";
+    };
+
+    const getActivityType = (typeId) => {
+        for (let i = 0; i < activityTypes.length; i++) {
+            if (activityTypes[i].id === typeId) {
+                return activityTypes[i].type;
+            }
+        }
+
+        return "Type not found";
+    };
+
+
+
+    const prepareDataForPost = (json) => {
+        const activities = [];
+        for (let i = 0; i < json.length; i++) {
+            json[i].type_id = getActivityTypeID(json[i].type);
+            delete json[i].type;
+
+            activities.push({
+                name: json[i].name,
+                description: json[i].description,
+                image: json[i].image,
+                date: json[i].date,
+                duration: json[i].duration,
+                type_id: json[i].type_id,
+                topic: json[i].topic,
+                speaker: json[i].speaker,
+                facilitator: json[i].facilitator
+            })
+        }
+
+        return activities;
+    };
+
 
     const fetchActivityTypes = async () => {
-            const response = await fetch('http://localhost:8000/activity-types/');
+            const response = await fetch('http://localhost:8000/api/v1/activity-types/');
             const data = await response.json();
-            console.log("Tipos de Atividades:", data);
+            console.log("Activity Types:", data);
             setActivityTypes(data);
         }
     
     const fetchActivities = async () => {
-        const response = await fetch('http://localhost:8000/activities/');
+        const response = await fetch('http://localhost:8000/api/v1/activities/');
         const data = await response.json();
-        console.log("Atividades:", data);
+        console.log("Activities:", data);
         setActivities(data);
     }
+
+    var ExcelToJSON = function() {
+        this.parseExcel = function(file) {
+            return new Promise((resolve, reject) => {
+                var reader = new FileReader();
+                reader.onload = function(e) {
+                    var data = e.target.result;
+                    var workbook = XLSX.read(data, { type: 'binary' });
+
+                    let jsonData = [];
+
+                    workbook.SheetNames.forEach(function(sheetName) {
+                        var XL_row_object = XLSX.utils.sheet_to_row_object_array(workbook.Sheets[sheetName]);
+                        console.log(`Data from sheet: ${sheetName}`);
+                        console.log(XL_row_object);
+
+                        jsonData = jsonData.concat(XL_row_object);
+                    });
+
+                    resolve(jsonData);
+                };
+                reader.onerror = function(ex) {
+                    reject(ex);
+                };
+                reader.readAsBinaryString(file);
+            });
+        };
+    };
 
     useEffect(() => {
         fetchActivityTypes();
@@ -54,6 +135,56 @@ export default function Activities() {
         }));
     };
 
+    const handleExcelFileChange = (e) => {
+        const file = e.target.files[0];
+        if (file) {
+            const excelToJson = new ExcelToJSON();
+            excelToJson.parseExcel(file).then(jsonData => {
+                activities = prepareDataForPost(jsonData);
+                console.log(activities)
+
+
+            }).catch(error => {
+                console.error("Error processing excel file:", error);
+        }
+
+        );
+
+        return activities
+
+        } else {
+            console.log("No file selected.");
+        }
+
+    };
+
+    const handleExcelSubmit = async (e) => {
+        e.preventDefault()
+        try {
+            const response = await axios.post('http://localhost:8000/api/v1/activities/batch', activities);
+            console.log('Data sent successfully', response);
+            setFeedbackMessage("Activities added successfully!");
+            setErrorMessage("");  // Limpa qualquer erro anterior
+            document.getElementById("excel_modal").close();
+        } catch (error) {
+            console.error('Error sending the data:', error);
+
+            if (error.response) {
+                setErrorMessage(`API Error: ${error.response.data.message || 'An error occurred'}`);
+                document.getElementById("excel_modal").close();
+            } else if (error.request) {
+                setErrorMessage('No response received from the server. Please try again later.');
+                document.getElementById("excel_modal").close();
+            } else {
+                setErrorMessage(`Unexpected error: ${error.message}`);
+                document.getElementById("excel_modal").close();
+            }
+        }
+
+        fetchActivities();
+    };
+
+
     const handleFileChange = (e) => {
         const file = e.target.files[0];
         if (file) {
@@ -65,10 +196,11 @@ export default function Activities() {
         }
     };
 
+
+
     const handleSubmit = async (e) => {
         e.preventDefault();
 
-        // Validate required fields
         if (!newSession.name || !newSession.description || !newSession.type_id) {
             setErrorMessage("Name, Description, and Type are required.");
             return;
@@ -118,22 +250,6 @@ export default function Activities() {
     const handleBrowseClick = () => {
         document.getElementById('file-input').click();
     };
-
-    // const handleFileChange = (event) => {
-    //     const file = event.target.files[0];
-
-    //     if (file) {
-    //         if (file.size > MAX_FILE_SIZE) {
-    //             setFeedbackMessage("File size exceeds the 5MB limit. Please select a smaller file.");
-    //         } else if (file.type !== "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet") {
-    //             setFeedbackMessage("Please select a valid Excel file.");
-    //         } else {
-    //             setSelectedFile(file);
-    //             setFeedbackMessage("File selected successfully!");
-    //             simulateUpload();
-    //         }
-    //     }
-    // };
 
     const simulateUpload = () => {
         let progress = 0;
@@ -189,6 +305,7 @@ export default function Activities() {
         <>
             <div className="w-full min-h-svh p-8">
                 <h1 className="text-3xl font-bold">Create Sessions</h1>
+
                 <div className="grid grid-cols-3 gap-4 mt-8">
                     <CreateCard
                         icon={FaFileExcel}
@@ -204,7 +321,18 @@ export default function Activities() {
                     />
                 </div>
                 <h1 className="text-3xl font-bold mt-8">Sessions</h1>
-                <div className="w-full grid grid-cols-3 gap-4 overflow-hidden mt-8" >
+                {feedbackMessage && (
+                    <div role="alert" className="alert alert-success my-4 w-1/2">
+                        <span className="flex gap-4"><FaCheck className="text-white text-xl"/>{feedbackMessage}</span>
+                    </div>
+                )}
+                {errorMessage && (
+                    <div role="alert" className="alert alert-error my-4 w-1/2">
+                        <span className="flex gap-4"><FaExclamationTriangle className="text-white text-xl"/>{errorMessage}</span>
+                    </div>
+                )}
+
+                <div className="w-full grid grid-cols-3 gap-4 overflow-hidden mt-8">
                     {activities.map((activity) => (
                         <Activity
                             key={activity.id}
@@ -213,10 +341,11 @@ export default function Activities() {
                             description={activity.description}
                             image={activity.image}
                             category={activity.topic}
-                            type={activityTypes.find(type => type.id === activity.type_id).type}
+                            type={getActivityType(activity.type_id)}
                         />
                     ))}
                 </div>
+
             </div>
 
             <dialog id="excel_modal" className="modal">
@@ -227,7 +356,7 @@ export default function Activities() {
                     <h3 className="text-lg font-bold">Upload Excel File</h3>
                     <p className="py-4">Select an Excel file to upload multiple sessions at once.</p>
 
-                    <a href="/activityTemplate.xlsx" download>
+                    <a href="/template.xlsx" download>
                         <button className="btn btn-secondary mt-4 w-full">Download Excel Template</button>
                     </a>
 
@@ -273,18 +402,22 @@ export default function Activities() {
                             </>
                         )}
                     </div>
-                    <input
-                        type="file"
-                        id="file-input"
-                        style={{ display: 'none' }}
-                        accept=".xlsx,.xls"
-                        onChange={handleFileChange}
-                    />
-                    <button
-                        className="btn btn-primary mt-4 mx-auto w-1/3 flex items-center justify-center"
-                    >
-                        Submit
-                    </button>
+                    <form>
+                        <input
+                            type="file"
+                            id="file-input"
+                            style={{ display: 'none' }}
+                            accept=".xlsx,.xls"
+                            onChange={handleExcelFileChange}
+                        />
+                        <button
+                            className="btn btn-primary mt-4 mx-auto w-1/3 flex items-center justify-center"
+                            onClick={handleExcelSubmit}
+                        >
+                            Submit
+                        </button>
+                    </form>
+
                 </div>
 
 

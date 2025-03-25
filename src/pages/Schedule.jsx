@@ -14,14 +14,14 @@ export default function DragDropCalendar() {
     const [outside_activities, setOutsideActivities] = useState([]);  // Activities not yet added to the calendar
 
     const fetchActivityTypes = async () => {
-        const response = await fetch('http://localhost:8000/activity-types/');
+        const response = await fetch('http://localhost:8000/api/v1/activity-types/');
         const data = await response.json();
         console.log("Tipos de Atividades:", data);
         setActivityTypes(data);
     }
 
     const fetchActivities = async () => {
-        const response = await fetch('http://localhost:8000/activities/');
+        const response = await fetch('http://localhost:8000/api/v1/activities/');
         const data = await response.json();
         console.log("Atividades:", data);
         
@@ -87,7 +87,7 @@ export default function DragDropCalendar() {
     
             try {
                 // Send a PUT request to update the activity with the new date
-                const response = await fetch(`http://localhost:8000/activities/${activityId}`, {
+                const response = await fetch(`http://localhost:8000/api/v1/activities/${activityId}`, {
                     method: 'PUT',
                     headers: {
                         'Content-Type': 'application/json',
@@ -127,7 +127,7 @@ export default function DragDropCalendar() {
 
             try {
                 // Send a PUT request to update the activity with the new duration
-                const response = await fetch(`http://localhost:8000/activities/${activityId}`, {
+                const response = await fetch(`http://localhost:8000/api/v1/activities/${activityId}`, {
                     method: 'PUT',
                     headers: {
                         'Content-Type': 'application/json',
@@ -166,7 +166,7 @@ export default function DragDropCalendar() {
     
             try {
                 // Send a PUT request to update the activity with the new date
-                const response = await fetch(`http://localhost:8000/activities/${activityId}`, {
+                const response = await fetch(`http://localhost:8000/api/v1/activities/${activityId}`, {
                     method: 'PUT',
                     headers: {
                         'Content-Type': 'application/json',
@@ -207,7 +207,7 @@ export default function DragDropCalendar() {
     
                 try {
                     // Send a PUT request to update the activity with the new date (null)
-                    const response = await fetch(`http://localhost:8000/activities/${activityId}`, {
+                    const response = await fetch(`http://localhost:8000/api/v1/activities/${activityId}`, {
                         method: 'PUT',
                         headers: {
                             'Content-Type': 'application/json',
