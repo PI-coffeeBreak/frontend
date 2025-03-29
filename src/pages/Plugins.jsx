@@ -1,70 +1,74 @@
-import { useState } from "react";
+import { useState,useEffect } from "react";
 import { FaCog } from "react-icons/fa";
 import Pagination from "../components/pagination";
 import PluginSettingsModal from "../components/PluginSettingsModal";
+import { baseUrl } from "../consts";
+import axios from "axios";
+
+const pluginsBaseUrl = `${baseUrl}/plugins`;
 
 export default function Plugins() {
     const [plugins, setPlugins] = useState([
-        {
-            name: "Registration System",
-            description: "This plugin allows you to manage the registration of participants in the event.",
-            enable: true,
-            settings: {
-                title: "Registration System",
-                description: "Plugin to manage registrations.",
-                inputs: [
-                    {
-                        type: "text",
-                        title: "Registration URL",
-                        description: "The URL for registration",
-                        optional: "false",
-                    },
-                ],
-            },
-        },
-        {
-            name: "Alert System",
-            description: "This plugin allows you to send alerts to participants.",
-            enable: true,
-            settings: {
-                title: "Alert System",
-                description: "This plugin allows you to send alerts to participants.",
-                inputs: [
-                    {
-                        type: "selector",
-                        title: "Who can send alerts?",
-                        description: "Choose who can send alerts.",
-                        options: ["Everyone", "Only Admins"],
-                        optional: "false",
-                    },
-                    {
-                        type: "checkbox",
-                        title: "Do you want template messages for alerts?",
-                        kind: "multiple",
-                        options: ["Yes", "No", "bla", "bla2"],
-                        optional: "true",
-                    },
-                    {
-                        type: "shortText",
-                        title: "Alerts API Key",
-                        description: "The API key to send alerts.",
-                        optional: "false",
-                    },
-                    {
-                        type: "text",
-                        title: "Alerts API URL",
-                        description: "The URL to send alerts.",
-                        optional: "false",
-                    },
-                    {
-                        type: "composedText",
-                        title: "Alerts Message",
-                        description: "The message to send.",
-                        optional: "false",
-                    }
-                ],
-            },
-        },
+        // {
+        //     name: "Registration System",
+        //     description: "This plugin allows you to manage the registration of participants in the event.",
+        //     enable: true,
+        //     settings: {
+        //         title: "Registration System",
+        //         description: "Plugin to manage registrations.",
+        //         inputs: [
+        //             {
+        //                 type: "text",
+        //                 title: "Registration URL",
+        //                 description: "The URL for registration",
+        //                 optional: "false",
+        //             },
+        //         ],
+        //     },
+        // },
+        // {
+        //     name: "Alert System",
+        //     description: "This plugin allows you to send alerts to participants.",
+        //     enable: true,
+        //     settings: {
+        //         title: "Alert System",
+        //         description: "This plugin allows you to send alerts to participants.",
+        //         inputs: [
+        //             {
+        //                 type: "selector",
+        //                 title: "Who can send alerts?",
+        //                 description: "Choose who can send alerts.",
+        //                 options: ["Everyone", "Only Admins"],
+        //                 optional: "false",
+        //             },
+        //             {
+        //                 type: "checkbox",
+        //                 title: "Do you want template messages for alerts?",
+        //                 kind: "multiple",
+        //                 options: ["Yes", "No", "bla", "bla2"],
+        //                 optional: "true",
+        //             },
+        //             {
+        //                 type: "shortText",
+        //                 title: "Alerts API Key",
+        //                 description: "The API key to send alerts.",
+        //                 optional: "false",
+        //             },
+        //             {
+        //                 type: "text",
+        //                 title: "Alerts API URL",
+        //                 description: "The URL to send alerts.",
+        //                 optional: "false",
+        //             },
+        //             {
+        //                 type: "composedText",
+        //                 title: "Alerts Message",
+        //                 description: "The message to send.",
+        //                 optional: "false",
+        //             }
+        //         ],
+        //     },
+        // },
     ]);
 
     const [selectedPlugin, setSelectedPlugin] = useState(null);
@@ -80,6 +84,44 @@ export default function Plugins() {
     const indexOfLastPlugin = currentPage * pluginsPerPage;
     const indexOfFirstPlugin = indexOfLastPlugin - pluginsPerPage;
     const currentPlugins = filteredPlugins.slice(indexOfFirstPlugin, indexOfLastPlugin);
+
+    useEffect(() => {
+        fetchPlugins();
+    }, []);
+
+    const fetchPlugins = async () => {
+        try {
+            const response = await axios.get(pluginsBaseUrl)
+            console.log("Plugins fetched successfully:", response.data);
+            const fetchedPlugins = response.data;
+
+            const formattedPlugins = fetchedPlugins.map((pluginName) => ({
+                name: pluginName,
+                description: `${pluginName} plugin description`,
+                enable: false,
+                settings: {
+                    title: `${pluginName}`,
+                    description: `${pluginName} plugin description`,
+                    inputs: [
+                        {
+                            type: "selector",
+                            title: "Who can send alerts?",
+                            description: "Choose who can send alerts.",
+                            options: ["Everyone", "Only Admins"],
+                            optional: "false",
+                        },
+                    ]
+                }
+            }));
+
+            console.log("Plugins formatted:", formattedPlugins)
+            setPlugins(formattedPlugins);
+        }
+        catch (error) {
+            console.error("Error fetching plugins:", error);
+            throw error;
+        }
+    }
 
     const togglePlugin = (index) => {
         setPlugins(prevPlugins => 
