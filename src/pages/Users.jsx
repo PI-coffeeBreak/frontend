@@ -1,5 +1,8 @@
 import axios from "axios";
 import React, { useEffect, useState } from "react";
+import { baseUrl } from "../consts";
+
+const usersBaseUrl = `${baseUrl}/users`;
 
 export default function Users() {
     const [searchTerm, setSearchTerm] = useState("");
@@ -139,7 +142,7 @@ export default function Users() {
 
     const fetchUsers = async () => {
         try {
-            const response = await axios.get("http://localhost:8000/api/v1/users");
+            const response = await axios.get(usersBaseUrl);
             console.log("Users fetched successfully:", response.data);
             setUsers(response.data);
         }

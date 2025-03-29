@@ -10,6 +10,10 @@ import Activity from "../components/Activity.jsx";
 import { MdError } from "react-icons/md";
 import * as XLSX from "xlsx";
 import axios from 'axios';
+import { baseUrl } from "../consts.js";
+
+const activitiesBaseUrl = `${baseUrl}/activities`;
+const activityTypesBaseUrl = `${baseUrl}/activity-types`;
 
 export default function Activities() {
     const [newSession, setNewSession] = useState({
@@ -36,7 +40,7 @@ export default function Activities() {
 
     const fetchActivityTypes = async () => {
         try {
-            const response = await axios.get('http://localhost:8000/api/v1/activity-types/');
+            const response = await axios.get(activityTypesBaseUrl);
             console.log("Activity Types:", response.data);
             setActivityTypes(response.data);
         } catch (error) {
@@ -46,7 +50,7 @@ export default function Activities() {
 
     const fetchActivities = async () => {
         try {
-            const response = await axios.get('http://localhost:8000/api/v1/activities/');
+            const response = await axios.get(activitiesBaseUrl);
             console.log("Activities:", response.data);
             setActivities(response.data);
         } catch (error) {
@@ -204,7 +208,7 @@ export default function Activities() {
     const handleExcelSubmit = async (e) => {
         e.preventDefault()
         try {
-            const response = await axios.post('http://localhost:8000/api/v1/activities/batch', activities);
+            const response = await axios.post(activitiesBaseUrl + '/batch', activities);
             console.log('Data sent successfully', response);
             setFeedbackMessage("Activities added successfully!");
             setErrorMessage("");
@@ -265,7 +269,7 @@ export default function Activities() {
 
 
         try {
-            const response = await axios.post('http://localhost:8000/api/v1/activities', activity);
+            const response = await axios.post(activitiesBaseUrl, activity);
             setFeedbackMessage("Activities added successfully!");
             setErrorMessage("");
             document.getElementById("excel_modal").close();

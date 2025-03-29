@@ -4,6 +4,10 @@ import interactionPlugin, { Draggable } from '@fullcalendar/interaction';
 import dayGridPlugin from '@fullcalendar/daygrid';
 import timeGridPlugin from '@fullcalendar/timegrid';
 import Activity from "../components/Activity.jsx";
+import { baseUrl } from '../consts.js';
+
+const activitiesBaseUrl = `${baseUrl}/activities`;
+const activityTypesBaseUrl = `${baseUrl}/activity-types`;
 
 export default function DragDropCalendar() {
     const calendarRef = useRef(null);
@@ -14,14 +18,14 @@ export default function DragDropCalendar() {
     const [outside_activities, setOutsideActivities] = useState([]);  // Activities not yet added to the calendar
 
     const fetchActivityTypes = async () => {
-        const response = await fetch('http://localhost:8000/api/v1/activity-types/');
+        const response = await fetch(activityTypesBaseUrl);
         const data = await response.json();
         console.log("Tipos de Atividades:", data);
         setActivityTypes(data);
     }
 
     const fetchActivities = async () => {
-        const response = await fetch('http://localhost:8000/api/v1/activities/');
+        const response = await fetch(activitiesBaseUrl);
         const data = await response.json();
         console.log("Atividades:", data);
         
@@ -87,7 +91,7 @@ export default function DragDropCalendar() {
     
             try {
                 // Send a PUT request to update the activity with the new date
-                const response = await fetch(`http://localhost:8000/api/v1/activities/${activityId}`, {
+                const response = await fetch(activitiesBaseUrl + `/${activityId}`, {
                     method: 'PUT',
                     headers: {
                         'Content-Type': 'application/json',
@@ -127,7 +131,7 @@ export default function DragDropCalendar() {
 
             try {
                 // Send a PUT request to update the activity with the new duration
-                const response = await fetch(`http://localhost:8000/api/v1/activities/${activityId}`, {
+                const response = await fetch(activitiesBaseUrl + `/${activityId}`, {
                     method: 'PUT',
                     headers: {
                         'Content-Type': 'application/json',
@@ -166,7 +170,7 @@ export default function DragDropCalendar() {
     
             try {
                 // Send a PUT request to update the activity with the new date
-                const response = await fetch(`http://localhost:8000/api/v1/activities/${activityId}`, {
+                const response = await fetch(activitiesBaseUrl + `/${activityId}`, {
                     method: 'PUT',
                     headers: {
                         'Content-Type': 'application/json',
@@ -207,7 +211,7 @@ export default function DragDropCalendar() {
     
                 try {
                     // Send a PUT request to update the activity with the new date (null)
-                    const response = await fetch(`http://localhost:8000/api/v1/activities/${activityId}`, {
+                    const response = await fetch(activitiesBaseUrl + `/${activityId}`, {
                         method: 'PUT',
                         headers: {
                             'Content-Type': 'application/json',
