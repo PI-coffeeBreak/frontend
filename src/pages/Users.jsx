@@ -1,12 +1,12 @@
-import React, { useState } from "react";
+import axios from "axios";
+import React, { useEffect, useState } from "react";
 
 export default function Users() {
     const [searchTerm, setSearchTerm] = useState("");
     const [filterRole, setFilterRole] = useState("");
     const [currentPage, setCurrentPage] = useState(1);
     const usersPerPage = 5;
-
-    const users = [
+    const [users, setUsers] = useState([
         {
             id: 1,
             name: "João Almeida",
@@ -120,16 +120,34 @@ export default function Users() {
             status: "Active",
             naturality: "Ucraine"
         }
-    ];
+    ]);
 
-    const filteredUsers = users.filter(user =>
-        user.name.toLowerCase().includes(searchTerm.toLowerCase()) &&
-        (filterRole === "" || user.role === filterRole)
-    );
+    const filteredUsers = users;
+    // users.filter(
+        //user =>
+        //(user.firstName.toLowerCase() + " " + user.lastName.toLowerCase()).includes(searchTerm.toLowerCase()) &&
+        //(filterRole === "" || user.role === filterRole)
+    // );
 
     const indexOfLastUser = currentPage * usersPerPage;
     const indexOfFirstUser = indexOfLastUser - usersPerPage;
     const currentUsers = filteredUsers.slice(indexOfFirstUser, indexOfLastUser);
+
+    useEffect(() => {
+        fetchUsers();
+    }, []);
+
+    const fetchUsers = async () => {
+        try {
+            const response = await axios.get("http://localhost:8000/api/v1/users");
+            console.log("Users fetched successfully:", response.data);
+            setUsers(response.data);
+        }
+        catch (error) {
+            console.error("Error fetching users:", error);
+            throw error;
+        }
+    }
 
     return (
         <>
@@ -178,19 +196,18 @@ export default function Users() {
                                             </div>
                                         </div>
                                         <div>
-                                            <div className="font-bold">{user.name}</div>
-                                            <div className="text-sm opacity-50">{user.naturality}</div>
+                                            <div className="font-bold">{user.firstName} {user.lastName}</div>
+                                            <div className="text-sm opacity-50">Add naturality{user.naturality}</div>
                                         </div>
                                     </div>
                                 </td>
                                 <td>{user.email}</td>
                                 <td>
-                                    <div className="badge badge-primary w-24">{user.role}</div>
+                                    <div className="badge badge-primary w-24">Get roles{user.role}</div>
                                 </td>
                                 <th>
                                     <button className="btn mr-2 btn-secondary btn-xs"
-                                            onClick={() => document.getElementById('my_modal_3').showModal()}>Manage
-                                        Role
+                                            onClick={() => document.getElementById('my_modal_3').showModal()}>Manage Role
                                     </button>
                                     <dialog id="my_modal_3" className="modal">
                                         <div className="modal-box">
