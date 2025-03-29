@@ -10,127 +10,30 @@ export default function Users() {
     const [currentPage, setCurrentPage] = useState(1);
     const usersPerPage = 5;
     const [users, setUsers] = useState([
-        {
-            id: 1,
-            name: "João Almeida",
-            email: "joão@ua.pt",
-            role: "Organizer",
-            status: "Active",
-            naturality: "Portugal",
-            avatar: "/joao.jpg"
-        },
-        {
-            id: 2,
-            name: "Maria Silva",
-            email: "maria@ua.pt",
-            role: "Staff",
-            status: "Active",
-            naturality: "Portugal"
-        },
-        {
-            id: 3,
-            name: "Carlos Ferreira",
-            email: "carlos@ua.pt",
-            role: "Staff",
-            status: "Active",
-            naturality: "Portugal"
-        },
-        {
-            id: 4,
-            name: "Ana Costa",
-            email: "ana@ua.pt",
-            role: "Staff",
-            status: "Active",
-            naturality: "Germany"
-        },
-        {
-            id: 5,
-            name: "Rui Machado",
-            email: "rui@ua.pt",
-            role: "Speaker",
-            status: "Active",
-            naturality: "Vizela"
-        },
-        {
-            id: 6,
-            name: "Sofia Lopes",
-            email: "sofia@ua.pt",
-            role: "Speaker",
-            status: "Active",
-            naturality: "France"
-        },
-        {
-            id: 7,
-            name: "Pedro Salgado",
-            email: "pedro@ua.pt",
-            role: "Speaker",
-            status: "Active",
-            naturality: "Germany"
-        },
-        {
-            id: 8,
-            name: "Teresa Gomes",
-            email: "teresa@ua.pt",
-            role: "Speaker",
-            status: "Active",
-            naturality: "Portugal"
-        },
-        {
-            id: 9,
-            name: "Miguel Rocha",
-            email: "miguel@ua.pt",
-            role: "Participant",
-            status: "Active",
-            naturality: "Portugal"
-        },
-        {
-            id: 10,
-            name: "Isabel Nunes",
-            email: "isabel@ua.pt",
-            role: "Participant",
-            status: "Active",
-            naturality: "Portugal"
-        },
-        {
-            id: 11,
-            name: "Ricardo Faria",
-            email: "ricardo@ua.pt",
-            role: "Participant",
-            status: "Active",
-            naturality: "Germany"
-        },
-        {
-            id: 12,
-            name: "Patrícia Sousa",
-            email: "patricia@ua.pt",
-            role: "Participant",
-            status: "Active",
-            naturality: "Italy"
-        },
-        {
-            id: 13,
-            name: "André Matos",
-            email: "andre@ua.pt",
-            role: "Participant",
-            status: "Active",
-            naturality: "Greece"
-        },
-        {
-            id: 14,
-            name: "Vanessa Ribeiro",
-            email: "vanessa@ua.pt",
-            role: "Participant",
-            status: "Active",
-            naturality: "Ucraine"
-        }
+        // {
+        //     id: 1,
+        //     name: "João Almeida",
+        //     email: "joão@ua.pt",
+        //     role: "Organizer",
+        //     status: "Active",
+        //     naturality: "Portugal",
+        //     avatar: "/joao.jpg"
+        // },
+        // {
+        //     id: 2,
+        //     name: "Maria Silva",
+        //     email: "maria@ua.pt",
+        //     role: "Staff",
+        //     status: "Active",
+        //     naturality: "Portugal"
+        // },
     ]);
 
-    const filteredUsers = users;
-    // users.filter(
-        //user =>
-        //(user.firstName.toLowerCase() + " " + user.lastName.toLowerCase()).includes(searchTerm.toLowerCase()) &&
-        //(filterRole === "" || user.role === filterRole)
-    // );
+    const filteredUsers = users.filter(
+        user =>
+        (user.firstName.toLowerCase() + " " + user.lastName.toLowerCase()).includes(searchTerm.toLowerCase()) &&
+        (filterRole === "" || user.role === filterRole)
+    );
 
     const indexOfLastUser = currentPage * usersPerPage;
     const indexOfFirstUser = indexOfLastUser - usersPerPage;
