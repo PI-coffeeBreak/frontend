@@ -93,29 +93,7 @@ export default function Plugins() {
         try {
             const response = await axios.get(pluginsBaseUrl)
             console.log("Plugins fetched successfully:", response.data);
-            const fetchedPlugins = response.data;
-
-            const formattedPlugins = fetchedPlugins.map((pluginName) => ({
-                name: pluginName,
-                description: `${pluginName} plugin description`,
-                enable: false,
-                settings: {
-                    title: `${pluginName}`,
-                    description: `${pluginName} plugin description`,
-                    inputs: [
-                        {
-                            type: "selector",
-                            title: "Who can send alerts?",
-                            description: "Choose who can send alerts.",
-                            options: ["Everyone", "Only Admins"],
-                            optional: "false",
-                        },
-                    ]
-                }
-            }));
-
-            console.log("Plugins formatted:", formattedPlugins)
-            setPlugins(formattedPlugins);
+            setPlugins(response.data)
         }
         catch (error) {
             console.error("Error fetching plugins:", error);
@@ -126,7 +104,7 @@ export default function Plugins() {
     const togglePlugin = (index) => {
         setPlugins(prevPlugins => 
             prevPlugins.map((plugin, i) => 
-                i === index ? { ...plugin, enable: !plugin.enable } : plugin
+                i === index ? { ...plugin, is_loaded: !plugin.is_loaded } : plugin
             )
         );
     };
@@ -176,11 +154,11 @@ export default function Plugins() {
                                             <input
                                                 type="checkbox"
                                                 className="hidden"
-                                                checked={plugin.enable}
+                                                checked={plugin.is_loaded}
                                                 onChange={() => togglePlugin(index)}
                                             />
-                                            <div className={`w-10 h-5 flex items-center bg-gray-300 rounded-full p-1 transition duration-300 ${plugin.enable ? "bg-primary" : "bg-gray-400"}`}>
-                                                <div className={`bg-white w-4 h-4 rounded-full shadow-md transform transition duration-300 ${plugin.enable ? "translate-x-4" : "translate-x-0"}`}></div>
+                                            <div className={`w-10 h-5 flex items-center bg-gray-300 rounded-full p-1 transition duration-300 ${plugin.is_loaded ? "bg-primary" : "bg-gray-400"}`}>
+                                                <div className={`bg-white w-4 h-4 rounded-full shadow-md transform transition duration-300 ${plugin.is_loaded ? "translate-x-4" : "translate-x-0"}`}></div>
                                             </div>
                                         </label>
                                     </td>
