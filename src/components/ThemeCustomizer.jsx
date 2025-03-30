@@ -78,27 +78,22 @@ export function ThemeCustomizer() {
     setIsApplied(false)
   }
 
-  const applyTheme = () => {
-    // Apply the theme to CSS variables
-    Object.keys(theme).forEach((key) => {
-      const cssVarName = `--color-${key}`
-      // Set the property
-      document.documentElement.style.setProperty(cssVarName, theme[key])
-    })
-
-    setIsApplied(true)
-    setShowTooltip(true)
-    setTimeout(() => setShowTooltip(false), 3000)
-  }
-
   const resetTheme = () => {
-    setTheme(initialTheme); // Reset the theme state to the initial state
-    // Reset the CSS variables to the initial theme
+    // Reset the theme state to the original theme (initialTheme)
+    setTheme(initialTheme);
+
+    // Reset the hexValues state to match the initial theme values
+    const resetHexValues = { ...initialTheme };
+    setHexValues(resetHexValues);
+
+    // Reset the CSS variables to the initial theme values
     Object.keys(initialTheme).forEach((key) => {
       document.documentElement.style.setProperty(`--color-${key}`, initialTheme[key]); // Use initialTheme for reset
     });
-    setIsApplied(false); // Optionally reset the applied state
-  }
+
+    // Optionally reset the applied state
+    setIsApplied(false);
+};
   
   
 
@@ -242,18 +237,6 @@ export function ThemeCustomizer() {
                 title="Reset to original theme"
               >
                 <Undo className="w-4 h-4" />
-              </button>
-              <button
-                className="btn btn-sm btn-circle glass text-primary-content relative"
-                onClick={applyTheme}
-                disabled={isApplied}
-              >
-                <RefreshCw className="w-4 h-4" />
-                {showTooltip && (
-                  <span className="absolute -bottom-12 left-1/2 transform -translate-x-1/2 bg-black/80 text-white text-xs py-1 px-2 rounded whitespace-nowrap">
-                    Colors applied!
-                  </span>
-                )}
               </button>
               <button className="btn btn-sm btn-circle glass text-primary-content relative" onClick={saveTheme}>
                 <Save className="w-4 h-4" />
