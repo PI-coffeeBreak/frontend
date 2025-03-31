@@ -53,12 +53,20 @@ export function ThemeCustomizer() {
       const response = await axios.get(colorThemeBaseUrl);
       console.log("Theme colors fetched successfully:", response.data);
 
-      setTheme(response.data);
-      setOriginalTheme(response.data);
+      // Convert keys from underscored to hyphenated format
+      const transformedTheme = Object.keys(response.data).reduce((acc, key) => {
+        const newKey = key.replace(/_/g, "-"); // Replace underscores with hyphens
+        acc[newKey] = response.data[key];
+        return acc;
+      }, {});
 
-      setHexValues(response.data);
-      Object.keys(response.data).forEach((key) => {
-        document.documentElement.style.setProperty(`--color-${key}`, response.data[key]);
+      setTheme(transformedTheme);
+      setOriginalTheme(transformedTheme);
+      setHexValues(transformedTheme);
+
+      // Apply the theme to CSS variables
+      Object.keys(transformedTheme).forEach((key) => {
+        document.documentElement.style.setProperty(`--color-${key}`, transformedTheme[key]);
       });
     } catch (error) {
       console.error("Error fetching theme colors:", error);
@@ -68,13 +76,29 @@ export function ThemeCustomizer() {
 
   const updateThemeColors = async () => {
     try {
-      const response = await axios.put(colorThemeBaseUrl, theme)
+      // Convert theme keys from hyphenated to underscored format
+      const transformedTheme = Object.keys(theme).reduce((acc, key) => {
+        const newKey = key.replace(/-/g, "_"); // Replace hyphens with underscores
+        acc[newKey] = theme[key];
+        return acc;
+      }, {});
+
+      const response = await axios.put(colorThemeBaseUrl, transformedTheme);
       console.log("Theme colors updated successfully:", response.data);
-      setTheme(response.data)
-      setOriginalTheme(response.data)
-      setHexValues(response.data)
-      Object.keys(response.data).forEach((key) => {
-        document.documentElement.style.setProperty(`--color-${key}`, response.data[key]);
+
+      // Update state with the response data (convert back to hyphenated keys if necessary)
+      const updatedTheme = Object.keys(response.data).reduce((acc, key) => {
+        const newKey = key.replace(/_/g, "-"); // Replace underscores with hyphens
+        acc[newKey] = response.data[key];
+        return acc;
+      }, {});
+
+      setTheme(updatedTheme);
+      setOriginalTheme(updatedTheme);
+      setHexValues(updatedTheme);
+
+      Object.keys(updatedTheme).forEach((key) => {
+        document.documentElement.style.setProperty(`--color-${key}`, updatedTheme[key]);
       });
     } catch (error) {
       console.error("Error updating theme colors:", error);
@@ -307,7 +331,7 @@ export function ThemeCustomizer() {
                             <label className="font-medium">{colorMapping[key] || key}</label>
                             <input
                               type="color"
-                              value={hexValues[key]}
+                              value={hexValues[key] || "#000000"}
                               onChange={(e) => handleColorChange(key, e.target.value)}
                               className="w-full h-8 cursor-pointer mt-1"
                             />
