@@ -1,11 +1,11 @@
-"use client"
-
 import { useState, useEffect } from "react"
 import { Save, RefreshCw, Undo, Calendar, Users, MapPin, Bell, Clock, Gift, Music, Camera } from "lucide-react"
+import axios from "axios"
+import { baseUrl } from "../consts"
 
-// Using named export only, no default export
+const colorThemeBaseUrl = `${baseUrl}/ui/color-theme/color-theme`;
+
 export function ThemeCustomizer() {
-  // Initial theme colors as hex values
   const initialTheme = {
     "base-100": "#f3faff",
     "base-200": "#d6d6d3",
@@ -39,21 +39,7 @@ export function ThemeCustomizer() {
 
   // Load saved theme from localStorage on component mount
   useEffect(() => {
-    const savedTheme = localStorage.getItem('eventTheme'); //TODO: CHANGE TO BD
-    if (savedTheme) {
-      try {
-        const parsedTheme = JSON.parse(savedTheme);
-        setTheme(parsedTheme);
-        setOriginalTheme(parsedTheme);
-
-        // Apply the saved theme immediately
-        Object.keys(parsedTheme).forEach((key) => {
-          document.documentElement.style.setProperty(`--color-${key}`, parsedTheme[key]);
-        });
-      } catch (e) {
-        console.error("Error loading saved theme:", e);
-      }
-    }
+    fetchThemeColors()
   }, []);
 
   // Update the hex values on mount
@@ -61,6 +47,40 @@ export function ThemeCustomizer() {
     const hexObj = { ...theme }
     setHexValues(hexObj)
   }, [])
+
+  const fetchThemeColors = async () => {
+    try {
+      const response = await axios.get(colorThemeBaseUrl);
+      console.log("Theme colors fetched successfully:", response.data);
+
+      setTheme(response.data);
+      setOriginalTheme(response.data);
+
+      setHexValues(response.data);
+      Object.keys(response.data).forEach((key) => {
+        document.documentElement.style.setProperty(`--color-${key}`, response.data[key]);
+      });
+    } catch (error) {
+      console.error("Error fetching theme colors:", error);
+      throw error;
+    }
+  }
+
+  const updateThemeColors = async () => {
+    try {
+      const response = await axios.put(colorThemeBaseUrl, theme)
+      console.log("Theme colors updated successfully:", response.data);
+      setTheme(response.data)
+      setOriginalTheme(response.data)
+      setHexValues(response.data)
+      Object.keys(response.data).forEach((key) => {
+        document.documentElement.style.setProperty(`--color-${key}`, response.data[key]);
+      });
+    } catch (error) {
+      console.error("Error updating theme colors:", error);
+      throw error;
+    }
+  }
 
   const handleColorChange = (key, hexValue) => {
     const newHexValues = { ...hexValues, [key]: hexValue }
@@ -98,9 +118,8 @@ export function ThemeCustomizer() {
   
 
   const saveTheme = () => {
-    // Save theme to localStorage
-    localStorage.setItem('eventTheme', JSON.stringify(theme)) // CHANGE TO BD
-    setOriginalTheme(theme)
+    updateThemeColors()
+
     setSavedMessage(true)
     setTimeout(() => setSavedMessage(false), 3000)
     setIsApplied(true)
@@ -304,7 +323,7 @@ export function ThemeCustomizer() {
             renderPreview()
           )}
         </div>
-        </div>
-        </div>
+      </div>
+    </div>
   )
 }
