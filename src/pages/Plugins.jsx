@@ -1,6 +1,6 @@
 import { useState,useEffect } from "react";
 import { FaCog } from "react-icons/fa";
-import Pagination from "../components/pagination";
+import Pagination from "../components/Pagination";
 import PluginSettingsModal from "../components/PluginSettingsModal";
 import { baseUrl } from "../consts";
 import axios from "axios";

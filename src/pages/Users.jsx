@@ -35,6 +35,7 @@ export default function Users() {
         (filterRole === "" || user.role === filterRole)
     );
 
+    const totalPages = Math.ceil(filteredUsers.length / usersPerPage);
     const indexOfLastUser = currentPage * usersPerPage;
     const indexOfFirstUser = indexOfLastUser - usersPerPage;
     const currentUsers = filteredUsers.slice(indexOfFirstUser, indexOfLastUser);
@@ -131,23 +132,11 @@ export default function Users() {
                         </tbody>
                     </table>
                 </div>
-                <div className="flex justify-center mt-4 gap-2">
-                    <button
-                        className="btn btn-sm btn-secondary"
-                        onClick={() => setCurrentPage(prev => Math.max(prev - 1, 1))}
-                        disabled={currentPage === 1}
-                    >
-                        Previous
-                    </button>
-                    <span className="text-sm font-medium">Page {currentPage} of {Math.ceil(filteredUsers.length / usersPerPage)}</span>
-                    <button
-                        className="btn btn-sm btn-secondary"
-                        onClick={() => setCurrentPage(prev => Math.min(prev + 1, Math.ceil(filteredUsers.length / usersPerPage)))}
-                        disabled={currentPage === Math.ceil(filteredUsers.length / usersPerPage)}
-                    >
-                        Next
-                    </button>
-                </div>
+                <Pagination 
+                currentPage={currentPage} 
+                totalPages={totalPages} 
+                onPageChange={handlePageChange}
+                />
             </div>
         </>
     );
