@@ -1,11 +1,10 @@
-import { useState, useEffect } from "react"
-import { Save, RefreshCw, Undo, Calendar, Users, MapPin, Bell, Clock, Gift, Music, Camera } from "lucide-react"
-import axios from "axios"
-import { baseUrl } from "../consts"
-
-const colorThemeBaseUrl = `${baseUrl}/ui/color-theme/color-theme`;
+import { useState, useEffect } from "react";
+import { Save, RefreshCw, Undo, Calendar, Users, MapPin, Bell, Clock, Gift, Music, Camera } from "lucide-react";
+import { useTheme } from "../contexts/ThemeContext";
 
 export function ThemeCustomizer() {
+  const { theme, fetchThemeColors, updateThemeColors } = useTheme();
+  
   const initialTheme = {
     "base-100": "#f3faff",
     "base-200": "#d6d6d3",
@@ -29,125 +28,76 @@ export function ThemeCustomizer() {
     "error-content": "#fff6f4",
   }
 
-  const [theme, setTheme] = useState(initialTheme)
-  const [originalTheme, setOriginalTheme] = useState(initialTheme)
-  const [hexValues, setHexValues] = useState({})
-  const [isApplied, setIsApplied] = useState(false)
-  const [activeTab, setActiveTab] = useState("colors")
-  const [showTooltip, setShowTooltip] = useState(false)
-  const [savedMessage, setSavedMessage] = useState(false)
+  const [localTheme, setLocalTheme] = useState(initialTheme);
+  const [originalTheme, setOriginalTheme] = useState(initialTheme);
+  const [hexValues, setHexValues] = useState({});
+  const [isApplied, setIsApplied] = useState(false);
+  const [activeTab, setActiveTab] = useState("colors");
+  const [savedMessage, setSavedMessage] = useState(false);
 
-  // Load saved theme from localStorage on component mount
+  // Load saved theme from context on component mount
   useEffect(() => {
-    fetchThemeColors()
+    const loadTheme = async () => {
+      try {
+        await fetchThemeColors();
+      } catch (error) {
+        console.error("Error loading theme:", error);
+      }
+    };
+    
+    loadTheme();
   }, []);
 
-  // Update the hex values on mount
+  // Update local state when context theme changes
   useEffect(() => {
-    const hexObj = { ...theme }
-    setHexValues(hexObj)
-  }, [])
-
-  const fetchThemeColors = async () => {
-    try {
-      const response = await axios.get(colorThemeBaseUrl);
-      console.log("Theme colors fetched successfully:", response.data);
-
-      // Convert keys from underscored to hyphenated format
-      const transformedTheme = Object.keys(response.data).reduce((acc, key) => {
-        const newKey = key.replace(/_/g, "-"); // Replace underscores with hyphens
-        acc[newKey] = response.data[key];
-        return acc;
-      }, {});
-
-      setTheme(transformedTheme);
-      setOriginalTheme(transformedTheme);
-      setHexValues(transformedTheme);
-
+    if (Object.keys(theme).length > 0) {
+      setLocalTheme(theme);
+      setOriginalTheme(theme);
+      setHexValues(theme);
+      
       // Apply the theme to CSS variables
-      Object.keys(transformedTheme).forEach((key) => {
-        document.documentElement.style.setProperty(`--color-${key}`, transformedTheme[key]);
+      Object.keys(theme).forEach((key) => {
+        document.documentElement.style.setProperty(`--color-${key}`, theme[key]);
       });
-    } catch (error) {
-      console.error("Error fetching theme colors:", error);
-      throw error;
     }
-  }
-
-  const updateThemeColors = async () => {
-    try {
-      // Convert theme keys from hyphenated to underscored format
-      const transformedTheme = Object.keys(theme).reduce((acc, key) => {
-        const newKey = key.replace(/-/g, "_"); // Replace hyphens with underscores
-        acc[newKey] = theme[key];
-        return acc;
-      }, {});
-
-      const response = await axios.put(colorThemeBaseUrl, transformedTheme);
-      console.log("Theme colors updated successfully:", response.data);
-
-      // Update state with the response data (convert back to hyphenated keys if necessary)
-      const updatedTheme = Object.keys(response.data).reduce((acc, key) => {
-        const newKey = key.replace(/_/g, "-"); // Replace underscores with hyphens
-        acc[newKey] = response.data[key];
-        return acc;
-      }, {});
-
-      setTheme(updatedTheme);
-      setOriginalTheme(updatedTheme);
-      setHexValues(updatedTheme);
-
-      Object.keys(updatedTheme).forEach((key) => {
-        document.documentElement.style.setProperty(`--color-${key}`, updatedTheme[key]);
-      });
-    } catch (error) {
-      console.error("Error updating theme colors:", error);
-      throw error;
-    }
-  }
+  }, [theme]);
 
   const handleColorChange = (key, hexValue) => {
-    const newHexValues = { ...hexValues, [key]: hexValue }
-    setHexValues(newHexValues)
+    const newHexValues = { ...hexValues, [key]: hexValue };
+    setHexValues(newHexValues);
 
     // Update the theme state with the new hex value
-    const newTheme = { ...theme }
-    newTheme[key] = hexValue
-    setTheme(newTheme)
-    console.log(`--color-${key}: ${hexValue}`)
-    console.log(newTheme)
+    const newTheme = { ...localTheme };
+    newTheme[key] = hexValue;
+    setLocalTheme(newTheme);
 
     // Apply the new theme to CSS variables
-    document.documentElement.style.setProperty(`--color-${key}`, hexValue)
-    setIsApplied(false)
-  }
+    document.documentElement.style.setProperty(`--color-${key}`, hexValue);
+    setIsApplied(false);
+  };
 
   const resetTheme = () => {
-    // Reset the theme state to the original theme (initialTheme)
-    setTheme(initialTheme);
+    setLocalTheme(originalTheme);
+    setHexValues(originalTheme);
 
-    // Reset the hexValues state to match the initial theme values
-    const resetHexValues = { ...initialTheme };
-    setHexValues(resetHexValues);
-
-    // Reset the CSS variables to the initial theme values
-    Object.keys(initialTheme).forEach((key) => {
-      document.documentElement.style.setProperty(`--color-${key}`, initialTheme[key]); // Use initialTheme for reset
+    // Reset the CSS variables to the original theme values
+    Object.keys(originalTheme).forEach((key) => {
+      document.documentElement.style.setProperty(`--color-${key}`, originalTheme[key]);
     });
 
-    // Optionally reset the applied state
     setIsApplied(false);
-};
-  
-  
+  };
 
-  const saveTheme = () => {
-    updateThemeColors()
-
-    setSavedMessage(true)
-    setTimeout(() => setSavedMessage(false), 3000)
-    setIsApplied(true)
-  }
+  const saveTheme = async () => {
+    try {
+      await updateThemeColors(hexValues);
+      setSavedMessage(true);
+      setTimeout(() => setSavedMessage(false), 3000);
+      setIsApplied(true);
+    } catch (error) {
+      console.error("Error saving theme:", error);
+    }
+  };
 
   // User-friendly color names
   const colorMapping = {
@@ -203,19 +153,19 @@ export function ThemeCustomizer() {
         <div className="card shadow-sm" style={{ backgroundColor: hexValues["base-200"]}}>
           <div className="card-body p-4">
             <div className="flex items-center gap-2 mb-2">
-              <MapPin className="w-4 h-4" style={{ color:["primary"] }} />
-              <h3 className="card-title" style={{ color:["base"] }}>Event Location</h3>
+              <MapPin className="w-4 h-4" style={{ color: hexValues["primary"] }} />
+              <h3 className="card-title" style={{ color: hexValues["base-content"] }}>Event Location</h3>
             </div>
             <p className="text-sm">Centro de Congressos de Aveiro</p>
-            <p className="text-xs" style={{ color:["base-content/70"] }}>Cais da Fonte Nova, 3810-164 Aveiro</p>
+            <p className="text-xs" style={{ color: hexValues["base-content"] }}>Cais da Fonte Nova, 3810-164 Aveiro</p>
           </div>
         </div>
 
         <div className="card shadow-sm" style={{ backgroundColor: hexValues["base-200"] }}>
           <div className="card-body p-4">
             <div className="flex items-center gap-2 mb-2">
-              <Users className="w-4 h-4" style={{ color:["primary"] }} />
-              <h3 className="card-title" style={{ color:["base"] }}>Attendees</h3>
+              <Users className="w-4 h-4" style={{ color: hexValues["primary"] }} />
+              <h3 className="card-title" style={{ color: hexValues["base-content"] }}>Attendees</h3>
             </div>
             <div className="flex justify-between items-center">
               <p className="text-sm">400 tickets</p>
@@ -245,15 +195,15 @@ export function ThemeCustomizer() {
       <h4 className="font-semibold mb-3">Event Updates</h4>
       <div className="space-y-2 mb-6">
         <div className="flex items-center gap-2 p-2 rounded" style={{ backgroundColor: hexValues["info"], color: hexValues["info-content"] }}>
-          <Bell className="w-4 h-4" style={{ color:["info"]}}/>
+          <Bell className="w-4 h-4" style={{ color: hexValues["info"]}}/>
           <p className="text-sm">Event is about to start</p>
         </div>
         <div className="flex items-center gap-2 p-2 rounded" style={{ backgroundColor: hexValues["success"], color: hexValues["success-content"] }}>
-          <Clock className="w-4 h-4" style={{ color:["success"] }}/>
+          <Clock className="w-4 h-4" style={{ color: hexValues["success"] }}/>
           <p className="text-sm">Coffee Break in 10 minutes</p>
         </div>
         <div className="flex items-center gap-2 p-2 rounded" style={{ backgroundColor: hexValues["warning"], color: hexValues["warning-content"] }}>
-          <Gift className="w-4 h-4 text-warning" style={{ color:["warning"] }}/>
+          <Gift className="w-4 h-4" style={{ color: hexValues["warning"] }}/>
           <p className="text-sm">Talk x staring hour was delayed from 15:00 to 17:00</p>
         </div>
       </div>
@@ -264,7 +214,7 @@ export function ThemeCustomizer() {
         <button className="btn btn-outline">Contact Organizer</button>
       </div>
     </div>
-  )
+  );
 
   return (
     <div className="container mx-auto p-4">
@@ -349,5 +299,5 @@ export function ThemeCustomizer() {
         </div>
       </div>
     </div>
-  )
+  );
 }
