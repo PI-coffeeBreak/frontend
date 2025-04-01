@@ -53,6 +53,7 @@ export function ThemeCustomizer() {
     if (Object.keys(theme).length > 0) {
       setLocalTheme(theme);
       setOriginalTheme(theme);
+      // Reset using the original theme from context
       setHexValues(theme);
       
       // Apply the theme to CSS variables
@@ -76,16 +77,18 @@ export function ThemeCustomizer() {
     setIsApplied(false);
   };
 
-  const resetTheme = () => {
-    setLocalTheme(originalTheme);
-    setHexValues(originalTheme);
-
-    // Reset the CSS variables to the original theme values
-    Object.keys(originalTheme).forEach((key) => {
-      document.documentElement.style.setProperty(`--color-${key}`, originalTheme[key]);
-    });
-
-    setIsApplied(false);
+  const resetTheme = async () => {
+    try {
+      // Fetch latest theme from the server
+      await fetchThemeColors();
+      
+      // The theme state will be updated by the useEffect that watches theme changes
+      // This ensures we reset to the actual database values
+      
+      setIsApplied(false);
+    } catch (error) {
+      console.error("Error resetting theme:", error);
+    }
   };
 
   const saveTheme = async () => {
