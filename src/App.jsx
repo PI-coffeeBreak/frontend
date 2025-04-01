@@ -19,6 +19,7 @@ import { PluginsProvider } from "./contexts/PluginsContext.jsx";
 
 export default function App() {
   return (
+    <PluginsProvider>
     <ActivitiesProvider>
         <Router>
           <Routes>
@@ -48,5 +49,6 @@ export default function App() {
           </Routes>
         </Router>
     </ActivitiesProvider>
+    </PluginsProvider>
   );
 }
