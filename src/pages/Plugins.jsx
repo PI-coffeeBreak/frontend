@@ -9,68 +9,7 @@ const pluginsBaseUrl = `${baseUrl}/plugins`;
 const pluginsConfigBaseUrl = `${baseUrl}/ui/plugin-config`;
 
 export default function Plugins() {
-    const [plugins, setPlugins] = useState([
-        // {
-        //     name: "Registration System",
-        //     description: "This plugin allows you to manage the registration of participants in the event.",
-        //     enable: true,
-        //     settings: {
-        //         title: "Registration System",
-        //         description: "Plugin to manage registrations.",
-        //         inputs: [
-        //             {
-        //                 type: "text",
-        //                 title: "Registration URL",
-        //                 description: "The URL for registration",
-        //                 optional: "false",
-        //             },
-        //         ],
-        //     },
-        // },
-        // {
-        //     name: "Alert System",
-        //     description: "This plugin allows you to send alerts to participants.",
-        //     enable: true,
-        //     settings: {
-        //         title: "Alert System",
-        //         description: "This plugin allows you to send alerts to participants.",
-        //         inputs: [
-        //             {
-        //                 type: "selector",
-        //                 title: "Who can send alerts?",
-        //                 description: "Choose who can send alerts.",
-        //                 options: ["Everyone", "Only Admins"],
-        //                 optional: "false",
-        //             },
-        //             {
-        //                 type: "checkbox",
-        //                 title: "Do you want template messages for alerts?",
-        //                 kind: "multiple",
-        //                 options: ["Yes", "No", "bla", "bla2"],
-        //                 optional: "true",
-        //             },
-        //             {
-        //                 type: "shortText",
-        //                 title: "Alerts API Key",
-        //                 description: "The API key to send alerts.",
-        //                 optional: "false",
-        //             },
-        //             {
-        //                 type: "text",
-        //                 title: "Alerts API URL",
-        //                 description: "The URL to send alerts.",
-        //                 optional: "false",
-        //             },
-        //             {
-        //                 type: "composedText",
-        //                 title: "Alerts Message",
-        //                 description: "The message to send.",
-        //                 optional: "false",
-        //             }
-        //         ],
-        //     },
-        // },
-    ]);
+    const [plugins, setPlugins] = useState([]);
     const [pluginsConfig, setPluginsConfig] = useState([]);
     const [selectedPlugin, setSelectedPlugin] = useState(null);
     const [searchTerm, setSearchTerm] = useState("");
@@ -83,7 +22,7 @@ export default function Plugins() {
 
     const totalPages = Math.ceil(filteredPlugins.length / pluginsPerPage);
     const indexOfLastPlugin = currentPage * pluginsPerPage;
-    const indexOfFirstPlugin = indexOfLastPlugin - pluginsPerPage;
+    // const indexOfFirstPlugin = indexOfLastPlugin - pluginsPerPage;
     // const currentPlugins = filteredPlugins.slice(indexOfFirstPlugin, indexOfLastPlugin);
 
     useEffect(() => {
@@ -115,14 +54,26 @@ export default function Plugins() {
         }
     }
 
+    const togglePlugin = async (index) => {
+        const pluginToUpdate = plugins[index];
+        const endpoint = pluginToUpdate.is_loaded ? `${pluginsBaseUrl}/unload` : `${pluginsBaseUrl}/load`;
 
+        try {
+            // Send POST request to the appropriate endpoint with the correct payload
+            await axios.post(endpoint, {
+                plugin_name: pluginToUpdate.name,
+            });
 
-    const togglePlugin = (index) => {
-        setPlugins(prevPlugins => 
-            prevPlugins.map((plugin, i) => 
+            // Update the local state only after a successful POST request
+            const updatedPlugins = plugins.map((plugin, i) =>
                 i === index ? { ...plugin, is_loaded: !plugin.is_loaded } : plugin
-            )
-        );
+            );
+            setPlugins(updatedPlugins);
+
+            console.log(`Plugin ${pluginToUpdate.name} ${pluginToUpdate.is_loaded ? "unloaded" : "loaded"} successfully.`);
+        } catch (error) {
+            console.error(`Error ${pluginToUpdate.is_loaded ? "unloading" : "loading"} plugin ${pluginToUpdate.name}:`, error);
+        }
     };
 
     const openModal = (plugin) => {
