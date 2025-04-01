@@ -1,37 +1,12 @@
 import { useState, useEffect } from "react";
-import { Save, RefreshCw, Undo, Calendar, Users, MapPin, Bell, Clock, Gift, Music, Camera } from "lucide-react";
+import { Save, Undo, Calendar, Users, MapPin, Bell, Clock, Gift, Music, Camera } from "lucide-react";
 import { useTheme } from "../contexts/ThemeContext";
 
 export function ThemeCustomizer() {
-  const { theme, fetchThemeColors, updateThemeColors } = useTheme();
-  
-  const initialTheme = {
-    "base-100": "#f3faff",
-    "base-200": "#d6d6d3",
-    "base-300": "#d6d6d3",
-    "base-content": "#726d65",
-    "primary": "#4f2b1d",
-    "primary-content": "#f3faff",
-    "secondary": "#c6baa2",
-    "secondary-content": "#f1fbfb",
-    "accent": "#faa275",
-    "accent-content": "#f3fbf6",
-    "neutral": "#caa751",
-    "neutral-content": "#f3faff",
-    "info": "#00b2dd",
-    "info-content": "#f2fafd",
-    "success": "#0cae00",
-    "success-content": "#f5faf4",
-    "warning": "#fbad00",
-    "warning-content": "#221300",
-    "error": "#ff1300",
-    "error-content": "#fff6f4",
-  }
+  const { theme, fetchThemeColors, updateThemeColors, initialTheme } = useTheme();
 
   const [localTheme, setLocalTheme] = useState(initialTheme);
-  const [originalTheme, setOriginalTheme] = useState(initialTheme);
   const [hexValues, setHexValues] = useState({});
-  const [isApplied, setIsApplied] = useState(false);
   const [activeTab, setActiveTab] = useState("colors");
   const [savedMessage, setSavedMessage] = useState(false);
 
@@ -52,8 +27,6 @@ export function ThemeCustomizer() {
   useEffect(() => {
     if (Object.keys(theme).length > 0) {
       setLocalTheme(theme);
-      setOriginalTheme(theme);
-      // Reset using the original theme from context
       setHexValues(theme);
       
       // Apply the theme to CSS variables
@@ -74,18 +47,12 @@ export function ThemeCustomizer() {
 
     // Apply the new theme to CSS variables
     document.documentElement.style.setProperty(`--color-${key}`, hexValue);
-    setIsApplied(false);
   };
 
   const resetTheme = async () => {
     try {
       // Fetch latest theme from the server
       await fetchThemeColors();
-      
-      // The theme state will be updated by the useEffect that watches theme changes
-      // This ensures we reset to the actual database values
-      
-      setIsApplied(false);
     } catch (error) {
       console.error("Error resetting theme:", error);
     }
@@ -96,7 +63,6 @@ export function ThemeCustomizer() {
       await updateThemeColors(hexValues);
       setSavedMessage(true);
       setTimeout(() => setSavedMessage(false), 3000);
-      setIsApplied(true);
     } catch (error) {
       console.error("Error saving theme:", error);
     }
