@@ -1,72 +1,16 @@
-import { useState } from "react";
+import { useState,useEffect } from "react";
 import { FaCog } from "react-icons/fa";
 import Pagination from "../components/Pagination";
 import PluginSettingsModal from "../components/PluginSettingsModal";
+import { baseUrl } from "../consts";
+import axios from "axios";
+
+const pluginsBaseUrl = `${baseUrl}/plugins`;
+const pluginsConfigBaseUrl = `${baseUrl}/ui/plugin-config`;
 
 export default function Plugins() {
-    const [plugins, setPlugins] = useState([
-        {
-            name: "Registration System",
-            description: "This plugin allows you to manage the registration of participants in the event.",
-            enable: true,
-            settings: {
-                title: "Registration System",
-                description: "Plugin to manage registrations.",
-                inputs: [
-                    {
-                        type: "text",
-                        title: "Registration URL",
-                        description: "The URL for registration",
-                        optional: "false",
-                    },
-                ],
-            },
-        },
-        {
-            name: "Alert System",
-            description: "This plugin allows you to send alerts to participants.",
-            enable: true,
-            settings: {
-                title: "Alert System",
-                description: "This plugin allows you to send alerts to participants.",
-                inputs: [
-                    {
-                        type: "selector",
-                        title: "Who can send alerts?",
-                        description: "Choose who can send alerts.",
-                        options: ["Everyone", "Only Admins"],
-                        optional: "false",
-                    },
-                    {
-                        type: "checkbox",
-                        title: "Do you want template messages for alerts?",
-                        kind: "multiple",
-                        options: ["Yes", "No", "bla", "bla2"],
-                        optional: "true",
-                    },
-                    {
-                        type: "shortText",
-                        title: "Alerts API Key",
-                        description: "The API key to send alerts.",
-                        optional: "false",
-                    },
-                    {
-                        type: "text",
-                        title: "Alerts API URL",
-                        description: "The URL to send alerts.",
-                        optional: "false",
-                    },
-                    {
-                        type: "composedText",
-                        title: "Alerts Message",
-                        description: "The message to send.",
-                        optional: "false",
-                    }
-                ],
-            },
-        },
-    ]);
-
+    const [plugins, setPlugins] = useState([]);
+    const [pluginsConfig, setPluginsConfig] = useState([]);
     const [selectedPlugin, setSelectedPlugin] = useState(null);
     const [searchTerm, setSearchTerm] = useState("");
     const [currentPage, setCurrentPage] = useState(1);
@@ -78,19 +22,65 @@ export default function Plugins() {
 
     const totalPages = Math.ceil(filteredPlugins.length / pluginsPerPage);
     const indexOfLastPlugin = currentPage * pluginsPerPage;
-    const indexOfFirstPlugin = indexOfLastPlugin - pluginsPerPage;
-    const currentPlugins = filteredPlugins.slice(indexOfFirstPlugin, indexOfLastPlugin);
+    // const indexOfFirstPlugin = indexOfLastPlugin - pluginsPerPage;
+    // const currentPlugins = filteredPlugins.slice(indexOfFirstPlugin, indexOfLastPlugin);
 
-    const togglePlugin = (index) => {
-        setPlugins(prevPlugins => 
-            prevPlugins.map((plugin, i) => 
-                i === index ? { ...plugin, enable: !plugin.enable } : plugin
-            )
-        );
+    useEffect(() => {
+        fetchPlugins();
+        fetchPluginsConfig();
+    }, []);
+
+    const fetchPlugins = async () => {
+        try {
+            const response = await axios.get(pluginsBaseUrl)
+            console.log("Plugins fetched successfully:", response.data);
+            setPlugins(response.data)
+        }
+        catch (error) {
+            console.error("Error fetching plugins:", error);
+            throw error;
+        }
+    }
+
+    const fetchPluginsConfig = async () => {
+        try {
+            const response = await axios.get(pluginsConfigBaseUrl)
+            console.log("Plugins configs fetched successfully:", response.data);
+            setPluginsConfig(response.data)
+        }
+        catch (error) {
+            console.error("Error fetching plugins:", error);
+            throw error;
+        }
+    }
+
+    const togglePlugin = async (index) => {
+        const pluginToUpdate = plugins[index];
+        const endpoint = pluginToUpdate.is_loaded ? `${pluginsBaseUrl}/unload` : `${pluginsBaseUrl}/load`;
+
+        try {
+            // Send POST request to the appropriate endpoint with the correct payload
+            await axios.post(endpoint, {
+                plugin_name: pluginToUpdate.name,
+            });
+
+            // Update the local state only after a successful POST request
+            const updatedPlugins = plugins.map((plugin, i) =>
+                i === index ? { ...plugin, is_loaded: !plugin.is_loaded } : plugin
+            );
+            setPlugins(updatedPlugins);
+
+            console.log(`Plugin ${pluginToUpdate.name} ${pluginToUpdate.is_loaded ? "unloaded" : "loaded"} successfully.`);
+        } catch (error) {
+            console.error(`Error ${pluginToUpdate.is_loaded ? "unloading" : "loading"} plugin ${pluginToUpdate.name}:`, error);
+        }
     };
 
     const openModal = (plugin) => {
-        setSelectedPlugin(plugin);
+        const pluginConfig = pluginsConfig.find((config) => config.title === plugin.name);
+        if (pluginConfig) {
+            setSelectedPlugin({ ...plugin, config: pluginConfig });
+        }
     };
 
     const closeModal = () => {
@@ -134,21 +124,23 @@ export default function Plugins() {
                                             <input
                                                 type="checkbox"
                                                 className="hidden"
-                                                checked={plugin.enable}
+                                                checked={plugin.is_loaded}
                                                 onChange={() => togglePlugin(index)}
                                             />
-                                            <div className={`w-10 h-5 flex items-center bg-gray-300 rounded-full p-1 transition duration-300 ${plugin.enable ? "bg-primary" : "bg-gray-400"}`}>
-                                                <div className={`bg-white w-4 h-4 rounded-full shadow-md transform transition duration-300 ${plugin.enable ? "translate-x-4" : "translate-x-0"}`}></div>
+                                            <div className={`w-10 h-5 flex items-center bg-gray-300 rounded-full p-1 transition duration-300 ${plugin.is_loaded ? "bg-primary" : "bg-gray-400"}`}>
+                                                <div className={`bg-white w-4 h-4 rounded-full shadow-md transform transition duration-300 ${plugin.is_loaded ? "translate-x-4" : "translate-x-0"}`}></div>
                                             </div>
                                         </label>
                                     </td>
                                     <td className="p-3 text-center">
+                                      {pluginsConfig.some((config) => config.title === plugin.name) && (
                                         <button
-                                            onClick={() => openModal(plugin.settings)}
-                                            className="text-gray-700 hover:text-black"
+                                          onClick={() => openModal(plugin)}
+                                          className="text-gray-700 hover:text-black"
                                         >
-                                            <FaCog className="text-lg" />
+                                          <FaCog className="text-lg" />
                                         </button>
+                                      )}
                                     </td>
                                 </tr>
                             ))}
@@ -157,7 +149,7 @@ export default function Plugins() {
             </div>
             {selectedPlugin && (
                 <PluginSettingsModal
-                    plugin={selectedPlugin}
+                    pluginConfig={selectedPlugin.config}
                     onClose={closeModal}
                 />
             )}

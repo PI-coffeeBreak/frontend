@@ -1,11 +1,11 @@
-"use client"
-
 import { useState, useEffect } from "react"
 import { Save, RefreshCw, Undo, Calendar, Users, MapPin, Bell, Clock, Gift, Music, Camera } from "lucide-react"
+import axios from "axios"
+import { baseUrl } from "../consts"
 
-// Using named export only, no default export
+const colorThemeBaseUrl = `${baseUrl}/ui/color-theme/color-theme`;
+
 export function ThemeCustomizer() {
-  // Initial theme colors as hex values
   const initialTheme = {
     "base-100": "#f3faff",
     "base-200": "#d6d6d3",
@@ -39,21 +39,7 @@ export function ThemeCustomizer() {
 
   // Load saved theme from localStorage on component mount
   useEffect(() => {
-    const savedTheme = localStorage.getItem('eventTheme'); //TODO: CHANGE TO BD
-    if (savedTheme) {
-      try {
-        const parsedTheme = JSON.parse(savedTheme);
-        setTheme(parsedTheme);
-        setOriginalTheme(parsedTheme);
-
-        // Apply the saved theme immediately
-        Object.keys(parsedTheme).forEach((key) => {
-          document.documentElement.style.setProperty(`--color-${key}`, parsedTheme[key]);
-        });
-      } catch (e) {
-        console.error("Error loading saved theme:", e);
-      }
-    }
+    fetchThemeColors()
   }, []);
 
   // Update the hex values on mount
@@ -61,6 +47,64 @@ export function ThemeCustomizer() {
     const hexObj = { ...theme }
     setHexValues(hexObj)
   }, [])
+
+  const fetchThemeColors = async () => {
+    try {
+      const response = await axios.get(colorThemeBaseUrl);
+      console.log("Theme colors fetched successfully:", response.data);
+
+      // Convert keys from underscored to hyphenated format
+      const transformedTheme = Object.keys(response.data).reduce((acc, key) => {
+        const newKey = key.replace(/_/g, "-"); // Replace underscores with hyphens
+        acc[newKey] = response.data[key];
+        return acc;
+      }, {});
+
+      setTheme(transformedTheme);
+      setOriginalTheme(transformedTheme);
+      setHexValues(transformedTheme);
+
+      // Apply the theme to CSS variables
+      Object.keys(transformedTheme).forEach((key) => {
+        document.documentElement.style.setProperty(`--color-${key}`, transformedTheme[key]);
+      });
+    } catch (error) {
+      console.error("Error fetching theme colors:", error);
+      throw error;
+    }
+  }
+
+  const updateThemeColors = async () => {
+    try {
+      // Convert theme keys from hyphenated to underscored format
+      const transformedTheme = Object.keys(theme).reduce((acc, key) => {
+        const newKey = key.replace(/-/g, "_"); // Replace hyphens with underscores
+        acc[newKey] = theme[key];
+        return acc;
+      }, {});
+
+      const response = await axios.put(colorThemeBaseUrl, transformedTheme);
+      console.log("Theme colors updated successfully:", response.data);
+
+      // Update state with the response data (convert back to hyphenated keys if necessary)
+      const updatedTheme = Object.keys(response.data).reduce((acc, key) => {
+        const newKey = key.replace(/_/g, "-"); // Replace underscores with hyphens
+        acc[newKey] = response.data[key];
+        return acc;
+      }, {});
+
+      setTheme(updatedTheme);
+      setOriginalTheme(updatedTheme);
+      setHexValues(updatedTheme);
+
+      Object.keys(updatedTheme).forEach((key) => {
+        document.documentElement.style.setProperty(`--color-${key}`, updatedTheme[key]);
+      });
+    } catch (error) {
+      console.error("Error updating theme colors:", error);
+      throw error;
+    }
+  }
 
   const handleColorChange = (key, hexValue) => {
     const newHexValues = { ...hexValues, [key]: hexValue }
@@ -98,9 +142,8 @@ export function ThemeCustomizer() {
   
 
   const saveTheme = () => {
-    // Save theme to localStorage
-    localStorage.setItem('eventTheme', JSON.stringify(theme)) // CHANGE TO BD
-    setOriginalTheme(theme)
+    updateThemeColors()
+
     setSavedMessage(true)
     setTimeout(() => setSavedMessage(false), 3000)
     setIsApplied(true)
@@ -288,7 +331,7 @@ export function ThemeCustomizer() {
                             <label className="font-medium">{colorMapping[key] || key}</label>
                             <input
                               type="color"
-                              value={hexValues[key]}
+                              value={hexValues[key] || "#000000"}
                               onChange={(e) => handleColorChange(key, e.target.value)}
                               className="w-full h-8 cursor-pointer mt-1"
                             />
@@ -304,7 +347,7 @@ export function ThemeCustomizer() {
             renderPreview()
           )}
         </div>
-        </div>
-        </div>
+      </div>
+    </div>
   )
 }

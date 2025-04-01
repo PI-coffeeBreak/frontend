@@ -5,7 +5,7 @@ import { FaHome, FaCalendarAlt, FaPen, FaUserPlus } from "react-icons/fa";
 import DropdownMenu from "./DropdownMenu.jsx";
 
 export default function Sidebar() {
-    const [isVisible, setIsVisible] = useState(false);
+    const [isVisible, setIsVisible] = useState(true);
     const location = useLocation();
     const pathnames = location.pathname.split("/").filter((x) => x);
     const toggleSidebar = () => {
@@ -77,7 +77,7 @@ export default function Sidebar() {
                 >
                     {isVisible ? <VscLayoutSidebarLeftOff /> : <VscLayoutSidebarLeft />}
                 </button>
-                <div className="text-sm flex items-center ml-4">
+                <div className="text-sm flex items-center ">
                     <ul className="flex gap-2">
                         {pathnames.map((name, index) => {
                             const routeTo = `/${pathnames.slice(0, index + 1).join("/")}`;

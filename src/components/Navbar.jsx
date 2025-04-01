@@ -5,7 +5,7 @@ export default function Navbar() {
     return (
         <div className="navbar bg-secondary shadow-sm rounded-xl">
             <div className="flex-1">
-                <NavLink to="/" className="btn btn-ghost rounded-xl hover:btn-secondary text-xl">
+                <NavLink to="/instantiate" className="btn btn-ghost rounded-xl hover:btn-secondary text-xl">
                     <img src="/logo.svg" alt="Logo coffeeBreak" width="140" height="90" />
                 </NavLink>
             </div>
