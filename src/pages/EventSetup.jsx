@@ -29,7 +29,7 @@ export default function EventSetup(){
                                         <select id="eventtype" className="p-4 w-full bg-base-200 h-16 rounded-xl">
                                             <option disabled selected>Pick a event type</option>
                                             <option>Conference</option>
-                                            <option>Exhibiton</option>
+                                            <option>Exhibition</option>
                                             <option>Corporate</option>
                                             <option>Congress</option>
                                             <option>Other</option>
