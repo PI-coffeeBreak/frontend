@@ -6,6 +6,7 @@ import { baseUrl } from "../consts";
 import axios from "axios";
 
 const pluginsBaseUrl = `${baseUrl}/plugins`;
+const pluginsConfigBaseUrl = `${baseUrl}/ui/plugin-config`;
 
 export default function Plugins() {
     const [plugins, setPlugins] = useState([
@@ -70,7 +71,7 @@ export default function Plugins() {
         //     },
         // },
     ]);
-
+    const [pluginsConfig, setPluginsConfig] = useState([]);
     const [selectedPlugin, setSelectedPlugin] = useState(null);
     const [searchTerm, setSearchTerm] = useState("");
     const [currentPage, setCurrentPage] = useState(1);
@@ -83,10 +84,11 @@ export default function Plugins() {
     const totalPages = Math.ceil(filteredPlugins.length / pluginsPerPage);
     const indexOfLastPlugin = currentPage * pluginsPerPage;
     const indexOfFirstPlugin = indexOfLastPlugin - pluginsPerPage;
-    const currentPlugins = filteredPlugins.slice(indexOfFirstPlugin, indexOfLastPlugin);
+    // const currentPlugins = filteredPlugins.slice(indexOfFirstPlugin, indexOfLastPlugin);
 
     useEffect(() => {
         fetchPlugins();
+        fetchPluginsConfig();
     }, []);
 
     const fetchPlugins = async () => {
@@ -101,6 +103,20 @@ export default function Plugins() {
         }
     }
 
+    const fetchPluginsConfig = async () => {
+        try {
+            const response = await axios.get(pluginsConfigBaseUrl)
+            console.log("Plugins configs fetched successfully:", response.data);
+            setPluginsConfig(response.data)
+        }
+        catch (error) {
+            console.error("Error fetching plugins:", error);
+            throw error;
+        }
+    }
+
+
+
     const togglePlugin = (index) => {
         setPlugins(prevPlugins => 
             prevPlugins.map((plugin, i) => 
@@ -110,7 +126,10 @@ export default function Plugins() {
     };
 
     const openModal = (plugin) => {
-        setSelectedPlugin(plugin);
+        const pluginConfig = pluginsConfig.find((config) => config.title === plugin.name);
+        if (pluginConfig) {
+            setSelectedPlugin({ ...plugin, config: pluginConfig });
+        }
     };
 
     const closeModal = () => {
@@ -163,12 +182,14 @@ export default function Plugins() {
                                         </label>
                                     </td>
                                     <td className="p-3 text-center">
+                                      {pluginsConfig.some((config) => config.title === plugin.name) && (
                                         <button
-                                            onClick={() => openModal(plugin.settings)}
-                                            className="text-gray-700 hover:text-black"
+                                          onClick={() => openModal(plugin)}
+                                          className="text-gray-700 hover:text-black"
                                         >
-                                            <FaCog className="text-lg" />
+                                          <FaCog className="text-lg" />
                                         </button>
+                                      )}
                                     </td>
                                 </tr>
                             ))}
@@ -177,7 +198,7 @@ export default function Plugins() {
             </div>
             {selectedPlugin && (
                 <PluginSettingsModal
-                    plugin={selectedPlugin}
+                    pluginConfig={selectedPlugin.config}
                     onClose={closeModal}
                 />
             )}

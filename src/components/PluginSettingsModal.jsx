@@ -5,10 +5,9 @@ import ComposedText from './forms/ComposedText';
 import ShortTextInput from './forms/ShortTextInput';
 import TextInput from './forms/TextInput';
 
-function PluginSettingsModal({ plugin, onClose }) {
-
+function PluginSettingsModal({ pluginConfig, onClose }) {
     const renderFormFields = () => {
-        return plugin.inputs.map((input, index) => {
+        return pluginConfig.inputs.map((input, index) => {
             switch (input.type) {
                 case 'selector':
                     return <Selector key={index} {...input} />;
@@ -27,11 +26,10 @@ function PluginSettingsModal({ plugin, onClose }) {
     };
 
     return (
-
-        <div className={`modal ${plugin ? 'modal-open' : ''} fixed inset-0 flex justify-center items-center`}>
+        <div className="modal modal-open fixed inset-0 flex justify-center items-center">
             <div className="bg-white p-6 rounded-lg w-1/3">
-                <h2 className="text-xl font-bold mb-4">Settings for {plugin.title}</h2>
-                <p className="mb-4">{plugin.description}</p>
+                <h2 className="text-xl font-bold mb-4">Settings for {pluginConfig.title}</h2>
+                <p className="mb-4">{pluginConfig.description}</p>
 
                 {renderFormFields()}
 
