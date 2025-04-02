@@ -1,6 +1,7 @@
 import axios from "axios";
 import React, { useEffect, useState } from "react";
 import { baseUrl } from "../consts";
+import Pagination from "../components/Pagination.jsx";
 
 const usersBaseUrl = `${baseUrl}/users`;
 
@@ -35,10 +36,17 @@ export default function Users() {
         (filterRole === "" || user.role === filterRole)
     );
 
+
     const totalPages = Math.ceil(filteredUsers.length / usersPerPage);
     const indexOfLastUser = currentPage * usersPerPage;
     const indexOfFirstUser = indexOfLastUser - usersPerPage;
     const currentUsers = filteredUsers.slice(indexOfFirstUser, indexOfLastUser);
+
+    const handlePageChange = (pageNumber) => {
+        if (pageNumber >= 1 && pageNumber <= totalPages) {
+            setCurrentPage(pageNumber);
+        }
+    };
 
     useEffect(() => {
         fetchUsers();
@@ -132,10 +140,10 @@ export default function Users() {
                         </tbody>
                     </table>
                 </div>
-                <Pagination 
-                currentPage={currentPage} 
-                totalPages={totalPages} 
-                onPageChange={handlePageChange}
+                <Pagination
+                    currentPage={currentPage}
+                    totalPages={totalPages}
+                    onPageChange={handlePageChange}
                 />
             </div>
         </>

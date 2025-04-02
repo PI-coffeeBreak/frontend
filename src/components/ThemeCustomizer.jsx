@@ -1,6 +1,5 @@
 import { useState, useEffect } from "react"
 import { Save, RefreshCw, Undo, Calendar, Users, MapPin, Bell, Clock, Gift, Music, Camera } from "lucide-react"
-import axios from "axios"
 import { baseUrl } from "../consts"
 
 const colorThemeBaseUrl = `${baseUrl}/ui/color-theme/color-theme`;
