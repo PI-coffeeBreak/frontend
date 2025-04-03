@@ -1,5 +1,8 @@
+
 import React, { useState, useEffect } from "react";
 import { useUsers } from "../contexts/UsersContext";
+import Pagination from "../components/Pagination.jsx";
+
 
 export default function Users() {
     // Get users data and functions from context
@@ -24,17 +27,18 @@ export default function Users() {
         (user.firstName?.toLowerCase() + " " + user.lastName?.toLowerCase()).includes(searchTerm.toLowerCase()) &&
         (filterRole === "" || user.role === filterRole)
     );
-
-    // Pagination logic
     const totalPages = Math.ceil(filteredUsers.length / usersPerPage);
     const indexOfLastUser = currentPage * usersPerPage;
     const indexOfFirstUser = indexOfLastUser - usersPerPage;
     const currentUsers = filteredUsers.slice(indexOfFirstUser, indexOfLastUser);
 
-    // Handle page change
     const handlePageChange = (pageNumber) => {
-        setCurrentPage(pageNumber);
+        if (pageNumber >= 1 && pageNumber <= totalPages) {
+            setCurrentPage(pageNumber);
+        }
     };
+
+    
 
     // Open modal for managing user role
     const openRoleModal = (userId, currentRole) => {
@@ -95,7 +99,6 @@ export default function Users() {
                         <option value="Participant">Participant</option>
                     </select>
                 </div>
-
                 {isLoading ? (
                     <div className="flex justify-center items-center p-8">
                         <span className="loading loading-spinner loading-lg"></span>
@@ -154,7 +157,12 @@ export default function Users() {
                                 </tbody>
                             </table>
                         </div>
-                        
+                        <Pagination
+                          currentPage={currentPage}
+                          totalPages={totalPages}
+                          onPageChange={handlePageChange}
+                        />
+        
                         {totalPages > 1 && (
                             <div className="flex justify-center mt-4">
                                 <div className="join">
@@ -172,8 +180,6 @@ export default function Users() {
                         )}
                     </>
                 )}
-            </div>
-            
             {/* Role Management Modal */}
             <dialog id="role_modal" className="modal">
                 <div className="modal-box">

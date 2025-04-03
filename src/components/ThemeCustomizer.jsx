@@ -1,6 +1,9 @@
-import { useState, useEffect } from "react";
-import { Save, Undo, Calendar, Users, MapPin, Bell, Clock, Gift, Music, Camera } from "lucide-react";
+import { useState, useEffect } from "react"
+import { Save, RefreshCw, Undo, Calendar, Users, MapPin, Bell, Clock, Gift, Music, Camera } from "lucide-react"
+import { baseUrl } from "../consts"
 import { useTheme } from "../contexts/ThemeContext";
+
+const colorThemeBaseUrl = `${baseUrl}/ui/color-theme/color-theme`;
 
 export function ThemeCustomizer() {
   const { theme, fetchThemeColors, updateThemeColors, initialTheme } = useTheme();
