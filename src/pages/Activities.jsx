@@ -10,12 +10,15 @@ import Activity from "../components/Activity.jsx";
 import { MdError } from "react-icons/md";
 import * as XLSX from "xlsx";
 import axios from 'axios';
-import { baseUrl } from "../consts.js";
+import { baseUrl, MAX_FILE_SIZE } from "../consts.js";
+import { useActivities } from "../contexts/ActivitiesContext";
 
 const activitiesBaseUrl = `${baseUrl}/activities`;
 const activityTypesBaseUrl = `${baseUrl}/activity-types`;
 
 export default function Activities() {
+    const { activities, activityTypes, fetchActivities, fetchActivityTypes, getActivityTypeID, getActivityType } = useActivities();
+
     const [newSession, setNewSession] = useState({
         name: "",
         description: "",
@@ -34,30 +37,6 @@ export default function Activities() {
     const [feedbackMessage, setFeedbackMessage] = useState("");
     const [selectedFile, setSelectedFile] = useState(null);
     const [uploadProgress, setUploadProgress] = useState(0);
-    const [activityTypes, setActivityTypes] = useState([]);
-    let [activities, setActivities] = useState([]);
-    const MAX_FILE_SIZE = 1024 * 1024;
-
-    const fetchActivityTypes = async () => {
-        try {
-            const response = await axios.get(activityTypesBaseUrl);
-            console.log("Activity Types:", response.data);
-            setActivityTypes(response.data);
-        } catch (error) {
-            console.error("Error fetching activity types:", error);
-        }
-    }
-
-    const fetchActivities = async () => {
-        try {
-            const response = await axios.get(activitiesBaseUrl);
-            console.log("Activities:", response.data);
-            setActivities(response.data);
-        } catch (error) {
-            console.error("Error fetching activities:", error);
-        }
-    }
-
 
 
     //FILTERS
@@ -77,31 +56,6 @@ export default function Activities() {
 
         return matchesSearch && matchesType;
     });
-
-
-
-    const getActivityTypeID = (type) => {
-        const normalizedType = type.trim().toLowerCase();
-
-        for (let i = 0; i < activityTypes.length; i++) {
-            if (activityTypes[i].type.toLowerCase() === normalizedType) {
-                return activityTypes[i].id;
-            }
-        }
-
-        return "Type not found";
-    };
-
-    const getActivityType = (typeId) => {
-        for (let i = 0; i < activityTypes.length; i++) {
-            if (activityTypes[i].id === typeId) {
-                return activityTypes[i].type;
-            }
-        }
-
-        return "Type not found";
-    };
-
 
 
     const prepareDataForPost = (json) => {
@@ -125,8 +79,6 @@ export default function Activities() {
 
         return activities;
     };
-
-
 
 
     var ExcelToJSON = function() {
@@ -157,11 +109,6 @@ export default function Activities() {
         };
     };
 
-    useEffect(() => {
-        fetchActivityTypes();
-        fetchActivities();
-    }, []);
-
     const handleInputChange = (e) => {
         const { name, value } = e.target;
         setNewSession((prev) => ({
@@ -176,14 +123,14 @@ export default function Activities() {
         if (file) {
             const excelToJson = new ExcelToJSON();
             excelToJson.parseExcel(file).then(jsonData => {
-                activities = prepareDataForPost(jsonData);
+                importedActivities = prepareDataForPost(jsonData);
                 setSelectedFile(file);
             }).catch(error => {
                 console.error("Error processing excel file:", error);
             }
         );
 
-        return activities
+        return importedActivities
 
         } else {
             console.log("No file selected.");
@@ -195,8 +142,8 @@ export default function Activities() {
         if (file) {
             const excelToJson = new ExcelToJSON();
             excelToJson.parseExcel(file).then(jsonData => {
-                activities = prepareDataForPost(jsonData);
-                console.log(activities);
+                importedActivities = prepareDataForPost(jsonData);
+                console.log(importedActivities);
             }).catch(error => {
                 console.error("Error processing excel file:", error);
             });
@@ -242,8 +189,7 @@ export default function Activities() {
             setImagePreview(URL.createObjectURL(file));
         }
     };
-
-
+    
 
     const handleSubmit = async (e) => {
         e.preventDefault();
