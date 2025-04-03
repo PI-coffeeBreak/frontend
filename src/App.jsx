@@ -14,6 +14,7 @@ import ManualRegister from "./pages/ManualRegister.jsx";
 import Plugins from "./pages/Plugins.jsx";
 import Colors from "./pages/Colors.jsx";
 import BaseConfiguration from "./pages/BaseConfiguration.jsx";
+import EventSetup from "./pages/EventSetup.jsx";
 
 export default function App() {
   return (
@@ -25,6 +26,7 @@ export default function App() {
         <Route element={<LayoutAuth/>}>
            <Route  path="register" element={<Register />}/>
            <Route  path="login" element={<Login />}/>
+           <Route path="setup" element={<EventSetup/>}/>
         </Route>
         <Route path="instantiate" element={<LayoutInstantiate/>}>
             <Route path="home">
