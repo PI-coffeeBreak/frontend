@@ -2,34 +2,303 @@ import { FiUpload } from "react-icons/fi";
 import { FaPlus, FaFile } from "react-icons/fa";
 import { FaFileExcel } from "react-icons/fa6";
 import { FaTrash } from "react-icons/fa";
+import { FaExclamationTriangle } from "react-icons/fa";
+import { FaCheck } from "react-icons/fa";
 import CreateCard from "../components/CreateCard.jsx";
-import {useState} from "react";
+import {useState, useEffect} from "react";
 import Activity from "../components/Activity.jsx";
+import { MdError } from "react-icons/md";
+import * as XLSX from "xlsx";
+import axios from 'axios';
+import { baseUrl } from "../consts.js";
+
+const activitiesBaseUrl = `${baseUrl}/activities`;
+const activityTypesBaseUrl = `${baseUrl}/activity-types`;
 
 export default function Activities() {
+    const [newSession, setNewSession] = useState({
+        name: "",
+        description: "",
+        image: "",
+        date: "",
+        duration: 30,
+        type_id: 1,
+        topic: "",
+        speaker: "",
+        facilitator:  ""
+    });
+    const [searchQuery, setSearchQuery] = useState("");
+    const [selectedType, setSelectedType] = useState("");
+    const [errorMessage, setErrorMessage] = useState("");
+    const [imagePreview, setImagePreview] = useState(null);
     const [feedbackMessage, setFeedbackMessage] = useState("");
     const [selectedFile, setSelectedFile] = useState(null);
     const [uploadProgress, setUploadProgress] = useState(0);
-    const MAX_FILE_SIZE = 1024 * 1024; // temos que escolher quanto queremos depois
+    const [activityTypes, setActivityTypes] = useState([]);
+    let [activities, setActivities] = useState([]);
+    const MAX_FILE_SIZE = 1024 * 1024;
+
+    const fetchActivityTypes = async () => {
+        try {
+            const response = await axios.get(activityTypesBaseUrl);
+            console.log("Activity Types:", response.data);
+            setActivityTypes(response.data);
+        } catch (error) {
+            console.error("Error fetching activity types:", error);
+        }
+    }
+
+    const fetchActivities = async () => {
+        try {
+            const response = await axios.get(activitiesBaseUrl);
+            console.log("Activities:", response.data);
+            setActivities(response.data);
+        } catch (error) {
+            console.error("Error fetching activities:", error);
+        }
+    }
+
+
+
+    //FILTERS
+    const handleSearchChange = (e) => {
+        setSearchQuery(e.target.value);
+    };
+
+    const handleTypeChange = (e) => {
+        setSelectedType(e.target.value);
+    };
+
+    const filteredActivities = activities.filter((activity) => {
+        const matchesSearch = activity.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
+            activity.description.toLowerCase().includes(searchQuery.toLowerCase());
+
+        const matchesType = selectedType ? activity.type_id === parseInt(selectedType) : true;
+
+        return matchesSearch && matchesType;
+    });
+
+
+
+    const getActivityTypeID = (type) => {
+        const normalizedType = type.trim().toLowerCase();
+
+        for (let i = 0; i < activityTypes.length; i++) {
+            if (activityTypes[i].type.toLowerCase() === normalizedType) {
+                return activityTypes[i].id;
+            }
+        }
+
+        return "Type not found";
+    };
+
+    const getActivityType = (typeId) => {
+        for (let i = 0; i < activityTypes.length; i++) {
+            if (activityTypes[i].id === typeId) {
+                return activityTypes[i].type;
+            }
+        }
+
+        return "Type not found";
+    };
+
+
+
+    const prepareDataForPost = (json) => {
+        const activities = [];
+        for (let i = 0; i < json.length; i++) {
+            json[i].type_id = getActivityTypeID(json[i].type);
+            delete json[i].type;
+
+            activities.push({
+                name: json[i].name,
+                description: json[i].description,
+                image: json[i].image,
+                date: json[i].date,
+                duration: json[i].duration,
+                type_id: json[i].type_id,
+                topic: json[i].topic,
+                speaker: json[i].speaker,
+                facilitator: json[i].facilitator
+            })
+        }
+
+        return activities;
+    };
+
+
+
+
+    var ExcelToJSON = function() {
+        this.parseExcel = function(file) {
+            return new Promise((resolve, reject) => {
+                const reader = new FileReader();
+                reader.onload = function(e) {
+                    const data = e.target.result;
+                    const workbook = XLSX.read(data, {type: 'binary'});
+
+                    let jsonData = [];
+
+                    workbook.SheetNames.forEach(function(sheetName) {
+                        const XL_row_object = XLSX.utils.sheet_to_row_object_array(workbook.Sheets[sheetName]);
+                        console.log(`Data from sheet: ${sheetName}`);
+                        console.log(XL_row_object);
+
+                        jsonData = jsonData.concat(XL_row_object);
+                    });
+
+                    resolve(jsonData);
+                };
+                reader.onerror = function(ex) {
+                    reject(ex);
+                };
+                reader.readAsBinaryString(file);
+            });
+        };
+    };
+
+    useEffect(() => {
+        fetchActivityTypes();
+        fetchActivities();
+    }, []);
+
+    const handleInputChange = (e) => {
+        const { name, value } = e.target;
+        setNewSession((prev) => ({
+            ...prev,
+            [name]: value
+        }));
+    };
+
+    const handleExcelFileChange = (e) => {
+        const file = e.target.files[0];
+
+        if (file) {
+            const excelToJson = new ExcelToJSON();
+            excelToJson.parseExcel(file).then(jsonData => {
+                activities = prepareDataForPost(jsonData);
+                setSelectedFile(file);
+            }).catch(error => {
+                console.error("Error processing excel file:", error);
+            }
+        );
+
+        return activities
+
+        } else {
+            console.log("No file selected.");
+        }
+
+    };
+
+    const handleExcelFileChangeDrop = (file) => {
+        if (file) {
+            const excelToJson = new ExcelToJSON();
+            excelToJson.parseExcel(file).then(jsonData => {
+                activities = prepareDataForPost(jsonData);
+                console.log(activities);
+            }).catch(error => {
+                console.error("Error processing excel file:", error);
+            });
+        } else {
+            console.log("No file selected.");
+        }
+    };
+
+    const handleExcelSubmit = async (e) => {
+        e.preventDefault()
+        try {
+            const response = await axios.post(activitiesBaseUrl + '/batch', activities);
+            console.log('Data sent successfully', response);
+            setFeedbackMessage("Activities added successfully!");
+            setErrorMessage("");
+            document.getElementById("excel_modal").close();
+        } catch (error) {
+            console.error('Error sending the data:', error);
+
+            if (error.response) {
+                setErrorMessage(`API Error: ${error.response.data.message || 'An error occurred'}`);
+                document.getElementById("excel_modal").close();
+            } else if (error.request) {
+                setErrorMessage('No response received from the server. Please try again later.');
+                document.getElementById("excel_modal").close();
+            } else {
+                setErrorMessage(`Unexpected error: ${error.message}`);
+                document.getElementById("excel_modal").close();
+            }
+        }
+
+        fetchActivities();
+    };
+
+
+    const handleFileChange = (e) => {
+        const file = e.target.files[0];
+        if (file) {
+            setNewSession((prev) => ({
+                ...prev,
+                image: file
+            }));
+            setImagePreview(URL.createObjectURL(file));
+        }
+    };
+
+
+
+    const handleSubmit = async (e) => {
+        e.preventDefault();
+
+        if (!newSession.name || !newSession.description || !newSession.type_id) {
+            setErrorMessage("Name, Description, and Type are required.");
+            return;
+        }
+
+        console.log(newSession.date)
+
+        const activity = {
+            name: newSession.name,
+            description: newSession.description,
+            image: newSession.image,
+            date: newSession.date,
+            duration: newSession.duration,
+            type_id: newSession.type_id,
+            topic: newSession.topic,
+            speaker: newSession.speaker,
+            facilitator: newSession.facilitator
+        }
+
+
+        try {
+            const response = await axios.post(activitiesBaseUrl, activity);
+            setFeedbackMessage("Activities added successfully!");
+            setErrorMessage("");
+            document.getElementById("excel_modal").close();
+            if (response.ok) {
+                setNewSession({
+                    name: "",
+                    description: "",
+                    image: "",
+                    date: "",
+                    duration: 30,
+                    type_id: 1,
+                    topic: "",
+                    speaker: "",
+                    facilitator: ""
+                });
+                setImagePreview(null);
+                setErrorMessage("");
+                alert("Activity created successfully!");
+                fetchActivities();
+            } else {
+                setErrorMessage("Error creating activity.");
+            }
+        } catch{
+            setErrorMessage("Error creating activity.");
+        }
+    };
 
     const handleBrowseClick = () => {
         document.getElementById('file-input').click();
-    };
-
-    const handleFileChange = (event) => {
-        const file = event.target.files[0];
-
-        if (file) {
-            if (file.size > MAX_FILE_SIZE) {
-                setFeedbackMessage("File size exceeds the 5MB limit. Please select a smaller file.");
-            } else if (file.type !== "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet") {
-                setFeedbackMessage("Please select a valid Excel file.");
-            } else {
-                setSelectedFile(file);
-                setFeedbackMessage("File selected successfully!");
-                simulateUpload();
-            }
-        }
     };
 
     const simulateUpload = () => {
@@ -51,6 +320,7 @@ export default function Activities() {
     const handleDrop = (event) => {
         event.preventDefault();
         event.stopPropagation();
+
         const files = event.dataTransfer.files;
 
         if (files.length > 0) {
@@ -62,8 +332,12 @@ export default function Activities() {
                 setFeedbackMessage("Please drop a valid Excel file.");
             } else {
                 setSelectedFile(file);
+                console.log(selectedFile)
                 setFeedbackMessage("File dropped successfully!");
                 simulateUpload();
+
+
+                handleExcelFileChangeDrop(file);
             }
         }
     };
@@ -84,8 +358,9 @@ export default function Activities() {
 
     return (
         <>
-            <div className="w-full min-h-svh p-8">
+            <div className="w-full min-h-svh p-2 lg:p-8">
                 <h1 className="text-3xl font-bold">Create Sessions</h1>
+
                 <div className="grid grid-cols-3 gap-4 mt-8">
                     <CreateCard
                         icon={FaFileExcel}
@@ -101,36 +376,72 @@ export default function Activities() {
                     />
                 </div>
                 <h1 className="text-3xl font-bold mt-8">Sessions</h1>
-                <div className="w-full grid grid-cols-3 gap-4 overflow-hidden mt-8" >
-                    <Activity
-                        title="Innovation and Technology: Shaping the Future"
-                        description="Exploring how innovation and technology are transforming."
-                        image="/12.jpg"
-                        category="Technology"
-                        type="Talk"
-                    />
-                    <Activity
-                        title="AI and the Future of Work"
-                        description="How artificial intelligence is reshaping job markets and skill requirements."
-                        image="/13.jpg"
-                        category="AI"
-                        type="Workshop"
-                    />
-                    <Activity
-                        title="Sustainable Tech Solutions"
-                        description="Innovations driving a more sustainable and eco-friendly future."
-                        image="/14.jpg"
-                        category="Sustainability"
-                        type="Lecture"
-                    />
-                    <Activity
-                        title="The Future of Mobility"
-                        description="Exploring the future of transportation and mobility."
-                        image="/15.jpg"
-                        category="Transportation"
-                        type="Panel"
-                    />
+
+                {feedbackMessage && (
+                    <div role="alert" className="alert alert-success my-4 w-1/2">
+                        <span className="flex gap-4"><FaCheck className="text-white text-xl"/>{feedbackMessage}</span>
+                    </div>
+                )}
+                {errorMessage && (
+                    <div role="alert" className="alert alert-error my-4 w-1/2">
+                        <span className="flex gap-4"><FaExclamationTriangle
+                            className="text-white text-xl"/>{errorMessage}</span>
+                    </div>
+                )}
+
+                <div className="flex gap-8 mt-4">
+                    <div className="flex gap-4">
+                        <label className="input">
+                            <svg className="h-[1em] opacity-50" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
+                                <g strokeLinejoin="round" strokeLinecap="round" strokeWidth="2.5" fill="none"
+                                   stroke="currentColor">
+                                    <circle cx="11" cy="11" r="8"></circle>
+                                    <path d="m21 21-4.3-4.3"></path>
+                                </g>
+                            </svg>
+                            <input
+                                type="text"
+                                className="grow"
+                                placeholder="Search activities"
+                                value={searchQuery}
+                                onChange={handleSearchChange}/>
+                        </label>
+                    </div>
+
+
+                    <form className="filter">
+                        <input className="btn btn-square" type="reset" value="×" onClick={() => setSelectedType("")} />
+                        {activityTypes.map((type) => (
+                            <input
+                                key={type.id}
+                                type="radio"
+                                name="frameworks"
+                                value={type.id}
+                                onChange={handleTypeChange}
+                                className="btn btn-primary"
+                                aria-label={type.type}
+                            />
+                        ))}
+                    </form>
                 </div>
+                {filteredActivities.length > 0 ? (
+                    <div className="w-full grid grid-cols-1 gap-4 overflow-hidden mt-6 md:grid-cols-2 lg:grid-cols-3">
+                        {filteredActivities.map((activity) => (
+                            <Activity
+                                key={activity.id}
+                                id={activity.id}
+                                title={activity.name}
+                                description={activity.description}
+                                image={activity.image}
+                                category={activity.topic}
+                                type={getActivityType(activity.type_id)}
+                            />
+                        ))}
+                    </div>
+                ) : (
+                    <p className="text-7xl flex justify-center items-center text-center">No activities found.</p>
+                )}
+
             </div>
 
             <dialog id="excel_modal" className="modal">
@@ -141,7 +452,7 @@ export default function Activities() {
                     <h3 className="text-lg font-bold">Upload Excel File</h3>
                     <p className="py-4">Select an Excel file to upload multiple sessions at once.</p>
 
-                    <a href="/activityTemplate.xlsx" download>
+                    <a href="/template.xlsx" download>
                         <button className="btn btn-secondary mt-4 w-full">Download Excel Template</button>
                     </a>
 
@@ -187,18 +498,22 @@ export default function Activities() {
                             </>
                         )}
                     </div>
-                    <input
-                        type="file"
-                        id="file-input"
-                        style={{ display: 'none' }}
-                        accept=".xlsx,.xls"
-                        onChange={handleFileChange}
-                    />
-                    <button
-                        className="btn btn-primary mt-4 mx-auto w-1/3 flex items-center justify-center"
-                    >
-                        Submit
-                    </button>
+                    <form>
+                        <input
+                            type="file"
+                            id="file-input"
+                            style={{ display: 'none' }}
+                            accept=".xlsx,.xls"
+                            onChange={handleExcelFileChange}
+                        />
+                        <button
+                            className="btn btn-primary mt-4 mx-auto w-1/3 flex items-center justify-center"
+                            onClick={handleExcelSubmit}
+                        >
+                            Submit
+                        </button>
+                    </form>
+
                 </div>
 
 
@@ -214,47 +529,133 @@ export default function Activities() {
                     </form>
                     <h3 className="text-lg font-bold">Create New Session</h3>
                     <p className="py-4">Fill in the details to create a new session.</p>
-                    <form>
+                    <form onSubmit={handleSubmit}>
                         <div>
-                            <label form="title">Title</label>
-                            <input type="text" id="title" placeholder="Enter the session title" className="text-base-100 input w-full h-12 bg-secondary rounded-xl"></input>
+                            <label htmlFor="name">Name</label>
+                            <input
+                                type="text"
+                                id="name"
+                                name="name"
+                                value={newSession.name}
+                                onChange={handleInputChange}
+                                placeholder="Enter the session title"
+                                className="input w-full h-12 bg-secondary rounded-xl"
+                            />
                         </div>
-                        <div className="flex w-full gap-4 mt-4">
-                            <div className="w-1/2">
-                                <label htmlFor="sdate" className="block">Start Date</label>
-                                <input type="datetime-local" id="sdate" className="text-base-100 input w-full h-12 bg-secondary rounded-xl"></input>
-                            </div>
-                            <div className="w-1/2">
-                                <label htmlFor="edate" className="block">End Date</label>
-                                <input type="datetime-local" id="edate" className="text-base-100 input w-full h-12 bg-secondary rounded-xl"></input>
-                            </div>
+                        <div className="mt-4">
+                            <label htmlFor="description">Description</label>
+                            <textarea
+                                id="description"
+                                name="description"
+                                value={newSession.description}
+                                onChange={handleInputChange}
+                                placeholder="Enter the session description"
+                                className="input w-full h-24 bg-secondary rounded-xl"
+                            />
                         </div>
-                        <div className="flex w-full gap-4 mt-4">
+                        <div className="mt-4">
+                            <label htmlFor="type_id" className="select w-full h-12 bg-secondary rounded-xl">
+                                <span className="label">Type</span>
+                                <select
+                                    id="type_id"
+                                    name="type_id"
+                                    value={newSession.type_id}
+                                    onChange={handleInputChange}
+                                >
+                                    {activityTypes.map((type) => (
+                                        <option key={type.id} value={type.id}>
+                                            {type.type}
+                                        </option>
+                                    ))}
+                                </select>
+                            </label>
+                        </div>
+                        <div className="flex gap-4 mt-4">
                             <div className="w-1/2">
-                                <label htmlFor="location" className="block">Location</label>
-                                <input type="text" id="location" placeholder="Enter the session location" className="text-base-100 input h-12 bg-secondary rounded-xl"></input>
+                                <label htmlFor="date">Date</label>
+                                <input
+                                    type="datetime-local"
+                                    id="date"
+                                    name="date"
+                                    value={newSession.date}
+                                    onChange={handleInputChange}
+                                    className="input w-full h-12 bg-secondary rounded-xl"
+                                />
                             </div>
                             <div className="w-1/2">
-                                <label htmlFor="speaker" className="block">Speaker</label>
-                                <input type="text" id="speaker" placeholder="Enter the session speaker" className="text-base-100 input h-12 bg-secondary rounded-xl"></input>
+                                <label htmlFor="duration">Duration (minutes)</label>
+                                <input
+                                    type="number"
+                                    id="duration"
+                                    name="duration"
+                                    value={newSession.duration}
+                                    onChange={handleInputChange}
+                                    className="input w-full h-12 bg-secondary rounded-xl"
+                                />
                             </div>
                         </div>
                         <div className="mt-4">
-                            <label htmlFor="description" className="block">Description</label>
-                            <textarea id="description" className="text-base-100 input w-full h-24 bg-secondary rounded-xl"></textarea>
+                            <label htmlFor="topic">Topic</label>
+                            <input
+                                type="text"
+                                id="topic"
+                                name="topic"
+                                value={newSession.topic}
+                                onChange={handleInputChange}
+                                placeholder="Enter the session topic"
+                                className="input w-full h-12 bg-secondary rounded-xl"
+                            />
                         </div>
                         <div className="mt-4">
-                            <label htmlFor="img">Image</label>
-                            <fieldset className="fieldset rounded-xl">
-                                <input type="file" id="img" accept="image/*" className="file-input rounded-xl h-12 w-full bg-secondary text-base-100 border-2 focus:outline-none focus:ring-2 focus:ring-primary"/>
-                            </fieldset>
+                            <label htmlFor="speaker">Speaker</label>
+                            <input
+                                type="text"
+                                id="speaker"
+                                name="speaker"
+                                value={newSession.speaker}
+                                onChange={handleInputChange}
+                                placeholder="Enter the speaker's name"
+                                className="input w-full h-12 bg-secondary rounded-xl"
+                            />
                         </div>
-                        <button className="btn btn-primary mt-4 mx-auto w-1/3 flex items-center justify-center">
-                            Submit
-                        </button>
+                        <div className="mt-4">
+                            <label htmlFor="facilitator">Facilitator</label>
+                            <input
+                                type="text"
+                                id="facilitator"
+                                name="facilitator"
+                                value={newSession.facilitator}
+                                onChange={handleInputChange}
+                                placeholder="Enter the facilitator's name"
+                                className="input w-full h-12 bg-secondary rounded-xl"
+                            />
+                        </div>
+                        <div className="mt-4">
+                            <label htmlFor="image">Image</label>
+                            <input
+                                type="file"
+                                id="image"
+                                accept="image/*"
+                                onChange={handleFileChange}
+                                className="file-input w-full h-12 bg-secondary rounded-xl"
+                            />
+                        </div>
+
+                        {imagePreview && (
+                            <div className="mt-4">
+                                <img src={imagePreview} alt="Preview" className="w-full h-32 object-cover rounded-xl" />
+                            </div>
+                        )}
+
+                        {errorMessage && (
+                            <div className="text-red-500 mt-4">{errorMessage}</div>
+                        )}
+
+                        <button className="btn btn-primary mt-4 w-full">Create Session</button>
                     </form>
                 </div>
-                <form method="dialog" className="modal-backdrop bg-none bg-opacity-10">
+
+                <form method="dialog" className="modal-backdrop bg-opacity-10">
                     <button>close</button>
                 </form>
             </dialog>
