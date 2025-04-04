@@ -15,24 +15,11 @@ import Plugins from "./pages/Plugins.jsx";
 import Colors from "./pages/Colors.jsx";
 import BaseConfiguration from "./pages/BaseConfiguration.jsx";
 import keycloak from "./keycloak.js";
-import {useEffect, useState} from "react";
 import PrivateRoute from "./PrivateRoute.js";
 
 export default function App() {
-    const [keycloakLoaded, setKeycloakLoaded] = useState(false);
-
-    useEffect(() => {
-        keycloak.init({ onLoad: 'login-required' }).then(authenticated => {
-            setKeycloakLoaded(authenticated);
-        });
-    }, []);
-
-    if (!keycloakLoaded) {
-        return <div>Loading...</div>
-    }
-
   return (
-      <ReactKeycloakProvider authClient={keycloak}>
+      <ReactKeycloakProvider authClient={keycloak} initOptions={{ onLoad: 'login-required' }}>
           <Router>
               <Routes>
                   <Route element={<Layout />}>
@@ -42,14 +29,12 @@ export default function App() {
                       <Route  path="register" element={<Register />}/>
                       <Route  path="login" element={<Login />}/>
                   </Route>
-                  <PrivateRoute>
-                      <Route path="instantiate" element={<LayoutInstantiate/>}>
-                          <Route path="home">
-                              <Route path="users" element={<Users />}/>
-                              <Route path="sessions" element={<Activities/>}/>
-                              <Route path="alerts" element={<Alerts/>}/>
-                          </Route>
-
+                  <Route path="instantiate" element={<PrivateRoute><LayoutInstantiate/></PrivateRoute>}>
+                      <Route path="home">
+                          <Route path="users" element={<Users />}/>
+                          <Route path="sessions" element={<Activities/>}/>
+                          <Route path="alerts" element={<Alerts/>}/>
+                      </Route>
                           <Route path="eventmaker">
                               <Route path="colors" element={<Colors/>}></Route>
                               <Route path="base-configurations" element={<BaseConfiguration/>}></Route>
@@ -57,8 +42,7 @@ export default function App() {
                           </Route>
                           <Route path="schedule" element={<Schedule/>}></Route>
                           <Route path="register" element={<ManualRegister/>}></Route>
-                      </Route>
-                  </PrivateRoute>
+                  </Route>
               </Routes>
           </Router>
       </ReactKeycloakProvider>
