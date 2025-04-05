@@ -1,6 +1,6 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
-import { FaHome, FaPalette, FaCogs, FaCalendarAlt, FaUserPlus, FaPuzzlePiece, FaUsers, FaBell } from 'react-icons/fa';
+import { FaHome, FaPalette, FaCogs, FaCalendarAlt, FaPuzzlePiece, FaUsers, FaBell } from 'react-icons/fa';
 
 export default function Instantiate() {
     const quickLinks = [
