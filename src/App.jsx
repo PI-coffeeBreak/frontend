@@ -47,10 +47,12 @@ export default function App() {
                     <Route path="eventmaker">
                         <Route path="colors" element={<Colors />}></Route>
                         <Route path="base-configurations" element={<BaseConfiguration />}></Route>
-                        <Route path="plugins" element={<Plugins />}></Route>
+                        <Route path="choose-plugins" element={<Plugins />}></Route>
                     </Route>
-                    <Route path="schedule" element={<Schedule />}></Route>
-                    <Route path="register" element={<ManualRegister />}></Route>
+                    <Route path="plugins">
+                      <Route path="alerts" element={<Alerts />}></Route>
+                      <Route path="schedule" element={<Schedule />}></Route>
+                    </Route>
                 </Route>
               </Routes>
             </Router>
