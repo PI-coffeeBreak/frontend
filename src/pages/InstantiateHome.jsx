@@ -1,10 +1,11 @@
-import React from 'react';
-import { Link } from 'react-router-dom';
+import React, { useMemo } from 'react';
 import { FaUsers, FaCalendarCheck, FaBell } from 'react-icons/fa';
+import DashboardCard from '../components/DashboardCard';
 
 export default function InstantiateHome() {
-    const cards = [
+    const cards = useMemo(() => [
         {
+            id: 'users',
             title: "Users",
             description: "Manage your event's participants, speakers, and staff. View profiles, assign roles, and handle user permissions all in one place.",
             icon: FaUsers,
@@ -13,6 +14,7 @@ export default function InstantiateHome() {
             buttonText: "Manage Users"
         },
         {
+            id: 'sessions',
             title: "Sessions",
             description: "Create and organize event sessions, workshops, and activities. Schedule timings and assign speakers to create the perfect agenda.",
             icon: FaCalendarCheck,
@@ -21,6 +23,7 @@ export default function InstantiateHome() {
             buttonText: "Manage Sessions"
         },
         {
+            id: 'alerts',
             title: "Alerts",
             description: "Keep your attendees informed with real-time notifications. Send important updates, reminders, and announcements throughout your event.",
             icon: FaBell,
@@ -28,7 +31,7 @@ export default function InstantiateHome() {
             color: "accent",
             buttonText: "Manage Alerts"
         }
-    ];
+    ], []);
 
     return (
         <div className="w-full min-h-svh p-8">
@@ -37,24 +40,11 @@ export default function InstantiateHome() {
                 <p className="text-lg text-base-content/70 mb-12">Monitor and manage all aspects of your event from one central location</p>
                 
                 <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
-                    {cards.map((card, index) => (
-                        <Link key={index} to={card.path} className="group">
-                            <div className={`card bg-base-100 shadow-xl hover:shadow-2xl transition-all duration-300 hover:-translate-y-2 h-[400px] relative overflow-hidden w-full`}>
-                                <div className={`absolute top-0 left-0 w-full h-2 bg-${card.color} transform origin-left transition-transform duration-300 scale-x-0 group-hover:scale-x-100`}></div>
-                                <div className="card-body p-8 flex flex-col h-full">
-                                    <div className="flex flex-col items-center text-center flex-grow">
-                                        <div className={`w-20 h-20 rounded-full bg-${card.color}/10 flex items-center justify-center mb-6 group-hover:scale-110 transition-transform duration-300`}>
-                                            <card.icon className={`text-4xl text-${card.color}`} />
-                                        </div>
-                                        <h2 className="card-title text-2xl mb-4">{card.title}</h2>
-                                        <p className="text-base-content/70 text-lg">{card.description}</p>
-                                    </div>
-                                    <div className="absolute inset-x-4 bottom-4">
-                                        <button className={`btn btn-${card.color} btn-outline w-full`}>{card.buttonText}</button>
-                                    </div>
-                                </div>
-                            </div>
-                        </Link>
+                    {cards.map((card) => (
+                        <DashboardCard
+                            key={card.id}
+                            {...card}
+                        />
                     ))}
                 </div>
             </div>
