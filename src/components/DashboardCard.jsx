@@ -1,6 +1,17 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
+import PropTypes from 'prop-types';
 
+/**
+ * DashboardCard component for displaying feature cards in the dashboard
+ * @param {Object} props - Component props
+ * @param {string} props.title - Card title
+ * @param {string} props.description - Card description
+ * @param {Function} props.icon - Icon component to be rendered
+ * @param {string} props.path - Navigation path for the card
+ * @param {('primary'|'secondary'|'accent')} props.color - Color theme for the card
+ * @param {string} props.buttonText - Text to display on the card's button
+ */
 export default function DashboardCard({ title, description, icon: Icon, path, color, buttonText }) {
     return (
         <Link to={path} className="group">
@@ -21,4 +32,19 @@ export default function DashboardCard({ title, description, icon: Icon, path, co
             </div>
         </Link>
     );
-} 
+}
+
+DashboardCard.propTypes = {
+    /** The title of the card */
+    title: PropTypes.string.isRequired,
+    /** Detailed description of the feature */
+    description: PropTypes.string.isRequired,
+    /** Icon component to be rendered */
+    icon: PropTypes.elementType.isRequired,
+    /** Navigation path when card is clicked */
+    path: PropTypes.string.isRequired,
+    /** Color theme for the card styling */
+    color: PropTypes.oneOf(['primary', 'secondary', 'accent']).isRequired,
+    /** Text to display on the card's button */
+    buttonText: PropTypes.string.isRequired
+}; 
