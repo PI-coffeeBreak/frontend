@@ -1,40 +1,40 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
-import { FaUsers, FaCalendarCheck, FaBell } from 'react-icons/fa';
+import { FaPalette, FaCogs, FaPuzzlePiece } from 'react-icons/fa';
 
-export default function InstantiateHome() {
+export default function EventMaker() {
     const cards = [
         {
-            title: "Users",
-            description: "Manage your event's participants, speakers, and staff. View profiles, assign roles, and handle user permissions all in one place.",
-            icon: FaUsers,
-            path: "users",
+            title: "Colors",
+            description: "Create a unique visual identity for your event by customizing the color scheme. Choose colors that reflect your brand and create the perfect atmosphere.",
+            icon: FaPalette,
+            path: "colors",
             color: "primary",
-            buttonText: "Manage Users"
+            buttonText: "Customize Colors"
         },
         {
-            title: "Sessions",
-            description: "Create and organize event sessions, workshops, and activities. Schedule timings and assign speakers to create the perfect agenda.",
-            icon: FaCalendarCheck,
-            path: "sessions",
+            title: "Base Configurations",
+            description: "Set up the fundamental aspects of your event, including basic information, scheduling preferences, and core functionality.",
+            icon: FaCogs,
+            path: "base-configurations",
             color: "secondary",
-            buttonText: "Manage Sessions"
+            buttonText: "Configure Event"
         },
         {
-            title: "Alerts",
-            description: "Keep your attendees informed with real-time notifications. Send important updates, reminders, and announcements throughout your event.",
-            icon: FaBell,
-            path: "alerts",
+            title: "Choose Plugins",
+            description: "Enhance your event with powerful plugins. Add features like schedules, alerts, and more to create the perfect experience.",
+            icon: FaPuzzlePiece,
+            path: "plugins",
             color: "accent",
-            buttonText: "Manage Alerts"
+            buttonText: "Manage Plugins"
         }
     ];
 
     return (
         <div className="w-full min-h-svh p-8">
             <div className="max-w-7xl mx-auto">
-                <h1 className="text-4xl font-bold mb-4 text-primary">Event Dashboard</h1>
-                <p className="text-lg text-base-content/70 mb-12">Monitor and manage all aspects of your event from one central location</p>
+                <h1 className="text-4xl font-bold mb-4 text-primary">Event Maker</h1>
+                <p className="text-lg text-base-content/70 mb-12">Customize and configure your event with these powerful tools</p>
                 
                 <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
                     {cards.map((card, index) => (
@@ -60,4 +60,4 @@ export default function InstantiateHome() {
             </div>
         </div>
     );
-}
+} 
