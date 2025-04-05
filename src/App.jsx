@@ -19,6 +19,7 @@ import { PluginsProvider } from "./contexts/PluginsContext.jsx";
 import { ThemeProvider } from "./contexts/ThemeContext";
 import { UsersProvider } from "./contexts/UsersContext.jsx";
 import EventSetup from "./pages/EventSetup.jsx";
+import Instantiate from "./pages/Instantiate.jsx";
 
 export default function App() {
   return (
@@ -37,6 +38,7 @@ export default function App() {
                    <Route path="setup" element={<EventSetup/>}/>
                 </Route>
                 <Route path="instantiate" element={<LayoutInstantiate/>}>
+                    <Route index element={<Instantiate />} />
                     <Route path="home">
                         <Route path="users" element={<Users />}/>
                         <Route path="sessions" element={<Activities/>}/>
