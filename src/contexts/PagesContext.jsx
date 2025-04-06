@@ -1,4 +1,5 @@
-import React, { createContext, useContext, useState } from "react";
+import React, { createContext, useContext, useState, useMemo } from "react";
+import PropTypes from "prop-types";
 import axios from "axios";
 import { baseUrl } from "../consts";
 
@@ -24,11 +25,26 @@ export const PagesProvider = ({ children }) => {
         }
     };
 
+    // Memoize the context value
+    const contextValue = useMemo(
+        () => ({
+            pages,
+            savePage,
+            isLoading,
+            error,
+        }),
+        [pages, isLoading, error]
+    );
+
     return (
-        <PagesContext.Provider value={{ pages, savePage, isLoading, error }}>
+        <PagesContext.Provider value={contextValue}>
             {children}
         </PagesContext.Provider>
     );
+};
+
+PagesProvider.propTypes = {
+    children: PropTypes.node.isRequired,
 };
 
 export const usePages = () => useContext(PagesContext);

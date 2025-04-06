@@ -1,4 +1,5 @@
-import React, { createContext, useContext, useState, useEffect } from "react";
+import React, { createContext, useContext, useState, useEffect, useMemo } from "react";
+import PropTypes from "prop-types";
 import axios from "axios";
 import { baseUrl } from "../consts";
 
@@ -56,19 +57,27 @@ export const PluginsProvider = ({ children }) => {
         fetchPluginsConfig();
     }, []);
 
+    // Memoize the context value
+    const contextValue = useMemo(
+        () => ({
+            plugins,
+            pluginsConfig,
+            fetchPlugins,
+            fetchPluginsConfig,
+            togglePlugin,
+        }),
+        [plugins, pluginsConfig]
+    );
+
     return (
-        <PluginsContext.Provider
-            value={{
-                plugins,
-                pluginsConfig,
-                fetchPlugins,
-                fetchPluginsConfig,
-                togglePlugin,
-            }}
-        >
+        <PluginsContext.Provider value={contextValue}>
             {children}
         </PluginsContext.Provider>
     );
+};
+
+PluginsProvider.propTypes = {
+    children: PropTypes.node.isRequired,
 };
 
 export const usePlugins = () => useContext(PluginsContext);
