@@ -1,4 +1,5 @@
 import React from "react";
+import PropTypes from "prop-types";
 
 export const TextInput = ({ label, name, value, onChange }) => (
     <div className="mb-2">
@@ -13,6 +14,13 @@ export const TextInput = ({ label, name, value, onChange }) => (
     </div>
 );
 
+TextInput.propTypes = {
+    label: PropTypes.string.isRequired,
+    name: PropTypes.string.isRequired,
+    value: PropTypes.string,
+    onChange: PropTypes.func.isRequired,
+};
+
 export const CheckboxInput = ({ label, name, checked, onChange }) => (
     <label className="flex items-center gap-2">
         <input
@@ -25,6 +33,13 @@ export const CheckboxInput = ({ label, name, checked, onChange }) => (
         <span className="text-xs font-medium text-gray-700">{label}</span>
     </label>
 );
+
+CheckboxInput.propTypes = {
+    label: PropTypes.string.isRequired,
+    name: PropTypes.string.isRequired,
+    checked: PropTypes.bool,
+    onChange: PropTypes.func.isRequired,
+};
 
 export const SelectInput = ({ label, name, value, options, onChange }) => (
     <div className="mb-2">
@@ -43,3 +58,16 @@ export const SelectInput = ({ label, name, value, options, onChange }) => (
         </select>
     </div>
 );
+
+SelectInput.propTypes = {
+    label: PropTypes.string.isRequired,
+    name: PropTypes.string.isRequired,
+    value: PropTypes.string,
+    options: PropTypes.arrayOf(
+        PropTypes.shape({
+            value: PropTypes.string.isRequired,
+            label: PropTypes.string.isRequired,
+        })
+    ).isRequired,
+    onChange: PropTypes.func.isRequired,
+};

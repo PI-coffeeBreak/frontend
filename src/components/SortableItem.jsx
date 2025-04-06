@@ -1,9 +1,9 @@
 import React, { useState } from "react";
+import PropTypes from "prop-types";
 import { useSortable } from "@dnd-kit/sortable";
 import { CSS } from "@dnd-kit/utilities";
 import { FaBars, FaChevronDown, FaChevronUp, FaTrash } from "react-icons/fa";
 import { useComponents } from "../contexts/ComponentsContext";
-import { Title, Image, Button, Text } from "./componentsMap.jsx";
 import { componentMap } from "./componentsMap";
 
 export function SortableItem({ id, componentData, onComponentTypeChange, onComponentPropsChange, onRemove }) {
@@ -191,3 +191,14 @@ export function SortableItem({ id, componentData, onComponentTypeChange, onCompo
         </div>
     );
 }
+
+SortableItem.propTypes = {
+    id: PropTypes.string.isRequired,
+    componentData: PropTypes.shape({
+        name: PropTypes.string.isRequired,
+        props: PropTypes.object.isRequired,
+    }).isRequired,
+    onComponentTypeChange: PropTypes.func.isRequired,
+    onComponentPropsChange: PropTypes.func.isRequired,
+    onRemove: PropTypes.func.isRequired,
+};

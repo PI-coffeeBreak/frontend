@@ -1,4 +1,5 @@
 import React from "react";
+import PropTypes from "prop-types";
 import { TextInput, CheckboxInput, SelectInput } from "./CommonInputs";
 
 const textColorOptions = [
@@ -144,4 +145,14 @@ export const componentConfigurations = {
             />
         </>
     ),
+};
+
+componentConfigurations.Title.propTypes = {
+    componentProps: PropTypes.shape({
+        text: PropTypes.string,
+        color: PropTypes.string,
+        bold: PropTypes.bool,
+        italic: PropTypes.bool,
+    }).isRequired,
+    handlePropertyChange: PropTypes.func.isRequired,
 };

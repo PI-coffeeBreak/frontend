@@ -1,4 +1,5 @@
 import React from "react";
+import PropTypes from "prop-types";
 
 export function Title({
     text = "Default Title",
@@ -13,6 +14,15 @@ export function Title({
     return <h1 className={`text-2xl ${colorClass} ${fontStyle} ${className}`}>{text}</h1>;
 }
 
+Title.propTypes = {
+    text: PropTypes.string,
+    color: PropTypes.string,
+    bold: PropTypes.bool,
+    italic: PropTypes.bool,
+    underline: PropTypes.bool,
+    className: PropTypes.string,
+};
+
 export function Image({
     src = "https://via.placeholder.com/150",
     alt = "Placeholder",
@@ -20,6 +30,12 @@ export function Image({
 }) {
     return <img src={src} alt={alt} className={`rounded shadow ${className}`} />;
 }
+
+Image.propTypes = {
+    src: PropTypes.string,
+    alt: PropTypes.string,
+    className: PropTypes.string,
+};
 
 export function Button({
     text = "Click Me",
@@ -46,6 +62,16 @@ export function Button({
     );
 }
 
+Button.propTypes = {
+    text: PropTypes.string,
+    METHOD: PropTypes.string,
+    URL: PropTypes.string,
+    className: PropTypes.string,
+    backgroundColor: PropTypes.string,
+    textColor: PropTypes.string,
+    disabled: PropTypes.bool,
+};
+
 export function Text({
     text = "Default Text",
     color = "black", // Default to "black"
@@ -58,6 +84,15 @@ export function Text({
     const colorClass = `text-${color}`; // Dynamically apply the Tailwind class for text color
     return <p className={`${colorClass} ${fontStyle} ${className}`}>{text}</p>;
 }
+
+Text.propTypes = {
+    text: PropTypes.string,
+    color: PropTypes.string,
+    bold: PropTypes.bool,
+    italic: PropTypes.bool,
+    underline: PropTypes.bool,
+    className: PropTypes.string,
+};
 
 // Map component names without "Component" suffix
 export const componentMap = {
