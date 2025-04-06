@@ -2,14 +2,15 @@ import React from "react";
 
 export function Title({
     text = "Default Title",
-    color = "text-black",
+    color = "black", // Default to "black"
     bold = false,
     italic = false,
     underline = false,
     className = "",
 }) {
     const fontStyle = `${bold ? "font-bold" : ""} ${italic ? "italic" : ""} ${underline ? "underline" : ""}`;
-    return <h1 className={`text-2xl ${color} ${fontStyle} ${className}`}>{text}</h1>;
+    const colorClass = `text-${color}`; // Dynamically apply the Tailwind class for text color
+    return <h1 className={`text-2xl ${colorClass} ${fontStyle} ${className}`}>{text}</h1>;
 }
 
 export function Image({
