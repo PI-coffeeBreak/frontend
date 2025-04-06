@@ -25,12 +25,33 @@ export const ComponentsProvider = ({ children }) => {
         }
     };
 
+    // Function to return a simplified list of components
+    const getComponentList = () => {
+        const componentList = Object.keys(components).map((key) => {
+            const { title, description, properties } = components[key];
+            return {
+                name: key,
+                title: title || key,
+                description: description || "No description available",
+                properties: Object.keys(properties)
+                    .filter((propKey) => propKey !== "name" && propKey !== "component_id") // Exclude name and component_id
+                    .map((propKey) => ({
+                        name: propKey,
+                        ...properties[propKey],
+                    })),
+            };
+        });
+
+        console.log("Simplified Component List:", componentList);
+        return componentList;
+    };
+
     useEffect(() => {
         fetchComponents();
     }, []);
 
     return (
-        <ComponentsContext.Provider value={{ components, isLoading, error }}>
+        <ComponentsContext.Provider value={{ components, isLoading, error, getComponentList }}>
             {children}
         </ComponentsContext.Provider>
     );
