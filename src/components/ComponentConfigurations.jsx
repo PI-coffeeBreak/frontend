@@ -156,3 +156,33 @@ componentConfigurations.Title.propTypes = {
     }).isRequired,
     handlePropertyChange: PropTypes.func.isRequired,
 };
+
+componentConfigurations.Image.propTypes = {
+    componentProps: PropTypes.shape({
+        src: PropTypes.string,
+        alt: PropTypes.string,
+    }).isRequired,
+    handlePropertyChange: PropTypes.func.isRequired,
+};
+
+componentConfigurations.Button.propTypes = {
+    componentProps: PropTypes.shape({
+        text: PropTypes.string,
+        URL: PropTypes.string,
+        METHOD: PropTypes.string,
+        backgroundColor: PropTypes.string,
+        textColor: PropTypes.string,
+        disabled: PropTypes.bool,
+    }).isRequired,
+    handlePropertyChange: PropTypes.func.isRequired,
+};
+
+componentConfigurations.Text.propTypes = {
+    componentProps: PropTypes.shape({
+        content: PropTypes.string,
+        className: PropTypes.string,
+        bold: PropTypes.bool,
+        italic: PropTypes.bool,
+    }).isRequired,
+    handlePropertyChange: PropTypes.func.isRequired,
+};
