@@ -13,6 +13,7 @@ import Schedule from "./pages/Schedule.jsx";
 import ManualRegister from "./pages/ManualRegister.jsx";
 import Plugins from "./pages/Plugins.jsx";
 import Colors from "./pages/Colors.jsx";
+import { HomeEditor } from "./pages/HomeEditor.jsx";
 import BaseConfiguration from "./pages/BaseConfiguration.jsx";
 import { ActivitiesProvider } from "./contexts/ActivitiesContext.jsx";
 import { PluginsProvider } from "./contexts/PluginsContext.jsx";
@@ -44,6 +45,7 @@ export default function App() {
                     </Route>
                     <Route path="eventmaker">
                         <Route path="colors" element={<Colors />}></Route>
+                        <Route path="home-editor" element={<HomeEditor />}></Route>
                         <Route path="base-configurations" element={<BaseConfiguration />}></Route>
                         <Route path="choose-plugins" element={<Plugins />}></Route>
                     </Route>
