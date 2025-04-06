@@ -108,22 +108,16 @@ export const UsersProvider = ({ children }) => {
             );
 
             setUsersGroupedByRole((prevGrouped) => {
-                const newGrouped = JSON.parse(JSON.stringify(prevGrouped));
-
-                if (newGrouped[oldBackendRole]) {
-                    newGrouped[oldBackendRole] = newGrouped[oldBackendRole].filter(
-                        (u) => u.id !== userId
-                    );
-                }
-
-                if (!newGrouped[backendRole]) newGrouped[backendRole] = [];
-
                 const userWithoutRoleProperty = { ...user };
                 delete userWithoutRoleProperty.role;
 
-                newGrouped[backendRole].push(userWithoutRoleProperty);
-
-                return newGrouped;
+                return updateUserRoleInGroupedRoles(
+                    prevGrouped,
+                    userId,
+                    oldBackendRole,
+                    backendRole,
+                    userWithoutRoleProperty
+                );
             });
 
             return { success: true, message: `User role updated to ${newRole}` };
@@ -150,19 +144,9 @@ export const UsersProvider = ({ children }) => {
                 )
             );
 
-            setUsersGroupedByRole((prevGrouped) => {
-                const newGrouped = JSON.parse(JSON.stringify(prevGrouped));
-
-                Object.keys(newGrouped).forEach((roleKey) => {
-                    newGrouped[roleKey] = newGrouped[roleKey].map((user) =>
-                        user.id === userId
-                            ? { ...user, enabled: !shouldBeBanned }
-                            : user
-                    );
-                });
-
-                return newGrouped;
-            });
+            setUsersGroupedByRole((prevGrouped) =>
+                toggleUserEnabledInGroupedRoles(prevGrouped, userId, shouldBeBanned)
+            );
 
             return {
                 success: true,
@@ -227,3 +211,38 @@ UsersProvider.propTypes = {
 };
 
 export const useUsers = () => useContext(UsersContext);
+
+// Helper function to toggle a user's enabled status in a grouped structure
+const toggleUserEnabledInGroupedRoles = (groupedRoles, userId, shouldBeBanned) => {
+    const updatedGroupedRoles = { ...groupedRoles };
+
+    Object.keys(updatedGroupedRoles).forEach((roleKey) => {
+        updatedGroupedRoles[roleKey] = updatedGroupedRoles[roleKey].map((user) =>
+            user.id === userId
+                ? { ...user, enabled: !shouldBeBanned }
+                : user
+        );
+    });
+
+    return updatedGroupedRoles;
+};
+
+// Helper function to update a user's role in a grouped structure
+const updateUserRoleInGroupedRoles = (groupedRoles, userId, oldRole, newRole, userWithoutRoleProperty) => {
+    const updatedGroupedRoles = { ...groupedRoles };
+
+    // Remove user from the old role
+    if (updatedGroupedRoles[oldRole]) {
+        updatedGroupedRoles[oldRole] = updatedGroupedRoles[oldRole].filter(
+            (user) => user.id !== userId
+        );
+    }
+
+    // Add user to the new role
+    if (!updatedGroupedRoles[newRole]) {
+        updatedGroupedRoles[newRole] = [];
+    }
+    updatedGroupedRoles[newRole].push(userWithoutRoleProperty);
+
+    return updatedGroupedRoles;
+};
