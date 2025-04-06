@@ -2,6 +2,7 @@ import React, { useState } from "react";
 import { useSortable } from "@dnd-kit/sortable";
 import { CSS } from "@dnd-kit/utilities";
 import { FaBars, FaChevronDown, FaChevronUp, FaTrash } from "react-icons/fa";
+import { componentConfigurations } from "./ComponentConfigurations";
 import { Title, Image, Button, Text, Heading } from "./componentsMap.jsx";
 
 // Map the component types to their respective components
@@ -36,7 +37,10 @@ export function SortableItem({ id, componentData, onComponentTypeChange, onRemov
         onComponentTypeChange(id, newType); // Notify parent to update the component type
     };
 
+    // Normalize componentData.name to match the keys in componentConfigurations
+    const normalizedComponentName = componentData.name.charAt(0).toUpperCase() + componentData.name.slice(1);
     const SelectedComponent = componentMap[componentData.name.toLowerCase()];
+    const ConfigurationComponent = componentConfigurations[normalizedComponentName] || null;
 
     return (
         <div
@@ -57,11 +61,11 @@ export function SortableItem({ id, componentData, onComponentTypeChange, onRemov
                         onChange={handleTypeChange}
                         className="mt-1 block w-full p-2 border border-gray-300 rounded-md shadow-sm"
                     >
-                        <option value="Heading">Heading</option>
-                        <option value="Text">Text</option>
-                        <option value="Button">Button</option>
-                        <option value="Image">Image</option>
-                        <option value="Title">Title</option>
+                        {Object.keys(componentMap).map((key) => (
+                            <option key={key} value={key}>
+                                {key}
+                            </option>
+                        ))}
                     </select>
                 </div>
 
@@ -80,236 +84,12 @@ export function SortableItem({ id, componentData, onComponentTypeChange, onRemov
                 </button>
 
                 {/* Inline Configuration Options */}
-                {!isCollapsed && (
+                {!isCollapsed && ConfigurationComponent && (
                     <div className="p-4 bg-gray-100 rounded-lg mt-2">
-                        {componentData.name === "Heading" && (
-                            <>
-                                <div className="mb-2">
-                                    <label className="block text-xs font-medium text-gray-700">Text</label>
-                                    <input
-                                        type="text"
-                                        name="text"
-                                        value={componentProps.text || ""}
-                                        onChange={handlePropertyChange}
-                                        className="mt-1 block w-full p-2 border border-gray-300 rounded-md shadow-sm"
-                                    />
-                                </div>
-                                <div className="mb-2">
-                                    <label className="block text-xs font-medium text-gray-700">Level</label>
-                                    <select
-                                        name="level"
-                                        value={componentProps.level || 2}
-                                        onChange={handlePropertyChange}
-                                        className="mt-1 block w-full p-2 border border-gray-300 rounded-md shadow-sm"
-                                    >
-                                        <option value={1}>H1</option>
-                                        <option value={2}>H2</option>
-                                        <option value={3}>H3</option>
-                                        <option value={4}>H4</option>
-                                        <option value={5}>H5</option>
-                                        <option value={6}>H6</option>
-                                    </select>
-                                </div>
-                                <div className="mb-2 flex items-center gap-4">
-                                    <label className="flex items-center gap-2">
-                                        <input
-                                            type="checkbox"
-                                            name="bold"
-                                            checked={componentProps.bold || false}
-                                            onChange={handlePropertyChange}
-                                            className="checkbox checkbox-primary"
-                                        />
-                                        <span className="text-xs font-medium text-gray-700">Bold</span>
-                                    </label>
-                                    <label className="flex items-center gap-2">
-                                        <input
-                                            type="checkbox"
-                                            name="italic"
-                                            checked={componentProps.italic || false}
-                                            onChange={handlePropertyChange}
-                                            className="checkbox checkbox-primary"
-                                        />
-                                        <span className="text-xs font-medium text-gray-700">Italic</span>
-                                    </label>
-                                </div>
-                            </>
-                        )}
-                        {componentData.name === "Title" && (
-                            <>
-                                <div className="mb-2">
-                                    <label className="block text-xs font-medium text-gray-700">Text</label>
-                                    <input
-                                        type="text"
-                                        name="text"
-                                        value={componentProps.text || ""}
-                                        onChange={handlePropertyChange}
-                                        className="mt-1 block w-full p-2 border border-gray-300 rounded-md shadow-sm"
-                                    />
-                                </div>
-                                <div className="mb-2 flex items-center gap-4">
-                                    <label className="flex items-center gap-2">
-                                        <input
-                                            type="checkbox"
-                                            name="bold"
-                                            checked={componentProps.bold || false}
-                                            onChange={handlePropertyChange}
-                                            className="checkbox checkbox-primary"
-                                        />
-                                        <span className="text-xs font-medium text-gray-700">Bold</span>
-                                    </label>
-                                    <label className="flex items-center gap-2">
-                                        <input
-                                            type="checkbox"
-                                            name="italic"
-                                            checked={componentProps.italic || false}
-                                            onChange={handlePropertyChange}
-                                            className="checkbox checkbox-primary"
-                                        />
-                                        <span className="text-xs font-medium text-gray-700">Italic</span>
-                                    </label>
-                                </div>
-                            </>
-                        )}
-                        {componentData.name === "Text" && (
-                            <>
-                                <div className="mb-2">
-                                    <label className="block text-xs font-medium text-gray-700">Content</label>
-                                    <textarea
-                                        name="content"
-                                        value={componentProps.content || ""}
-                                        onChange={handlePropertyChange}
-                                        className="mt-1 block w-full p-2 border border-gray-300 rounded-md shadow-sm"
-                                    />
-                                </div>
-                                <div className="mb-2">
-                                    <label className="block text-xs font-medium text-gray-700">Text Color</label>
-                                    <select
-                                        name="className"
-                                        value={componentProps.className || ""}
-                                        onChange={handlePropertyChange}
-                                        className="mt-1 block w-full p-2 border border-gray-300 rounded-md shadow-sm"
-                                    >
-                                        <option value="text-gray-700">Default</option>
-                                        <option value="text-red-500">Red</option>
-                                        <option value="text-blue-500">Blue</option>
-                                        <option value="text-green-500">Green</option>
-                                        <option value="text-yellow-500">Yellow</option>
-                                    </select>
-                                </div>
-                                <div className="mb-2 flex items-center gap-4">
-                                    <label className="flex items-center gap-2">
-                                        <input
-                                            type="checkbox"
-                                            name="bold"
-                                            checked={componentProps.bold || false}
-                                            onChange={handlePropertyChange}
-                                            className="checkbox checkbox-primary"
-                                        />
-                                        <span className="text-xs font-medium text-gray-700">Bold</span>
-                                    </label>
-                                    <label className="flex items-center gap-2">
-                                        <input
-                                            type="checkbox"
-                                            name="italic"
-                                            checked={componentProps.italic || false}
-                                            onChange={handlePropertyChange}
-                                            className="checkbox checkbox-primary"
-                                        />
-                                        <span className="text-xs font-medium text-gray-700">Italic</span>
-                                    </label>
-                                </div>
-                            </>
-                        )}
-                        {componentData.name === "Button" && (
-                            <>
-                                <div className="mb-2">
-                                    <label className="block text-xs font-medium text-gray-700">Text</label>
-                                    <input
-                                        type="text"
-                                        name="text"
-                                        value={componentProps.text || ""}
-                                        onChange={handlePropertyChange}
-                                        className="mt-1 block w-full p-2 border border-gray-300 rounded-md shadow-sm"
-                                    />
-                                </div>
-                                <div className="mb-2">
-                                    <label className="block text-xs font-medium text-gray-700">URL</label>
-                                    <input
-                                        type="text"
-                                        name="URL"
-                                        value={componentProps.URL || ""}
-                                        onChange={handlePropertyChange}
-                                        className="mt-1 block w-full p-2 border border-gray-300 rounded-md shadow-sm"
-                                    />
-                                </div>
-                                <div className="mb-2">
-                                    <label className="block text-xs font-medium text-gray-700">Method</label>
-                                    <select
-                                        name="METHOD"
-                                        value={componentProps.METHOD || "GET"}
-                                        onChange={handlePropertyChange}
-                                        className="mt-1 block w-full p-2 border border-gray-300 rounded-md shadow-sm"
-                                    >
-                                        <option value="GET">GET</option>
-                                        <option value="POST">POST</option>
-                                        <option value="PUT">PUT</option>
-                                        <option value="DELETE">DELETE</option>
-                                    </select>
-                                </div>
-                                <div className="mb-2">
-                                    <label className="block text-xs font-medium text-gray-700">Label Color</label>
-                                    <select
-                                        name="labelColor"
-                                        value={componentProps.labelColor || ""}
-                                        onChange={handlePropertyChange}
-                                        className="mt-1 block w-full p-2 border border-gray-300 rounded-md shadow-sm"
-                                    >
-                                        <option value="text-white">White</option>
-                                        <option value="text-black">Black</option>
-                                        <option value="text-primary">Primary</option>
-                                        <option value="text-secondary">Secondary</option>
-                                    </select>
-                                </div>
-                                <div className="mb-2">
-                                    <label className="block text-xs font-medium text-gray-700">Background Color</label>
-                                    <select
-                                        name="backgroundColor"
-                                        value={componentProps.backgroundColor || ""}
-                                        onChange={handlePropertyChange}
-                                        className="mt-1 block w-full p-2 border border-gray-300 rounded-md shadow-sm"
-                                    >
-                                        <option value="btn-primary">Primary</option>
-                                        <option value="btn-secondary">Secondary</option>
-                                        <option value="btn-accent">Accent</option>
-                                        <option value="btn-neutral">Neutral</option>
-                                    </select>
-                                </div>
-                            </>
-                        )}
-                        {componentData.name === "Image" && (
-                            <>
-                                <div className="mb-2">
-                                    <label className="block text-xs font-medium text-gray-700">Image URL</label>
-                                    <input
-                                        type="text"
-                                        name="src"
-                                        value={componentProps.src || ""}
-                                        onChange={handlePropertyChange}
-                                        className="mt-1 block w-full p-2 border border-gray-300 rounded-md shadow-sm"
-                                    />
-                                </div>
-                                <div className="mb-2">
-                                    <label className="block text-xs font-medium text-gray-700">Alt Text</label>
-                                    <input
-                                        type="text"
-                                        name="alt"
-                                        value={componentProps.alt || ""}
-                                        onChange={handlePropertyChange}
-                                        className="mt-1 block w-full p-2 border border-gray-300 rounded-md shadow-sm"
-                                    />
-                                </div>
-                            </>
-                        )}
+                        <ConfigurationComponent
+                            componentProps={componentProps}
+                            handlePropertyChange={handlePropertyChange}
+                        />
                     </div>
                 )}
             </div>

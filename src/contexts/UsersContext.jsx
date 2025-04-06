@@ -214,7 +214,7 @@ export const UsersProvider = ({ children }) => {
 
     // Load users when the provider is mounted
     useEffect(() => {
-        fetchUsers();
+        // fetchUsers();
     }, []);
     
     return (
