@@ -10,7 +10,6 @@ import Users from "./pages/Users.jsx";
 import Alerts from "./pages/Alerts.jsx";
 import Activities from "./pages/Activities.jsx";
 import Schedule from "./pages/Schedule.jsx";
-import ManualRegister from "./pages/ManualRegister.jsx";
 import Plugins from "./pages/Plugins.jsx";
 import Colors from "./pages/Colors.jsx";
 import { HomeEditor } from "./pages/HomeEditor.jsx";

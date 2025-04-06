@@ -58,14 +58,14 @@ export function HomeEditor() {
     };
 
     const getDefaultProps = (type) => {
-        const componentSchema = components[type];
-        if (!componentSchema || !componentSchema.properties) return {};
+        const componentSchema = components?.[type]?.properties;
+        if (!componentSchema) return {};
 
         // Generate default props based on the schema
         const defaultProps = {};
-        Object.keys(componentSchema.properties).forEach((key) => {
+        Object.keys(componentSchema).forEach((key) => {
             if (key !== "name" && key !== "component_id") {
-                defaultProps[key] = componentSchema.properties[key].default || "";
+                defaultProps[key] = componentSchema[key]?.default || "";
             }
         });
         return defaultProps;
@@ -141,12 +141,13 @@ export function HomeEditor() {
                             />
                         ))}
                         {/* Add New Section Button */}
-                        <div
-                            className="flex items-center justify-center p-4 bg-gray-200 rounded-lg cursor-pointer hover:bg-gray-300"
+                        <button
+                            className="flex items-center justify-center p-4 bg-gray-200 rounded-lg hover:bg-gray-300"
                             onClick={addNewSection}
+                            aria-label="Add New Section" // Accessible label
                         >
                             <span className="text-sm font-bold text-gray-700">+ Add New Section</span>
-                        </div>
+                        </button>
                     </div>
                     {/* Save Button */}
                     <button
