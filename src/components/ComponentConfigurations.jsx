@@ -1,194 +1,147 @@
 import React from "react";
+import { TextInput, CheckboxInput, SelectInput } from "./CommonInputs";
+
+const textColorOptions = [
+    { value: "text-gray-700", label: "Default" },
+    { value: "text-red-500", label: "Red" },
+    { value: "text-blue-500", label: "Blue" },
+    { value: "text-green-500", label: "Green" },
+    { value: "text-yellow-500", label: "Yellow" },
+];
+
+const backgroundColorOptions = [
+    { value: "primary", label: "Primary" },
+    { value: "secondary", label: "Secondary" },
+    { value: "success", label: "Success" },
+    { value: "warning", label: "Warning" },
+    { value: "error", label: "Error" },
+];
 
 export const componentConfigurations = {
     Title: ({ componentProps, handlePropertyChange }) => (
         <>
-            <div className="mb-2">
-                <label className="block text-xs font-medium text-gray-700">Text</label>
-                <input
-                    type="text"
-                    name="text"
-                    value={componentProps.text || ""}
-                    onChange={handlePropertyChange}
-                    className="mt-1 block w-full p-2 border border-gray-300 rounded-md shadow-sm"
-                />
-            </div>
+            <TextInput
+                label="Text"
+                name="text"
+                value={componentProps.text}
+                onChange={handlePropertyChange}
+            />
+            <SelectInput
+                label="Color"
+                name="color"
+                value={componentProps.color}
+                options={textColorOptions}
+                onChange={handlePropertyChange}
+            />
             <div className="mb-2 flex items-center gap-4">
-                <label className="flex items-center gap-2">
-                    <input
-                        type="checkbox"
-                        name="bold"
-                        checked={componentProps.bold || false}
-                        onChange={handlePropertyChange}
-                        className="checkbox checkbox-primary"
-                    />
-                    <span className="text-xs font-medium text-gray-700">Bold</span>
-                </label>
-                <label className="flex items-center gap-2">
-                    <input
-                        type="checkbox"
-                        name="italic"
-                        checked={componentProps.italic || false}
-                        onChange={handlePropertyChange}
-                        className="checkbox checkbox-primary"
-                    />
-                    <span className="text-xs font-medium text-gray-700">Italic</span>
-                </label>
+                <CheckboxInput
+                    label="Bold"
+                    name="bold"
+                    checked={componentProps.bold}
+                    onChange={handlePropertyChange}
+                />
+                <CheckboxInput
+                    label="Italic"
+                    name="italic"
+                    checked={componentProps.italic}
+                    onChange={handlePropertyChange}
+                />
             </div>
         </>
     ),
     Text: ({ componentProps, handlePropertyChange }) => (
         <>
-            <div className="mb-2">
-                <label className="block text-xs font-medium text-gray-700">Content</label>
-                <textarea
-                    name="content"
-                    value={componentProps.content || ""}
-                    onChange={handlePropertyChange}
-                    className="mt-1 block w-full p-2 border border-gray-300 rounded-md shadow-sm"
-                />
-            </div>
-            <div className="mb-2">
-                <label className="block text-xs font-medium text-gray-700">Text Color</label>
-                <select
-                    name="className"
-                    value={componentProps.className || ""}
-                    onChange={handlePropertyChange}
-                    className="mt-1 block w-full p-2 border border-gray-300 rounded-md shadow-sm"
-                >
-                    <option value="text-gray-700">Default</option>
-                    <option value="text-red-500">Red</option>
-                    <option value="text-blue-500">Blue</option>
-                    <option value="text-green-500">Green</option>
-                    <option value="text-yellow-500">Yellow</option>
-                </select>
-            </div>
+            <TextInput
+                label="Content"
+                name="content"
+                value={componentProps.content}
+                onChange={handlePropertyChange}
+            />
+            <SelectInput
+                label="Text Color"
+                name="className"
+                value={componentProps.className}
+                options={textColorOptions}
+                onChange={handlePropertyChange}
+            />
             <div className="mb-2 flex items-center gap-4">
-                <label className="flex items-center gap-2">
-                    <input
-                        type="checkbox"
-                        name="bold"
-                        checked={componentProps.bold || false}
-                        onChange={handlePropertyChange}
-                        className="checkbox checkbox-primary"
-                    />
-                    <span className="text-xs font-medium text-gray-700">Bold</span>
-                </label>
-                <label className="flex items-center gap-2">
-                    <input
-                        type="checkbox"
-                        name="italic"
-                        checked={componentProps.italic || false}
-                        onChange={handlePropertyChange}
-                        className="checkbox checkbox-primary"
-                    />
-                    <span className="text-xs font-medium text-gray-700">Italic</span>
-                </label>
+                <CheckboxInput
+                    label="Bold"
+                    name="bold"
+                    checked={componentProps.bold}
+                    onChange={handlePropertyChange}
+                />
+                <CheckboxInput
+                    label="Italic"
+                    name="italic"
+                    checked={componentProps.italic}
+                    onChange={handlePropertyChange}
+                />
             </div>
         </>
     ),
     Button: ({ componentProps, handlePropertyChange }) => (
         <>
-            <div className="mb-2">
-                <label className="block text-xs font-medium text-gray-700">Text</label>
-                <input
-                    type="text"
-                    name="text"
-                    value={componentProps.text || ""}
-                    onChange={handlePropertyChange}
-                    className="mt-1 block w-full p-2 border border-gray-300 rounded-md shadow-sm"
-                />
-            </div>
-            <div className="mb-2">
-                <label className="block text-xs font-medium text-gray-700">URL</label>
-                <input
-                    type="text"
-                    name="URL"
-                    value={componentProps.URL || ""}
-                    onChange={handlePropertyChange}
-                    className="mt-1 block w-full p-2 border border-gray-300 rounded-md shadow-sm"
-                />
-            </div>
-            <div className="mb-2">
-                <label className="block text-xs font-medium text-gray-700">HTTP Method</label>
-                <select
-                    name="METHOD"
-                    value={componentProps.METHOD || "GET"}
-                    onChange={handlePropertyChange}
-                    className="mt-1 block w-full p-2 border border-gray-300 rounded-md shadow-sm"
-                >
-                    <option value="GET">GET</option>
-                    <option value="POST">POST</option>
-                    <option value="PUT">PUT</option>
-                    <option value="DELETE">DELETE</option>
-                </select>
-            </div>
-            <div className="mb-2">
-                <label className="block text-xs font-medium text-gray-700">Background Color</label>
-                <select
-                    name="backgroundColor"
-                    value={componentProps.backgroundColor || "primary"}
-                    onChange={handlePropertyChange}
-                    className="mt-1 block w-full p-2 border border-gray-300 rounded-md shadow-sm"
-                >
-                    {colorOptions.map((option) => (
-                        <option key={option.value} value={option.value}>
-                            {option.label}
-                        </option>
-                    ))}
-                </select>
-            </div>
-            <div className="mb-2">
-                <label className="block text-xs font-medium text-gray-700">Text Color</label>
-                <select
-                    name="textColor"
-                    value={componentProps.textColor || "primary-content"}
-                    onChange={handlePropertyChange}
-                    className="mt-1 block w-full p-2 border border-gray-300 rounded-md shadow-sm"
-                >
-                    {textColorOptions.map((option) => (
-                        <option key={option.value} value={option.value}>
-                            {option.label}
-                        </option>
-                    ))}
-                </select>
-            </div>
-            <div className="mb-2">
-                <label className="flex items-center gap-2">
-                    <input
-                        type="checkbox"
-                        name="disabled"
-                        checked={componentProps.disabled || false}
-                        onChange={handlePropertyChange}
-                        className="checkbox checkbox-primary"
-                    />
-                    <span className="text-xs font-medium text-gray-700">Disabled</span>
-                </label>
-            </div>
+            <TextInput
+                label="Text"
+                name="text"
+                value={componentProps.text}
+                onChange={handlePropertyChange}
+            />
+            <TextInput
+                label="URL"
+                name="URL"
+                value={componentProps.URL}
+                onChange={handlePropertyChange}
+            />
+            <SelectInput
+                label="HTTP Method"
+                name="METHOD"
+                value={componentProps.METHOD}
+                options={[
+                    { value: "GET", label: "GET" },
+                    { value: "POST", label: "POST" },
+                    { value: "PUT", label: "PUT" },
+                    { value: "DELETE", label: "DELETE" },
+                ]}
+                onChange={handlePropertyChange}
+            />
+            <SelectInput
+                label="Background Color"
+                name="backgroundColor"
+                value={componentProps.backgroundColor}
+                options={backgroundColorOptions}
+                onChange={handlePropertyChange}
+            />
+            <SelectInput
+                label="Text Color"
+                name="textColor"
+                value={componentProps.textColor}
+                options={textColorOptions}
+                onChange={handlePropertyChange}
+            />
+            <CheckboxInput
+                label="Disabled"
+                name="disabled"
+                checked={componentProps.disabled}
+                onChange={handlePropertyChange}
+            />
         </>
     ),
     Image: ({ componentProps, handlePropertyChange }) => (
         <>
-            <div className="mb-2">
-                <label className="block text-xs font-medium text-gray-700">Image URL</label>
-                <input
-                    type="text"
-                    name="src"
-                    value={componentProps.src || ""}
-                    onChange={handlePropertyChange}
-                    className="mt-1 block w-full p-2 border border-gray-300 rounded-md shadow-sm"
-                />
-            </div>
-            <div className="mb-2">
-                <label className="block text-xs font-medium text-gray-700">Alt Text</label>
-                <input
-                    type="text"
-                    name="alt"
-                    value={componentProps.alt || ""}
-                    onChange={handlePropertyChange}
-                    className="mt-1 block w-full p-2 border border-gray-300 rounded-md shadow-sm"
-                />
-            </div>
+            <TextInput
+                label="Image URL"
+                name="src"
+                value={componentProps.src}
+                onChange={handlePropertyChange}
+            />
+            <TextInput
+                label="Alt Text"
+                name="alt"
+                value={componentProps.alt}
+                onChange={handlePropertyChange}
+            />
         </>
     ),
 };
