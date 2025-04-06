@@ -9,21 +9,21 @@ export function HomeEditor() {
             id: "1",
             componentData: {
                 name: "Heading",
-                props: { text: "Welcome to the Event", color: "#000", fontSize: "24px" },
+                props: { text: "Welcome to the Event", className: "text-primary" },
             },
         },
         {
             id: "2",
             componentData: {
                 name: "Text",
-                props: { text: "This is a description of the event.", color: "#555", fontSize: "16px" },
+                props: { content: "This is a description of the event.", className: "text-gray-700" },
             },
         },
         {
             id: "3",
             componentData: {
                 name: "Button",
-                props: { text: "Learn More", METHOD: "GET", URL: "https://example.com" },
+                props: { text: "Learn More", METHOD: "GET", URL: "https://example.com", className: "btn-primary" },
             },
         },
     ]);
@@ -41,6 +41,43 @@ export function HomeEditor() {
         }
     };
 
+    const handleComponentTypeChange = (id, newType) => {
+        setSections((prevSections) =>
+            prevSections.map((section) =>
+                section.id === id
+                    ? {
+                          ...section,
+                          componentData: {
+                              name: newType,
+                              props: getDefaultProps(newType),
+                          },
+                      }
+                    : section
+            )
+        );
+    };
+
+    const getDefaultProps = (type) => {
+        switch (type) {
+            case "Heading":
+                return { text: "Default Heading", className: "text-primary" };
+            case "Text":
+                return { content: "Default Text", className: "text-gray-700" };
+            case "Button":
+                return {
+                    text: "Click Me",
+                    METHOD: "GET",
+                    URL: "#",
+                    labelColor: "text-white",
+                    backgroundColor: "btn-primary",
+                };
+            case "Image":
+                return { src: "https://via.placeholder.com/150", alt: "Placeholder", className: "" };
+            default:
+                return {};
+        }
+    };
+
     return (
         <DndContext collisionDetection={closestCenter} onDragEnd={handleDragEnd}>
             <SortableContext items={sections.map((section) => section.id)} strategy={verticalListSortingStrategy}>
@@ -48,7 +85,12 @@ export function HomeEditor() {
                     <h1 className="text-2xl font-bold mb-4">Event Page Editor</h1>
                     <div className="space-y-4">
                         {sections.map((section) => (
-                            <SortableItem key={section.id} id={section.id} componentData={section.componentData} />
+                            <SortableItem
+                                key={section.id}
+                                id={section.id}
+                                componentData={section.componentData}
+                                onComponentTypeChange={handleComponentTypeChange}
+                            />
                         ))}
                     </div>
                 </div>
