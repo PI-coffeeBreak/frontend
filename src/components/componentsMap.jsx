@@ -59,26 +59,10 @@ export function Text({
     return <p className={`${colorClass} ${fontStyle} ${className}`}>{text}</p>;
 }
 
-export function Heading({
-    text = "Default Heading",
-    level = 2,
-    color = "black", // Default to "black"
-    bold = false,
-    italic = false,
-    underline = false,
-    className = "",
-}) {
-    const Tag = `h${level}`;
-    const fontStyle = `${bold ? "font-bold" : ""} ${italic ? "italic" : ""} ${underline ? "underline" : ""}`;
-    const colorClass = `text-${color}`; // Dynamically apply the Tailwind class for text color
-    return <Tag className={`${colorClass} ${fontStyle} ${className}`}>{text}</Tag>;
-}
-
 // Map component names without "Component" suffix
 export const componentMap = {
     TitleComponent: Title,
     ImageComponent: Image,
     ButtonComponent: Button,
     TextComponent: Text,
-    HeadingComponent: Heading,
 };

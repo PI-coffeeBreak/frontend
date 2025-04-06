@@ -1,58 +1,6 @@
 import React from "react";
 
 export const componentConfigurations = {
-    Heading: ({ componentProps, handlePropertyChange }) => (
-        <>
-            <div className="mb-2">
-                <label className="block text-xs font-medium text-gray-700">Text</label>
-                <input
-                    type="text"
-                    name="text"
-                    value={componentProps.text || ""}
-                    onChange={handlePropertyChange}
-                    className="mt-1 block w-full p-2 border border-gray-300 rounded-md shadow-sm"
-                />
-            </div>
-            <div className="mb-2">
-                <label className="block text-xs font-medium text-gray-700">Level</label>
-                <select
-                    name="level"
-                    value={componentProps.level || 2}
-                    onChange={handlePropertyChange}
-                    className="mt-1 block w-full p-2 border border-gray-300 rounded-md shadow-sm"
-                >
-                    <option value={1}>H1</option>
-                    <option value={2}>H2</option>
-                    <option value={3}>H3</option>
-                    <option value={4}>H4</option>
-                    <option value={5}>H5</option>
-                    <option value={6}>H6</option>
-                </select>
-            </div>
-            <div className="mb-2 flex items-center gap-4">
-                <label className="flex items-center gap-2">
-                    <input
-                        type="checkbox"
-                        name="bold"
-                        checked={componentProps.bold || false}
-                        onChange={handlePropertyChange}
-                        className="checkbox checkbox-primary"
-                    />
-                    <span className="text-xs font-medium text-gray-700">Bold</span>
-                </label>
-                <label className="flex items-center gap-2">
-                    <input
-                        type="checkbox"
-                        name="italic"
-                        checked={componentProps.italic || false}
-                        onChange={handlePropertyChange}
-                        className="checkbox checkbox-primary"
-                    />
-                    <span className="text-xs font-medium text-gray-700">Italic</span>
-                </label>
-            </div>
-        </>
-    ),
     Title: ({ componentProps, handlePropertyChange }) => (
         <>
             <div className="mb-2">

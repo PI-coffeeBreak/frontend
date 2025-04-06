@@ -3,7 +3,7 @@ import { useSortable } from "@dnd-kit/sortable";
 import { CSS } from "@dnd-kit/utilities";
 import { FaBars, FaChevronDown, FaChevronUp, FaTrash } from "react-icons/fa";
 import { useComponents } from "../contexts/ComponentsContext";
-import { Title, Image, Button, Text, Heading } from "./componentsMap.jsx";
+import { Title, Image, Button, Text } from "./componentsMap.jsx";
 import { componentMap } from "./componentsMap";
 
 export function SortableItem({ id, componentData, onComponentTypeChange, onComponentPropsChange, onRemove }) {
