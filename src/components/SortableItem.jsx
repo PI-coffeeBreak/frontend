@@ -6,22 +6,6 @@ import { useComponents } from "../contexts/ComponentsContext";
 import { Title, Image, Button, Text, Heading } from "./componentsMap.jsx";
 import { componentMap } from "./componentsMap";
 
-// Define the available text color options
-const textColorOptions = [
-    { value: "text-primary", label: "Primary" },
-    { value: "text-primary-content", label: "Primary Content" },
-    { value: "text-secondary", label: "Secondary" },
-    { value: "text-secondary-content", label: "Secondary Content" },
-    { value: "text-success", label: "Success" },
-    { value: "text-success-content", label: "Success Content" },
-    { value: "text-danger", label: "Danger" },
-    { value: "text-danger-content", label: "Danger Content" },
-    { value: "text-warning", label: "Warning" },
-    { value: "text-warning-content", label: "Warning Content" },
-    { value: "text-info", label: "Info" },
-    { value: "text-info-content", label: "Info Content" },
-];
-
 export function SortableItem({ id, componentData, onComponentTypeChange, onComponentPropsChange, onRemove }) {
     const { getComponentList } = useComponents();
     const componentList = getComponentList();
@@ -52,6 +36,31 @@ export function SortableItem({ id, componentData, onComponentTypeChange, onCompo
 
     const SelectedComponent = componentMap[componentData.name];
     const currentComponent = componentList.find((component) => component.name === componentData.name);
+
+    const colorOptions = [
+        { value: "primary", label: "Primary" },
+        { value: "secondary", label: "Secondary" },
+        { value: "accent", label: "Accent" },
+        { value: "neutral", label: "Neutral" },
+        { value: "success", label: "Success" },
+        { value: "warning", label: "Warning" },
+        { value: "error", label: "Error" },
+    ];
+
+    const textColorOptions = [
+        { value: "primary-content", label: "Primary Content" },
+        { value: "secondary-content", label: "Secondary Content" },
+        { value: "white", label: "White" },
+        { value: "black", label: "Black" },
+        { value: "success-content", label: "Success Content" },
+        { value: "warning-content", label: "Warning Content" },
+        { value: "error-content", label: "Error Content" },
+    ];
+
+    const combinedColorOptions = [
+        ...colorOptions,
+        ...textColorOptions,
+    ];
 
     return (
         <div
@@ -101,7 +110,20 @@ export function SortableItem({ id, componentData, onComponentTypeChange, onCompo
                                 <label className="block text-xs font-medium text-gray-700">
                                     {property.title || property.name}
                                 </label>
-                                {property.name.includes("color") ? (
+                                {property.name.toLowerCase() === "backgroundcolor" ? (
+                                    <select
+                                        name={property.name}
+                                        value={componentProps[property.name] || ""}
+                                        onChange={handlePropertyChange}
+                                        className="mt-1 block w-full p-2 border border-gray-300 rounded-md shadow-sm"
+                                    >
+                                        {colorOptions.map((option) => (
+                                            <option key={option.value} value={option.value}>
+                                                {option.label}
+                                            </option>
+                                        ))}
+                                    </select>
+                                ) : property.name.toLowerCase() === "textcolor" ? (
                                     <select
                                         name={property.name}
                                         value={componentProps[property.name] || ""}
@@ -109,6 +131,19 @@ export function SortableItem({ id, componentData, onComponentTypeChange, onCompo
                                         className="mt-1 block w-full p-2 border border-gray-300 rounded-md shadow-sm"
                                     >
                                         {textColorOptions.map((option) => (
+                                            <option key={option.value} value={option.value}>
+                                                {option.label}
+                                            </option>
+                                        ))}
+                                    </select>
+                                ) : property.name.toLowerCase() === "color" || !property.name ? (
+                                    <select
+                                        name={property.name || "color"}
+                                        value={componentProps[property.name || "color"] || ""}
+                                        onChange={handlePropertyChange}
+                                        className="mt-1 block w-full p-2 border border-gray-300 rounded-md shadow-sm"
+                                    >
+                                        {combinedColorOptions.map((option) => (
                                             <option key={option.value} value={option.value}>
                                                 {option.label}
                                             </option>

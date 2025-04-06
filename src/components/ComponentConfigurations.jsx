@@ -162,7 +162,7 @@ export const componentConfigurations = {
                 />
             </div>
             <div className="mb-2">
-                <label className="block text-xs font-medium text-gray-700">Method</label>
+                <label className="block text-xs font-medium text-gray-700">HTTP Method</label>
                 <select
                     name="METHOD"
                     value={componentProps.METHOD || "GET"}
@@ -176,32 +176,46 @@ export const componentConfigurations = {
                 </select>
             </div>
             <div className="mb-2">
-                <label className="block text-xs font-medium text-gray-700">Label Color</label>
-                <select
-                    name="labelColor"
-                    value={componentProps.labelColor || ""}
-                    onChange={handlePropertyChange}
-                    className="mt-1 block w-full p-2 border border-gray-300 rounded-md shadow-sm"
-                >
-                    <option value="text-white">White</option>
-                    <option value="text-black">Black</option>
-                    <option value="text-primary">Primary</option>
-                    <option value="text-secondary">Secondary</option>
-                </select>
-            </div>
-            <div className="mb-2">
                 <label className="block text-xs font-medium text-gray-700">Background Color</label>
                 <select
                     name="backgroundColor"
-                    value={componentProps.backgroundColor || ""}
+                    value={componentProps.backgroundColor || "primary"}
                     onChange={handlePropertyChange}
                     className="mt-1 block w-full p-2 border border-gray-300 rounded-md shadow-sm"
                 >
-                    <option value="btn-primary">Primary</option>
-                    <option value="btn-secondary">Secondary</option>
-                    <option value="btn-accent">Accent</option>
-                    <option value="btn-neutral">Neutral</option>
+                    {colorOptions.map((option) => (
+                        <option key={option.value} value={option.value}>
+                            {option.label}
+                        </option>
+                    ))}
                 </select>
+            </div>
+            <div className="mb-2">
+                <label className="block text-xs font-medium text-gray-700">Text Color</label>
+                <select
+                    name="textColor"
+                    value={componentProps.textColor || "primary-content"}
+                    onChange={handlePropertyChange}
+                    className="mt-1 block w-full p-2 border border-gray-300 rounded-md shadow-sm"
+                >
+                    {textColorOptions.map((option) => (
+                        <option key={option.value} value={option.value}>
+                            {option.label}
+                        </option>
+                    ))}
+                </select>
+            </div>
+            <div className="mb-2">
+                <label className="flex items-center gap-2">
+                    <input
+                        type="checkbox"
+                        name="disabled"
+                        checked={componentProps.disabled || false}
+                        onChange={handlePropertyChange}
+                        className="checkbox checkbox-primary"
+                    />
+                    <span className="text-xs font-medium text-gray-700">Disabled</span>
+                </label>
             </div>
         </>
     ),
