@@ -1,5 +1,6 @@
-export function Title({ text = "Default Title", className = "" }) {
-    return <h1 className={`text-2xl font-bold ${className}`}>{text}</h1>;
+export function Title({ text = "Default Title", className = "", bold = false, italic = false }) {
+    const fontStyle = `${bold ? "font-bold" : ""} ${italic ? "italic" : ""}`;
+    return <h1 className={`text-2xl ${fontStyle} ${className}`}>{text}</h1>;
 }
 
 export function Image({ src = "https://via.placeholder.com/150", alt = "Placeholder", className = "" }) {
@@ -24,11 +25,13 @@ export function Button({
     );
 }
 
-export function Text({ content = "Default Text", className = "" }) {
-    return <p className={`text-gray-700 ${className}`}>{content}</p>;
+export function Text({ content = "Default Text", className = "", bold = false, italic = false }) {
+    const fontStyle = `${bold ? "font-bold" : ""} ${italic ? "italic" : ""}`;
+    return <p className={`${className} ${fontStyle}`}>{content}</p>;
 }
 
-export function Heading({ text = "Default Heading", level = 2, className = "" }) {
+export function Heading({ text = "Default Heading", level = 2, className = "", bold = false, italic = false }) {
     const Tag = `h${level}`;
-    return <Tag className={`font-semibold ${className}`}>{text}</Tag>;
+    const fontStyle = `${bold ? "font-bold" : ""} ${italic ? "italic" : ""}`;
+    return <Tag className={`${fontStyle} ${className}`}>{text}</Tag>;
 }

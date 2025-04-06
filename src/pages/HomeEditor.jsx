@@ -78,6 +78,21 @@ export function HomeEditor() {
         }
     };
 
+    const addNewSection = () => {
+        const newSection = {
+            id: (sections.length + 1).toString(),
+            componentData: {
+                name: "Text", // Default to "Text" component
+                props: getDefaultProps("Text"),
+            },
+        };
+        setSections((prevSections) => [...prevSections, newSection]);
+    };
+
+    const removeSection = (id) => {
+        setSections((prevSections) => prevSections.filter((section) => section.id !== id));
+    };
+
     return (
         <DndContext collisionDetection={closestCenter} onDragEnd={handleDragEnd}>
             <SortableContext items={sections.map((section) => section.id)} strategy={verticalListSortingStrategy}>
@@ -90,8 +105,16 @@ export function HomeEditor() {
                                 id={section.id}
                                 componentData={section.componentData}
                                 onComponentTypeChange={handleComponentTypeChange}
+                                onRemove={() => removeSection(section.id)} // Pass the remove handler
                             />
                         ))}
+                        {/* Add New Section Button */}
+                        <div
+                            className="flex items-center justify-center p-4 bg-gray-200 rounded-lg cursor-pointer hover:bg-gray-300"
+                            onClick={addNewSection}
+                        >
+                            <span className="text-sm font-bold text-gray-700">+ Add New Section</span>
+                        </div>
                     </div>
                 </div>
             </SortableContext>

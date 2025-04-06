@@ -1,7 +1,7 @@
 import React, { useState } from "react";
 import { useSortable } from "@dnd-kit/sortable";
 import { CSS } from "@dnd-kit/utilities";
-import { FaBars, FaChevronDown, FaChevronUp } from "react-icons/fa";
+import { FaBars, FaChevronDown, FaChevronUp, FaTrash } from "react-icons/fa";
 import { Title, Image, Button, Text, Heading } from "./componentsMap.jsx";
 
 // Map the component types to their respective components
@@ -13,7 +13,7 @@ export const componentMap = {
     heading: Heading,
 };
 
-export function SortableItem({ id, componentData, onComponentTypeChange }) {
+export function SortableItem({ id, componentData, onComponentTypeChange, onRemove }) {
     const { attributes, listeners, setNodeRef, transform, transition } = useSortable({ id });
     const [componentProps, setComponentProps] = useState(componentData.props);
     const [isCollapsed, setIsCollapsed] = useState(true);
@@ -24,10 +24,10 @@ export function SortableItem({ id, componentData, onComponentTypeChange }) {
     };
 
     const handlePropertyChange = (event) => {
-        const { name, value } = event.target;
+        const { name, value, type, checked } = event.target;
         setComponentProps((prevProps) => ({
             ...prevProps,
-            [name]: value,
+            [name]: type === "checkbox" ? checked : value,
         }));
     };
 
@@ -61,6 +61,7 @@ export function SortableItem({ id, componentData, onComponentTypeChange }) {
                         <option value="Text">Text</option>
                         <option value="Button">Button</option>
                         <option value="Image">Image</option>
+                        <option value="Title">Title</option>
                     </select>
                 </div>
 
@@ -109,18 +110,115 @@ export function SortableItem({ id, componentData, onComponentTypeChange }) {
                                         <option value={6}>H6</option>
                                     </select>
                                 </div>
+                                <div className="mb-2 flex items-center gap-4">
+                                    <label className="flex items-center gap-2">
+                                        <input
+                                            type="checkbox"
+                                            name="bold"
+                                            checked={componentProps.bold || false}
+                                            onChange={handlePropertyChange}
+                                            className="checkbox checkbox-primary"
+                                        />
+                                        <span className="text-xs font-medium text-gray-700">Bold</span>
+                                    </label>
+                                    <label className="flex items-center gap-2">
+                                        <input
+                                            type="checkbox"
+                                            name="italic"
+                                            checked={componentProps.italic || false}
+                                            onChange={handlePropertyChange}
+                                            className="checkbox checkbox-primary"
+                                        />
+                                        <span className="text-xs font-medium text-gray-700">Italic</span>
+                                    </label>
+                                </div>
+                            </>
+                        )}
+                        {componentData.name === "Title" && (
+                            <>
+                                <div className="mb-2">
+                                    <label className="block text-xs font-medium text-gray-700">Text</label>
+                                    <input
+                                        type="text"
+                                        name="text"
+                                        value={componentProps.text || ""}
+                                        onChange={handlePropertyChange}
+                                        className="mt-1 block w-full p-2 border border-gray-300 rounded-md shadow-sm"
+                                    />
+                                </div>
+                                <div className="mb-2 flex items-center gap-4">
+                                    <label className="flex items-center gap-2">
+                                        <input
+                                            type="checkbox"
+                                            name="bold"
+                                            checked={componentProps.bold || false}
+                                            onChange={handlePropertyChange}
+                                            className="checkbox checkbox-primary"
+                                        />
+                                        <span className="text-xs font-medium text-gray-700">Bold</span>
+                                    </label>
+                                    <label className="flex items-center gap-2">
+                                        <input
+                                            type="checkbox"
+                                            name="italic"
+                                            checked={componentProps.italic || false}
+                                            onChange={handlePropertyChange}
+                                            className="checkbox checkbox-primary"
+                                        />
+                                        <span className="text-xs font-medium text-gray-700">Italic</span>
+                                    </label>
+                                </div>
                             </>
                         )}
                         {componentData.name === "Text" && (
-                            <div className="mb-2">
-                                <label className="block text-xs font-medium text-gray-700">Content</label>
-                                <textarea
-                                    name="content"
-                                    value={componentProps.content || ""}
-                                    onChange={handlePropertyChange}
-                                    className="mt-1 block w-full p-2 border border-gray-300 rounded-md shadow-sm"
-                                />
-                            </div>
+                            <>
+                                <div className="mb-2">
+                                    <label className="block text-xs font-medium text-gray-700">Content</label>
+                                    <textarea
+                                        name="content"
+                                        value={componentProps.content || ""}
+                                        onChange={handlePropertyChange}
+                                        className="mt-1 block w-full p-2 border border-gray-300 rounded-md shadow-sm"
+                                    />
+                                </div>
+                                <div className="mb-2">
+                                    <label className="block text-xs font-medium text-gray-700">Text Color</label>
+                                    <select
+                                        name="className"
+                                        value={componentProps.className || ""}
+                                        onChange={handlePropertyChange}
+                                        className="mt-1 block w-full p-2 border border-gray-300 rounded-md shadow-sm"
+                                    >
+                                        <option value="text-gray-700">Default</option>
+                                        <option value="text-red-500">Red</option>
+                                        <option value="text-blue-500">Blue</option>
+                                        <option value="text-green-500">Green</option>
+                                        <option value="text-yellow-500">Yellow</option>
+                                    </select>
+                                </div>
+                                <div className="mb-2 flex items-center gap-4">
+                                    <label className="flex items-center gap-2">
+                                        <input
+                                            type="checkbox"
+                                            name="bold"
+                                            checked={componentProps.bold || false}
+                                            onChange={handlePropertyChange}
+                                            className="checkbox checkbox-primary"
+                                        />
+                                        <span className="text-xs font-medium text-gray-700">Bold</span>
+                                    </label>
+                                    <label className="flex items-center gap-2">
+                                        <input
+                                            type="checkbox"
+                                            name="italic"
+                                            checked={componentProps.italic || false}
+                                            onChange={handlePropertyChange}
+                                            className="checkbox checkbox-primary"
+                                        />
+                                        <span className="text-xs font-medium text-gray-700">Italic</span>
+                                    </label>
+                                </div>
+                            </>
                         )}
                         {componentData.name === "Button" && (
                             <>
@@ -215,6 +313,15 @@ export function SortableItem({ id, componentData, onComponentTypeChange }) {
                     </div>
                 )}
             </div>
+
+            {/* Discreet Remove Button */}
+            <button
+                onClick={onRemove}
+                className="text-gray-500 hover:text-red-500 p-2 rounded-full"
+                title="Remove Section"
+            >
+                <FaTrash />
+            </button>
 
             {/* Drag Handle */}
             <div
