@@ -4,6 +4,7 @@ import { CSS } from "@dnd-kit/utilities";
 import { FaBars, FaChevronDown, FaChevronUp, FaTrash } from "react-icons/fa";
 import { useComponents } from "../contexts/ComponentsContext";
 import { Title, Image, Button, Text, Heading } from "./componentsMap.jsx";
+import { componentMap } from "./componentsMap";
 
 // Define the available text color options
 const textColorOptions = [
@@ -21,15 +22,7 @@ const textColorOptions = [
     { value: "text-info-content", label: "Info Content" },
 ];
 
-export const componentMap = {
-    TitleComponent: Title,
-    ImageComponent: Image,
-    ButtonComponent: Button,
-    TextComponent: Text,
-    HeadingComponent: Heading,
-};
-
-export function SortableItem({ id, componentData, onComponentTypeChange, onRemove }) {
+export function SortableItem({ id, componentData, onComponentTypeChange, onComponentPropsChange, onRemove }) {
     const { getComponentList } = useComponents();
     const componentList = getComponentList();
 
@@ -44,10 +37,12 @@ export function SortableItem({ id, componentData, onComponentTypeChange, onRemov
 
     const handlePropertyChange = (event) => {
         const { name, value, type, checked } = event.target;
-        setComponentProps((prevProps) => ({
-            ...prevProps,
+        const updatedProps = {
+            ...componentProps,
             [name]: type === "checkbox" ? checked : value,
-        }));
+        };
+        setComponentProps(updatedProps);
+        onComponentPropsChange(id, updatedProps); // Notify parent of the updated props
     };
 
     const handleTypeChange = (event) => {
@@ -107,7 +102,6 @@ export function SortableItem({ id, componentData, onComponentTypeChange, onRemov
                                     {property.title || property.name}
                                 </label>
                                 {property.name.includes("color") ? (
-                                    // Render a dropdown for color fields
                                     <select
                                         name={property.name}
                                         value={componentProps[property.name] || ""}
@@ -121,7 +115,6 @@ export function SortableItem({ id, componentData, onComponentTypeChange, onRemov
                                         ))}
                                     </select>
                                 ) : property.type === "boolean" ? (
-                                    // Render a checkbox for boolean fields
                                     <input
                                         type="checkbox"
                                         name={property.name}
@@ -130,7 +123,6 @@ export function SortableItem({ id, componentData, onComponentTypeChange, onRemov
                                         className="checkbox checkbox-primary"
                                     />
                                 ) : (
-                                    // Render a text input for other fields
                                     <input
                                         type="text"
                                         name={property.name}

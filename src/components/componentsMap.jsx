@@ -1,3 +1,5 @@
+import React from "react";
+
 export function Title({
     text = "Default Title",
     color = "text-black",
@@ -40,7 +42,7 @@ export function Button({
 }
 
 export function Text({
-    content = "Default Text",
+    text = "Default Text",
     color = "text-black",
     bold = false,
     italic = false,
@@ -48,7 +50,7 @@ export function Text({
     className = "",
 }) {
     const fontStyle = `${bold ? "font-bold" : ""} ${italic ? "italic" : ""} ${underline ? "underline" : ""}`;
-    return <p className={`${color} ${fontStyle} ${className}`}>{content}</p>;
+    return <p className={`${color} ${fontStyle} ${className}`}>{text}</p>;
 }
 
 export function Heading({
@@ -64,3 +66,12 @@ export function Heading({
     const fontStyle = `${bold ? "font-bold" : ""} ${italic ? "italic" : ""} ${underline ? "underline" : ""}`;
     return <Tag className={`${color} ${fontStyle} ${className}`}>{text}</Tag>;
 }
+
+// Map component names without "Component" suffix
+export const componentMap = {
+    TitleComponent: Title,
+    ImageComponent: Image,
+    ButtonComponent: Button,
+    TextComponent: Text,
+    HeadingComponent: Heading,
+};

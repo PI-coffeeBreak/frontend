@@ -3,10 +3,14 @@ import { DndContext, closestCenter } from "@dnd-kit/core";
 import { arrayMove, SortableContext, verticalListSortingStrategy } from "@dnd-kit/sortable";
 import { SortableItem } from "../components/SortableItem";
 import { useComponents } from "../contexts/ComponentsContext";
+import { usePages } from "../contexts/PagesContext";
+import { componentMap } from "../components/componentsMap";
 
 export function HomeEditor() {
-    const { components, isLoading, error } = useComponents(); // Fetch components from context
+    const { components, isLoading, error } = useComponents();
+    const { savePage, isLoading: isSaving, error: saveError } = usePages();
     const [sections, setSections] = useState([]);
+    const [pageTitle, setPageTitle] = useState("");
 
     const handleDragEnd = (event) => {
         const { active, over } = event;
@@ -37,6 +41,22 @@ export function HomeEditor() {
         );
     };
 
+    const handleComponentPropsChange = (id, updatedProps) => {
+        setSections((prevSections) =>
+            prevSections.map((section) =>
+                section.id === id
+                    ? {
+                          ...section,
+                          componentData: {
+                              ...section.componentData,
+                              props: updatedProps,
+                          },
+                      }
+                    : section
+            )
+        );
+    };
+
     const getDefaultProps = (type) => {
         const componentSchema = components[type];
         if (!componentSchema || !componentSchema.properties) return {};
@@ -55,8 +75,8 @@ export function HomeEditor() {
         const newSection = {
             id: (sections.length + 1).toString(),
             componentData: {
-                name: "Text", // Default to "Text" component
-                props: getDefaultProps("Text"),
+                name: "TextComponent", // Default to "TextComponent"
+                props: getDefaultProps("TextComponent"),
             },
         };
         setSections((prevSections) => [...prevSections, newSection]);
@@ -66,25 +86,48 @@ export function HomeEditor() {
         setSections((prevSections) => prevSections.filter((section) => section.id !== id));
     };
 
-    const savePage = () => {
-        const jsonStructure = {
+    const handleSavePage = () => {
+        // Transform the componentMap to map values (e.g., Text) to keys (e.g., TextComponent)
+        const nameMap = Object.entries(componentMap).reduce((acc, [key, value]) => {
+            acc[key] = key.replace("Component", ""); // Remove "Component" suffix
+            return acc;
+        }, {});
+    
+        const pageData = {
+            title: pageTitle,
             components: sections.map((section) => ({
-                name: section.componentData.name,
-                props: section.componentData.props,
+                ...section.componentData.props,
+                name: nameMap[section.componentData.name] || section.componentData.name, // Transform the name
             })),
         };
-        console.log(JSON.stringify(jsonStructure, null, 2));
+    
+        savePage(pageData);
     };
 
     return (
         <DndContext collisionDetection={closestCenter} onDragEnd={handleDragEnd}>
             <SortableContext items={sections.map((section) => section.id)} strategy={verticalListSortingStrategy}>
                 <div className="container mx-auto p-4">
-                    <h1 className="text-2xl font-bold mb-4">Event Page Editor</h1>
+                    <h1 className="text-2xl font-bold mb-4">Page Editor</h1>
 
                     {/* Error or Loading State */}
                     {isLoading && <p>Loading components...</p>}
                     {error && <p className="text-red-500">{error}</p>}
+                    {saveError && <p className="text-red-500">{saveError}</p>}
+                    {isSaving && <p>Saving page...</p>}
+
+                    <div className="mb-4">
+                        <label htmlFor="page-title" className="block text-sm font-medium text-gray-700">
+                            Page Title
+                        </label>
+                        <input
+                            id="page-title"
+                            type="text"
+                            value={pageTitle}
+                            onChange={(e) => setPageTitle(e.target.value)}
+                            className="mt-1 block w-full p-2 border border-gray-300 rounded-md shadow-sm"
+                        />
+                    </div>
 
                     <div className="space-y-4">
                         {sections.map((section) => (
@@ -93,8 +136,8 @@ export function HomeEditor() {
                                 id={section.id}
                                 componentData={section.componentData}
                                 onComponentTypeChange={handleComponentTypeChange}
-                                onRemove={() => removeSection(section.id)} // Pass the remove handler
-                                componentOptions={Object.keys(components || {})} // Pass component options
+                                onComponentPropsChange={handleComponentPropsChange} // Pass the function here
+                                onRemove={() => removeSection(section.id)}
                             />
                         ))}
                         {/* Add New Section Button */}
@@ -107,7 +150,7 @@ export function HomeEditor() {
                     </div>
                     {/* Save Button */}
                     <button
-                        onClick={savePage}
+                        onClick={handleSavePage}
                         className="mt-4 px-4 py-2 bg-blue-500 text-white rounded-md hover:bg-blue-600"
                     >
                         Save Page
