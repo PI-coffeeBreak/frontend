@@ -1,4 +1,5 @@
-import React, { createContext, useContext, useState, useEffect } from "react";
+import React, { createContext, useContext, useState, useEffect, useMemo } from "react";
+import PropTypes from "prop-types";
 import axios from "axios";
 import { baseUrl } from "../consts";
 
@@ -50,11 +51,27 @@ export const ComponentsProvider = ({ children }) => {
         fetchComponents();
     }, []);
 
+    // Memoize the value object to prevent unnecessary re-renders
+    const contextValue = useMemo(
+        () => ({
+            components,
+            isLoading,
+            error,
+            getComponentList,
+        }),
+        [components, isLoading, error] // Dependencies
+    );
+
     return (
-        <ComponentsContext.Provider value={{ components, isLoading, error, getComponentList }}>
+        <ComponentsContext.Provider value={contextValue}>
             {children}
         </ComponentsContext.Provider>
     );
+};
+
+// Add PropTypes validation for the `children` prop
+ComponentsProvider.propTypes = {
+    children: PropTypes.node.isRequired,
 };
 
 export const useComponents = () => useContext(ComponentsContext);

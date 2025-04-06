@@ -34,6 +34,84 @@ export function SortableItem({ id, componentData, onComponentTypeChange, onCompo
         onComponentTypeChange(id, newType); // Notify parent to update the component type
     };
 
+    const renderInputField = (property) => {
+        const { name, type } = property;
+        const value = componentProps[name] || "";
+
+        if (name.toLowerCase() === "backgroundcolor") {
+            return (
+                <select
+                    name={name}
+                    value={value}
+                    onChange={handlePropertyChange}
+                    className="mt-1 block w-full p-2 border border-gray-300 rounded-md shadow-sm"
+                >
+                    {colorOptions.map((option) => (
+                        <option key={option.value} value={option.value}>
+                            {option.label}
+                        </option>
+                    ))}
+                </select>
+            );
+        }
+
+        if (name.toLowerCase() === "textcolor") {
+            return (
+                <select
+                    name={name}
+                    value={value}
+                    onChange={handlePropertyChange}
+                    className="mt-1 block w-full p-2 border border-gray-300 rounded-md shadow-sm"
+                >
+                    {textColorOptions.map((option) => (
+                        <option key={option.value} value={option.value}>
+                            {option.label}
+                        </option>
+                    ))}
+                </select>
+            );
+        }
+
+        if (name.toLowerCase() === "color" || !name) {
+            return (
+                <select
+                    name={name || "color"}
+                    value={value}
+                    onChange={handlePropertyChange}
+                    className="mt-1 block w-full p-2 border border-gray-300 rounded-md shadow-sm"
+                >
+                    {combinedColorOptions.map((option) => (
+                        <option key={option.value} value={option.value}>
+                            {option.label}
+                        </option>
+                    ))}
+                </select>
+            );
+        }
+
+        if (type === "boolean") {
+            return (
+                <input
+                    type="checkbox"
+                    name={name}
+                    checked={value}
+                    onChange={handlePropertyChange}
+                    className="checkbox checkbox-primary"
+                />
+            );
+        }
+
+        return (
+            <input
+                type="text"
+                name={name}
+                value={value}
+                onChange={handlePropertyChange}
+                className="mt-1 block w-full p-2 border border-gray-300 rounded-md shadow-sm"
+            />
+        );
+    };
+
     const SelectedComponent = componentMap[componentData.name];
     const currentComponent = componentList.find((component) => component.name === componentData.name);
 
@@ -110,62 +188,7 @@ export function SortableItem({ id, componentData, onComponentTypeChange, onCompo
                                 <label className="block text-xs font-medium text-gray-700">
                                     {property.title || property.name}
                                 </label>
-                                {property.name.toLowerCase() === "backgroundcolor" ? (
-                                    <select
-                                        name={property.name}
-                                        value={componentProps[property.name] || ""}
-                                        onChange={handlePropertyChange}
-                                        className="mt-1 block w-full p-2 border border-gray-300 rounded-md shadow-sm"
-                                    >
-                                        {colorOptions.map((option) => (
-                                            <option key={option.value} value={option.value}>
-                                                {option.label}
-                                            </option>
-                                        ))}
-                                    </select>
-                                ) : property.name.toLowerCase() === "textcolor" ? (
-                                    <select
-                                        name={property.name}
-                                        value={componentProps[property.name] || ""}
-                                        onChange={handlePropertyChange}
-                                        className="mt-1 block w-full p-2 border border-gray-300 rounded-md shadow-sm"
-                                    >
-                                        {textColorOptions.map((option) => (
-                                            <option key={option.value} value={option.value}>
-                                                {option.label}
-                                            </option>
-                                        ))}
-                                    </select>
-                                ) : property.name.toLowerCase() === "color" || !property.name ? (
-                                    <select
-                                        name={property.name || "color"}
-                                        value={componentProps[property.name || "color"] || ""}
-                                        onChange={handlePropertyChange}
-                                        className="mt-1 block w-full p-2 border border-gray-300 rounded-md shadow-sm"
-                                    >
-                                        {combinedColorOptions.map((option) => (
-                                            <option key={option.value} value={option.value}>
-                                                {option.label}
-                                            </option>
-                                        ))}
-                                    </select>
-                                ) : property.type === "boolean" ? (
-                                    <input
-                                        type="checkbox"
-                                        name={property.name}
-                                        checked={componentProps[property.name] || false}
-                                        onChange={handlePropertyChange}
-                                        className="checkbox checkbox-primary"
-                                    />
-                                ) : (
-                                    <input
-                                        type="text"
-                                        name={property.name}
-                                        value={componentProps[property.name] || ""}
-                                        onChange={handlePropertyChange}
-                                        className="mt-1 block w-full p-2 border border-gray-300 rounded-md shadow-sm"
-                                    />
-                                )}
+                                {renderInputField(property)}
                             </div>
                         ))}
                     </div>
