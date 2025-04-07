@@ -1,4 +1,5 @@
-import React, { createContext, useContext, useState, useEffect } from "react";
+import React, { createContext, useContext, useState, useEffect, useMemo } from "react";
+import PropTypes from "prop-types";
 import axios from "axios";
 import { baseUrl } from "../consts";
 
@@ -92,11 +93,27 @@ export const ThemeProvider = ({ children }) => {
         fetchThemeColors();
     }, []);
 
+    // Memoize the context value
+    const contextValue = useMemo(
+        () => ({
+            initialTheme,
+            theme,
+            setTheme,
+            fetchThemeColors,
+            updateThemeColors,
+        }),
+        [theme]
+    );
+
     return (
-        <ThemeContext.Provider value={{ initialTheme, theme, setTheme, fetchThemeColors, updateThemeColors }}>
+        <ThemeContext.Provider value={contextValue}>
             {children}
         </ThemeContext.Provider>
     );
+};
+
+ThemeProvider.propTypes = {
+    children: PropTypes.node.isRequired,
 };
 
 export const useTheme = () => useContext(ThemeContext);

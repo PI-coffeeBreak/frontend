@@ -6,6 +6,25 @@ import timeGridPlugin from "@fullcalendar/timegrid";
 import Activity from "../components/Activity.jsx";
 import { useActivities } from "../contexts/ActivitiesContext";
 
+// Helper function to find an activity by ID
+const findActivityById = (activities, activityId) => {
+    const activity = activities.find((activity) => activity.id === parseInt(activityId));
+    if (!activity) {
+        console.error("Activity not found for ID:", activityId);
+    }
+    return activity;
+};
+
+// Helper function to format the duration
+const formatDuration = (duration) => {
+    if (duration > 0) {
+        const hours = Math.floor(duration / 60).toString().padStart(2, "0");
+        const minutes = (duration % 60).toString().padStart(2, "0");
+        return `${hours}:${minutes}`;
+    }
+    return "02:00"; // Default duration
+};
+
 export default function DragDropCalendar() {
     const calendarRef = useRef(null);
     const draggableRef = useRef(null);
@@ -34,24 +53,11 @@ export default function DragDropCalendar() {
                     itemSelector: ".fc-event",
                     eventData: function (eventEl) {
                         const activityId = eventEl.getAttribute("data-id");
-                        const activity = activities.find(
-                            (activity) => activity.id === parseInt(activityId)
-                        );
-
-                        if (!activity) {
-                            console.error("Activity not found for ID:", activityId);
-                        }
+                        const activity = findActivityById(activities, activityId);
 
                         return {
                             title: eventEl.getAttribute("data-title"),
-                            duration:
-                                activity && activity.duration && activity.duration > 0
-                                    ? `${Math.floor(activity.duration / 60)
-                                          .toString()
-                                          .padStart(2, "0")}:${(activity.duration % 60)
-                                          .toString()
-                                          .padStart(2, "0")}`
-                                    : "02:00",
+                            duration: formatDuration(activity?.duration || 0),
                             "data-id": activityId,
                         };
                     },
@@ -65,7 +71,7 @@ export default function DragDropCalendar() {
 
     const handleEventReceive = async (info) => {
         const activityId = parseInt(info.event.extendedProps["data-id"]);
-        const activity = activities.find((activity) => activity.id === activityId);
+        const activity = findActivityById(activities, activityId);
 
         if (activity) {
             setCalendarActivities((prev) => [...prev, activity]);
@@ -124,9 +130,9 @@ export default function DragDropCalendar() {
             <h3 className="font-bold mb-2">Atividades</h3>
             <div className="w-full grid grid-cols-3 gap-4 overflow-hidden" ref={draggableRef}>
                 {/* Atividades (Outside Calendar) */}
-                {outsideActivities.map((activity, i) => (
+                {outsideActivities.map((activity) => (
                     <Activity
-                        key={i}
+                        key={activity.id} // Use the unique `id` property as the key
                         id={activity.id}
                         title={activity.name}
                         description={activity.description}
