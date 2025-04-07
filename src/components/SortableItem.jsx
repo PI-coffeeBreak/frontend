@@ -4,14 +4,14 @@ import { useSortable } from "@dnd-kit/sortable";
 import { CSS } from "@dnd-kit/utilities";
 import { FaBars, FaChevronDown, FaChevronUp, FaTrash } from "react-icons/fa";
 import { useComponents } from "../contexts/ComponentsContext";
-import { componentMap } from "./componentsMap";
+import { componentList } from "./Components";
 
-export function SortableItem({ id, componentData, onComponentTypeChange, onComponentPropsChange, onRemove }) {
+export function SortableItem({ id, componentData = { name: "", props: {} }, onComponentTypeChange, onComponentPropsChange, onRemove }) {
     const { getComponentList } = useComponents();
-    const componentList = getComponentList();
+    const availableComponents = getComponentList();
 
     const { attributes, listeners, setNodeRef, transform, transition } = useSortable({ id });
-    const [componentProps, setComponentProps] = useState(componentData.props);
+    const [componentProps, setComponentProps] = useState(componentData.props || {}); // Fallback for props
     const [isCollapsed, setIsCollapsed] = useState(true);
 
     const style = {
@@ -112,8 +112,12 @@ export function SortableItem({ id, componentData, onComponentTypeChange, onCompo
         );
     };
 
-    const SelectedComponent = componentMap[componentData.name];
-    const currentComponent = componentList.find((component) => component.name === componentData.name);
+    if (!componentData || !componentData.name) {
+        return <p className="text-red-500">Error: Component data is missing</p>;
+    }
+
+    const SelectedComponent = componentList.find((c) => c.name === componentData.name)?.component || null;
+    const currentComponent = availableComponents.find((component) => component.name === componentData.name);
 
     const colorOptions = [
         { value: "primary", label: "Primary" },
@@ -157,7 +161,7 @@ export function SortableItem({ id, componentData, onComponentTypeChange, onCompo
                         onChange={handleTypeChange}
                         className="mt-1 block w-full p-2 border border-gray-300 rounded-md shadow-sm"
                     >
-                        {componentList.map((component) => (
+                        {availableComponents.map((component) => (
                             <option key={component.name} value={component.name}>
                                 {component.title}
                             </option>

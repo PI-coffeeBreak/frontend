@@ -5,13 +5,12 @@ import { arrayMove, SortableContext, verticalListSortingStrategy } from "@dnd-ki
 import { SortableItem } from "../components/SortableItem";
 import { useComponents } from "../contexts/ComponentsContext";
 import { usePages } from "../contexts/PagesContext";
-import { componentMap } from "../components/componentsMap";
 
 export function PageEditor({ mode }) {
     const { pageTitle } = useParams();
     const navigate = useNavigate();
     const { pages, getPages, savePage, updatePage, isLoading: isPagesLoading, error: pagesError } = usePages();
-    const { components, isLoading: isComponentsLoading, error: componentsError } = useComponents();
+    const { isLoading: isComponentsLoading, error: componentsError } = useComponents();
 
     const [page, setPage] = useState(mode === "create" ? { title: "" } : null); // Initialize title for "create" mode
     const [sections, setSections] = useState([]);
@@ -32,8 +31,18 @@ export function PageEditor({ mode }) {
             const foundPage = pages.find((p) => p.title === decodedTitle);
             if (foundPage) {
                 setPage(foundPage);
-                setSections(foundPage.components || []);
-                console.log("Sections set from foundPage.components:", foundPage.components || []);
+
+                // Transform sections to match the expected format
+                const transformedSections = (foundPage.components || []).map((component) => ({
+                    id: component.component_id, // Use component_id as the unique ID
+                    componentData: {
+                        name: component.name,
+                        props: { ...component }, // Pass the rest of the component properties as props
+                    },
+                }));
+
+                setSections(transformedSections);
+                console.log("Transformed Sections:", transformedSections);
             } else if (pages.length > 0) {
                 navigate("/instantiate/eventmaker/pages");
             }
@@ -53,31 +62,12 @@ export function PageEditor({ mode }) {
         }
     };
 
-    const getDefaultProps = (type) => {
-        const componentSchema = components?.[type]?.properties;
-        if (!componentSchema) return {}; // Return an empty object if the schema is missing
-
-        // Generate default props based on the schema
-        const defaultProps = {};
-        Object.keys(componentSchema).forEach((key) => {
-            if (key !== "name" && key !== "component_id") {
-                defaultProps[key] = componentSchema[key]?.default || ""; // Use default value or empty string
-            }
-        });
-        return defaultProps;
-    };
-
     const handleSavePage = () => {
-        const nameMap = Object.entries(componentMap).reduce((acc, [key, value]) => {
-            acc[key] = key.replace("Component", ""); // Remove "Component" suffix
-            return acc;
-        }, {});
-
         const pageData = {
             title: page?.title || "New Page", // Use the title from the page or a default title
             components: sections.map((section) => ({
                 ...section.componentData.props,
-                name: nameMap[section.componentData.name] || section.componentData.name, // Transform the name
+                name: section.componentData.name,
             })),
         };
 
@@ -139,7 +129,6 @@ export function PageEditor({ mode }) {
                     )}
 
                     <div className="space-y-4">
-                        { console.log("Sections:", sections) }
                         {sections.length > 0 ? (
                             sections.map((section, index) => (
                                 <SortableItem
@@ -194,7 +183,7 @@ export function PageEditor({ mode }) {
                                     {
                                         id: (prevSections.length + 1).toString(),
                                         componentData: {
-                                            name: "TextComponent",
+                                            name: "Text",
                                             props: {},
                                         },
                                     },
