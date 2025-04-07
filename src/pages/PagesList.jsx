@@ -1,9 +1,10 @@
 import React, { useEffect } from "react";
 import { usePages } from "../contexts/PagesContext.jsx";
 import { useNavigate } from "react-router-dom";
+import { FaEdit, FaTrash, FaPlus } from "react-icons/fa";
 
 export function PagesList() {
-    const { pages, isLoading, error, getPages, deletePage } = usePages();
+    const { pages, isLoading, error, getPages, deletePage, togglePageEnabled } = usePages();
     const navigate = useNavigate();
 
     useEffect(() => {
@@ -12,7 +13,6 @@ export function PagesList() {
 
     const handleEdit = (page) => {
         const pageTitleSlug = encodeURIComponent(page.title);
-        console.log("Page title slug:", pageTitleSlug);
         navigate(`/instantiate/eventmaker/edit-page/${pageTitleSlug}`);
     };
 
@@ -22,8 +22,12 @@ export function PagesList() {
         }
     };
 
+    const handleToggleEnabled = async (pageId, isEnabled) => {
+        await togglePageEnabled(pageId, isEnabled);
+    };
+
     const handleCreate = () => {
-        navigate("/instantiate/eventmaker/create-page"); // Navigate to the create page route
+        navigate("/instantiate/eventmaker/create-page");
     };
 
     return (
@@ -33,8 +37,9 @@ export function PagesList() {
             <div className="mb-4">
                 <button
                     onClick={handleCreate}
-                    className="px-4 py-2 bg-green-500 text-white rounded-md hover:bg-green-600"
+                    className="flex items-center gap-2 px-4 py-2 bg-green-600 text-white rounded-md hover:bg-green-700"
                 >
+                    <FaPlus />
                     Create Page
                 </button>
             </div>
@@ -46,22 +51,35 @@ export function PagesList() {
                 {pages.map((page) => (
                     <li
                         key={page.id}
-                        className="p-4 border border-gray-300 rounded-md shadow-sm"
+                        className="p-4 border border-gray-300 rounded-md shadow-sm hover:shadow-lg transition-shadow"
                     >
-                        <h2 className="text-xl font-semibold">{page.title}</h2>
-                        <div className="flex space-x-4 mt-2">
-                            <button
-                                onClick={() => handleEdit(page)} // Pass the page object to the editor
-                                className="px-4 py-2 bg-blue-500 text-white rounded-md hover:bg-blue-600"
-                            >
-                                Edit
-                            </button>
-                            <button
-                                onClick={() => handleDelete(page.id)} // Pass the page ID to delete
-                                className="px-4 py-2 bg-red-500 text-white rounded-md hover:bg-red-600"
-                            >
-                                Delete
-                            </button>
+                        <div className="flex justify-between items-center">
+                            <h2 className="text-xl font-semibold">{page.title}</h2>
+                            <div className="flex items-center space-x-2">
+                                <label className="flex items-center gap-2">
+                                    <span className="text-sm text-gray-700">Enabled</span>
+                                    <input
+                                        type="checkbox"
+                                        checked={page.enabled}
+                                        onChange={(e) => handleToggleEnabled(page.id, e.target.checked)}
+                                        className="toggle toggle-primary"
+                                    />
+                                </label>
+                                <button
+                                    onClick={() => handleEdit(page)}
+                                    className="text-gray-500 hover:text-blue-500 p-2 rounded-full"
+                                    title="Edit Page"
+                                >
+                                    <FaEdit />
+                                </button>
+                                <button
+                                    onClick={() => handleDelete(page.id)}
+                                    className="text-gray-500 hover:text-red-500 p-2 rounded-full"
+                                    title="Delete Page"
+                                >
+                                    <FaTrash />
+                                </button>
+                            </div>
                         </div>
                     </li>
                 ))}

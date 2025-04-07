@@ -75,6 +75,25 @@ export const PagesProvider = ({ children }) => {
         }
     };
 
+    const togglePageEnabled = async (pageId, isEnabled) => {
+        setIsLoading(true);
+        setError(null);
+        try {
+            // const response = await axios.patch(`${baseUrl}/pages/${pageId}`, { enabled: isEnabled });
+            console.log(`Page with ID ${pageId} updated successfully:`, response.data);
+            // setPages((prevPages) =>
+            //     prevPages.map((page) =>
+            //         page.id === pageId ? { ...page, enabled: response.data.enabled } : page
+            //     )
+            // );
+        } catch (err) {
+            console.error("Error updating page enabled state:", err);
+            setError("Failed to update page. Please try again.");
+        } finally {
+            setIsLoading(false);
+        }
+    };
+
     const findPageIdByTitle = (title) => {
         const page = pages.find((p) => p.title === title);
         console.log("Page ID found:", page ? page.id : "not found");
@@ -89,7 +108,8 @@ export const PagesProvider = ({ children }) => {
             savePage,
             updatePage,
             deletePage,
-            findPageIdByTitle, // Expose the function in the context
+            togglePageEnabled, // Expose the function in the context
+            findPageIdByTitle,
             isLoading,
             error,
         }),
