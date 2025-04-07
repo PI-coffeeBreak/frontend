@@ -81,7 +81,7 @@ export function PageEditor({ mode }) {
                     console.error("Error creating page:", error);
                 });
         } else if (mode === "edit") {
-            updatePage(page.id, pageData)
+            updatePage(page.page_id, pageData)
                 .then(() => {
                     console.log("Page updated successfully");
                     navigate("/instantiate/eventmaker/pages"); // Redirect to the pages list after saving
@@ -195,9 +195,40 @@ export function PageEditor({ mode }) {
                     </div>
                     <button
                         onClick={handleSavePage}
-                        className="mt-4 px-4 py-2 bg-blue-500 text-white rounded-md hover:bg-blue-600"
+                        className={`mt-4 px-6 py-3 rounded-md text-white font-semibold transition-all duration-300 ${
+                            isPagesLoading
+                                ? "bg-gray-400 cursor-not-allowed"
+                                : "bg-primary hover:scale-105 shadow-md hover:shadow-lg"
+                        }`}
+                        disabled={isPagesLoading} // Disable the button while loading
                     >
-                        {mode === "edit" ? "Update Page" : "Save Page"}
+                        {isPagesLoading ? (
+                            <span className="flex items-center gap-2">
+                                <svg
+                                    className="animate-spin h-5 w-5 text-white"
+                                    xmlns="http://www.w3.org/2000/svg"
+                                    fill="none"
+                                    viewBox="0 0 24 24"
+                                >
+                                    <circle
+                                        className="opacity-25"
+                                        cx="12"
+                                        cy="12"
+                                        r="10"
+                                        stroke="currentColor"
+                                        strokeWidth="4"
+                                    ></circle>
+                                    <path
+                                        className="opacity-75"
+                                        fill="currentColor"
+                                        d="M4 12a8 8 0 018-8v8H4z"
+                                    ></path>
+                                </svg>
+                                Saving...
+                            </span>
+                        ) : (
+                            mode === "edit" ? "Update Page" : "Save Page"
+                        )}
                     </button>
                 </div>
             </SortableContext>
