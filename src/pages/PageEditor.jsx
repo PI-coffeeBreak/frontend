@@ -5,12 +5,14 @@ import { arrayMove, SortableContext, verticalListSortingStrategy } from "@dnd-ki
 import { SortableItem } from "../components/SortableItem";
 import { useComponents } from "../contexts/ComponentsContext";
 import { usePages } from "../contexts/PagesContext";
+import { useNotification } from "../contexts/NotificationContext"; // Import the notification context
 
 export function PageEditor({ mode }) {
     const { pageTitle } = useParams();
     const navigate = useNavigate();
     const { pages, getPages, savePage, updatePage, isLoading: isPagesLoading, error: pagesError } = usePages();
     const { isLoading: isComponentsLoading, error: componentsError } = useComponents();
+    const { showNotification } = useNotification(); // Use the notification context
 
     const [page, setPage] = useState(mode === "create" ? { title: "" } : null); // Initialize title for "create" mode
     const [sections, setSections] = useState([]);
@@ -74,20 +76,22 @@ export function PageEditor({ mode }) {
         if (mode === "create") {
             savePage(pageData)
                 .then(() => {
-                    console.log("Page created successfully");
+                    showNotification("Page created successfully!", "success"); // Show success notification
                     navigate("/instantiate/eventmaker/pages"); // Redirect to the pages list after saving
                 })
                 .catch((error) => {
                     console.error("Error creating page:", error);
+                    showNotification("Failed to create the page.", "error"); // Show error notification
                 });
         } else if (mode === "edit") {
             updatePage(page.page_id, pageData)
                 .then(() => {
-                    console.log("Page updated successfully");
+                    showNotification("Page updated successfully!", "success"); // Show success notification
                     navigate("/instantiate/eventmaker/pages"); // Redirect to the pages list after saving
                 })
                 .catch((error) => {
                     console.error("Error updating page:", error);
+                    showNotification("Failed to update the page.", "error"); // Show error notification
                 });
         }
     };

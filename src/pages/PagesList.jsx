@@ -2,9 +2,11 @@ import React, { useEffect } from "react";
 import { usePages } from "../contexts/PagesContext.jsx";
 import { useNavigate } from "react-router-dom";
 import { FaEdit, FaTrash, FaPlus } from "react-icons/fa";
+import { useNotification } from "../contexts/NotificationContext";
 
 export function PagesList() {
     const { pages, isLoading, error, getPages, deletePage, togglePageEnabled } = usePages();
+    const { showNotification } = useNotification();
     const navigate = useNavigate();
 
     useEffect(() => {
@@ -18,7 +20,12 @@ export function PagesList() {
 
     const handleDelete = async (pageId) => {
         if (window.confirm("Are you sure you want to delete this page?")) {
-            await deletePage(pageId);
+            try {
+                await deletePage(pageId);
+                showNotification("Page deleted successfully!", "success");
+            } catch (error) {
+                showNotification("Failed to delete the page.", "error");
+            }
         }
     };
 
@@ -48,9 +55,9 @@ export function PagesList() {
             {error && <p className="text-red-500">{error}</p>}
 
             <ul className="space-y-4">
-                {pages.map((page) => (
+                {pages.map((page, index) => (
                     <li
-                        key={page.id}
+                        key={page.id || index}
                         className="p-4 border border-gray-300 rounded-md shadow-sm hover:shadow-lg transition-shadow"
                     >
                         <div className="flex justify-between items-center">
