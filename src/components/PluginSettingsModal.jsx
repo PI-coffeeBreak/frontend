@@ -1,4 +1,5 @@
 import React from 'react';
+import PropTypes from 'prop-types'; // Import PropTypes
 import Selector from './forms/Selector';
 import Checkbox from './forms/Checkbox';
 import ComposedText from './forms/ComposedText';
@@ -27,18 +28,20 @@ function PluginSettingsModal({ pluginConfig, onClose }) {
     };
 
     const renderFormFields = () => {
-        return pluginConfig.inputs.map((input, index) => {
-            switch (input.type) {
+        return pluginConfig.inputs.map((input) => {
+            const { type, name } = input; // Destructure to get the unique `name` property
+    
+            switch (type) {
                 case "selector":
-                    return <Selector key={index} {...input} />;
+                    return <Selector key={name} {...input} />;
                 case "checkbox":
-                    return <Checkbox key={index} {...input} />;
+                    return <Checkbox key={name} {...input} />;
                 case "composedText":
-                    return <ComposedText key={index} {...input} />;
+                    return <ComposedText key={name} {...input} />;
                 case "shortText":
-                    return <ShortTextInput key={index} {...input} />;
+                    return <ShortTextInput key={name} {...input} />;
                 case "text":
-                    return <TextInput key={index} {...input} />;
+                    return <TextInput key={name} {...input} />;
                 default:
                     return null;
             }
@@ -75,5 +78,27 @@ function PluginSettingsModal({ pluginConfig, onClose }) {
         </div>
     );
 }
+
+// Add PropTypes validation for all props
+PluginSettingsModal.propTypes = {
+    pluginConfig: PropTypes.shape({
+        title: PropTypes.string.isRequired,
+        description: PropTypes.string.isRequired,
+        inputs: PropTypes.arrayOf(
+            PropTypes.shape({
+                type: PropTypes.string.isRequired,
+                name: PropTypes.string.isRequired,
+                label: PropTypes.string,
+                options: PropTypes.arrayOf(
+                    PropTypes.shape({
+                        value: PropTypes.string.isRequired,
+                        label: PropTypes.string.isRequired,
+                    })
+                ),
+            })
+        ).isRequired,
+    }).isRequired,
+    onClose: PropTypes.func.isRequired,
+};
 
 export default PluginSettingsModal;

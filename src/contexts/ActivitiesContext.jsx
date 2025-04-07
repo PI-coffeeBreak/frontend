@@ -1,4 +1,5 @@
-import React, { createContext, useContext, useState, useEffect } from "react";
+import React, { createContext, useContext, useState, useEffect, useMemo } from "react";
+import PropTypes from "prop-types";
 import axios from "axios";
 import { baseUrl } from "../consts";
 
@@ -44,20 +45,16 @@ export const ActivitiesProvider = ({ children }) => {
 
     const updateActivity = async (activityId, updates) => {
         try {
-            // Find the activity to update
             const activity = activities.find((act) => act.id === activityId);
 
             if (!activity) {
                 throw new Error(`Activity with ID ${activityId} not found.`);
             }
 
-            // Merge the updates into the full activity object
             const updatedActivity = { ...activity, ...updates };
 
-            // Send the full activity object in the PUT request
-            const response = await axios.put(`${activitiesBaseUrl}/${activityId}`, updatedActivity);
+            await axios.put(`${activitiesBaseUrl}/${activityId}`, updatedActivity);
 
-            // Refresh activities after a successful update
             fetchActivities();
         } catch (error) {
             console.error("Error updating activity:", error);
@@ -75,9 +72,9 @@ export const ActivitiesProvider = ({ children }) => {
     const getActivityTypeID = (type) => {
         const normalizedType = type.trim().toLowerCase();
 
-        for (let i = 0; i < activityTypes.length; i++) {
-            if (activityTypes[i].type.toLowerCase() === normalizedType) {
-                return activityTypes[i].id;
+        for (const activityType of activityTypes) {
+            if (activityType.type.toLowerCase() === normalizedType) {
+                return activityType.id;
             }
         }
 
@@ -85,9 +82,9 @@ export const ActivitiesProvider = ({ children }) => {
     };
 
     const getActivityType = (typeId) => {
-        for (let i = 0; i < activityTypes.length; i++) {
-            if (activityTypes[i].id === typeId) {
-                return activityTypes[i].type;
+        for (const activityType of activityTypes) {
+            if (activityType.id === typeId) {
+                return activityType.type;
             }
         }
 
@@ -99,27 +96,41 @@ export const ActivitiesProvider = ({ children }) => {
         fetchActivityTypes();
     }, []);
 
+    // Memoize the value object to prevent unnecessary re-renders
+    const contextValue = useMemo(
+        () => ({
+            activities,
+            activityTypes,
+            calendarActivities,
+            outsideActivities,
+            fetchActivities,
+            fetchActivityTypes,
+            updateActivity,
+            moveActivityToCalendar,
+            removeActivityFromCalendar,
+            getActivityTypeID,
+            getActivityType,
+            setCalendarActivities,
+            setOutsideActivities,
+        }),
+        [
+            activities,
+            activityTypes,
+            calendarActivities,
+            outsideActivities,
+        ] // Dependencies
+    );
+
     return (
-        <ActivitiesContext.Provider
-            value={{
-                activities,
-                activityTypes,
-                calendarActivities,
-                outsideActivities,
-                fetchActivities,
-                fetchActivityTypes,
-                updateActivity,
-                moveActivityToCalendar,
-                removeActivityFromCalendar,
-                getActivityTypeID,
-                getActivityType,
-                setCalendarActivities,
-                setOutsideActivities,
-            }}
-        >
+        <ActivitiesContext.Provider value={contextValue}>
             {children}
         </ActivitiesContext.Provider>
     );
+};
+
+// Add PropTypes validation for the `children` prop
+ActivitiesProvider.propTypes = {
+    children: PropTypes.node.isRequired,
 };
 
 export const useActivities = () => useContext(ActivitiesContext);
