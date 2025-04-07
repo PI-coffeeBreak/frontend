@@ -23,6 +23,7 @@ import EventSetup from "./pages/EventSetup.jsx";
 import { ComponentsProvider } from "./contexts/ComponentsContext.jsx";
 import EventMaker from "./pages/EventMaker.jsx";
 import InstantiateHome from "./pages/InstantiateHome.jsx";
+import Instantiate from "./pages/Instantiate.jsx";
 
 export default function App() {
   return (
@@ -43,7 +44,8 @@ export default function App() {
                       <Route path="setup" element={<EventSetup/>}/>
                     </Route>
                     <Route path="instantiate" element={<LayoutInstantiate/>}>
-                        <Route path="home">
+                        <Route index element={<Instantiate />} />
+                    <Route path="home">
                             <Route index element={<InstantiateHome />} />
                         <Route path="users" element={<Users />}/>
                             <Route path="sessions" element={<Activities/>}/>
