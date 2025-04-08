@@ -22,6 +22,8 @@ import { PagesProvider } from "./contexts/PagesContext.jsx";
 import { NotificationProvider } from "./contexts/NotificationContext.jsx";
 import EventSetup from "./pages/EventSetup.jsx";
 import { ComponentsProvider } from "./contexts/ComponentsContext.jsx";
+import EventMaker from "./pages/EventMaker.jsx";
+import Instantiate from "./pages/Instantiate.jsx";
 
 export default function App() {
   return (
@@ -43,12 +45,14 @@ export default function App() {
                         <Route path="setup" element={<EventSetup />} />
                       </Route>
                       <Route path="instantiate" element={<LayoutInstantiate />}>
+                        <Route index element={<Instantiate />} />
                         <Route path="home">
                           <Route path="users" element={<Users />} />
                           <Route path="sessions" element={<Activities />} />
                           <Route path="alerts" element={<Alerts />} />
                         </Route>
                         <Route path="eventmaker">
+                          <Route index element={<EventMaker />} />
                           <Route path="colors" element={<Colors />} />
                           <Route path="pages" element={<PagesList />} />
                           <Route path="choose-plugins" element={<Plugins />} />
