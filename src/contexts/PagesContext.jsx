@@ -52,7 +52,7 @@ export const PagesProvider = ({ children }) => {
             const response = await axios.put(`${baseUrl}/pages/${pageId}`, updatedData);
             console.log("Page updated successfully:", response.data);
             setPages((prevPages) =>
-                prevPages.map((page) => (page.id === pageId ? response.data : page))
+                prevPages.map((page) => (page.page_id === pageId ? response.data : page))
             );
             return response.data;
         } catch (err) {
@@ -90,7 +90,7 @@ export const PagesProvider = ({ children }) => {
             console.log(`Page with ID ${pageId} updated successfully:`, response.data);
             // setPages((prevPages) =>
             //     prevPages.map((page) =>
-            //         page.id === pageId ? { ...page, enabled: response.data.enabled } : page
+            //         page.page_id === pageId ? { ...page, enabled: response.data.enabled } : page
             //     )
             // );
         } catch (err) {
@@ -103,8 +103,8 @@ export const PagesProvider = ({ children }) => {
 
     const findPageIdByTitle = (title) => {
         const page = pages.find((p) => p.title === title);
-        console.log("Page ID found:", page ? page.id : "not found");
-        return page ? page.id : null;
+        console.log("Page ID found:", page ? page.page_id : "not found");
+        return page ? page.page_id : null;
     };
 
     // Memoize the context value
