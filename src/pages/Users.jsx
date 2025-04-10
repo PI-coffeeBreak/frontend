@@ -1,7 +1,9 @@
-
 import React, { useState, useEffect } from "react";
 import { useUsers } from "../contexts/UsersContext";
 import Pagination from "../components/Pagination.jsx";
+import CreateCard from "../components/CreateCard.jsx";
+import {FaUsers, FaUser, FaUsersCog} from "react-icons/fa";
+import UserCard from "../components/UserCard.jsx";
 
 
 export default function Users() {
@@ -71,115 +73,111 @@ export default function Users() {
     return (
         <>
             <div className="w-full min-h-svh p-8">
-                <h1 className="text-3xl font-bold mb-6">Users</h1>
-                
-                {error && (
+                <h1 className="text-3xl font-bold">Create Users</h1>
+                <div className="grid grid-cols-3 gap-4 mt-8">
+                    <CreateCard
+                        icon={FaUsers}
+                        title="Add with an excel file"
+                        description="Upload an Excel file to quickly add multiple users at once."
+                    />
+                    <CreateCard
+                        icon={FaUser}
+                        title="Create a new user"
+                        description="Create a new user manually."
+                    />
+                    <CreateCard
+                        icon={FaUsersCog}
+                        title="Manage roles"
+                        description="Create or change a role."
+                    />
+                </div>
+
+                <h1 className="text-3xl font-bold mt-8">Users</h1>
+
+                <div className="flex gap-8 mt-4">
+                    <div className="flex gap-4">
+                        <label className="input">
+                            <svg className="h-[1em] opacity-50" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
+                                <g strokeLinejoin="round" strokeLinecap="round" strokeWidth="2.5" fill="none"
+                                   stroke="currentColor">
+                                    <circle cx="11" cy="11" r="8"></circle>
+                                    <path d="m21 21-4.3-4.3"></path>
+                                </g>
+                            </svg>
+                            <input
+                                type="text"
+                                className="grow"
+                                placeholder="Search users"
+                                />
+                        </label>
+                    </div>
+                </div>
+
+
+                <div className="overflow-x-auto mt-8">
+                    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                        {/* Example user cards - replace with your actual data mapping */}
+                        <UserCard/>
+                    </div>
+                </div>
+
+
+                {/* {error && (
                     <div className="alert alert-error mb-4">
                         <span>{error}</span>
                     </div>
-                )}
-                
-                <div className="mb-6 flex flex-wrap gap-4 items-center">
-                    <input
-                        type="text"
-                        placeholder="Search by name..."
-                        className="p-2 border rounded-lg shadow-sm"
-                        onChange={(e) => setSearchTerm(e.target.value)}
-                        value={searchTerm}
-                    />
-                    <select
-                        className="p-2 border rounded-lg shadow-sm"
-                        onChange={(e) => setFilterRole(e.target.value)}
-                        value={filterRole}
-                    >
-                        <option value="">All Roles</option>
-                        <option value="Organizer">Organizer</option>
-                        <option value="Staff">Staff</option>
-                        <option value="Speaker">Speaker</option>
-                        <option value="Participant">Participant</option>
-                    </select>
-                </div>
-                {isLoading ? (
+                )} */}
+
+                {/*{isLoading ? (
                     <div className="flex justify-center items-center p-8">
                         <span className="loading loading-spinner loading-lg"></span>
                     </div>
                 ) : (
                     <>
                         <div className="overflow-x-auto">
-                            <table className="table">
-                                <thead>
-                                    <tr>
-                                        <th>Name</th>
-                                        <th>Email</th>
-                                        <th>Role</th>
-                                        <th>Actions</th>
-                                    </tr>
-                                </thead>
-                                <tbody>
-                                    {currentUsers.map(user => (
-                                        <tr key={user.id} className={user.banned ? "bg-error bg-opacity-10" : ""}>
-                                            <td>
-                                                <div className="flex items-center gap-3">
-                                                    <div className="avatar">
-                                                        <div className="mask mask-squircle h-12 w-12">
-                                                            <img
-                                                                src={user.avatar ? user.avatar : "/placeholder.jpg"}
-                                                                alt={`Foto de ${user.firstName}`}
-                                                            />
-                                                        </div>
-                                                    </div>
-                                                    <div>
-                                                        <div className="font-bold">{user.firstName} {user.lastName}</div>
-                                                        <div className="text-sm opacity-50">{user.nationality || "Unknown nationality"}</div>
+                            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                                {currentUsers.map(user => (
+                                    <div key={user.id} className={`card shadow-xl ${user.banned ? "bg-error bg-opacity-20" : "bg-secondary text-secondary-content"}`}>
+                                        <div className="card-body">
+                                            <div className="flex items-center gap-4 mb-4">
+                                                <div className="avatar">
+                                                    <div className="w-16 rounded-full">
+                                                        <img src={user.avatar ? user.avatar : "/placeholder.jpg"} alt={`Foto de ${user.firstName}`} />
                                                     </div>
                                                 </div>
-                                            </td>
-                                            <td>{user.email}</td>
-                                            <td>
-                                                <div className="badge badge-primary w-24">{user.role || "No role"}</div>
-                                            </td>
-                                            <th>
-                                                <button 
-                                                    className="btn mr-2 btn-secondary btn-xs"
+                                                <div>
+                                                    <h2 className="card-title">{user.firstName} {user.lastName}</h2>
+                                                    <p className="text-sm opacity-75">{user.email}</p>
+                                                    <p className="text-xs opacity-50">{user.nationality || "Unknown nationality"}</p>
+                                                </div>
+                                            </div>
+                                            <div className="badge badge-primary mb-4">{user.role || "No role"}</div>
+                                            <div className="card-actions justify-end">
+                                                <button
+                                                    className="btn btn-secondary btn-sm"
                                                     onClick={() => openRoleModal(user.id, user.role)}
                                                 >
                                                     Manage Role
                                                 </button>
-                                                <button 
-                                                    className={`btn ${user.banned ? "btn-success" : "btn-error"} btn-xs`}
+                                                <button
+                                                    className={`btn ${user.banned ? "btn-success" : "btn-error"} btn-sm`}
                                                     onClick={() => handleToggleBan(user.id, user.banned)}
                                                 >
-                                                    {user.banned ? "Unban User" : "Ban User"}
+                                                    {user.banned ? "Unban" : "Ban"}
                                                 </button>
-                                            </th>
-                                        </tr>
-                                    ))}
-                                </tbody>
-                            </table>
+                                            </div>
+                                        </div>
+                                    </div>
+                                ))}
+                            </div>
                         </div>
                         <Pagination
                           currentPage={currentPage}
                           totalPages={totalPages}
                           onPageChange={handlePageChange}
                         />
-        
-                        {totalPages > 1 && (
-                            <div className="flex justify-center mt-4">
-                                <div className="join">
-                                    {Array.from({ length: totalPages }, (_, i) => (
-                                        <button
-                                            key={i + 1}
-                                            className={`join-item btn ${currentPage === i + 1 ? "btn-active" : ""}`}
-                                            onClick={() => handlePageChange(i + 1)}
-                                        >
-                                            {i + 1}
-                                        </button>
-                                    ))}
-                                </div>
-                            </div>
-                        )}
                     </>
-                )}
+                )}*/}
             {/* Role Management Modal */}
             <dialog id="role_modal" className="modal">
                 <div className="modal-box">
