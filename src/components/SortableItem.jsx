@@ -112,7 +112,7 @@ export function SortableItem({ id, componentData = { name: "", props: {} }, onCo
         );
     };
 
-    if (!componentData || !componentData.name) {
+    if (!componentData?.name) {
         return <p className="text-red-500">Error: Component data is missing</p>;
     }
 

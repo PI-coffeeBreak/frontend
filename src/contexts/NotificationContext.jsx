@@ -1,4 +1,5 @@
-import React, { createContext, useState, useContext } from "react";
+import React, { createContext, useState, useContext, useMemo } from "react";
+import PropTypes from "prop-types";
 
 const NotificationContext = createContext();
 
@@ -8,7 +9,7 @@ export const NotificationProvider = ({ children }) => {
     const showNotification = (message, type = "success", duration = 3000) => {
         setNotification({ message, type });
         setTimeout(() => {
-            setNotification(null); // Clear the notification after the duration
+            setNotification(null);
         }, duration);
     };
 
@@ -67,8 +68,10 @@ export const NotificationProvider = ({ children }) => {
         }
     };
 
+    const value = useMemo(() => ({ showNotification }), [showNotification]);
+
     return (
-        <NotificationContext.Provider value={{ showNotification }}>
+        <NotificationContext.Provider value={value}>
             {children}
             {notification && (
                 <div className={`toast toast-bottom toast-right`}>
@@ -80,6 +83,10 @@ export const NotificationProvider = ({ children }) => {
             )}
         </NotificationContext.Provider>
     );
+};
+
+NotificationProvider.propTypes = {
+    children: PropTypes.node.isRequired,
 };
 
 export const useNotification = () => useContext(NotificationContext);

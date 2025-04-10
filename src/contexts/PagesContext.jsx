@@ -33,14 +33,16 @@ export const PagesProvider = ({ children }) => {
             const response = await axios.post(`${baseUrl}/pages`, pageData);
             console.log("Page saved successfully:", response.data);
             setPages((prevPages) => [...prevPages, response.data]);
+            return response.data;
         } catch (err) {
             console.error("Error saving page:", err);
             setError("Failed to save page. Please try again.");
+            throw err;
         } finally {
             setIsLoading(false);
         }
     };
-
+    
     const updatePage = async (pageId, updatedData) => {
         setIsLoading(true);
         setError(null);
@@ -50,12 +52,12 @@ export const PagesProvider = ({ children }) => {
             setPages((prevPages) =>
                 prevPages.map((page) => (page.id === pageId ? response.data : page))
             );
-        }
-        catch (err) {
+            return response.data;
+        } catch (err) {
             console.error("Error updating page:", err);
             setError("Failed to update page. Please try again.");
-        }
-        finally {
+            throw err;
+        } finally {
             setIsLoading(false);
         }
     };
@@ -79,6 +81,7 @@ export const PagesProvider = ({ children }) => {
         setIsLoading(true);
         setError(null);
         try {
+            // implement when backend is ready
             // const response = await axios.patch(`${baseUrl}/pages/${pageId}`, { enabled: isEnabled });
             console.log(`Page with ID ${pageId} updated successfully:`, response.data);
             // setPages((prevPages) =>
@@ -108,7 +111,7 @@ export const PagesProvider = ({ children }) => {
             savePage,
             updatePage,
             deletePage,
-            togglePageEnabled, // Expose the function in the context
+            togglePageEnabled,
             findPageIdByTitle,
             isLoading,
             error,
