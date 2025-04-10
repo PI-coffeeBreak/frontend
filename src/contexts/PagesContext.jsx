@@ -18,9 +18,11 @@ export const PagesProvider = ({ children }) => {
             const response = await axios.get(`${baseUrl}/pages`);
             console.log("Pages fetched successfully:", response.data);
             setPages(response.data);
+            return response.data;
         } catch (err) {
             console.error("Error fetching pages:", err);
             setError("Failed to fetch pages. Please try again.");
+            throw err;
         } finally {
             setIsLoading(false);
         }
@@ -69,9 +71,11 @@ export const PagesProvider = ({ children }) => {
             await axios.delete(`${baseUrl}/pages/${pageId}`);
             setPages((prevPages) => prevPages.filter((page) => page.id !== pageId));
             console.log(`Page with ID ${pageId} deleted successfully.`);
+            return true;
         } catch (err) {
             console.error("Error deleting page:", err);
             setError("Failed to delete page. Please try again.");
+            throw err;
         } finally {
             setIsLoading(false);
         }
