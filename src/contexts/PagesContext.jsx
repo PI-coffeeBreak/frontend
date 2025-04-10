@@ -69,7 +69,7 @@ export const PagesProvider = ({ children }) => {
         setError(null);
         try {
             await axios.delete(`${baseUrl}/pages/${pageId}`);
-            setPages((prevPages) => prevPages.filter((page) => page.id !== pageId));
+            setPages((prevPages) => prevPages.filter((page) => page.page_id !== pageId));
             console.log(`Page with ID ${pageId} deleted successfully.`);
             return true;
         } catch (err) {

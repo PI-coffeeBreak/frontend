@@ -19,6 +19,7 @@ export function PagesList() {
     };
 
     const handleDelete = async (pageId) => {
+        console.log("Deleting page with ID:", pageId); // Debugging
         if (window.confirm("Are you sure you want to delete this page?")) {
             try {
                 await deletePage(pageId);
@@ -57,7 +58,7 @@ export function PagesList() {
             <ul className="space-y-4">
                 {pages.map((page, index) => (
                     <li
-                        key={page.id || index}
+                        key={page.page_id || index}
                         className="p-4 border border-gray-300 rounded-md shadow-sm hover:shadow-lg transition-shadow"
                     >
                         <div className="flex justify-between items-center">
@@ -68,7 +69,7 @@ export function PagesList() {
                                     <input
                                         type="checkbox"
                                         checked={page.enabled}
-                                        onChange={(e) => handleToggleEnabled(page.id, e.target.checked)}
+                                        onChange={(e) => handleToggleEnabled(page.page_id, e.target.checked)}
                                         className="toggle toggle-primary"
                                     />
                                 </label>
@@ -80,7 +81,7 @@ export function PagesList() {
                                     <FaEdit />
                                 </button>
                                 <button
-                                    onClick={() => handleDelete(page.id)}
+                                    onClick={() => handleDelete(page.page_id)}
                                     className="text-gray-500 hover:text-red-500 p-2 rounded-full"
                                     title="Delete Page"
                                 >
