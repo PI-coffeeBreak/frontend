@@ -1,14 +1,13 @@
-import React, { useContext } from "react";
+import React from "react";
 import PropTypes from "prop-types";
 import { useTheme } from "../contexts/ThemeContext";
 
 // Helper to get color value from theme
 const getThemeColor = (theme, colorKey) => {
-    // If the color is a theme key (e.g., "primary"), return the theme value
     if (theme[colorKey]) {
         return theme[colorKey];
     }
-    // If it's a direct color (e.g., "#FF0000"), return it as is
+
     if (colorKey.startsWith('#')) {
         return colorKey;
     }

@@ -5,13 +5,14 @@ import { CSS } from "@dnd-kit/utilities";
 import { FaBars, FaChevronDown, FaChevronUp, FaTrash } from "react-icons/fa";
 import { useComponents } from "../contexts/ComponentsContext";
 import { componentList } from "./Components";
+import { ColorSelector } from "./ColorSelector";
 
 export function SortableItem({ id, componentData = { name: "", props: {} }, onComponentTypeChange, onComponentPropsChange, onRemove }) {
     const { getComponentList } = useComponents();
     const availableComponents = getComponentList();
 
     const { attributes, listeners, setNodeRef, transform, transition } = useSortable({ id });
-    const [componentProps, setComponentProps] = useState(componentData.props || {}); // Fallback for props
+    const [componentProps, setComponentProps] = useState(componentData.props || {});
     const [isCollapsed, setIsCollapsed] = useState(true);
 
     const style = {
@@ -26,12 +27,12 @@ export function SortableItem({ id, componentData = { name: "", props: {} }, onCo
             [name]: type === "checkbox" ? checked : value,
         };
         setComponentProps(updatedProps);
-        onComponentPropsChange(id, updatedProps); // Notify parent of the updated props
+        onComponentPropsChange(id, updatedProps);
     };
 
     const handleTypeChange = (event) => {
         const newType = event.target.value;
-        onComponentTypeChange(id, newType); // Notify parent to update the component type
+        onComponentTypeChange(id, newType);
     };
 
     const renderInputField = (property) => {
@@ -40,53 +41,35 @@ export function SortableItem({ id, componentData = { name: "", props: {} }, onCo
 
         if (name.toLowerCase() === "backgroundcolor") {
             return (
-                <select
+                <ColorSelector
                     name={name}
-                    value={value}
+                    value={value || "primary"}
                     onChange={handlePropertyChange}
-                    className="mt-1 block w-full p-2 border border-gray-300 rounded-md shadow-sm"
-                >
-                    {colorOptions.map((option) => (
-                        <option key={option.value} value={option.value}>
-                            {option.label}
-                        </option>
-                    ))}
-                </select>
+                    options={colorOptions}
+                />
             );
         }
 
         if (name.toLowerCase() === "textcolor") {
             return (
-                <select
+                <ColorSelector
                     name={name}
-                    value={value}
+                    value={value || "primary-content"}
                     onChange={handlePropertyChange}
-                    className="mt-1 block w-full p-2 border border-gray-300 rounded-md shadow-sm"
-                >
-                    {textColorOptions.map((option) => (
-                        <option key={option.value} value={option.value}>
-                            {option.label}
-                        </option>
-                    ))}
-                </select>
+                    options={textColorOptions}
+                />
             );
         }
 
         if (name.toLowerCase() === "color") {
             const selectedValue = value || "base-content";
             return (
-                <select
+                <ColorSelector
                     name={name}
                     value={selectedValue}
                     onChange={handlePropertyChange}
-                    className="mt-1 block w-full p-2 border border-gray-300 rounded-md shadow-sm"
-                >
-                    {combinedColorOptions.map((option) => (
-                        <option key={option.value} value={option.value}>
-                            {option.label}
-                        </option>
-                    ))}
-                </select>
+                    options={combinedColorOptions}
+                />
             );
         }
 
@@ -147,8 +130,8 @@ export function SortableItem({ id, componentData = { name: "", props: {} }, onCo
     ];
 
     const combinedColorOptions = [
-        ...colorOptions,
-        ...textColorOptions,
+        ...colorOptions.filter(o => o.value !== "base-content"),
+        ...textColorOptions.filter(o => o.value !== "base-content")
     ];
 
     return (
