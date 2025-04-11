@@ -24,19 +24,39 @@ export function PagesList() {
     };
 
     const handleDelete = async (pageId) => {
-        console.log("Deleting page with ID:", pageId); // Debugging
+        console.log("Deleting page with ID:", pageId);
         if (window.confirm("Are you sure you want to delete this page?")) {
             try {
                 await deletePage(pageId);
                 showNotification("Page deleted successfully!", "success");
             } catch (error) {
-                showNotification("Failed to delete the page.", "error");
+                // Properly handle the error by logging it
+                console.error("Error deleting page:", error);
+                
+                // Show a more specific error message if possible
+                const errorMessage = error?.message || "Failed to delete the page.";
+                showNotification(errorMessage, "error");
+                
+                getPages(); 
             }
         }
     };
 
     const handleToggleEnabled = async (pageId, isEnabled) => {
-        await togglePageEnabled(pageId, isEnabled);
+        try {
+            await togglePageEnabled(pageId, isEnabled);
+            showNotification(
+                `Page ${isEnabled ? 'enabled' : 'disabled'} successfully!`, 
+                "success"
+            );
+        } catch (error) {
+            console.error("Error toggling page status:", error);
+            const errorMessage = error?.message || `Failed to ${isEnabled ? 'enable' : 'disable'} the page.`;
+            showNotification(errorMessage, "error");
+            
+            // Refresh the page list to ensure UI consistency
+            getPages();
+        }
     };
 
     const handleCreate = () => {
@@ -54,9 +74,11 @@ export function PagesList() {
 
             await savePage(clonedPageData);
             showNotification("Page cloned successfully!", "success");
-            getPages(); // Refresh the list
+            getPages();
         } catch (error) {
-            showNotification("Failed to clone the page.", "error");
+            console.error("Error cloning page:", error);
+            const errorMessage = error?.message || "Failed to clone the page.";
+            showNotification(errorMessage, "error");
         }
     };
 
@@ -210,13 +232,13 @@ export function PagesList() {
                             «
                         </button>
                         
-                        {[...Array(totalPages)].map((_, index) => (
+                        {Array.from({ length: totalPages }, (_, i) => i + 1).map((pageNumber) => (
                             <button
-                                key={index}
-                                className={`join-item btn ${currentPage === index + 1 ? 'btn-active' : ''}`}
-                                onClick={() => setCurrentPage(index + 1)}
+                                key={`page-${pageNumber}`}
+                                className={`join-item btn ${currentPage === pageNumber ? 'btn-active' : ''}`}
+                                onClick={() => setCurrentPage(pageNumber)}
                             >
-                                {index + 1}
+                                {pageNumber}
                             </button>
                         ))}
                         
