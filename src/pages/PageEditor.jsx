@@ -105,11 +105,16 @@ export function PageEditor({ mode }) {
             })),
         };
 
+        // For edit mode, we need to check if anything actually changed
         if (mode === "edit") {
             // Compare current data with original page data
             const originalComponents = page.components || [];
             const componentsEqual = compareComponents(originalComponents, pageData.components);
-            const titleEqual = page.title === pageData.title;
+            
+            const originalTitle = pages.find(p => p.page_id === page.page_id)?.title || "";
+            const titleEqual = originalTitle === pageData.title;
+            
+            console.log("Title comparison:", { originalTitle, newTitle: pageData.title, equal: titleEqual });
             
             // If nothing has changed, show a notification and return early
             if (titleEqual && componentsEqual) {
@@ -118,11 +123,16 @@ export function PageEditor({ mode }) {
             }
         }
 
+        // Ensure the page_id is included for updates
+        const dataToSave = mode === "edit" 
+            ? { ...pageData, page_id: page.page_id } 
+            : pageData;
+
         const saveOrUpdate = mode === "create" ? savePage : updatePage;
         const successMessage = mode === "create" ? "Page created successfully!" : "Page updated successfully!";
         const errorMessage = mode === "create" ? "Failed to create the page." : "Failed to update the page.";
 
-        saveOrUpdate(mode === "create" ? pageData : page.page_id, pageData)
+        saveOrUpdate(mode === "create" ? pageData : page.page_id, dataToSave)
             .then(() => {
                 showNotification(successMessage, "success");
                 navigate("/instantiate/eventmaker/pages");
@@ -390,21 +400,19 @@ export function PageEditor({ mode }) {
             >
                 <DndContext collisionDetection={closestCenter} onDragEnd={handleDragEnd}>
                     <SortableContext items={sections.map((section) => section.id)} strategy={verticalListSortingStrategy}>
-                        {mode === "create" && (
-                            <div className="mb-4">
-                                <label htmlFor="page-title" className="block text-sm font-medium text-gray-700">
-                                    Page Title
-                                </label>
-                                <input
-                                    id="page-title"
-                                    type="text"
-                                    value={page?.title || ""}
-                                    onChange={(e) => setPage({ ...page, title: e.target.value })}
-                                    className="input mt-1 block w-full p-2 border border-gray-300 rounded-md shadow-sm"
-                                    placeholder="Enter page title"
-                                />
-                            </div>
-                        )}
+                        <div className="mb-4">
+                            <label htmlFor="page-title" className="block text-sm font-medium text-gray-700">
+                                Page Title
+                            </label>
+                            <input
+                                id="page-title"
+                                type="text"
+                                value={page?.title || ""}
+                                onChange={(e) => setPage({ ...page, title: e.target.value })}
+                                className="input mt-1 block w-full p-2 border border-gray-300 rounded-md shadow-sm"
+                                placeholder="Enter page title"
+                            />
+                        </div>
 
                         <div className="space-y-4">
                             {renderSections()}
