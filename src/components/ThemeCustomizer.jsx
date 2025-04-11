@@ -1,17 +1,16 @@
 import { useState, useEffect } from "react"
-import { Save, RefreshCw, Undo, Calendar, Users, MapPin, Bell, Clock, Gift, Music, Camera } from "lucide-react"
-import { baseUrl } from "../consts"
+import { Save, Undo, Calendar, Users, MapPin, Bell, Clock, Gift, Music, Camera } from "lucide-react"
 import { useTheme } from "../contexts/ThemeContext";
+import { useNotification } from "../contexts/NotificationContext";
 
-const colorThemeBaseUrl = `${baseUrl}/ui/color-theme/color-theme`;
 
 export function ThemeCustomizer() {
   const { theme, fetchThemeColors, updateThemeColors, initialTheme } = useTheme();
+  const { showNotification } = useNotification();
 
   const [localTheme, setLocalTheme] = useState(initialTheme);
   const [hexValues, setHexValues] = useState({});
   const [activeTab, setActiveTab] = useState("colors");
-  const [savedMessage, setSavedMessage] = useState(false);
 
   // Load saved theme from context on component mount
   useEffect(() => {
@@ -56,18 +55,20 @@ export function ThemeCustomizer() {
     try {
       // Fetch latest theme from the server
       await fetchThemeColors();
+      showNotification("Theme reset to original", "info");
     } catch (error) {
       console.error("Error resetting theme:", error);
+      showNotification("Failed to reset theme", "error");
     }
   };
 
   const saveTheme = async () => {
     try {
       await updateThemeColors(hexValues);
-      setSavedMessage(true);
-      setTimeout(() => setSavedMessage(false), 3000);
+      showNotification("Theme saved successfully!", "success");
     } catch (error) {
       console.error("Error saving theme:", error);
+      showNotification("Failed to save theme. Please try again.", "error");
     }
   };
 
@@ -189,85 +190,115 @@ export function ThemeCustomizer() {
   );
 
   return (
-    <div className="container mx-auto p-4">
-      <div className="bg-base-100 rounded-xl shadow-xl overflow-hidden">
-        {/* Header */}
-        <div className="bg-gradient-to-r from-primary to-secondary p-6 text-primary-content">
-          <div className="flex justify-between items-center">
+    <div className="bg-base-100 rounded-xl shadow-xl overflow-hidden">
+      {/* Header */}
+      <div className="bg-gradient-to-r from-primary to-secondary p-6 text-primary-content">
+        <div className="flex justify-between items-center">
+          <div>
             <h2 className="text-2xl font-bold">Event Theme Designer</h2>
-            <div className="flex gap-2">
-              <button
-                className="btn btn-sm btn-circle btn-ghost text-primary-content"
-                onClick={resetTheme}
-                title="Reset to original theme"
-              >
-                <Undo className="w-4 h-4" />
-              </button>
-              <button className="btn btn-sm btn-circle glass text-primary-content relative" onClick={saveTheme}>
-                <Save className="w-4 h-4" />
-                {savedMessage && (
-                  <span className="absolute -bottom-12 left-1/2 transform -translate-x-1/2 bg-black/80 text-white text-xs py-1 px-2 rounded whitespace-nowrap">
-                    Theme saved!
-                  </span>
-                )}
-              </button>
+            <p className="mt-2 text-sm opacity-90">Customize your event's colors and see how they look in real-time</p>
+          </div>
+          <div className="flex gap-2">
+            <button
+              className="btn btn-sm btn-outline text-primary-content"
+              onClick={resetTheme}
+              title="Reset to original theme"
+            >
+              <Undo className="w-4 h-4 mr-1" /> Reset
+            </button>
+            <button 
+              className="btn btn-sm btn-primary text-primary-content" 
+              onClick={saveTheme}
+            >
+              <Save className="w-4 h-4 mr-1" /> Save
+            </button>
+          </div>
+        </div>
+      </div>
+
+      {/* Tabs */}
+      <div className="bg-base-200 px-6 pt-4">
+        <div className="tabs tabs-boxed bg-base-300 inline-flex" role="tablist">
+          <button 
+            className={`tab ${activeTab === "colors" ? "tab-active" : ""}`}
+            onClick={() => setActiveTab("colors")}
+            role="tab"
+            aria-selected={activeTab === "colors"}
+            aria-controls="colors-panel"
+            id="colors-tab"
+          >
+            Choose Colors
+          </button>
+          <button 
+            className={`tab ${activeTab === "preview" ? "tab-active" : ""}`}
+            onClick={() => setActiveTab("preview")}
+            role="tab"
+            aria-selected={activeTab === "preview"}
+            aria-controls="preview-panel"
+            id="preview-tab"
+          >
+            Preview Your Event
+          </button>
+        </div>
+      </div>
+
+      {/* Content */}
+      <div className="p-6 bg-base-200 min-h-[500px]">
+        <div 
+          id="colors-panel" 
+          role="tabpanel" 
+          aria-labelledby="colors-tab"
+          className={activeTab === "colors" ? "" : "hidden"}
+        >
+          <div className="space-y-8">
+            <div className="bg-base-100 p-4 rounded-lg shadow-sm">
+              <p className="text-sm mb-4">
+                Click on any color below to change it. You'll see your changes in the "Preview Your Event" tab.
+              </p>
             </div>
-          </div>
-          <p className="mt-2 text-sm opacity-90">Customize your event's colors and see how they look in real-time</p>
-        </div>
-
-        {/* Tabs */}
-        <div className="bg-base-200 px-6 pt-4">
-          <div className="tabs tabs-boxed bg-base-300 inline-flex">
-            <a className={`tab ${activeTab === "colors" ? "tab-active" : ""}`} onClick={() => setActiveTab("colors")}>
-              Choose Colors
-            </a>
-            <a className={`tab ${activeTab === "preview" ? "tab-active" : ""}`} onClick={() => setActiveTab("preview")}>
-              Preview Your Event
-            </a>
-          </div>
-        </div>
-
-        {/* Content */}
-        <div className="p-6 bg-base-200 min-h-[500px]">
-          {activeTab === "colors" ? (
-            <div className="space-y-8">
-              <div className="bg-base-100 p-4 rounded-lg shadow-sm">
-                <p className="text-sm mb-4">
-                  Click on any color below to change it. You'll see your changes in the "Preview Your Event" tab.
-                </p>
-              </div>
-
-              {Object.entries(colorGroups).map(([groupName, colorKeys]) => (
-                <div key={groupName} className="space-y-4">
-                  <h3 className="font-semibold text-lg">{groupName}</h3>
-                  <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-                    {colorKeys.map((key) => (
-                      <div key={key} className="bg-base-100 p-4 rounded-lg shadow-sm hover:shadow-md transition-shadow">
-                        <div className="flex items-center gap-3">
-                          <div
-                            className="w-12 h-12 rounded-lg shadow-inner border"
-                            style={{ backgroundColor: hexValues[key] }}
-                          ></div>
-                          <div className="flex-1">
-                            <label className="font-medium">{colorMapping[key] || key}</label>
+            
+            {Object.entries(colorGroups).map(([groupName, colorKeys]) => (
+              <div key={groupName} className="space-y-4">
+                <h3 className="font-semibold text-lg">{groupName}</h3>
+                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+                  {colorKeys.map((key) => (
+                    <div key={key} className="bg-base-100 p-4 rounded-lg shadow-sm hover:shadow-md transition-shadow border border-base-300">
+                      <div className="flex items-center gap-3">
+                        <div
+                          className="w-12 h-12 rounded-lg shadow-inner border border-base-300 flex items-center justify-center"
+                          style={{ backgroundColor: hexValues[key] }}
+                        >
+                          {/* Show contrast text for accessibility */}
+                          {key.includes('content') && <span className="text-xs opacity-75">Text</span>}
+                        </div>
+                        <div className="flex-1">
+                          <label className="font-medium block mb-1">{colorMapping[key] || key}</label>
+                          <div className="flex gap-2 items-center">
                             <input
                               type="color"
                               value={hexValues[key] || "#000000"}
                               onChange={(e) => handleColorChange(key, e.target.value)}
-                              className="w-full h-8 cursor-pointer mt-1"
+                              className="w-full h-8 cursor-pointer"
                             />
+                            <span className="text-xs font-mono">{hexValues[key]}</span>
                           </div>
                         </div>
                       </div>
-                    ))}
-                  </div>
+                    </div>
+                  ))}
                 </div>
-              ))}
-            </div>
-          ) : (
-            renderPreview()
-          )}
+              </div>
+            ))}
+          </div>
+        </div>
+        
+        <div 
+          id="preview-panel" 
+          role="tabpanel" 
+          aria-labelledby="preview-tab"
+          className={activeTab === "preview" ? "" : "hidden"}
+        >
+          {renderPreview()}
         </div>
       </div>
     </div>
