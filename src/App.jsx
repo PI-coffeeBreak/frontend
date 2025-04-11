@@ -19,7 +19,17 @@ import PrivateRoute from "./PrivateRoute.js";
 
 export default function App() {
   return (
-      <ReactKeycloakProvider authClient={keycloak} initOptions={{ onLoad: 'login-required' }}>
+      <ReactKeycloakProvider 
+        authClient={keycloak} 
+        initOptions={{
+          onLoad: 'login-required',
+          checkLoginIframe: false,
+          pkceMethod: 'S256',
+          // Set a more reasonable token refresh time (in seconds)
+          // The default is 5 seconds which is too frequent and causes issues
+          tokenRefreshInterval: 60
+        }}
+      >
           <Router>
               <Routes>
                   <Route element={<Layout />}>
