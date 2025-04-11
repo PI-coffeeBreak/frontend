@@ -2,17 +2,42 @@ import React from "react";
 import PropTypes from "prop-types";
 import { TextInput, CheckboxInput, SelectInput } from "./CommonInputs";
 
+// Theme-aware color options for text
 const textColorOptions = [
-    { value: "text-gray-700", label: "Default" },
-    { value: "text-red-500", label: "Red" },
-    { value: "text-blue-500", label: "Blue" },
-    { value: "text-green-500", label: "Green" },
-    { value: "text-yellow-500", label: "Yellow" },
+    { value: "base-content", label: "Default Text" },
+    { value: "primary", label: "Primary" },
+    { value: "secondary", label: "Secondary" },
+    { value: "accent", label: "Accent" },
+    { value: "neutral", label: "Neutral" },
+    { value: "info", label: "Info" },
+    { value: "success", label: "Success" },
+    { value: "warning", label: "Warning" },
+    { value: "error", label: "Error" },
 ];
 
+// Content color options - these are text colors that contrast with backgrounds
+const contentColorOptions = [
+    { value: "primary-content", label: "Primary Content" },
+    { value: "secondary-content", label: "Secondary Content" },
+    { value: "accent-content", label: "Accent Content" },
+    { value: "neutral-content", label: "Neutral Content" },
+    { value: "base-content", label: "Base Content" },
+    { value: "info-content", label: "Info Content" },
+    { value: "success-content", label: "Success Content" },
+    { value: "warning-content", label: "Warning Content" },
+    { value: "error-content", label: "Error Content" },
+];
+
+// Background color options for elements
 const backgroundColorOptions = [
     { value: "primary", label: "Primary" },
     { value: "secondary", label: "Secondary" },
+    { value: "accent", label: "Accent" },
+    { value: "neutral", label: "Neutral" },
+    { value: "base-100", label: "Base 100" },
+    { value: "base-200", label: "Base 200" },
+    { value: "base-300", label: "Base 300" },
+    { value: "info", label: "Info" },
     { value: "success", label: "Success" },
     { value: "warning", label: "Warning" },
     { value: "error", label: "Error" },
@@ -24,13 +49,13 @@ export const componentConfigurations = {
             <TextInput
                 label="Text"
                 name="text"
-                value={componentProps.text}
+                value={componentProps.text || "Default Title"}
                 onChange={handlePropertyChange}
             />
             <SelectInput
-                label="Color"
+                label="Text Color"
                 name="color"
-                value={componentProps.color}
+                value={componentProps.color || "base-content"}
                 options={textColorOptions}
                 onChange={handlePropertyChange}
             />
@@ -38,13 +63,19 @@ export const componentConfigurations = {
                 <CheckboxInput
                     label="Bold"
                     name="bold"
-                    checked={componentProps.bold}
+                    checked={componentProps.bold || false}
                     onChange={handlePropertyChange}
                 />
                 <CheckboxInput
                     label="Italic"
                     name="italic"
-                    checked={componentProps.italic}
+                    checked={componentProps.italic || false}
+                    onChange={handlePropertyChange}
+                />
+                <CheckboxInput
+                    label="Underline"
+                    name="underline"
+                    checked={componentProps.underline || false}
                     onChange={handlePropertyChange}
                 />
             </div>
@@ -53,15 +84,15 @@ export const componentConfigurations = {
     Text: ({ componentProps, handlePropertyChange }) => (
         <>
             <TextInput
-                label="Content"
-                name="content"
-                value={componentProps.content}
+                label="Text"
+                name="text"
+                value={componentProps.text || "Default Text"}
                 onChange={handlePropertyChange}
             />
             <SelectInput
                 label="Text Color"
-                name="className"
-                value={componentProps.className}
+                name="color"
+                value={componentProps.color || "base-content"}
                 options={textColorOptions}
                 onChange={handlePropertyChange}
             />
@@ -69,13 +100,19 @@ export const componentConfigurations = {
                 <CheckboxInput
                     label="Bold"
                     name="bold"
-                    checked={componentProps.bold}
+                    checked={componentProps.bold || false}
                     onChange={handlePropertyChange}
                 />
                 <CheckboxInput
                     label="Italic"
                     name="italic"
-                    checked={componentProps.italic}
+                    checked={componentProps.italic || false}
+                    onChange={handlePropertyChange}
+                />
+                <CheckboxInput
+                    label="Underline"
+                    name="underline"
+                    checked={componentProps.underline || false}
                     onChange={handlePropertyChange}
                 />
             </div>
@@ -86,19 +123,19 @@ export const componentConfigurations = {
             <TextInput
                 label="Text"
                 name="text"
-                value={componentProps.text}
+                value={componentProps.text || "Click Me"}
                 onChange={handlePropertyChange}
             />
             <TextInput
                 label="URL"
                 name="URL"
-                value={componentProps.URL}
+                value={componentProps.URL || "#"}
                 onChange={handlePropertyChange}
             />
             <SelectInput
                 label="HTTP Method"
                 name="METHOD"
-                value={componentProps.METHOD}
+                value={componentProps.METHOD || "GET"}
                 options={[
                     { value: "GET", label: "GET" },
                     { value: "POST", label: "POST" },
@@ -110,21 +147,21 @@ export const componentConfigurations = {
             <SelectInput
                 label="Background Color"
                 name="backgroundColor"
-                value={componentProps.backgroundColor}
+                value={componentProps.backgroundColor || "primary"}
                 options={backgroundColorOptions}
                 onChange={handlePropertyChange}
             />
             <SelectInput
                 label="Text Color"
                 name="textColor"
-                value={componentProps.textColor}
-                options={textColorOptions}
+                value={componentProps.textColor || "primary-content"}
+                options={contentColorOptions}
                 onChange={handlePropertyChange}
             />
             <CheckboxInput
                 label="Disabled"
                 name="disabled"
-                checked={componentProps.disabled}
+                checked={componentProps.disabled || false}
                 onChange={handlePropertyChange}
             />
         </>
@@ -134,14 +171,21 @@ export const componentConfigurations = {
             <TextInput
                 label="Image URL"
                 name="src"
-                value={componentProps.src}
+                value={componentProps.src || "https://via.placeholder.com/150"}
                 onChange={handlePropertyChange}
             />
             <TextInput
                 label="Alt Text"
                 name="alt"
-                value={componentProps.alt}
+                value={componentProps.alt || "Placeholder"}
                 onChange={handlePropertyChange}
+            />
+            <TextInput
+                label="CSS Class"
+                name="className"
+                value={componentProps.className || ""}
+                onChange={handlePropertyChange}
+                placeholder="Additional CSS classes (e.g., w-full, mx-auto)"
             />
         </>
     ),
@@ -153,6 +197,8 @@ componentConfigurations.Title.propTypes = {
         color: PropTypes.string,
         bold: PropTypes.bool,
         italic: PropTypes.bool,
+        underline: PropTypes.bool,
+        className: PropTypes.string,
     }).isRequired,
     handlePropertyChange: PropTypes.func.isRequired,
 };
@@ -161,6 +207,7 @@ componentConfigurations.Image.propTypes = {
     componentProps: PropTypes.shape({
         src: PropTypes.string,
         alt: PropTypes.string,
+        className: PropTypes.string,
     }).isRequired,
     handlePropertyChange: PropTypes.func.isRequired,
 };
@@ -173,16 +220,19 @@ componentConfigurations.Button.propTypes = {
         backgroundColor: PropTypes.string,
         textColor: PropTypes.string,
         disabled: PropTypes.bool,
+        className: PropTypes.string,
     }).isRequired,
     handlePropertyChange: PropTypes.func.isRequired,
 };
 
 componentConfigurations.Text.propTypes = {
     componentProps: PropTypes.shape({
-        content: PropTypes.string,
-        className: PropTypes.string,
+        text: PropTypes.string,
+        color: PropTypes.string,
         bold: PropTypes.bool,
         italic: PropTypes.bool,
+        underline: PropTypes.bool,
+        className: PropTypes.string,
     }).isRequired,
     handlePropertyChange: PropTypes.func.isRequired,
 };

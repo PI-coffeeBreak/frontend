@@ -1,17 +1,41 @@
-import React from "react";
+import React, { useContext } from "react";
 import PropTypes from "prop-types";
+import { useTheme } from "../contexts/ThemeContext";
+
+// Helper to get color value from theme
+const getThemeColor = (theme, colorKey) => {
+    // If the color is a theme key (e.g., "primary"), return the theme value
+    if (theme[colorKey]) {
+        return theme[colorKey];
+    }
+    // If it's a direct color (e.g., "#FF0000"), return it as is
+    if (colorKey.startsWith('#')) {
+        return colorKey;
+    }
+    // Default fallback
+    return theme["base-content"];
+};
 
 export function Title({
     text = "Default Title",
-    color = "black", // Default to "black"
+    color = "base-content",
     bold = false,
     italic = false,
     underline = false,
     className = "",
 }) {
+    const { theme } = useTheme();
     const fontStyle = `${bold ? "font-bold" : ""} ${italic ? "italic" : ""} ${underline ? "underline" : ""}`;
-    const colorClass = `text-${color}`; // Dynamically apply the Tailwind class for text color
-    return <h1 className={`text-2xl ${colorClass} ${fontStyle} ${className}`}>{text}</h1>;
+    const textColor = getThemeColor(theme, color);
+    
+    return (
+        <h1 
+            className={`text-2xl ${fontStyle} ${className}`}
+            style={{ color: textColor }}
+        >
+            {text}
+        </h1>
+    );
 }
 
 Title.propTypes = {
@@ -42,23 +66,30 @@ export function Button({
     METHOD = "GET",
     URL = "#",
     className = "",
-    backgroundColor = "primary", // Background color (e.g., "primary", "success")
-    textColor = "primary-content", // Text color (e.g., "primary-content", "white")
+    backgroundColor = "primary",
+    textColor = "primary-content",
     disabled = false,
 }) {
-    // Map props to Tailwind CSS classes
-    const backgroundClass = `btn-${backgroundColor}`;
-    const textClass = `text-${textColor}`;
+    const { theme } = useTheme();
+    const bgColor = getThemeColor(theme, backgroundColor);
+    const txtColor = getThemeColor(theme, textColor);
 
     return (
-        <a
-            href={URL}
-            method={METHOD}
-            className={`btn ${backgroundClass} ${className} ${disabled ? "opacity-50 cursor-not-allowed" : ""}`}
-            onClick={(e) => disabled && e.preventDefault()} // Prevent action if disabled
+        <button
+            onClick={() => {
+                if (!disabled && URL !== "#") {
+                    window.location.href = URL;
+                }
+            }}
+            className={`btn ${className} ${disabled ? "opacity-50 cursor-not-allowed" : ""}`}
+            disabled={disabled}
+            style={{ 
+                backgroundColor: bgColor,
+                color: txtColor
+            }}
         >
-            <span className={textClass}>{text}</span>
-        </a>
+            {text}
+        </button>
     );
 }
 
@@ -74,15 +105,24 @@ Button.propTypes = {
 
 export function Text({
     text = "Default Text",
-    color = "black", // Default to "black"
+    color = "base-content",
     bold = false,
     italic = false,
     underline = false,
     className = "",
 }) {
+    const { theme } = useTheme();
     const fontStyle = `${bold ? "font-bold" : ""} ${italic ? "italic" : ""} ${underline ? "underline" : ""}`;
-    const colorClass = `text-${color}`; // Dynamically apply the Tailwind class for text color
-    return <p className={`${colorClass} ${fontStyle} ${className}`}>{text}</p>;
+    const textColor = getThemeColor(theme, color);
+    
+    return (
+        <p 
+            className={`${fontStyle} ${className}`}
+            style={{ color: textColor }}
+        >
+            {text}
+        </p>
+    );
 }
 
 Text.propTypes = {

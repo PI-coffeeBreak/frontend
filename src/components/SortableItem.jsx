@@ -72,11 +72,12 @@ export function SortableItem({ id, componentData = { name: "", props: {} }, onCo
             );
         }
 
-        if (name.toLowerCase() === "color" || !name) {
+        if (name.toLowerCase() === "color") {
+            const selectedValue = value || "base-content";
             return (
                 <select
-                    name={name || "color"}
-                    value={value}
+                    name={name}
+                    value={selectedValue}
                     onChange={handlePropertyChange}
                     className="mt-1 block w-full p-2 border border-gray-300 rounded-md shadow-sm"
                 >
@@ -124,16 +125,22 @@ export function SortableItem({ id, componentData = { name: "", props: {} }, onCo
         { value: "secondary", label: "Secondary" },
         { value: "accent", label: "Accent" },
         { value: "neutral", label: "Neutral" },
+        { value: "base-100", label: "Base 100" },
+        { value: "base-200", label: "Base 200" },
+        { value: "base-300", label: "Base 300" },
+        { value: "info", label: "Info" },
         { value: "success", label: "Success" },
         { value: "warning", label: "Warning" },
         { value: "error", label: "Error" },
     ];
 
     const textColorOptions = [
+        { value: "base-content", label: "Base Content" },
         { value: "primary-content", label: "Primary Content" },
         { value: "secondary-content", label: "Secondary Content" },
-        { value: "white", label: "White" },
-        { value: "black", label: "Black" },
+        { value: "accent-content", label: "Accent Content" },
+        { value: "neutral-content", label: "Neutral Content" },
+        { value: "info-content", label: "Info Content" },
         { value: "success-content", label: "Success Content" },
         { value: "warning-content", label: "Warning Content" },
         { value: "error-content", label: "Error Content" },
