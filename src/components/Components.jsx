@@ -94,10 +94,9 @@ Text.propTypes = {
     className: PropTypes.string,
 };
 
-// Map component names without "Component" suffix
-export const componentMap = {
-    TitleComponent: Title,
-    ImageComponent: Image,
-    ButtonComponent: Button,
-    TextComponent: Text,
-};
+export const componentList = [
+    { name: "Title", title: "Title Component", component: Title },
+    { name: "Image", title: "Image Component", component: Image },
+    { name: "Button", title: "Button Component", component: Button },
+    { name: "Text", title: "Text Component", component: Text },
+];

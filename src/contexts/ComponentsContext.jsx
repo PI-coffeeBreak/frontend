@@ -42,8 +42,7 @@ export const ComponentsProvider = ({ children }) => {
                     })),
             };
         });
-
-        console.log("Simplified Component List:", componentList);
+        console.log("Component list:", componentList);
         return componentList;
     };
 
@@ -59,7 +58,7 @@ export const ComponentsProvider = ({ children }) => {
             error,
             getComponentList,
         }),
-        [components, isLoading, error] // Dependencies
+        [components, isLoading, error]
     );
 
     return (
