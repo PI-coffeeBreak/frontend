@@ -1,10 +1,12 @@
-import {useEffect, useState, useRef} from "react";
+import { useEffect, useState, useRef } from "react";
 import { useNavigate } from "react-router-dom";
 import axios from "axios";
 import { baseUrl } from "../consts";
+import { useKeycloak } from "@react-keycloak/web";
 
-export default function EventSetup(){
+export default function EventSetup() {
     const navigate = useNavigate();
+    const { keycloak } = useKeycloak();
     const [step, setStep] = useState(1);
     const [isSubmitting, setIsSubmitting] = useState(false);
     const [submitError, setSubmitError] = useState(null);
@@ -15,10 +17,10 @@ export default function EventSetup(){
     const fileInputRef = useRef(null);
 
     const [formData, setFormData] = useState({
-    
+
         eventName: '',
         description: '',
-    
+
         startDate: '',
         endDate: '',
         location: '',
@@ -29,8 +31,8 @@ export default function EventSetup(){
 
     const validateStep = (step) => {
         const newErrors = {};
-        
-        switch(step) {
+
+        switch (step) {
             case 1:
                 if (!formData.eventName) newErrors.eventName = 'Event name is required';
                 if (!formData.description) newErrors.description = 'Description is required';
@@ -47,7 +49,7 @@ export default function EventSetup(){
                 if (!formData.location) newErrors.location = 'Location is required';
                 break;
         }
-        
+
         setErrors(newErrors);
         return Object.keys(newErrors).length === 0;
     };
@@ -120,19 +122,6 @@ export default function EventSetup(){
             setSubmitError(null);
             try {
                 let imageId = '';
-                
-                // First upload the image if exists
-                if (formData.image) {
-                    const imageFormData = new FormData();
-                    imageFormData.append('file', formData.image);
-                    
-                    const imageResponse = await axios.post(`${baseUrl}/event-info/upload`, imageFormData, {
-                        headers: {
-                            'Content-Type': 'multipart/form-data'
-                        }
-                    });
-                    imageId = imageResponse.data.image_id;
-                }
 
                 const eventData = {
                     name: formData.eventName,
@@ -144,7 +133,11 @@ export default function EventSetup(){
                     image_id: imageId
                 };
 
-                const response = await axios.post(`${baseUrl}/event-info/event`, eventData);
+                const response = await axios.post(`${baseUrl}/event-info/event`, eventData, {
+                    headers: {
+                        'Authorization': `Bearer ${keycloak.token}`
+                    }
+                });
                 console.log('Event created successfully:', response.data);
                 navigate('/instantiate/eventmaker');
             } catch (error) {
@@ -182,15 +175,15 @@ export default function EventSetup(){
                         format: 'json'
                     }
                 });
-                
+
                 console.log('API Response:', response.data);
-                
+
                 const suggestions = response.data.results.map(result => ({
                     name: result.formatted,
                     lat: result.lat,
                     lon: result.lon
                 }));
-                
+
                 console.log('Processed suggestions:', suggestions);
                 setLocationSuggestions(suggestions);
             } catch (error) {
@@ -205,15 +198,15 @@ export default function EventSetup(){
     };
 
     const handleLocationSelect = (suggestion) => {
-        setFormData(prev => ({ 
-            ...prev, 
+        setFormData(prev => ({
+            ...prev,
             location: suggestion.name
         }));
         setLocationSuggestions([]);
     };
 
     const renderStep = () => {
-        switch(step) {
+        switch (step) {
             case 1:
                 return (
                     <div className="w-full">
@@ -267,15 +260,15 @@ export default function EventSetup(){
                                     accept="image/*"
                                     onChange={handleImageChange}
                                 />
-                                <div 
+                                <div
                                     className="w-full h-48 bg-base-200 rounded-xl flex items-center justify-center cursor-pointer relative overflow-hidden"
                                     onClick={handleImageClick}
                                 >
                                     {imagePreview ? (
                                         <>
-                                            <img 
-                                                src={imagePreview} 
-                                                alt="Event preview" 
+                                            <img
+                                                src={imagePreview}
+                                                alt="Event preview"
                                                 className="w-full h-full object-cover"
                                             />
                                             <button
@@ -353,7 +346,7 @@ export default function EventSetup(){
                                     autoComplete="off"
                                 />
                                 {errors.location && <p className="text-red-500 mt-1">{errors.location}</p>}
-                                
+
                                 {/* Location Suggestions Dropdown */}
                                 {(locationSuggestions.length > 0 || isLoadingLocations) && (
                                     <div className="absolute w-full mt-1 bg-base-100 rounded-xl shadow-lg z-50 max-h-60 overflow-auto">
@@ -382,7 +375,7 @@ export default function EventSetup(){
         }
     };
 
-    return(
+    return (
         <div className="min-h-screen bg-base-100 py-8">
             {/* Steps indicator */}
             <div className="w-full max-w-4xl mx-auto mb-8">
@@ -398,7 +391,7 @@ export default function EventSetup(){
                 <div className="w-2/5 rounded-xl mx-auto bg-secondary min-h-[600px] z-10 flex flex-col items-center justify-center relative">
                     <div className="w-full px-8">
                         <h1 className="text-5xl text-primary font-bold mb-8">Create your event</h1>
-                        
+
                         {renderStep()}
 
                         {submitError && (
