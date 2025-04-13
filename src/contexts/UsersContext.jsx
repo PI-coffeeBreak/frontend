@@ -1,25 +1,31 @@
 import { createContext, useContext, useState, useEffect, useMemo } from "react";
 import PropTypes from "prop-types";
-import { baseUrl } from "../consts";
 import { useKeycloak } from "@react-keycloak/web";
-import { axiosWithAuth } from '../utils/axiosWithAuth';
+import axios from "axios";
+import { baseUrl } from "../consts";
+import { axiosWithAuth } from "../utils/axiosWithAuth";
 
 const UsersContext = createContext();
 
 export const UsersProvider = ({ children }) => {
     const usersBaseUrl = `${baseUrl}/users`;
     const usersRolesUrl = `${baseUrl}/users/roles/users`;
-    const { keycloak } = useKeycloak();
-
+    const { keycloak, initialized } = useKeycloak();
     const [users, setUsers] = useState([]);
     const [usersGroupedByRole, setUsersGroupedByRole] = useState({});
     const [isLoading, setIsLoading] = useState(false);
     const [error, setError] = useState(null);
 
     const fetchUsers = async () => {
+        if (!initialized || !keycloak?.authenticated) {
+            console.log("Keycloak not initialized or user not authenticated");
+            return;
+        }
+
         setIsLoading(true);
         setError(null);
         try {
+            console.log("Fetching users with auth status:", keycloak.authenticated);
             const response = await axiosWithAuth(keycloak).get(usersRolesUrl);
             console.log("Users grouped by role fetched successfully:", response.data);
 
@@ -180,8 +186,10 @@ export const UsersProvider = ({ children }) => {
     };
 
     useEffect(() => {
-        fetchUsers();
-    }, []);
+        if (initialized && keycloak?.authenticated) {
+            fetchUsers();
+        }
+    }, [initialized, keycloak?.authenticated]);
 
     // Memoize the value object to prevent unnecessary re-renders
     const contextValue = useMemo(

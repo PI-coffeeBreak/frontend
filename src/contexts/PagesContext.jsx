@@ -1,9 +1,8 @@
 import React, { createContext, useContext, useState, useMemo } from "react";
 import PropTypes from "prop-types";
-import { baseUrl } from "../consts";
 import { useKeycloak } from "@react-keycloak/web";
-import { axiosWithAuth } from '../utils/axiosWithAuth';
-
+import { baseUrl } from "../consts";
+import axiosWithAuth from "../utils/axiosWithAuth";
 const PagesContext = createContext();
 
 export const PagesProvider = ({ children }) => {
@@ -87,17 +86,18 @@ export const PagesProvider = ({ children }) => {
         setIsLoading(true);
         setError(null);
         try {
-            // implement when backend is ready
-            // const response = await axios.patch(`${baseUrl}/pages/${pageId}`, { enabled: isEnabled });
+            const response = await axiosWithAuth(keycloak).patch(`${baseUrl}/pages/${pageId}`, { enabled: isEnabled });
             console.log(`Page with ID ${pageId} updated successfully:`, response.data);
-            // setPages((prevPages) =>
-            //     prevPages.map((page) =>
-            //         page.page_id === pageId ? { ...page, enabled: response.data.enabled } : page
-            //     )
-            // );
+            setPages((prevPages) =>
+                prevPages.map((page) =>
+                    page.page_id === pageId ? { ...page, enabled: response.data.enabled } : page
+                )
+            );
+            return response.data;
         } catch (err) {
             console.error("Error updating page enabled state:", err);
             setError("Failed to update page. Please try again.");
+            throw err;
         } finally {
             setIsLoading(false);
         }

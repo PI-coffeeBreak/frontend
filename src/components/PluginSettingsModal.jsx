@@ -62,7 +62,7 @@ function PluginSettingsModal({ pluginConfig, onClose }) {
                     ✕
                 </button>
 
-                <h2 className="text-xl font-bold mb-4">Settings for {pluginConfig.title}</h2>
+                <h2 className="text-xl font-bold mb-4">Settings for {pluginConfig.formatted_name}</h2>
                 <p className="mb-4">{pluginConfig.description}</p>
 
                 <form id="plugin-settings-form" onSubmit={handleSubmit}>
@@ -86,6 +86,7 @@ function PluginSettingsModal({ pluginConfig, onClose }) {
 PluginSettingsModal.propTypes = {
     pluginConfig: PropTypes.shape({
         title: PropTypes.string.isRequired,
+        formatted_name: PropTypes.string.isRequired,
         description: PropTypes.string.isRequired,
         inputs: PropTypes.arrayOf(
             PropTypes.shape({
