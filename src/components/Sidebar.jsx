@@ -2,15 +2,24 @@ import { useState } from "react";
 import {Link, useLocation} from "react-router-dom";
 import { VscLayoutSidebarLeft, VscLayoutSidebarLeftOff } from "react-icons/vsc";
 import { FaHome, FaCalendarAlt, FaPen, FaUserPlus } from "react-icons/fa";
+import { RiApps2AddLine } from "react-icons/ri";
 import DropdownMenu from "./DropdownMenu.jsx";
 import { useKeycloak } from "@react-keycloak/web";
+import { usePlugins } from "../contexts/PluginsContext";
 
 export default function Sidebar() {
     const { keycloak } = useKeycloak();
     const [isVisible, setIsVisible] = useState(true);
     const location = useLocation();
     const pathnames = location.pathname.split("/").filter((x) => x);
-
+    const { plugins } = usePlugins();
+    
+    const hasEnabledPlugins = plugins.some(plugin => plugin.is_loaded);
+    const enabledPlugins = plugins.filter(plugin => plugin.is_loaded).map(plugin => ({
+        label: plugin.name,
+        path: `plugins/${plugin.name.toLowerCase()}`
+    }));
+    
     const toggleSidebar = () => {
         setIsVisible(!isVisible);
     };
@@ -41,7 +50,6 @@ export default function Sidebar() {
                                 links={[
                                     { label: "Users", path: "home/users" },
                                     { label: "Sessions", path: "home/sessions" },
-                                    { label: "Alerts", path: "home/alerts" }
                                 ]}
                             />
                             <DropdownMenu
@@ -50,22 +58,18 @@ export default function Sidebar() {
                                 isVisible={isVisible}
                                 links={[
                                     { label: "Colors", path: "eventmaker/colors" },
-                                    { label: "Base Configurations", path: "eventmaker/base-configurations" },
-                                    { label: "Plugins", path: "eventmaker/plugins" }
+                                    { label: "Pages", path: "eventmaker/pages" },
+                                    { label: "Choose Plugins", path: "eventmaker/choose-plugins" }
                                 ]}
                             />
-                            <li>
-                                <Link to="schedule" className={`flex ${isVisible ? "items-center gap-3 p-3" : "justify-center items-center p-4"} hover:bg-secondary rounded-md transition-all`}>
-                                    <FaCalendarAlt className="text-xl" />
-                                    <span className={`overflow-hidden transition-all duration-300 ${isVisible ? "w-auto opacity-100" : "w-0 opacity-0"}`}>Schedule</span>
-                                </Link>
-                            </li>
-                            <li>
-                                <Link to="register" className={`flex ${isVisible ? "items-center gap-3 p-3" : "justify-center items-center p-4"} hover:bg-secondary rounded-md transition-all`}>
-                                    <FaUserPlus className="text-xl" />
-                                    <span className={`overflow-hidden transition-all duration-300 ${isVisible ? "w-auto opacity-100" : "w-0 opacity-0"}`}>Register</span>
-                                </Link>
-                            </li>
+                            {hasEnabledPlugins && (
+                                <DropdownMenu
+                                    icon={RiApps2AddLine}
+                                    title="Plugins"
+                                    isVisible={isVisible}
+                                    links={enabledPlugins}
+                                />
+                            )}
                         </ul>
                     </nav>
                 </div>

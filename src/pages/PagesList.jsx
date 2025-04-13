@@ -1,0 +1,257 @@
+import React, { useEffect, useState } from "react";
+import { usePages } from "../contexts/PagesContext.jsx";
+import { useNavigate } from "react-router-dom";
+import { FaEdit, FaTrash, FaPlus } from "react-icons/fa";
+import { useNotification } from "../contexts/NotificationContext";
+
+export function PagesList() {
+    const { pages, isLoading, error, getPages, deletePage, togglePageEnabled, savePage } = usePages();
+    const { showNotification } = useNotification();
+    const navigate = useNavigate();
+
+    const [searchTerm, setSearchTerm] = useState("");
+    const [filterEnabled, setFilterEnabled] = useState("all"); // "all", "enabled", "disabled"
+    const [currentPage, setCurrentPage] = useState(1);
+    const itemsPerPage = 5;
+
+    useEffect(() => {
+        getPages();
+    }, []);
+
+    const handleEdit = (page) => {
+        const pageTitleSlug = encodeURIComponent(page.title);
+        navigate(`/instantiate/eventmaker/edit-page/${pageTitleSlug}`);
+    };
+
+    const handleDelete = async (pageId) => {
+        console.log("Deleting page with ID:", pageId);
+        if (window.confirm("Are you sure you want to delete this page?")) {
+            try {
+                await deletePage(pageId);
+                showNotification("Page deleted successfully!", "success");
+            } catch (error) {
+                // Properly handle the error by logging it
+                console.error("Error deleting page:", error);
+                
+                // Show a more specific error message if possible
+                const errorMessage = error?.message || "Failed to delete the page.";
+                showNotification(errorMessage, "error");
+                
+                getPages(); 
+            }
+        }
+    };
+
+    const handleToggleEnabled = async (pageId, isEnabled) => {
+        try {
+            await togglePageEnabled(pageId, isEnabled);
+            showNotification(
+                `Page ${isEnabled ? 'enabled' : 'disabled'} successfully!`, 
+                "success"
+            );
+        } catch (error) {
+            console.error("Error toggling page status:", error);
+            const errorMessage = error?.message || `Failed to ${isEnabled ? 'enable' : 'disable'} the page.`;
+            showNotification(errorMessage, "error");
+            
+            // Refresh the page list to ensure UI consistency
+            getPages();
+        }
+    };
+
+    const handleCreate = () => {
+        navigate("/instantiate/eventmaker/create-page");
+    };
+
+    const handleClone = async (page) => {
+        try {
+            // Create a new page with the same content
+            const clonedPageData = {
+                title: `${page.title} (Copy)`,
+                components: page.components,
+                enabled: false // Start as disabled
+            };
+
+            await savePage(clonedPageData);
+            showNotification("Page cloned successfully!", "success");
+            getPages();
+        } catch (error) {
+            console.error("Error cloning page:", error);
+            const errorMessage = error?.message || "Failed to clone the page.";
+            showNotification(errorMessage, "error");
+        }
+    };
+
+    const filteredPages = pages.filter(page => {
+        // Apply search filter
+        const matchesSearch = page.title.toLowerCase().includes(searchTerm.toLowerCase());
+        
+        // Apply enabled/disabled filter
+        const matchesEnabled = 
+            filterEnabled === "all" || 
+            (filterEnabled === "enabled" && page.enabled) || 
+            (filterEnabled === "disabled" && !page.enabled);
+            
+        return matchesSearch && matchesEnabled;
+    });
+
+    const totalPages = Math.ceil(filteredPages.length / itemsPerPage);
+    const paginatedPages = filteredPages.slice(
+        (currentPage - 1) * itemsPerPage,
+        currentPage * itemsPerPage
+    );
+
+    return (
+        <div className="w-full min-h-svh p-8">
+            <h1 className="text-3xl font-bold mb-4">Pages</h1>
+
+            <div className="mb-4">
+                <button
+                    onClick={handleCreate}
+                    className="flex items-center gap-2 px-4 py-2 bg-green-600 text-white rounded-md hover:bg-green-700"
+                >
+                    <FaPlus />
+                    Create Page
+                </button>
+            </div>
+
+            <div className="flex flex-col sm:flex-row gap-4 mb-6">
+                <div className="relative flex-1">
+                    <input
+                        type="text"
+                        placeholder="Search pages..."
+                        value={searchTerm}
+                        onChange={(e) => setSearchTerm(e.target.value)}
+                        className="w-full p-2 pl-10 border border-gray-300 rounded-md shadow-sm"
+                    />
+                    <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5 absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
+                    </svg>
+                </div>
+                
+                <select
+                    value={filterEnabled}
+                    onChange={(e) => setFilterEnabled(e.target.value)}
+                    className="p-2 border border-gray-300 rounded-md shadow-sm"
+                >
+                    <option value="all">All Pages</option>
+                    <option value="enabled">Enabled Only</option>
+                    <option value="disabled">Disabled Only</option>
+                </select>
+            </div>
+
+            {isLoading && <p>Loading pages...</p>}
+            {error && <p className="text-red-500">{error}</p>}
+
+            {!isLoading && pages.length === 0 && (
+                <div className="flex flex-col items-center justify-center p-8 border-2 border-dashed border-gray-300 rounded-lg">
+                    <svg xmlns="http://www.w3.org/2000/svg" className="h-16 w-16 text-gray-400 mb-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+                    </svg>
+                    <h3 className="text-lg font-medium text-gray-700 mb-2">No pages found</h3>
+                    <p className="text-gray-500 text-center mb-4">Get started by creating your first page.</p>
+                    <button
+                        onClick={handleCreate}
+                        className="flex items-center gap-2 px-4 py-2 bg-green-600 text-white rounded-md hover:bg-green-700"
+                    >
+                        <FaPlus />
+                        Create First Page
+                    </button>
+                </div>
+            )}
+
+            <ul className="space-y-4">
+                {paginatedPages.map((page, index) => (
+                    <li
+                        key={page.page_id || index}
+                        className={`p-4 border border-gray-300 rounded-md shadow-sm hover:shadow-lg transition-shadow ${
+                            !page.enabled ? 'bg-gray-50' : ''
+                        }`}
+                    >
+                        <div className="flex justify-between items-center">
+                            <div>
+                                <div className="flex items-center gap-2">
+                                    <h2 className="text-xl font-semibold">{page.title}</h2>
+                                    <span className={`text-xs px-2 py-1 rounded-full ${
+                                        page.enabled 
+                                            ? 'bg-green-100 text-green-800' 
+                                            : 'bg-gray-100 text-gray-800'
+                                    }`}>
+                                        {page.enabled ? 'Enabled' : 'Disabled'}
+                                    </span>
+                                </div>
+                                <p className="text-gray-500">{page.description || "No description available."}</p>
+                            </div>
+                            <div className="flex items-center space-x-2">
+                                <label className="flex items-center gap-2">
+                                    <span className="text-sm text-gray-700">Enabled</span>
+                                    <input
+                                        type="checkbox"
+                                        checked={page.enabled}
+                                        onChange={(e) => handleToggleEnabled(page.page_id, e.target.checked)}
+                                        className="toggle toggle-primary"
+                                    />
+                                </label>
+                                <button
+                                    onClick={() => handleEdit(page)}
+                                    className="text-gray-500 hover:text-blue-500 p-2 rounded-full"
+                                    title="Edit Page"
+                                >
+                                    <FaEdit />
+                                </button>
+                                <button
+                                    onClick={() => handleDelete(page.page_id)}
+                                    className="text-gray-500 hover:text-red-500 p-2 rounded-full"
+                                    title="Delete Page"
+                                >
+                                    <FaTrash />
+                                </button>
+                                <button
+                                    onClick={() => handleClone(page)}
+                                    className="text-gray-500 hover:text-purple-500 p-2 rounded-full"
+                                    title="Clone Page"
+                                >
+                                    <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 7v8a2 2 0 002 2h6M8 7V5a2 2 0 012-2h4.586a1 1 0 01.707.293l4.414 4.414a1 1 0 01.293.707V15a2 2 0 01-2 2h-2M8 7H6a2 2 0 00-2 2v10a2 2 0 002 2h8a2 2 0 002-2v-2" />
+                                    </svg>
+                                </button>
+                            </div>
+                        </div>
+                    </li>
+                ))}
+            </ul>
+
+            {filteredPages.length > itemsPerPage && (
+                <div className="flex justify-center mt-6">
+                    <div className="join">
+                        <button
+                            className="join-item btn"
+                            onClick={() => setCurrentPage(Math.max(1, currentPage - 1))}
+                            disabled={currentPage === 1}
+                        >
+                            «
+                        </button>
+                        
+                        {Array.from({ length: totalPages }, (_, i) => i + 1).map((pageNumber) => (
+                            <button
+                                key={`page-${pageNumber}`}
+                                className={`join-item btn ${currentPage === pageNumber ? 'btn-active' : ''}`}
+                                onClick={() => setCurrentPage(pageNumber)}
+                            >
+                                {pageNumber}
+                            </button>
+                        ))}
+                        
+                        <button
+                            className="join-item btn"
+                            onClick={() => setCurrentPage(Math.min(totalPages, currentPage + 1))}
+                            disabled={currentPage === totalPages}
+                        >
+                            »
+                        </button>
+                    </div>
+                </div>
+            )}
+        </div>
+    );
+}

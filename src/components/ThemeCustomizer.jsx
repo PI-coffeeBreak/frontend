@@ -1,153 +1,76 @@
 import { useState, useEffect } from "react"
-import { Save, RefreshCw, Undo, Calendar, Users, MapPin, Bell, Clock, Gift, Music, Camera } from "lucide-react"
-import axios from "axios"
-import { baseUrl } from "../consts"
+import { Save, Undo, Calendar, Users, MapPin, Bell, Clock, Gift, Music, Camera } from "lucide-react"
+import { useTheme } from "../contexts/ThemeContext";
+import { useNotification } from "../contexts/NotificationContext";
 
-const colorThemeBaseUrl = `${baseUrl}/ui/color-theme/color-theme`;
 
 export function ThemeCustomizer() {
-  const initialTheme = {
-    "base-100": "#f3faff",
-    "base-200": "#d6d6d3",
-    "base-300": "#d6d6d3",
-    "base-content": "#726d65",
-    "primary": "#4f2b1d",
-    "primary-content": "#f3faff",
-    "secondary": "#c6baa2",
-    "secondary-content": "#f1fbfb",
-    "accent": "#faa275",
-    "accent-content": "#f3fbf6",
-    "neutral": "#caa751",
-    "neutral-content": "#f3faff",
-    "info": "#00b2dd",
-    "info-content": "#f2fafd",
-    "success": "#0cae00",
-    "success-content": "#f5faf4",
-    "warning": "#fbad00",
-    "warning-content": "#221300",
-    "error": "#ff1300",
-    "error-content": "#fff6f4",
-  }
+  const { theme, fetchThemeColors, updateThemeColors, initialTheme } = useTheme();
+  const { showNotification } = useNotification();
 
-  const [theme, setTheme] = useState(initialTheme)
-  const [originalTheme, setOriginalTheme] = useState(initialTheme)
-  const [hexValues, setHexValues] = useState({})
-  const [isApplied, setIsApplied] = useState(false)
-  const [activeTab, setActiveTab] = useState("colors")
-  const [showTooltip, setShowTooltip] = useState(false)
-  const [savedMessage, setSavedMessage] = useState(false)
+  const [localTheme, setLocalTheme] = useState(initialTheme);
+  const [hexValues, setHexValues] = useState({});
+  const [activeTab, setActiveTab] = useState("colors");
 
-  // Load saved theme from localStorage on component mount
+  // Load saved theme from context on component mount
   useEffect(() => {
-    fetchThemeColors()
+    const loadTheme = async () => {
+      try {
+        await fetchThemeColors();
+      } catch (error) {
+        console.error("Error loading theme:", error);
+      }
+    };
+    
+    loadTheme();
   }, []);
 
-  // Update the hex values on mount
+  // Update local state when context theme changes
   useEffect(() => {
-    const hexObj = { ...theme }
-    setHexValues(hexObj)
-  }, [])
-
-  const fetchThemeColors = async () => {
-    try {
-      const response = await axios.get(colorThemeBaseUrl);
-      console.log("Theme colors fetched successfully:", response.data);
-
-      // Convert keys from underscored to hyphenated format
-      const transformedTheme = Object.keys(response.data).reduce((acc, key) => {
-        const newKey = key.replace(/_/g, "-"); // Replace underscores with hyphens
-        acc[newKey] = response.data[key];
-        return acc;
-      }, {});
-
-      setTheme(transformedTheme);
-      setOriginalTheme(transformedTheme);
-      setHexValues(transformedTheme);
-
+    if (Object.keys(theme).length > 0) {
+      setLocalTheme(theme);
+      setHexValues(theme);
+      
       // Apply the theme to CSS variables
-      Object.keys(transformedTheme).forEach((key) => {
-        document.documentElement.style.setProperty(`--color-${key}`, transformedTheme[key]);
+      Object.keys(theme).forEach((key) => {
+        document.documentElement.style.setProperty(`--color-${key}`, theme[key]);
       });
-    } catch (error) {
-      console.error("Error fetching theme colors:", error);
-      throw error;
     }
-  }
-
-  const updateThemeColors = async () => {
-    try {
-      // Convert theme keys from hyphenated to underscored format
-      const transformedTheme = Object.keys(theme).reduce((acc, key) => {
-        const newKey = key.replace(/-/g, "_"); // Replace hyphens with underscores
-        acc[newKey] = theme[key];
-        return acc;
-      }, {});
-
-      const response = await axios.put(colorThemeBaseUrl, transformedTheme);
-      console.log("Theme colors updated successfully:", response.data);
-
-      // Update state with the response data (convert back to hyphenated keys if necessary)
-      const updatedTheme = Object.keys(response.data).reduce((acc, key) => {
-        const newKey = key.replace(/_/g, "-"); // Replace underscores with hyphens
-        acc[newKey] = response.data[key];
-        return acc;
-      }, {});
-
-      setTheme(updatedTheme);
-      setOriginalTheme(updatedTheme);
-      setHexValues(updatedTheme);
-
-      Object.keys(updatedTheme).forEach((key) => {
-        document.documentElement.style.setProperty(`--color-${key}`, updatedTheme[key]);
-      });
-    } catch (error) {
-      console.error("Error updating theme colors:", error);
-      throw error;
-    }
-  }
+  }, [theme]);
 
   const handleColorChange = (key, hexValue) => {
-    const newHexValues = { ...hexValues, [key]: hexValue }
-    setHexValues(newHexValues)
+    const newHexValues = { ...hexValues, [key]: hexValue };
+    setHexValues(newHexValues);
 
     // Update the theme state with the new hex value
-    const newTheme = { ...theme }
-    newTheme[key] = hexValue
-    setTheme(newTheme)
-    console.log(`--color-${key}: ${hexValue}`)
-    console.log(newTheme)
+    const newTheme = { ...localTheme };
+    newTheme[key] = hexValue;
+    setLocalTheme(newTheme);
 
     // Apply the new theme to CSS variables
-    document.documentElement.style.setProperty(`--color-${key}`, hexValue)
-    setIsApplied(false)
-  }
+    document.documentElement.style.setProperty(`--color-${key}`, hexValue);
+  };
 
-  const resetTheme = () => {
-    // Reset the theme state to the original theme (initialTheme)
-    setTheme(initialTheme);
+  const resetTheme = async () => {
+    try {
+      // Fetch latest theme from the server
+      await fetchThemeColors();
+      showNotification("Theme reset to original", "info");
+    } catch (error) {
+      console.error("Error resetting theme:", error);
+      showNotification("Failed to reset theme", "error");
+    }
+  };
 
-    // Reset the hexValues state to match the initial theme values
-    const resetHexValues = { ...initialTheme };
-    setHexValues(resetHexValues);
-
-    // Reset the CSS variables to the initial theme values
-    Object.keys(initialTheme).forEach((key) => {
-      document.documentElement.style.setProperty(`--color-${key}`, initialTheme[key]); // Use initialTheme for reset
-    });
-
-    // Optionally reset the applied state
-    setIsApplied(false);
-};
-  
-  
-
-  const saveTheme = () => {
-    updateThemeColors()
-
-    setSavedMessage(true)
-    setTimeout(() => setSavedMessage(false), 3000)
-    setIsApplied(true)
-  }
+  const saveTheme = async () => {
+    try {
+      await updateThemeColors(hexValues);
+      showNotification("Theme saved successfully!", "success");
+    } catch (error) {
+      console.error("Error saving theme:", error);
+      showNotification("Failed to save theme. Please try again.", "error");
+    }
+  };
 
   // User-friendly color names
   const colorMapping = {
@@ -203,19 +126,19 @@ export function ThemeCustomizer() {
         <div className="card shadow-sm" style={{ backgroundColor: hexValues["base-200"]}}>
           <div className="card-body p-4">
             <div className="flex items-center gap-2 mb-2">
-              <MapPin className="w-4 h-4" style={{ color:["primary"] }} />
-              <h3 className="card-title" style={{ color:["base"] }}>Event Location</h3>
+              <MapPin className="w-4 h-4" style={{ color: hexValues["primary"] }} />
+              <h3 className="card-title" style={{ color: hexValues["base-content"] }}>Event Location</h3>
             </div>
             <p className="text-sm">Centro de Congressos de Aveiro</p>
-            <p className="text-xs" style={{ color:["base-content/70"] }}>Cais da Fonte Nova, 3810-164 Aveiro</p>
+            <p className="text-xs" style={{ color: hexValues["base-content"] }}>Cais da Fonte Nova, 3810-164 Aveiro</p>
           </div>
         </div>
 
         <div className="card shadow-sm" style={{ backgroundColor: hexValues["base-200"] }}>
           <div className="card-body p-4">
             <div className="flex items-center gap-2 mb-2">
-              <Users className="w-4 h-4" style={{ color:["primary"] }} />
-              <h3 className="card-title" style={{ color:["base"] }}>Attendees</h3>
+              <Users className="w-4 h-4" style={{ color: hexValues["primary"] }} />
+              <h3 className="card-title" style={{ color: hexValues["base-content"] }}>Attendees</h3>
             </div>
             <div className="flex justify-between items-center">
               <p className="text-sm">400 tickets</p>
@@ -245,15 +168,15 @@ export function ThemeCustomizer() {
       <h4 className="font-semibold mb-3">Event Updates</h4>
       <div className="space-y-2 mb-6">
         <div className="flex items-center gap-2 p-2 rounded" style={{ backgroundColor: hexValues["info"], color: hexValues["info-content"] }}>
-          <Bell className="w-4 h-4" style={{ color:["info"]}}/>
+          <Bell className="w-4 h-4" style={{ color: hexValues["info"]}}/>
           <p className="text-sm">Event is about to start</p>
         </div>
         <div className="flex items-center gap-2 p-2 rounded" style={{ backgroundColor: hexValues["success"], color: hexValues["success-content"] }}>
-          <Clock className="w-4 h-4" style={{ color:["success"] }}/>
+          <Clock className="w-4 h-4" style={{ color: hexValues["success"] }}/>
           <p className="text-sm">Coffee Break in 10 minutes</p>
         </div>
         <div className="flex items-center gap-2 p-2 rounded" style={{ backgroundColor: hexValues["warning"], color: hexValues["warning-content"] }}>
-          <Gift className="w-4 h-4 text-warning" style={{ color:["warning"] }}/>
+          <Gift className="w-4 h-4" style={{ color: hexValues["warning"] }}/>
           <p className="text-sm">Talk x staring hour was delayed from 15:00 to 17:00</p>
         </div>
       </div>
@@ -264,90 +187,120 @@ export function ThemeCustomizer() {
         <button className="btn btn-outline">Contact Organizer</button>
       </div>
     </div>
-  )
+  );
 
   return (
-    <div className="container mx-auto p-4">
-      <div className="bg-base-100 rounded-xl shadow-xl overflow-hidden">
-        {/* Header */}
-        <div className="bg-gradient-to-r from-primary to-secondary p-6 text-primary-content">
-          <div className="flex justify-between items-center">
+    <div className="bg-base-100 rounded-xl shadow-xl overflow-hidden">
+      {/* Header */}
+      <div className="bg-gradient-to-r from-primary to-secondary p-6 text-primary-content">
+        <div className="flex justify-between items-center">
+          <div>
             <h2 className="text-2xl font-bold">Event Theme Designer</h2>
-            <div className="flex gap-2">
-              <button
-                className="btn btn-sm btn-circle btn-ghost text-primary-content"
-                onClick={resetTheme}
-                title="Reset to original theme"
-              >
-                <Undo className="w-4 h-4" />
-              </button>
-              <button className="btn btn-sm btn-circle glass text-primary-content relative" onClick={saveTheme}>
-                <Save className="w-4 h-4" />
-                {savedMessage && (
-                  <span className="absolute -bottom-12 left-1/2 transform -translate-x-1/2 bg-black/80 text-white text-xs py-1 px-2 rounded whitespace-nowrap">
-                    Theme saved!
-                  </span>
-                )}
-              </button>
+            <p className="mt-2 text-sm opacity-90">Customize your event's colors and see how they look in real-time</p>
+          </div>
+          <div className="flex gap-2">
+            <button
+              className="btn btn-sm btn-outline text-primary-content"
+              onClick={resetTheme}
+              title="Reset to original theme"
+            >
+              <Undo className="w-4 h-4 mr-1" /> Reset
+            </button>
+            <button 
+              className="btn btn-sm btn-primary text-primary-content" 
+              onClick={saveTheme}
+            >
+              <Save className="w-4 h-4 mr-1" /> Save
+            </button>
+          </div>
+        </div>
+      </div>
+
+      {/* Tabs */}
+      <div className="bg-base-200 px-6 pt-4">
+        <div className="tabs tabs-boxed bg-base-300 inline-flex" role="tablist">
+          <button 
+            className={`tab ${activeTab === "colors" ? "tab-active" : ""}`}
+            onClick={() => setActiveTab("colors")}
+            role="tab"
+            aria-selected={activeTab === "colors"}
+            aria-controls="colors-panel"
+            id="colors-tab"
+          >
+            Choose Colors
+          </button>
+          <button 
+            className={`tab ${activeTab === "preview" ? "tab-active" : ""}`}
+            onClick={() => setActiveTab("preview")}
+            role="tab"
+            aria-selected={activeTab === "preview"}
+            aria-controls="preview-panel"
+            id="preview-tab"
+          >
+            Preview Your Event
+          </button>
+        </div>
+      </div>
+
+      {/* Content */}
+      <div className="p-6 bg-base-200 min-h-[500px]">
+        <div 
+          id="colors-panel" 
+          role="tabpanel" 
+          aria-labelledby="colors-tab"
+          className={activeTab === "colors" ? "" : "hidden"}
+        >
+          <div className="space-y-8">
+            <div className="bg-base-100 p-4 rounded-lg shadow-sm">
+              <p className="text-sm mb-4">
+                Click on any color below to change it. You'll see your changes in the "Preview Your Event" tab.
+              </p>
             </div>
-          </div>
-          <p className="mt-2 text-sm opacity-90">Customize your event's colors and see how they look in real-time</p>
-        </div>
-
-        {/* Tabs */}
-        <div className="bg-base-200 px-6 pt-4">
-          <div className="tabs tabs-boxed bg-base-300 inline-flex">
-            <a className={`tab ${activeTab === "colors" ? "tab-active" : ""}`} onClick={() => setActiveTab("colors")}>
-              Choose Colors
-            </a>
-            <a className={`tab ${activeTab === "preview" ? "tab-active" : ""}`} onClick={() => setActiveTab("preview")}>
-              Preview Your Event
-            </a>
-          </div>
-        </div>
-
-        {/* Content */}
-        <div className="p-6 bg-base-200 min-h-[500px]">
-          {activeTab === "colors" ? (
-            <div className="space-y-8">
-              <div className="bg-base-100 p-4 rounded-lg shadow-sm">
-                <p className="text-sm mb-4">
-                  Click on any color below to change it. You'll see your changes in the "Preview Your Event" tab.
-                </p>
-              </div>
-
-              {Object.entries(colorGroups).map(([groupName, colorKeys]) => (
-                <div key={groupName} className="space-y-4">
-                  <h3 className="font-semibold text-lg">{groupName}</h3>
-                  <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-                    {colorKeys.map((key) => (
-                      <div key={key} className="bg-base-100 p-4 rounded-lg shadow-sm hover:shadow-md transition-shadow">
-                        <div className="flex items-center gap-3">
-                          <div
-                            className="w-12 h-12 rounded-lg shadow-inner border"
-                            style={{ backgroundColor: hexValues[key] }}
-                          ></div>
-                          <div className="flex-1">
-                            <label className="font-medium">{colorMapping[key] || key}</label>
+            
+            {Object.entries(colorGroups).map(([groupName, colorKeys]) => (
+              <div key={groupName} className="space-y-4">
+                <h3 className="font-semibold text-lg">{groupName}</h3>
+                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+                  {colorKeys.map((key) => (
+                    <div key={key} className="bg-base-100 p-4 rounded-lg shadow-sm hover:shadow-md transition-shadow border border-base-300">
+                      <div className="flex items-center gap-3">
+                        <div
+                          className="w-12 h-12 rounded-lg shadow-inner border border-base-300 flex items-center justify-center"
+                          style={{ backgroundColor: hexValues[key] }}
+                        >
+                          {/* Show contrast text for accessibility */}
+                          {key.includes('content') && <span className="text-xs opacity-75">Text</span>}
+                        </div>
+                        <div className="flex-1">
+                          <label className="font-medium block mb-1">{colorMapping[key] || key}</label>
+                          <div className="flex gap-2 items-center">
                             <input
                               type="color"
                               value={hexValues[key] || "#000000"}
                               onChange={(e) => handleColorChange(key, e.target.value)}
-                              className="w-full h-8 cursor-pointer mt-1"
+                              className="w-full h-8 cursor-pointer"
                             />
+                            <span className="text-xs font-mono">{hexValues[key]}</span>
                           </div>
                         </div>
                       </div>
-                    ))}
-                  </div>
+                    </div>
+                  ))}
                 </div>
-              ))}
-            </div>
-          ) : (
-            renderPreview()
-          )}
+              </div>
+            ))}
+          </div>
+        </div>
+        
+        <div 
+          id="preview-panel" 
+          role="tabpanel" 
+          aria-labelledby="preview-tab"
+          className={activeTab === "preview" ? "" : "hidden"}
+        >
+          {renderPreview()}
         </div>
       </div>
     </div>
-  )
+  );
 }
