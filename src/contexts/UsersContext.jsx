@@ -1,7 +1,9 @@
 import { createContext, useContext, useState, useEffect, useMemo } from "react";
 import PropTypes from "prop-types";
+import { useKeycloak } from "@react-keycloak/web";
 import axios from "axios";
 import { baseUrl } from "../consts";
+import { axiosWithAuth } from "../utils/axiosWithAuth";
 
 const UsersContext = createContext();
 

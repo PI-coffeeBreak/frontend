@@ -16,7 +16,7 @@ export default function Sidebar() {
 
     const hasEnabledPlugins = plugins.some(plugin => plugin.is_loaded);
     const enabledPlugins = plugins.filter(plugin => plugin.is_loaded).map(plugin => ({
-        label: plugin.name,
+        label: plugin.formatted_name,
         path: `plugins/${plugin.name.toLowerCase()}`
     }));
 
