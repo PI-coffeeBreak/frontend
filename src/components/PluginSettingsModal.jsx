@@ -30,7 +30,7 @@ function PluginSettingsModal({ pluginConfig, onClose }) {
     const renderFormFields = () => {
         return pluginConfig.inputs.map((input) => {
             const { type, name } = input; // Destructure to get the unique `name` property
-    
+
             switch (type) {
                 case "selector":
                     return <Selector key={name} {...input} />;
@@ -59,7 +59,7 @@ function PluginSettingsModal({ pluginConfig, onClose }) {
                     ✕
                 </button>
 
-                <h2 className="text-xl font-bold mb-4">Settings for {pluginConfig.title}</h2>
+                <h2 className="text-xl font-bold mb-4">Settings for {pluginConfig.formatted_name}</h2>
                 <p className="mb-4">{pluginConfig.description}</p>
 
                 <form id="plugin-settings-form" onSubmit={handleSubmit}>
@@ -83,6 +83,7 @@ function PluginSettingsModal({ pluginConfig, onClose }) {
 PluginSettingsModal.propTypes = {
     pluginConfig: PropTypes.shape({
         title: PropTypes.string.isRequired,
+        formatted_name: PropTypes.string.isRequired,
         description: PropTypes.string.isRequired,
         inputs: PropTypes.arrayOf(
             PropTypes.shape({
