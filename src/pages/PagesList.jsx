@@ -3,11 +3,14 @@ import { usePages } from "../contexts/PagesContext.jsx";
 import { useNavigate } from "react-router-dom";
 import { FaEdit, FaTrash, FaPlus } from "react-icons/fa";
 import { useNotification } from "../contexts/NotificationContext";
+import { axiosWithAuth } from "../utils/axiosWithAuth";
+import { useKeycloak } from "@react-keycloak/web";
 
 export function PagesList() {
     const { pages, isLoading, error, getPages, deletePage, togglePageEnabled, savePage } = usePages();
     const { showNotification } = useNotification();
     const navigate = useNavigate();
+    const { keycloak } = useKeycloak();
 
     const [searchTerm, setSearchTerm] = useState("");
     const [filterEnabled, setFilterEnabled] = useState("all"); // "all", "enabled", "disabled"
@@ -32,28 +35,61 @@ export function PagesList() {
             } catch (error) {
                 // Properly handle the error by logging it
                 console.error("Error deleting page:", error);
-                
+
                 // Show a more specific error message if possible
                 const errorMessage = error?.message || "Failed to delete the page.";
                 showNotification(errorMessage, "error");
-                
-                getPages(); 
+
+                getPages();
             }
         }
     };
 
     const handleToggleEnabled = async (pageId, isEnabled) => {
         try {
+            const page = pages.find(p => p.page_id === pageId);
+            if (!page) return;
+
             await togglePageEnabled(pageId, isEnabled);
+
+            const axiosInstance = axiosWithAuth(keycloak);
+
+            if (isEnabled) {
+                // Create menu option when enabling
+                const menuOption = {
+                    icon: "FaFile",
+                    label: page.title,
+                    href: page.title.toLowerCase().replace(/\s+/g, '-')
+                };
+
+                await axiosInstance.post(
+                    `${import.meta.env.VITE_API_BASE_URL}/ui/menu/option`,
+                    menuOption
+                );
+            } else {
+                // Get menu options and find the one with matching label
+                const { data: menu } = await axiosInstance.get(
+                    `${import.meta.env.VITE_API_BASE_URL}/ui/menu`
+                );
+
+                const menuOption = menu.options.find(opt => opt.label === page.title);
+                if (menuOption) {
+                    // Remove menu option by ID
+                    await axiosInstance.delete(
+                        `${import.meta.env.VITE_API_BASE_URL}/ui/menu/option/${menuOption.id}`
+                    );
+                }
+            }
+
             showNotification(
-                `Page ${isEnabled ? 'enabled' : 'disabled'} successfully!`, 
+                `Page ${isEnabled ? 'enabled' : 'disabled'} successfully!`,
                 "success"
             );
         } catch (error) {
             console.error("Error toggling page status:", error);
             const errorMessage = error?.message || `Failed to ${isEnabled ? 'enable' : 'disable'} the page.`;
             showNotification(errorMessage, "error");
-            
+
             // Refresh the page list to ensure UI consistency
             getPages();
         }
@@ -85,13 +121,13 @@ export function PagesList() {
     const filteredPages = pages.filter(page => {
         // Apply search filter
         const matchesSearch = page.title.toLowerCase().includes(searchTerm.toLowerCase());
-        
+
         // Apply enabled/disabled filter
-        const matchesEnabled = 
-            filterEnabled === "all" || 
-            (filterEnabled === "enabled" && page.enabled) || 
+        const matchesEnabled =
+            filterEnabled === "all" ||
+            (filterEnabled === "enabled" && page.enabled) ||
             (filterEnabled === "disabled" && !page.enabled);
-            
+
         return matchesSearch && matchesEnabled;
     });
 
@@ -128,7 +164,7 @@ export function PagesList() {
                         <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
                     </svg>
                 </div>
-                
+
                 <select
                     value={filterEnabled}
                     onChange={(e) => setFilterEnabled(e.target.value)}
@@ -164,19 +200,17 @@ export function PagesList() {
                 {paginatedPages.map((page, index) => (
                     <li
                         key={page.page_id || index}
-                        className={`p-4 border border-gray-300 rounded-md shadow-sm hover:shadow-lg transition-shadow ${
-                            !page.enabled ? 'bg-gray-50' : ''
-                        }`}
+                        className={`p-4 border border-gray-300 rounded-md shadow-sm hover:shadow-lg transition-shadow ${!page.enabled ? 'bg-gray-50' : ''
+                            }`}
                     >
                         <div className="flex justify-between items-center">
                             <div>
                                 <div className="flex items-center gap-2">
                                     <h2 className="text-xl font-semibold">{page.title}</h2>
-                                    <span className={`text-xs px-2 py-1 rounded-full ${
-                                        page.enabled 
-                                            ? 'bg-green-100 text-green-800' 
-                                            : 'bg-gray-100 text-gray-800'
-                                    }`}>
+                                    <span className={`text-xs px-2 py-1 rounded-full ${page.enabled
+                                        ? 'bg-green-100 text-green-800'
+                                        : 'bg-gray-100 text-gray-800'
+                                        }`}>
                                         {page.enabled ? 'Enabled' : 'Disabled'}
                                     </span>
                                 </div>
@@ -231,7 +265,7 @@ export function PagesList() {
                         >
                             «
                         </button>
-                        
+
                         {Array.from({ length: totalPages }, (_, i) => i + 1).map((pageNumber) => (
                             <button
                                 key={`page-${pageNumber}`}
@@ -241,7 +275,7 @@ export function PagesList() {
                                 {pageNumber}
                             </button>
                         ))}
-                        
+
                         <button
                             className="join-item btn"
                             onClick={() => setCurrentPage(Math.min(totalPages, currentPage + 1))}

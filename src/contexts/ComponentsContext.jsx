@@ -14,7 +14,7 @@ export const ComponentsProvider = ({ children }) => {
         setIsLoading(true);
         setError(null);
         try {
-            const response = await axios.get(`${baseUrl}/components/components`);
+            const response = await axiosWithAuth(keycloak).get(`${baseUrl}/components`);
             const componentsData = response.data.components;
             console.log("Components fetched successfully:", componentsData);
             setComponents(componentsData);
@@ -24,6 +24,28 @@ export const ComponentsProvider = ({ children }) => {
         } finally {
             setIsLoading(false);
         }
+    };
+
+    // Function to get component schema
+    const getComponentSchema = (componentName) => {
+        return components[componentName] || null;
+    };
+
+    // Function to get default props for a component
+    const getDefaultPropsForComponent = (componentName) => {
+        const schema = getComponentSchema(componentName);
+        if (!schema) return {};
+
+        const defaultProps = { name: componentName };
+
+        // Extract default values from properties
+        Object.entries(schema.properties).forEach(([key, prop]) => {
+            if (key !== 'name' && key !== 'component_id' && 'default' in prop) {
+                defaultProps[key] = prop.default;
+            }
+        });
+
+        return defaultProps;
     };
 
     // Function to return a simplified list of components
@@ -57,6 +79,8 @@ export const ComponentsProvider = ({ children }) => {
             isLoading,
             error,
             getComponentList,
+            getComponentSchema,
+            getDefaultPropsForComponent,
         }),
         [components, isLoading, error]
     );

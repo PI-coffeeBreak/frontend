@@ -13,7 +13,6 @@ import Plugins from "./pages/Plugins.jsx";
 import Colors from "./pages/Colors.jsx";
 import keycloak from "./keycloak.js";
 import PrivateRoute from "./PrivateRoute.js";
-import { PageEditorWrapper } from "./pages/PageEditorWrapper.jsx";
 import { PagesList } from "./pages/PagesList.jsx";
 import { ActivitiesProvider } from "./contexts/ActivitiesContext.jsx";
 import { PluginsProvider } from "./contexts/PluginsContext.jsx";
@@ -25,64 +24,65 @@ import EventSetup from "./pages/EventSetup.jsx";
 import { ComponentsProvider } from "./contexts/ComponentsContext.jsx";
 import EventMaker from "./pages/EventMaker.jsx";
 import Instantiate from "./pages/Instantiate.jsx";
-
+import { CreatePage } from "./pages/page_editor/CreatePage.jsx";
+import { EditPage } from "./pages/page_editor/EditPage.jsx";
 
 export default function App() {
   return (
-      <ReactKeycloakProvider 
-        authClient={keycloak}
-        initOptions={{
-          checkLoginIframe: false,
-          pkceMethod: 'S256',
-          tokenRefreshInterval: 60
-        }}
-      >
-        <NotificationProvider>
-          <ThemeProvider>
-            <PluginsProvider>
-              <ComponentsProvider>
-                <ActivitiesProvider>
-                  <UsersProvider>
-                    <PagesProvider>
-                
-          <Router>
-              <Routes>
-                      <Route element={<Layout />}>
-                        <Route index element={<Home />} />
-                      </Route>
-                      <Route element={<LayoutAuth />}>
-                        <Route path="setup" element={<EventSetup />} />
-                      </Route>
-                  
-                  <Route path="instantiate" element={<PrivateRoute><LayoutInstantiate/></PrivateRoute>}>
-                      <Route index element={<Instantiate />} />
-                      <Route path="home">
-                          <Route path="users" element={<Users />}/>
-                          <Route path="sessions" element={<Activities/>}/>
-                          <Route path="alerts" element={<Alerts/>}/>
-                      </Route>
-                      <Route path="eventmaker">
-                          <Route index element={<EventMaker />} />
-                          <Route path="colors" element={<Colors />} />
-                          <Route path="pages" element={<PagesList />} />
-                          <Route path="choose-plugins" element={<Plugins />} />
-                          <Route path="edit-page/:pageTitle" element={<PageEditorWrapper />} />
-                          <Route path="create-page" element={<PageEditorWrapper />} />
+    <ReactKeycloakProvider
+      authClient={keycloak}
+      initOptions={{
+        checkLoginIframe: false,
+        pkceMethod: 'S256',
+        tokenRefreshInterval: 60
+      }}
+    >
+      <NotificationProvider>
+        <ThemeProvider>
+          <PluginsProvider>
+            <ComponentsProvider>
+              <ActivitiesProvider>
+                <UsersProvider>
+                  <PagesProvider>
+
+                    <Router>
+                      <Routes>
+                        <Route element={<Layout />}>
+                          <Route index element={<Home />} />
                         </Route>
-                        <Route path="plugins">
-                          <Route path="alerts" element={<Alerts />} />
-                          <Route path="schedule" element={<Schedule />} />
+                        <Route element={<LayoutAuth />}>
+                          <Route path="setup" element={<EventSetup />} />
                         </Route>
-                  </Route>
-              </Routes>
-          </Router>
-          </PagesProvider>
-                  </UsersProvider>
-                </ActivitiesProvider>
-              </ComponentsProvider>
-            </PluginsProvider>
-          </ThemeProvider>
-        </NotificationProvider>
-      </ReactKeycloakProvider>
+
+                        <Route path="instantiate" element={<PrivateRoute><LayoutInstantiate /></PrivateRoute>}>
+                          <Route index element={<Instantiate />} />
+                          <Route path="home">
+                            <Route path="users" element={<Users />} />
+                            <Route path="sessions" element={<Activities />} />
+                            <Route path="alerts" element={<Alerts />} />
+                          </Route>
+                          <Route path="eventmaker">
+                            <Route index element={<EventMaker />} />
+                            <Route path="colors" element={<Colors />} />
+                            <Route path="pages" element={<PagesList />} />
+                            <Route path="choose-plugins" element={<Plugins />} />
+                            <Route path="edit-page/:pageTitle" element={<EditPage />} />
+                            <Route path="create-page" element={<CreatePage />} />
+                          </Route>
+                          <Route path="plugins">
+                            <Route path="alerts" element={<Alerts />} />
+                            <Route path="schedule" element={<Schedule />} />
+                          </Route>
+                        </Route>
+                      </Routes>
+                    </Router>
+                  </PagesProvider>
+                </UsersProvider>
+              </ActivitiesProvider>
+            </ComponentsProvider>
+          </PluginsProvider>
+        </ThemeProvider>
+      </NotificationProvider>
+    </ReactKeycloakProvider>
   );
 }
