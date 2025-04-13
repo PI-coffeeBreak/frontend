@@ -6,11 +6,11 @@ export default function Navbar() {
     const { keycloak } = useKeycloak();
 
     const handleLogout = () => {
-        keycloak.logout();
+        keycloak.logout({ redirectUri: window.location.origin });
     };
 
     const handleLogin = () => {
-        keycloak.login();
+        keycloak.login({ redirectUri: window.location.origin + '/instantiate' });
     };
 
     return (

@@ -3,14 +3,22 @@ import {Link, useLocation} from "react-router-dom";
 import { VscLayoutSidebarLeft, VscLayoutSidebarLeftOff } from "react-icons/vsc";
 import { FaHome, FaCalendarAlt, FaPen, FaUserPlus } from "react-icons/fa";
 import DropdownMenu from "./DropdownMenu.jsx";
+import { useKeycloak } from "@react-keycloak/web";
 
 export default function Sidebar() {
+    const { keycloak } = useKeycloak();
     const [isVisible, setIsVisible] = useState(true);
     const location = useLocation();
     const pathnames = location.pathname.split("/").filter((x) => x);
+
     const toggleSidebar = () => {
         setIsVisible(!isVisible);
     };
+
+    const handleLogout = () => {
+        keycloak.logout({ redirectUri: window.location.origin + '/' });
+    };
+
 
     return (
         <>
@@ -61,6 +69,9 @@ export default function Sidebar() {
                         </ul>
                     </nav>
                 </div>
+                <li>
+                    <button onClick={handleLogout} className="btn btn-primary rounded-xl">Logout</button>
+                </li>
                 <div className="flex mx-auto my-8 items-center gap-4 mb-4">
                     <img src="/joao.jpg" alt="User Avatar" className={`rounded-full w-12 h-12 border-2 border-white ${isVisible ? "mx-2": "mx-auto"}`} />
                     <span className={`transition-all duration-300 text-left ${isVisible ? "opacity-100 w-auto mt-2" : "opacity-0 w-0"}`}>
@@ -77,6 +88,7 @@ export default function Sidebar() {
                 >
                     {isVisible ? <VscLayoutSidebarLeftOff /> : <VscLayoutSidebarLeft />}
                 </button>
+                
                 <div className="text-sm flex items-center ">
                     <ul className="flex gap-2">
                         {pathnames.map((name, index) => {
