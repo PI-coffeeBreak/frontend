@@ -58,6 +58,7 @@ export default function Sidebar() {
                                 isVisible={isVisible}
                                 links={[
                                     { label: "Colors", path: "eventmaker/colors" },
+                                    { label: "Menus", path: "eventmaker/menus" },
                                     { label: "Pages", path: "eventmaker/pages" },
                                     { label: "Choose Plugins", path: "eventmaker/choose-plugins" }
                                 ]}
