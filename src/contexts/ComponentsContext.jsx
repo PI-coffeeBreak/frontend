@@ -1,11 +1,12 @@
 import React, { createContext, useContext, useState, useEffect, useMemo } from "react";
 import PropTypes from "prop-types";
-import axios from "axios";
+import { useKeycloak } from "@react-keycloak/web";
 import { baseUrl } from "../consts";
-
+import axiosWithAuth from "../utils/axiosWithAuth";
 const ComponentsContext = createContext();
 
 export const ComponentsProvider = ({ children }) => {
+    const { keycloak } = useKeycloak();
     const [components, setComponents] = useState([]);
     const [isLoading, setIsLoading] = useState(false);
     const [error, setError] = useState(null);

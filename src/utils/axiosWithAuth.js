@@ -27,3 +27,5 @@ export const axiosWithAuth = (keycloak) => {
 
   return instance;
 };
+
+export default axiosWithAuth;

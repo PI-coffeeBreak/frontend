@@ -1,11 +1,13 @@
 import React, { createContext, useContext, useState, useMemo } from "react";
 import PropTypes from "prop-types";
+import { useKeycloak } from "@react-keycloak/web";
 import axios from "axios";
 import { baseUrl } from "../consts";
-
+import axiosWithAuth from "../utils/axiosWithAuth";
 const PagesContext = createContext();
 
 export const PagesProvider = ({ children }) => {
+    const { keycloak } = useKeycloak();
     const [pages, setPages] = useState([]);
     const [isLoading, setIsLoading] = useState(false);
     const [error, setError] = useState(null);
@@ -44,7 +46,7 @@ export const PagesProvider = ({ children }) => {
             setIsLoading(false);
         }
     };
-    
+
     const updatePage = async (pageId, updatedData) => {
         setIsLoading(true);
         setError(null);
