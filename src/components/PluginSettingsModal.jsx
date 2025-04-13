@@ -83,6 +83,7 @@ function PluginSettingsModal({ pluginConfig, onClose }) {
 PluginSettingsModal.propTypes = {
     pluginConfig: PropTypes.shape({
         title: PropTypes.string.isRequired,
+        formatted_name: PropTypes.string.isRequired,
         description: PropTypes.string.isRequired,
         inputs: PropTypes.arrayOf(
             PropTypes.shape({

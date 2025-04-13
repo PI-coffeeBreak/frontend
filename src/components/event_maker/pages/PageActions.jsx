@@ -9,6 +9,11 @@ export function PageActions({
     saveButtonText = "Save Page",
     loadingText = "Saving..."
 }) {
+    const getButtonClass = (isLoading, hasUnsavedChanges) => {
+        if (isLoading) return "btn-disabled";
+        if (hasUnsavedChanges) return "btn-primary";
+        return "btn-disabled";
+    };
     return (
         <div className="mt-8 flex justify-between items-center">
             <button
@@ -23,7 +28,7 @@ export function PageActions({
 
             <button
                 onClick={onSave}
-                className={`btn btn-lg gap-2 px-8 ${isLoading ? "btn-disabled" : hasUnsavedChanges ? "btn-primary" : "btn-disabled"}`}
+                className={`btn btn-lg gap-2 px-8 ${getButtonClass(isLoading, hasUnsavedChanges)}`}
                 disabled={isLoading || !hasUnsavedChanges}
             >
                 {isLoading ? (

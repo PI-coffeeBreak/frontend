@@ -16,5 +16,4 @@ export function Alert({
 
 Alert.propTypes = {
     message: PropTypes.string,
-    className: PropTypes.string,
 }; 
