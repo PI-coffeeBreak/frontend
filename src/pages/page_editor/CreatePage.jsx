@@ -10,6 +10,7 @@ import { PageHeader } from "../../components/event_maker/pages/PageHeader";
 import { PageTitleInput } from "../../components/event_maker/pages/PageTitleInput";
 import { PageContent } from "../../components/event_maker/pages/PageContent";
 import { PageActions } from "../../components/event_maker/pages/PageActions";
+import { useSections } from "../../hooks/useSections";
 
 export function CreatePage() {
     const navigate = useNavigate();
@@ -19,7 +20,13 @@ export function CreatePage() {
     const { showNotification } = useNotification();
 
     const [page, setPage] = useState({ title: "" });
-    const [sections, setSections] = useState([]);
+    const {
+        sections,
+        handleComponentTypeChange,
+        handleComponentPropsChange,
+        handleRemoveSection,
+        handleAddSection,
+    } = useSections([]);
 
     const handleDragEnd = (event) => {
         const { active, over } = event;
@@ -64,46 +71,6 @@ export function CreatePage() {
             console.error("Failed to create the page or menu option.", error);
             showNotification("Failed to create the page or menu option.", "error");
         }
-    };
-
-    const handleComponentTypeChange = (id, newType) => {
-        setSections((prevSections) =>
-            prevSections.map((section) =>
-                section.id === id
-                    ? {
-                        ...section,
-                        componentData: {
-                            name: newType,
-                            props: {},
-                        },
-                    }
-                    : section
-            )
-        );
-    };
-
-    const handleComponentPropsChange = (id, updatedProps) => {
-        setSections((prevSections) =>
-            prevSections.map((section) =>
-                section.id === id
-                    ? {
-                        ...section,
-                        componentData: {
-                            ...section.componentData,
-                            props: updatedProps,
-                        },
-                    }
-                    : section
-            )
-        );
-    };
-
-    const handleRemoveSection = (id) => {
-        setSections((prevSections) => prevSections.filter((section) => section.id !== id));
-    };
-
-    const handleAddSection = (newSection) => {
-        setSections((prevSections) => [...prevSections, newSection]);
     };
 
     if (isComponentsLoading) {
