@@ -6,18 +6,21 @@ import ComposedText from './forms/ComposedText';
 import ShortTextInput from './forms/ShortTextInput';
 import TextInput from './forms/TextInput';
 import { baseUrl } from '../consts';
-import axios from 'axios';
+import { useKeycloak } from '@react-keycloak/web';
+import { axiosWithAuth } from '../utils/axiosWithAuth';
 
 const submitSettingsBaseUrl = `${baseUrl}/plugins/submit-settings`;
 
 function PluginSettingsModal({ pluginConfig, onClose }) {
+    const { keycloak } = useKeycloak();
+
     const handleSubmit = async (event) => {
         event.preventDefault();
         const formData = new FormData(event.target);
         const settings = Object.fromEntries(formData.entries());
 
         try {
-            const response = await axios.post(submitSettingsBaseUrl + `/${pluginConfig.title}`, {
+            const response = await axiosWithAuth(keycloak).post(submitSettingsBaseUrl + `/${pluginConfig.title}`, {
                 settings: settings,
             });
             console.log("Settings submitted successfully:", response.data);
@@ -30,7 +33,7 @@ function PluginSettingsModal({ pluginConfig, onClose }) {
     const renderFormFields = () => {
         return pluginConfig.inputs.map((input) => {
             const { type, name } = input; // Destructure to get the unique `name` property
-    
+
             switch (type) {
                 case "selector":
                     return <Selector key={name} {...input} />;

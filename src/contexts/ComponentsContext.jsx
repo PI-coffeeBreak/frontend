@@ -1,7 +1,8 @@
 import React, { createContext, useContext, useState, useEffect, useMemo } from "react";
 import PropTypes from "prop-types";
-import axios from "axios";
 import { baseUrl } from "../consts";
+import { useKeycloak } from "@react-keycloak/web";
+import { axiosWithAuth } from '../utils/axiosWithAuth';
 
 const ComponentsContext = createContext();
 
@@ -9,12 +10,13 @@ export const ComponentsProvider = ({ children }) => {
     const [components, setComponents] = useState([]);
     const [isLoading, setIsLoading] = useState(false);
     const [error, setError] = useState(null);
+    const { keycloak } = useKeycloak();
 
     const fetchComponents = async () => {
         setIsLoading(true);
         setError(null);
         try {
-            const response = await axios.get(`${baseUrl}/components/components`);
+            const response = await axiosWithAuth(keycloak).get(`${baseUrl}/components/components`);
             const componentsData = response.data.components;
             console.log("Components fetched successfully:", componentsData);
             setComponents(componentsData);

@@ -1,7 +1,8 @@
 import React, { createContext, useContext, useState, useMemo } from "react";
 import PropTypes from "prop-types";
-import axios from "axios";
 import { baseUrl } from "../consts";
+import { useKeycloak } from "@react-keycloak/web";
+import { axiosWithAuth } from '../utils/axiosWithAuth';
 
 const PagesContext = createContext();
 
@@ -9,13 +10,14 @@ export const PagesProvider = ({ children }) => {
     const [pages, setPages] = useState([]);
     const [isLoading, setIsLoading] = useState(false);
     const [error, setError] = useState(null);
+    const { keycloak } = useKeycloak();
 
     // Method to fetch pages from the server
     const getPages = async () => {
         setIsLoading(true);
         setError(null);
         try {
-            const response = await axios.get(`${baseUrl}/pages`);
+            const response = await axiosWithAuth(keycloak).get(`${baseUrl}/pages`);
             console.log("Pages fetched successfully:", response.data);
             setPages(response.data);
             return response.data;
@@ -32,7 +34,7 @@ export const PagesProvider = ({ children }) => {
         setIsLoading(true);
         setError(null);
         try {
-            const response = await axios.post(`${baseUrl}/pages`, pageData);
+            const response = await axiosWithAuth(keycloak).post(`${baseUrl}/pages`, pageData);
             console.log("Page saved successfully:", response.data);
             setPages((prevPages) => [...prevPages, response.data]);
             return response.data;
@@ -44,12 +46,12 @@ export const PagesProvider = ({ children }) => {
             setIsLoading(false);
         }
     };
-    
+
     const updatePage = async (pageId, updatedData) => {
         setIsLoading(true);
         setError(null);
         try {
-            const response = await axios.put(`${baseUrl}/pages/${pageId}`, updatedData);
+            const response = await axiosWithAuth(keycloak).put(`${baseUrl}/pages/${pageId}`, updatedData);
             console.log("Page updated successfully:", response.data);
             setPages((prevPages) =>
                 prevPages.map((page) => (page.page_id === pageId ? response.data : page))
@@ -68,7 +70,7 @@ export const PagesProvider = ({ children }) => {
         setIsLoading(true);
         setError(null);
         try {
-            await axios.delete(`${baseUrl}/pages/${pageId}`);
+            await axiosWithAuth(keycloak).delete(`${baseUrl}/pages/${pageId}`);
             setPages((prevPages) => prevPages.filter((page) => page.page_id !== pageId));
             console.log(`Page with ID ${pageId} deleted successfully.`);
             return true;

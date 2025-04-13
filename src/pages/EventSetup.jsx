@@ -1,8 +1,9 @@
 import { useEffect, useState, useRef } from "react";
 import { useNavigate } from "react-router-dom";
-import axios from "axios";
 import { baseUrl } from "../consts";
 import { useKeycloak } from "@react-keycloak/web";
+import { axiosWithAuth } from '../utils/axiosWithAuth';
+import axios from 'axios'; // Keep this for geoapify API calls
 
 export default function EventSetup() {
     const navigate = useNavigate();
@@ -17,10 +18,8 @@ export default function EventSetup() {
     const fileInputRef = useRef(null);
 
     const [formData, setFormData] = useState({
-
         eventName: '',
         description: '',
-
         startDate: '',
         endDate: '',
         location: '',
@@ -133,11 +132,7 @@ export default function EventSetup() {
                     image_id: imageId
                 };
 
-                const response = await axios.post(`${baseUrl}/event-info/event`, eventData, {
-                    headers: {
-                        'Authorization': `Bearer ${keycloak.token}`
-                    }
-                });
+                const response = await axiosWithAuth(keycloak).post(`${baseUrl}/event-info/event`, eventData);
                 console.log('Event created successfully:', response.data);
                 navigate('/instantiate/eventmaker');
             } catch (error) {

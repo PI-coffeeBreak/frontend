@@ -1,13 +1,15 @@
 import { createContext, useContext, useState, useEffect, useMemo } from "react";
 import PropTypes from "prop-types";
-import axios from "axios";
 import { baseUrl } from "../consts";
+import { useKeycloak } from "@react-keycloak/web";
+import { axiosWithAuth } from '../utils/axiosWithAuth';
 
 const UsersContext = createContext();
 
 export const UsersProvider = ({ children }) => {
     const usersBaseUrl = `${baseUrl}/users`;
     const usersRolesUrl = `${baseUrl}/users/roles/users`;
+    const { keycloak } = useKeycloak();
 
     const [users, setUsers] = useState([]);
     const [usersGroupedByRole, setUsersGroupedByRole] = useState({});
@@ -18,7 +20,7 @@ export const UsersProvider = ({ children }) => {
         setIsLoading(true);
         setError(null);
         try {
-            const response = await axios.get(usersRolesUrl);
+            const response = await axiosWithAuth(keycloak).get(usersRolesUrl);
             console.log("Users grouped by role fetched successfully:", response.data);
 
             setUsersGroupedByRole(response.data);
@@ -68,7 +70,7 @@ export const UsersProvider = ({ children }) => {
             const existingUser = users.find((user) => user.id === userId);
             if (existingUser) return existingUser;
 
-            const response = await axios.get(`${usersBaseUrl}/${userId}`);
+            const response = await axiosWithAuth(keycloak).get(`${usersBaseUrl}/${userId}`);
             return response.data;
         } catch (error) {
             console.error(`Error fetching user with ID ${userId}:`, error);
@@ -160,8 +162,7 @@ export const UsersProvider = ({ children }) => {
                 error
             );
             setError(
-                `Failed to ${
-                    shouldBeBanned ? "ban" : "unban"
+                `Failed to ${shouldBeBanned ? "ban" : "unban"
                 } user. Please try again later.`
             );
             throw error;
