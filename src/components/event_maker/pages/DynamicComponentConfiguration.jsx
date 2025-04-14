@@ -5,7 +5,216 @@ import { useComponents } from "../../../contexts/ComponentsContext";
 import { SortableItemLayout } from "./SortableItemLayout";
 import { TextInput, CheckboxInput, SelectInput } from "./CommonInputs";
 import { NumberInput } from "../../../components/forms/NumberInput";
+import { MediaInput } from "../../../components/forms/MediaInput";
 import * as Components from "./components";
+
+function AnyOfInput({ propertyName, schemas, currentValue, onPropertyChange }) {
+    // Create options for the type selector with consistent labels
+    const TYPE_LABELS = {
+        MEDIA: 'Upload Media',
+        URL: 'External URL'
+    };
+
+    const typeOptions = schemas.map((schema, index) => {
+        // Handle Media type
+        if (schema.$ref === '#/$defs/Media') {
+            return {
+                value: index.toString(),
+                label: TYPE_LABELS.MEDIA,
+                isMedia: true
+            };
+        }
+        // Handle URL/string type
+        if (schema.type === 'string') {
+            return {
+                value: index.toString(),
+                label: TYPE_LABELS.URL,
+                isString: true
+            };
+        }
+        // Default case
+        return {
+            value: index.toString(),
+            label: schema.title || schema.type
+        };
+    });
+
+    // Determine current type
+    let initialType = '0';
+    if (currentValue) {
+        if (typeof currentValue === 'object' && currentValue.uuid) {
+            initialType = typeOptions.findIndex(opt => 'isMedia' in opt).toString();
+        } else if (typeof currentValue === 'string') {
+            initialType = typeOptions.findIndex(opt => 'isString' in opt).toString();
+        }
+    }
+
+    const [selectedType, setSelectedType] = useState(initialType);
+
+    const handleTypeSelect = (event) => {
+        const newTypeIndex = event.target.value;
+        setSelectedType(newTypeIndex);
+
+        // Reset value when type changes
+        const newSchema = schemas[parseInt(newTypeIndex)];
+        let defaultValue;
+
+        if (newSchema.type === 'string') {
+            defaultValue = '';
+        } else if (newSchema.$ref === '#/$defs/Media') {
+            defaultValue = { uuid: '' }; // Initialize with empty uuid instead of null
+        } else {
+            defaultValue = undefined;
+        }
+
+        onPropertyChange({
+            target: {
+                name: propertyName,
+                value: defaultValue
+            }
+        });
+    };
+
+    return (
+        <div className="space-y-4">
+            <SelectInput
+                label="Source Type"
+                value={selectedType}
+                options={typeOptions}
+                onChange={handleTypeSelect}
+            />
+            <PropertyInput
+                propertyName={propertyName}
+                propertySchema={schemas[parseInt(selectedType)]}
+                value={currentValue}
+                onChange={onPropertyChange}
+            />
+        </div>
+    );
+}
+
+AnyOfInput.propTypes = {
+    propertyName: PropTypes.string.isRequired,
+    schemas: PropTypes.arrayOf(PropTypes.object).isRequired,
+    currentValue: PropTypes.any,
+    onPropertyChange: PropTypes.func.isRequired
+};
+
+function PropertyInput({ propertyName, propertySchema, value, onChange, isRequired, schema }) {
+    const label = propertySchema.title || propertyName;
+    const description = propertySchema.description;
+
+    // Handle Media type
+    if (propertySchema.$ref === '#/$defs/Media') {
+        return (
+            <MediaInput
+                key={propertyName}
+                name={propertyName}
+                label={`${label}${isRequired ? " *" : ""}`}
+                value={value}
+                onChange={onChange}
+            />
+        );
+    }
+
+    // Handle enum references
+    if (propertySchema.$ref) {
+        const enumName = propertySchema.$ref.split('/').pop();
+        const enumDef = schema?.$defs?.[enumName];
+        if (enumDef?.enum) {
+            return (
+                <SelectInput
+                    key={propertyName}
+                    label={`${label}${isRequired ? " *" : ""}`}
+                    name={propertyName}
+                    value={value || propertySchema.default || ""}
+                    options={enumDef.enum.map(value => ({
+                        value,
+                        label: value.split('-').map(word =>
+                            word.charAt(0).toUpperCase() + word.slice(1)
+                        ).join(' ')
+                    }))}
+                    onChange={onChange}
+                />
+            );
+        }
+    }
+
+    // Handle direct enums
+    if (propertySchema.enum) {
+        return (
+            <SelectInput
+                key={propertyName}
+                label={`${label}${isRequired ? " *" : ""}`}
+                name={propertyName}
+                value={value || propertySchema.default || ""}
+                options={propertySchema.enum.map(value => ({
+                    value,
+                    label: typeof value === 'string'
+                        ? value.split('-').map(word =>
+                            word.charAt(0).toUpperCase() + word.slice(1)
+                        ).join(' ')
+                        : value
+                }))}
+                onChange={onChange}
+            />
+        );
+    }
+
+    switch (propertySchema.type) {
+        case "string":
+            return (
+                <TextInput
+                    key={propertyName}
+                    label={`${label}${isRequired ? " *" : ""}`}
+                    name={propertyName}
+                    value={value || propertySchema.default || ""}
+                    onChange={onChange}
+                    placeholder={description}
+                />
+            );
+
+        case "boolean":
+            return (
+                <CheckboxInput
+                    key={propertyName}
+                    label={label}
+                    name={propertyName}
+                    checked={value ?? propertySchema.default ?? false}
+                    onChange={onChange}
+                />
+            );
+
+        case "number":
+        case "integer":
+            return (
+                <NumberInput
+                    key={propertyName}
+                    label={label}
+                    name={propertyName}
+                    value={value ?? propertySchema.default ?? ""}
+                    onChange={onChange}
+                    required={isRequired}
+                    min={propertySchema.minimum}
+                    max={propertySchema.maximum}
+                    step={propertySchema.type === "integer" ? 1 : propertySchema.multipleOf}
+                />
+            );
+
+        default:
+            console.warn(`Unsupported property type: ${propertySchema.type} for ${propertyName}`);
+            return null;
+    }
+}
+
+PropertyInput.propTypes = {
+    propertyName: PropTypes.string.isRequired,
+    propertySchema: PropTypes.object.isRequired,
+    value: PropTypes.any,
+    onChange: PropTypes.func.isRequired,
+    isRequired: PropTypes.bool,
+    schema: PropTypes.object
+};
 
 export function DynamicComponentConfiguration({ id, componentData = { name: "", props: {} }, onComponentTypeChange, onComponentPropsChange, onRemove }) {
     const { getComponentList, getComponentSchema } = useComponents();
@@ -43,7 +252,7 @@ export function DynamicComponentConfiguration({ id, componentData = { name: "", 
         );
     };
 
-    const renderPropertyInput = (propertyName, propertySchema) => {
+    const renderPropertyInput = (propertyName, propertySchema, value) => {
         // Skip reserved, const properties, and properties with const values
         if (["name", "component_id"].includes(propertyName) ||
             propertySchema.const !== undefined ||
@@ -51,99 +260,32 @@ export function DynamicComponentConfiguration({ id, componentData = { name: "", 
             return null;
         }
 
-        const value = componentData.props[propertyName];
         const isRequired = schema.required?.includes(propertyName);
-        const label = propertySchema.title || propertyName;
-        const description = propertySchema.description;
 
-        // Handle enum references
-        if (propertySchema.$ref) {
-            const enumName = propertySchema.$ref.split('/').pop();
-            const enumDef = schema.$defs?.[enumName];
-            if (enumDef?.enum) {
-                return (
-                    <SelectInput
-                        key={propertyName}
-                        label={`${label}${isRequired ? " *" : ""}`}
-                        name={propertyName}
-                        value={value || propertySchema.default || ""}
-                        options={enumDef.enum.map(value => ({
-                            value,
-                            label: value.split('-').map(word =>
-                                word.charAt(0).toUpperCase() + word.slice(1)
-                            ).join(' ')
-                        }))}
-                        onChange={handlePropertyChange}
-                    />
-                );
-            }
-        }
-
-        // Handle direct enums
-        if (propertySchema.enum) {
+        // Handle anyOf
+        if (propertySchema.anyOf) {
             return (
-                <SelectInput
+                <AnyOfInput
                     key={propertyName}
-                    label={`${label}${isRequired ? " *" : ""}`}
-                    name={propertyName}
-                    value={value || propertySchema.default || ""}
-                    options={propertySchema.enum.map(value => ({
-                        value,
-                        label: typeof value === 'string'
-                            ? value.split('-').map(word =>
-                                word.charAt(0).toUpperCase() + word.slice(1)
-                            ).join(' ')
-                            : value
-                    }))}
-                    onChange={handlePropertyChange}
+                    propertyName={propertyName}
+                    schemas={propertySchema.anyOf}
+                    currentValue={value}
+                    onPropertyChange={handlePropertyChange}
                 />
             );
         }
 
-        switch (propertySchema.type) {
-            case "string":
-                return (
-                    <TextInput
-                        key={propertyName}
-                        label={`${label}${isRequired ? " *" : ""}`}
-                        name={propertyName}
-                        value={value || propertySchema.default || ""}
-                        onChange={handlePropertyChange}
-                        placeholder={description}
-                    />
-                );
-
-            case "boolean":
-                return (
-                    <CheckboxInput
-                        key={propertyName}
-                        label={label}
-                        name={propertyName}
-                        checked={value ?? propertySchema.default ?? false}
-                        onChange={handlePropertyChange}
-                    />
-                );
-
-            case "number":
-            case "integer":
-                return (
-                    <NumberInput
-                        key={propertyName}
-                        label={label}
-                        name={propertyName}
-                        value={value ?? propertySchema.default ?? ""}
-                        onChange={handlePropertyChange}
-                        required={isRequired}
-                        min={propertySchema.minimum}
-                        max={propertySchema.maximum}
-                        step={propertySchema.type === "integer" ? 1 : propertySchema.multipleOf}
-                    />
-                );
-
-            default:
-                console.warn(`Unsupported property type: ${propertySchema.type} for ${propertyName}`);
-                return null;
-        }
+        return (
+            <PropertyInput
+                key={propertyName}
+                propertyName={propertyName}
+                propertySchema={propertySchema}
+                value={value}
+                onChange={handlePropertyChange}
+                isRequired={isRequired}
+                schema={schema}
+            />
+        );
     };
 
     if (!componentData?.name) {
@@ -190,7 +332,7 @@ export function DynamicComponentConfiguration({ id, componentData = { name: "", 
                     {!isCollapsed && schema && (
                         <div className="p-4 bg-gray-100 rounded-lg mt-2 space-y-4">
                             {editableProperties.map(([propertyName, propertySchema]) =>
-                                renderPropertyInput(propertyName, propertySchema)
+                                renderPropertyInput(propertyName, propertySchema, componentData.props[propertyName])
                             )}
                         </div>
                     )}

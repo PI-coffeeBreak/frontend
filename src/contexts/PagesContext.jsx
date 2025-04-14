@@ -3,6 +3,7 @@ import PropTypes from "prop-types";
 import { useKeycloak } from "@react-keycloak/web";
 import { baseUrl } from "../consts";
 import axiosWithAuth from "../utils/axiosWithAuth";
+
 const PagesContext = createContext();
 
 export const PagesProvider = ({ children }) => {
@@ -33,7 +34,8 @@ export const PagesProvider = ({ children }) => {
         setIsLoading(true);
         setError(null);
         try {
-            const response = await axiosWithAuth(keycloak).post(`${baseUrl}/pages`, pageData);
+            const api = axiosWithAuth(keycloak);
+            const response = await api.post(`${baseUrl}/pages`, pageData);
             console.log("Page saved successfully:", response.data);
             setPages((prevPages) => [...prevPages, response.data]);
             return response.data;
@@ -69,7 +71,8 @@ export const PagesProvider = ({ children }) => {
         setIsLoading(true);
         setError(null);
         try {
-            await axiosWithAuth(keycloak).delete(`${baseUrl}/pages/${pageId}`);
+            const api = axiosWithAuth(keycloak);
+            await api.delete(`${baseUrl}/pages/${pageId}`);
             setPages((prevPages) => prevPages.filter((page) => page.page_id !== pageId));
             console.log(`Page with ID ${pageId} deleted successfully.`);
             return true;
@@ -86,7 +89,8 @@ export const PagesProvider = ({ children }) => {
         setIsLoading(true);
         setError(null);
         try {
-            const response = await axiosWithAuth(keycloak).patch(`${baseUrl}/pages/${pageId}`, { enabled: isEnabled });
+            const api = axiosWithAuth(keycloak);
+            const response = await api.patch(`${baseUrl}/pages/${pageId}`, { enabled: isEnabled });
             console.log(`Page with ID ${pageId} updated successfully:`, response.data);
             setPages((prevPages) =>
                 prevPages.map((page) =>
