@@ -209,7 +209,7 @@ export default function EventSetup() {
                 ) : (
                     locationSuggestions.map((suggestion, index) => (
                         <button
-                            key={index}
+                            key={`location-${suggestion.lat}-${suggestion.lon}`}
                             type="button"
                             className="w-full text-left px-4 py-2 hover:bg-base-200 cursor-pointer"
                             onClick={() => handleLocationSelect(suggestion)}
@@ -278,10 +278,17 @@ export default function EventSetup() {
                                     accept="image/*"
                                     onChange={handleImageChange}
                                 />
-                                <button
-                                    type="button"
+                                <div
                                     className="w-full h-48 bg-base-200 rounded-xl flex items-center justify-center cursor-pointer relative overflow-hidden"
                                     onClick={handleImageClick}
+                                    onKeyDown={(e) => {
+                                        if (e.key === 'Enter' || e.key === ' ') {
+                                            e.preventDefault();
+                                            handleImageClick();
+                                        }
+                                    }}
+                                    role="button"
+                                    tabIndex="0"
                                     aria-label="Upload event image"
                                 >
                                     {imagePreview ? (
@@ -320,7 +327,7 @@ export default function EventSetup() {
                                             <p className="text-base-content/30 text-sm mt-1">Maximum size: 5MB</p>
                                         </div>
                                     )}
-                                </button>
+                                </div>
                             </div>
                         </div>
                     </div>
