@@ -278,17 +278,10 @@ export default function EventSetup() {
                                     accept="image/*"
                                     onChange={handleImageChange}
                                 />
-                                <div
+                                <button
+                                    type="button"
                                     className="w-full h-48 bg-base-200 rounded-xl flex items-center justify-center cursor-pointer relative overflow-hidden"
                                     onClick={handleImageClick}
-                                    onKeyDown={(e) => {
-                                        if (e.key === 'Enter' || e.key === ' ') {
-                                            e.preventDefault();
-                                            handleImageClick();
-                                        }
-                                    }}
-                                    role="button"
-                                    tabIndex="0"
                                     aria-label="Upload event image"
                                 >
                                     {imagePreview ? (
@@ -327,7 +320,7 @@ export default function EventSetup() {
                                             <p className="text-base-content/30 text-sm mt-1">Maximum size: 5MB</p>
                                         </div>
                                     )}
-                                </div>
+                                </button>
                             </div>
                         </div>
                     </div>
