@@ -20,6 +20,7 @@ export function CreatePage() {
     const { showNotification } = useNotification();
 
     const [page, setPage] = useState({ title: "" });
+    const [hasUnsavedChanges, setHasUnsavedChanges] = useState(true);
     const {
         sections,
         handleComponentTypeChange,
@@ -83,6 +84,7 @@ export function CreatePage() {
                 title="Create New Page"
                 subtitle="Design your new page by adding and arranging components"
                 mode="Create"
+                hasUnsavedChanges={hasUnsavedChanges}
             />
 
             <PageTitleInput
@@ -105,6 +107,7 @@ export function CreatePage() {
                 onSave={handleSavePage}
                 isLoading={isPagesLoading}
                 saveButtonText="Save Page"
+                hasUnsavedChanges={hasUnsavedChanges}
             />
         </div>
     );
