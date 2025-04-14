@@ -164,6 +164,20 @@ export default function Alerts() {
         setHighPriority("");
     };
 
+    const getAlertButtonText = () => {
+        if (isLoading) {
+            return <span className="loading loading-spinner loading-sm"></span>;
+        }
+        return 'Create Alert';
+    };
+
+    const getTemplateButtonText = () => {
+        if (isLoading) {
+            return <span className="loading loading-spinner loading-sm"></span>;
+        }
+        return editingTemplate ? 'Update Template' : 'Create Template';
+    };
+
     return (
         <div className="w-full min-h-svh p-8">
             <h1 className="text-3xl font-bold">Create Alerts</h1>
@@ -283,7 +297,7 @@ export default function Alerts() {
                             className="btn btn-primary mt-4 mx-auto w-1/3 flex items-center justify-center"
                             disabled={isLoading}
                         >
-                            {isLoading ? <span className="loading loading-spinner loading-sm"></span> : 'Create Alert'}
+                            {getAlertButtonText()}
                         </button>
                     </form>
                 </div>
@@ -338,10 +352,7 @@ export default function Alerts() {
                             className="btn btn-primary mt-4 mx-auto w-1/3 flex items-center justify-center"
                             disabled={isLoading}
                         >
-                            {isLoading 
-                                ? <span className="loading loading-spinner loading-sm"></span> 
-                                : editingTemplate ? 'Update Template' : 'Create Template'
-                            }
+                            {getTemplateButtonText()}
                         </button>
                     </form>
                 </div>
