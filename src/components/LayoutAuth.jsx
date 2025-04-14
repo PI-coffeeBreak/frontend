@@ -45,7 +45,7 @@ export default function Layout() {
     return (
         <div className="relative w-full h-screen">
             <div id="particles-js" className="absolute inset-0 z-0"></div>
-                <Outlet />
+            <Outlet />
         </div>
     );
 }

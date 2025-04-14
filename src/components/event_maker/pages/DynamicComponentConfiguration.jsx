@@ -6,6 +6,8 @@ import { SortableItemLayout } from "./SortableItemLayout";
 import { TextInput, CheckboxInput, SelectInput } from "./CommonInputs";
 import { NumberInput } from "../../../components/forms/NumberInput";
 import { MediaInput } from "../../../components/forms/MediaInput";
+import { ColorSelector } from "../../../components/ColorSelector";
+import { ColorThemeLayout } from "../../../components/ColorThemeLayout";
 import * as Components from "./components";
 
 function AnyOfInput({ propertyName, schemas, currentValue, onPropertyChange }) {
@@ -39,9 +41,15 @@ function AnyOfInput({ propertyName, schemas, currentValue, onPropertyChange }) {
         };
     });
 
-    // Determine current type
+    // Determine current type based on value type
     let initialType = '0';
     if (currentValue) {
+        console.log('AnyOfInput - Determining type for value:', {
+            currentValue,
+            'typeof': typeof currentValue,
+            'has uuid': currentValue && typeof currentValue === 'object' && 'uuid' in currentValue
+        });
+
         if (typeof currentValue === 'object' && currentValue.uuid) {
             initialType = typeOptions.findIndex(opt => 'isMedia' in opt).toString();
         } else if (typeof currentValue === 'string') {
@@ -53,24 +61,36 @@ function AnyOfInput({ propertyName, schemas, currentValue, onPropertyChange }) {
 
     const handleTypeSelect = (event) => {
         const newTypeIndex = event.target.value;
+        console.log('AnyOfInput - Type changed:', {
+            from: selectedType,
+            to: newTypeIndex,
+            currentValue
+        });
+
         setSelectedType(newTypeIndex);
 
-        // Reset value when type changes
+        // Preserve value if possible, otherwise reset
         const newSchema = schemas[parseInt(newTypeIndex)];
-        let defaultValue;
+        let newValue;
 
-        if (newSchema.type === 'string') {
-            defaultValue = '';
-        } else if (newSchema.$ref === '#/$defs/Media') {
-            defaultValue = { uuid: '' }; // Initialize with empty uuid instead of null
+        if (newSchema.type === 'string' && typeof currentValue === 'object' && currentValue.uuid) {
+            // Converting from Media to URL - use the full URL
+            newValue = `${baseUrl}/media/${currentValue.uuid}`;
+        } else if (newSchema.$ref === '#/$defs/Media' && typeof currentValue === 'string') {
+            // Converting from URL to Media - initialize empty
+            newValue = { uuid: '' };
         } else {
-            defaultValue = undefined;
+            // Keep current value if types match
+            newValue = currentValue;
         }
+
+        console.log('AnyOfInput - New value after type change:', newValue);
 
         onPropertyChange({
             target: {
                 name: propertyName,
-                value: defaultValue
+                value: newValue,
+                type: newSchema.$ref === '#/$defs/Media' ? 'file' : 'text'
             }
         });
     };
@@ -101,11 +121,19 @@ AnyOfInput.propTypes = {
 };
 
 function PropertyInput({ propertyName, propertySchema, value, onChange, isRequired, schema }) {
+    console.log('PropertyInput called with:', {
+        propertyName,
+        propertySchema,
+        value,
+        isRequired
+    });
+
     const label = propertySchema.title || propertyName;
     const description = propertySchema.description;
 
     // Handle Media type
     if (propertySchema.$ref === '#/$defs/Media') {
+        console.log('Rendering MediaInput');
         return (
             <MediaInput
                 key={propertyName}
@@ -119,9 +147,42 @@ function PropertyInput({ propertyName, propertySchema, value, onChange, isRequir
 
     // Handle enum references
     if (propertySchema.$ref) {
+        console.log('Handling enum reference:', propertySchema.$ref);
         const enumName = propertySchema.$ref.split('/').pop();
         const enumDef = schema?.$defs?.[enumName];
         if (enumDef?.enum) {
+            console.log('Found enum definition:', enumDef);
+
+            // Check if this is a color selector (based on enum name)
+            if (enumName === "Color") {
+                console.log('Using ColorSelector for:', {
+                    propertyName,
+                    enumName,
+                    enum: enumDef.enum,
+                    value
+                });
+
+                const colorOptions = enumDef.enum.map(value => ({
+                    value,
+                    label: value.split('-').map(word =>
+                        word.charAt(0).toUpperCase() + word.slice(1)
+                    ).join(' '),
+                    color: `var(--color-${value})`
+                }));
+
+                console.log('ColorSelector options:', colorOptions);
+
+                return (
+                    <ColorSelector
+                        key={propertyName}
+                        name={propertyName}
+                        value={value || propertySchema.default || ""}
+                        onChange={onChange}
+                        options={colorOptions}
+                    />
+                );
+            }
+
             return (
                 <SelectInput
                     key={propertyName}
@@ -142,6 +203,7 @@ function PropertyInput({ propertyName, propertySchema, value, onChange, isRequir
 
     // Handle direct enums
     if (propertySchema.enum) {
+        console.log('Using SelectInput for enum');
         return (
             <SelectInput
                 key={propertyName}
@@ -217,17 +279,50 @@ PropertyInput.propTypes = {
 };
 
 export function DynamicComponentConfiguration({ id, componentData = { name: "", props: {} }, onComponentTypeChange, onComponentPropsChange, onRemove }) {
+    console.log('DynamicComponentConfiguration rendered with:', {
+        id,
+        componentData
+    });
+
     const { getComponentList, getComponentSchema } = useComponents();
     const availableComponents = getComponentList();
     const [isCollapsed, setIsCollapsed] = useState(true);
     const schema = getComponentSchema(componentData.name);
 
+    console.log('Component schema:', schema);
+
     const handlePropertyChange = (event) => {
         const { name, value, type, checked } = event.target;
+        console.log('DynamicComponentConfiguration - handlePropertyChange called with:', {
+            name,
+            value,
+            type,
+            checked,
+            'typeof value': typeof value,
+            'value details': value && typeof value === 'object' ? JSON.stringify(value) : value
+        });
+
+        let finalValue = value;
+        if (type === 'file' && value && typeof value === 'object' && 'uuid' in value) {
+            console.log('DynamicComponentConfiguration - Processing media value:', value);
+            finalValue = {
+                uuid: value.uuid
+            };
+        }
+
         const updatedProps = {
             ...componentData.props,
-            [name]: type === "checkbox" ? checked : value,
+            [name]: type === "checkbox" ? checked : finalValue,
         };
+
+        console.log('DynamicComponentConfiguration - Updating props to:', {
+            oldProps: componentData.props,
+            newProps: updatedProps,
+            'prop being updated': name,
+            'new value': finalValue,
+            'component name': componentData.name
+        });
+
         onComponentPropsChange(id, updatedProps);
     };
 
@@ -238,6 +333,7 @@ export function DynamicComponentConfiguration({ id, componentData = { name: "", 
 
     const renderComponentPreview = () => {
         const ComponentToRender = Components[componentData.name];
+        console.log('renderComponentPreview - Component data:', componentData);
         if (!ComponentToRender) return null;
 
         return (
@@ -253,6 +349,12 @@ export function DynamicComponentConfiguration({ id, componentData = { name: "", 
     };
 
     const renderPropertyInput = (propertyName, propertySchema, value) => {
+        console.log('Rendering property input for:', {
+            propertyName,
+            propertySchema,
+            value
+        });
+
         // Skip reserved, const properties, and properties with const values
         if (["name", "component_id"].includes(propertyName) ||
             propertySchema.const !== undefined ||
@@ -317,7 +419,9 @@ export function DynamicComponentConfiguration({ id, componentData = { name: "", 
                 </select>
             </div>
 
-            {renderComponentPreview()}
+            <ColorThemeLayout>
+                {renderComponentPreview()}
+            </ColorThemeLayout>
 
             {editableProperties.length > 0 && (
                 <>

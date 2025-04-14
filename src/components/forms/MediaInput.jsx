@@ -1,18 +1,83 @@
-import React, { useState, useRef } from "react";
+import React, { useState, useRef, useEffect } from "react";
 import PropTypes from "prop-types";
+import { baseUrl } from "../../consts";
+import { axiosWithAuth } from "../../utils/axiosWithAuth";
+import { useKeycloak } from "@react-keycloak/web";
 
 export function MediaInput({
     onChange,
+    value,
     accept = "image/*",
     multiple = false,
     maxSize = 5242880, // 5MB in bytes
     className = "",
+    name = "media"
 }) {
+    const { keycloak } = useKeycloak();
     const [preview, setPreview] = useState(null);
     const [error, setError] = useState("");
+    const [isUploading, setIsUploading] = useState(false);
     const fileInputRef = useRef(null);
 
-    const handleFileChange = (event) => {
+    const getMediaUrl = (uuid) => `${baseUrl}/media/${uuid}`;
+
+    // Handle initial value
+    useEffect(() => {
+        if (value?.uuid) {
+            setPreview(getMediaUrl(value.uuid));
+        }
+    }, [value]);
+
+    const handleUpload = async (file) => {
+        setIsUploading(true);
+        setError("");
+
+        try {
+            // First register the media
+            const { data: { uuid } } = await axiosWithAuth(keycloak).post(`${baseUrl}/media/register`);
+            console.log('Media registered with UUID:', uuid);
+
+            // Then upload the file
+            const formData = new FormData();
+            formData.append('file', file);
+
+            await axiosWithAuth(keycloak).post(
+                `${baseUrl}/media/${uuid}`,
+                formData,
+                {
+                    headers: {
+                        'Content-Type': 'multipart/form-data',
+                    },
+                }
+            );
+
+            console.log('Media uploaded successfully');
+
+            // Update preview with the media URL
+            const mediaUrl = getMediaUrl(uuid);
+            console.log('Setting preview to:', mediaUrl);
+            setPreview(mediaUrl);
+
+            // Call onChange with the media object
+            const mediaValue = { uuid };
+            console.log('Calling onChange with value:', mediaValue);
+            onChange({
+                target: {
+                    name: name,
+                    value: mediaValue,
+                    type: 'file'
+                }
+            });
+        } catch (error) {
+            console.error('Error uploading file:', error);
+            setError('Failed to upload file. Please try again.');
+            setPreview(null);
+        } finally {
+            setIsUploading(false);
+        }
+    };
+
+    const handleFileChange = async (event) => {
         const files = Array.from(event.target.files);
         setError("");
 
@@ -25,18 +90,12 @@ export function MediaInput({
             return;
         }
 
-        // Create preview for image files
-        if (files[0].type.startsWith("image/")) {
-            const reader = new FileReader();
-            reader.onloadend = () => {
-                setPreview(reader.result);
-            };
-            reader.readAsDataURL(files[0]);
+        // Handle upload for each file
+        if (multiple) {
+            await Promise.all(files.map(handleUpload));
         } else {
-            setPreview(null);
+            await handleUpload(files[0]);
         }
-
-        onChange(multiple ? files : files[0]);
     };
 
     const handleDrop = (event) => {
@@ -71,20 +130,24 @@ export function MediaInput({
                 multiple={multiple}
                 onChange={handleFileChange}
                 style={{ display: "none" }}
+                disabled={isUploading}
             />
             <div
-                onClick={() => fileInputRef.current?.click()}
+                onClick={() => !isUploading && fileInputRef.current?.click()}
                 style={{
                     border: "2px dashed var(--color-primary)",
                     borderRadius: "8px",
                     padding: "20px",
                     textAlign: "center",
-                    cursor: "pointer",
+                    cursor: isUploading ? "default" : "pointer",
                     backgroundColor: "var(--color-base-100)",
-                    color: "var(--color-base-content)"
+                    color: "var(--color-base-content)",
+                    opacity: isUploading ? 0.7 : 1
                 }}
             >
-                {preview ? (
+                {isUploading ? (
+                    <p>Uploading...</p>
+                ) : preview ? (
                     <div>
                         <img
                             src={preview}
@@ -101,7 +164,11 @@ export function MediaInput({
                     <p>Click or drag files here</p>
                 )}
                 {error && (
-                    <p style={{ color: "var(--color-error)", marginTop: "10px" }}>
+                    <p style={{
+                        color: "var(--color-error)",
+                        marginTop: "10px",
+                        fontSize: "0.875rem"
+                    }}>
                         {error}
                     </p>
                 )}
@@ -112,8 +179,12 @@ export function MediaInput({
 
 MediaInput.propTypes = {
     onChange: PropTypes.func.isRequired,
+    value: PropTypes.shape({
+        uuid: PropTypes.string.isRequired,
+    }),
     accept: PropTypes.string,
     multiple: PropTypes.bool,
     maxSize: PropTypes.number,
     className: PropTypes.string,
+    name: PropTypes.string,
 }; 
