@@ -1,6 +1,5 @@
 import React, { createContext, useContext, useState, useEffect, useMemo } from "react";
 import PropTypes from "prop-types";
-import axios from "axios";
 import { baseUrl } from "../consts";
 
 // Import all icon libraries
@@ -23,31 +22,36 @@ import * as Si from "react-icons/si";
 import * as Ti from "react-icons/ti";
 import * as Wi from "react-icons/wi";
 
+import { axiosWithAuth } from "../utils/axiosWithAuth";
+import { useKeycloak } from "@react-keycloak/web";
+
 const MenuContext = createContext();
 
 export const MenuProvider = ({ children }) => {
     const menuBaseUrl = `${baseUrl}/ui/menu`;
-    
+
+    const { keycloak } = useKeycloak();
+
     const [menuOptions, setMenuOptions] = useState([]);
     const [isLoading, setIsLoading] = useState(false);
     const [error, setError] = useState(null);
 
     const getIconComponent = (iconName) => {
         if (!iconName) return Fa.FaQuestion;
-        
+
         // 1. Try direct lookup first (most efficient)
         // Go through each icon library and check if the icon exists
         const allLibraries = { Fa, Fi, Ai, Bi, Bs, Ci, Di, Gi, Go, Hi, Im, Io, Io5, Md, Ri, Si, Ti, Wi };
-        
+
         for (const [, library] of Object.entries(allLibraries)) {
             if (library[iconName]) {
                 return library[iconName];
             }
         }
-        
+
         // 2. If direct lookup fails, try to parse the icon name
         const commonPrefixes = ['Fa', 'Fi', 'Ai', 'Bi', 'Bs', 'Ci', 'Di', 'Gi', 'Go', 'Hi', 'Im', 'Io', 'Io5', 'Md', 'Ri', 'Si', 'Ti', 'Wi'];
-        
+
         // Find the matching prefix (if any)
         let matchedPrefix = null;
         for (const prefix of commonPrefixes) {
@@ -56,41 +60,41 @@ export const MenuProvider = ({ children }) => {
                 break;
             }
         }
-        
+
         if (!matchedPrefix) {
             console.warn(`Could not determine icon library prefix for "${iconName}", using fallback`);
             return Fa.FaQuestion;
         }
-        
+
         const library = allLibraries[matchedPrefix];
-        
+
         // 3. Try some common variations
         const variations = [
             iconName,
             `${matchedPrefix}${iconName.substring(matchedPrefix.length)}`,
             `${matchedPrefix}${iconName.substring(matchedPrefix.length).charAt(0).toUpperCase()}${iconName.substring(matchedPrefix.length + 1)}`
         ];
-        
+
         for (const variation of variations) {
             if (library[variation]) {
                 return library[variation];
             }
         }
-        
+
         // 4. As a last resort, try fuzzy matching
         const iconNameLower = iconName.toLowerCase();
         const libraryKeys = Object.keys(library);
-        
+
         // Try to find a close match
-        const similarIcons = libraryKeys.filter(key => 
+        const similarIcons = libraryKeys.filter(key =>
             key.toLowerCase().includes(iconNameLower.substring(matchedPrefix.length))
         );
-        
+
         if (similarIcons.length > 0) {
             // Use the first match
             return library[similarIcons[0]];
         }
-        
+
         // If all else fails, return fallback
         console.warn(`Icon "${iconName}" not found in any library variation, using fallback.`);
         return Fa.FaQuestion;
@@ -101,9 +105,9 @@ export const MenuProvider = ({ children }) => {
         setError(null);
         console.log("Starting to fetch menu options...");
         try {
-            const response = await axios.get(`${menuBaseUrl}/`);
+            const response = await axiosWithAuth(keycloak).get(`${menuBaseUrl}/`);
             console.log("Menu API response:", response.data);
-            
+
             // Handle different response structures
             let options = [];
             if (response.data.options && Array.isArray(response.data.options)) {
@@ -118,7 +122,7 @@ export const MenuProvider = ({ children }) => {
                 console.warn("Unexpected menu data format:", response.data);
                 options = []; // Fallback to empty array
             }
-            
+
             console.log("Setting menuOptions state to:", options);
             setMenuOptions(options);
             return options;
@@ -137,13 +141,13 @@ export const MenuProvider = ({ children }) => {
         setIsLoading(true);
         setError(null);
         try {
-            const response = await axios.post(`${menuBaseUrl}/option`, optionData);
+            const response = await axiosWithAuth(keycloak).post(`${menuBaseUrl}/option`, optionData);
             console.log("Menu option added successfully:", response.data);
-            
+
             // Create a completely new array for state update
             const newOption = response.data;
             setMenuOptions(prevOptions => [...(prevOptions || []), newOption]);
-            
+
             return response.data;
         } catch (err) {
             console.error("Error adding menu option:", err);
@@ -159,13 +163,13 @@ export const MenuProvider = ({ children }) => {
         setIsLoading(true);
         setError(null);
         try {
-            const response = await axios.put(`${menuBaseUrl}/option/${optionId}`, updatedData);
+            const response = await axiosWithAuth(keycloak).put(`${menuBaseUrl}/option/${optionId}`, updatedData);
             console.log(`Menu option with ID ${optionId} updated successfully:`, response.data);
-            
+
             // Create a completely new array with the updated option
             setMenuOptions(prevOptions => {
                 if (!prevOptions || !Array.isArray(prevOptions)) return [];
-                
+
                 return prevOptions.map(option => {
                     if (option.id === optionId) {
                         // Return a completely new object
@@ -176,7 +180,7 @@ export const MenuProvider = ({ children }) => {
                     return option;
                 });
             });
-            
+
             return response.data;
         } catch (err) {
             console.error(`Error updating menu option with ID ${optionId}:`, err);
@@ -192,9 +196,9 @@ export const MenuProvider = ({ children }) => {
         setIsLoading(true);
         setError(null);
         try {
-            await axios.delete(`${menuBaseUrl}/option/${optionId}`);
+            await axiosWithAuth(keycloak).delete(`${menuBaseUrl}/option/${optionId}`);
             console.log(`Menu option with ID ${optionId} deleted successfully.`);
-            
+
             // Create a completely new array without the deleted option
             setMenuOptions(prevOptions => {
                 if (!prevOptions || !Array.isArray(prevOptions)) return [];
@@ -202,7 +206,7 @@ export const MenuProvider = ({ children }) => {
                 console.log("Filtered options after deletion:", filteredOptions);
                 return filteredOptions;
             });
-            
+
             return true;
         } catch (err) {
             console.error(`Error deleting menu option with ID ${optionId}:`, err);
@@ -219,13 +223,13 @@ export const MenuProvider = ({ children }) => {
         setError(null);
         try {
             console.log("Sending reordered options to API:", reorderedOptions);
-            const response = await axios.put(`${menuBaseUrl}/options`, reorderedOptions);
+            const response = await axiosWithAuth(keycloak).put(`${menuBaseUrl}/options`, reorderedOptions);
             console.log("Menu options order updated successfully:", response.data);
-            
+
             // Update the local state with the reordered menu options
             console.log("Setting new order in state:", reorderedOptions);
             setMenuOptions(reorderedOptions);
-            
+
             return response.data;
         } catch (err) {
             console.error("Error updating menu options order:", err);
@@ -247,69 +251,69 @@ export const MenuProvider = ({ children }) => {
         const iconsByLibrary = {
             // Font Awesome icons
             'Fa': Object.keys(Fa).filter(key => key.startsWith('Fa')),
-            
+
             // Feather icons
             'Fi': Object.keys(Fi).filter(key => key.startsWith('Fi')),
-            
+
             // Ant Design icons
             'Ai': Object.keys(Ai).filter(key => key.startsWith('Ai')),
-            
+
             // Bootstrap icons
             'Bi': Object.keys(Bi).filter(key => key.startsWith('Bi')),
             'Bs': Object.keys(Bs).filter(key => key.startsWith('Bs')),
-            
+
             // Circum icons
             'Ci': Object.keys(Ci).filter(key => key.startsWith('Ci')),
-            
+
             // Devicons
             'Di': Object.keys(Di).filter(key => key.startsWith('Di')),
-            
+
             // Game icons
             'Gi': Object.keys(Gi).filter(key => key.startsWith('Gi')),
-            
+
             // Github Octicons
             'Go': Object.keys(Go).filter(key => key.startsWith('Go')),
-            
+
             // Heroicons
             'Hi': Object.keys(Hi).filter(key => key.startsWith('Hi')),
-            
+
             // Remix icon
             'Ri': Object.keys(Ri).filter(key => key.startsWith('Ri')),
-            
+
             // Material Design icons
             'Md': Object.keys(Md).filter(key => key.startsWith('Md')),
-            
+
             // Ionicons 
             'Io': Object.keys(Io).filter(key => key.startsWith('Io')),
             'Io5': Object.keys(Io5).filter(key => key.startsWith('Io5')),
-            
+
             // Simple Icons
             'Si': Object.keys(Si).filter(key => key.startsWith('Si')),
-            
+
             // Typicons
             'Ti': Object.keys(Ti).filter(key => key.startsWith('Ti')),
-            
+
             // Weather Icons
             'Wi': Object.keys(Wi).filter(key => key.startsWith('Wi')),
         };
-        
+
         return iconsByLibrary;
     };
 
     const commonIcons = [
         // Font Awesome icons - widely supported and popular
-        "FaHome", "FaUser", "FaBook", "FaCalendar", "FaCog", "FaBell", 
-        "FaEnvelope", "FaSearch", "FaShoppingCart", "FaHeart", "FaStar", 
+        "FaHome", "FaUser", "FaBook", "FaCalendar", "FaCog", "FaBell",
+        "FaEnvelope", "FaSearch", "FaShoppingCart", "FaHeart", "FaStar",
         "FaChartBar", "FaListUl", "FaFileAlt", "FaLink", "FaQuestion",
         "FaImage", "FaVideo", "FaMusic", "FaGamepad", "FaMap", "FaArrowRight",
         "FaCheckCircle", "FaExclamationCircle", "FaInfoCircle", "FaTimes",
         "FaPlus", "FaMinus", "FaPen", "FaTrash", "FaShare", "FaDownload",
         "FaUpload", "FaClock", "FaCode", "FaPaperPlane", "FaBuilding",
-        
+
         // Material Design - also widely supported
         "MdDashboard", "MdSettings", "MdNotifications", "MdPeople",
         "MdHome", "MdMenu", "MdLock", "MdPerson", "MdMail", "MdPhone",
-        
+
         // Simple outline icons from Ant Design
         "AiOutlineTeam", "AiOutlineProject", "AiOutlineFileSearch",
         "AiOutlineUser", "AiOutlineSetting", "AiOutlineHome"
