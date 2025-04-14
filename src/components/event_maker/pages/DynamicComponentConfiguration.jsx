@@ -4,7 +4,7 @@ import { FaChevronDown, FaChevronUp } from "react-icons/fa";
 import { useComponents } from "../../../contexts/ComponentsContext";
 import { SortableItemLayout } from "./SortableItemLayout";
 import { TextInput, CheckboxInput, SelectInput } from "./CommonInputs";
-import { NumberInput } from "../../../components/forms/NumberInput";
+import { NumberInput } from "../../forms/NumberInput.jsx";
 import { MediaInput } from "../../../components/forms/MediaInput";
 import * as Components from "./components";
 
