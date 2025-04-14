@@ -120,6 +120,7 @@ export default function EventSetup() {
             setIsSubmitting(true);
             setSubmitError(null);
             try {
+                // Create the event
                 const eventData = {
                     name: formData.eventName,
                     description: formData.description,
@@ -131,6 +132,7 @@ export default function EventSetup() {
 
                 const response = await axiosWithAuth(keycloak).post(`${baseUrl}/event-info/event`, eventData);
                 console.log('Event created successfully:', response.data);
+                
                 navigate('/instantiate/eventmaker');
             } catch (error) {
                 console.error('Error creating event:', error);
