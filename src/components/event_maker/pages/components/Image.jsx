@@ -1,7 +1,6 @@
 import React from "react";
 import PropTypes from "prop-types";
-
-const baseUrl = import.meta.env.VITE_API_BASE_URL;
+import { baseUrl } from "../../../../consts";
 
 export function Image({
     src = "https://via.placeholder.com/150",

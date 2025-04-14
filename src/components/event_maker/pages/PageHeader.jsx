@@ -15,7 +15,7 @@ export function PageHeader({ title, subtitle, mode, hasUnsavedChanges }) {
                     <div className="badge badge-outline p-3">{mode} Mode</div>
                     {hasUnsavedChanges && (
                         <div className="badge badge-warning p-3">
-                            Alterações não salvas
+                            Unsaved changes
                         </div>
                     )}
                 </div>

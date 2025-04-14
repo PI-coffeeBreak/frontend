@@ -30,11 +30,13 @@ import { PagesProvider } from "./contexts/PagesContext.jsx";
 import { NotificationProvider } from "./contexts/NotificationContext.jsx";
 import { ComponentsProvider } from "./contexts/ComponentsContext.jsx";
 import { MenuProvider } from "./contexts/MenuContext.jsx";
+import { ColorThemeProvider } from './contexts/ColorThemeContext';
 
 
 export default function App() {
   return (
-      <ReactKeycloakProvider 
+    <ColorThemeProvider>
+      <ReactKeycloakProvider
         authClient={keycloak}
         initOptions={{
           checkLoginIframe: false,
@@ -58,27 +60,27 @@ export default function App() {
                             <Route element={<LayoutAuth />}>
                               <Route path="setup" element={<EventSetup />} />
                             </Route>
-                        
-                            <Route path="instantiate" element={<PrivateRoute><LayoutInstantiate/></PrivateRoute>}>
+
+                            <Route path="instantiate" element={<PrivateRoute><LayoutInstantiate /></PrivateRoute>}>
                               <Route index element={<Instantiate />} />
                               <Route path="home">
-                                  <Route path="users" element={<Users />}/>
-                                  <Route path="sessions" element={<Activities/>}/>
-                                  <Route path="alerts" element={<Alerts/>}/>
+                                <Route path="users" element={<Users />} />
+                                <Route path="sessions" element={<Activities />} />
+                                <Route path="alerts" element={<Alerts />} />
                               </Route>
                               <Route path="eventmaker">
-                                  <Route index element={<EventMaker />} />
-                                  <Route path="colors" element={<Colors />} />
-                                  <Route path="menus" element={<MenuEditor />} />
-                                  <Route path="pages" element={<PagesList />} />
-                                  <Route path="choose-plugins" element={<Plugins />} />
-                                  <Route path="edit-page/:pageTitle" element={<EditPage />} />
-                                  <Route path="create-page" element={<CreatePage />} />
-                                </Route>
-                                <Route path="plugins">
-                                  <Route path="alerts" element={<Alerts />} />
-                                  <Route path="schedule" element={<Schedule />} />
-                                </Route>
+                                <Route index element={<EventMaker />} />
+                                <Route path="colors" element={<Colors />} />
+                                <Route path="menus" element={<MenuEditor />} />
+                                <Route path="pages" element={<PagesList />} />
+                                <Route path="choose-plugins" element={<Plugins />} />
+                                <Route path="edit-page/:pageTitle" element={<EditPage />} />
+                                <Route path="create-page" element={<CreatePage />} />
+                              </Route>
+                              <Route path="plugins">
+                                <Route path="alerts" element={<Alerts />} />
+                                <Route path="schedule" element={<Schedule />} />
+                              </Route>
                             </Route>
                           </Routes>
                         </Router>
@@ -91,5 +93,6 @@ export default function App() {
           </ThemeProvider>
         </NotificationProvider>
       </ReactKeycloakProvider>
+    </ColorThemeProvider>
   );
 }
