@@ -178,6 +178,59 @@ export default function Alerts() {
         return editingTemplate ? 'Update Template' : 'Create Template';
     };
 
+    const renderTemplates = () => {
+        if (isLoading) {
+            return (
+                <div className="flex justify-center mt-4">
+                    <span className="loading loading-spinner loading-lg"></span>
+                </div>
+            );
+        }
+        
+        if (error) {
+            return (
+                <div className="alert alert-error mt-4">
+                    <span>{error}</span>
+                </div>
+            );
+        }
+        
+        if (templates.length === 0) {
+            return (
+                <div className="alert alert-info mt-4">
+                    <span>No templates found. Create one to get started!</span>
+                </div>
+            );
+        }
+        
+        return (
+            <div className="grid grid-cols-3 gap-4 mt-4">
+                {templates.map((template) => (
+                    <div key={template.id} className="card bg-base-300 shadow-xl">
+                        <div className="card-body">
+                            <h2 className="card-title">{template.name}</h2>
+                            <p className="whitespace-pre-wrap">{template.template}</p>
+                            <div className="card-actions justify-end mt-4">
+                                <button 
+                                    className="btn btn-outline btn-sm"
+                                    onClick={() => handleEditTemplate(template)}
+                                >
+                                    <FaEdit className="mr-1" /> Edit
+                                </button>
+                                <button 
+                                    className="btn btn-primary btn-sm"
+                                    onClick={() => handleDeleteTemplate(template.id)}
+                                >
+                                    <FaTrash className="mr-1" /> Delete
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                ))}
+            </div>
+        );
+    };
+
     return (
         <div className="w-full min-h-svh p-8">
             <h1 className="text-3xl font-bold">Create Alerts</h1>
@@ -201,44 +254,7 @@ export default function Alerts() {
             
             <h1 className="text-3xl font-bold mt-8">Existing Templates</h1>
             
-            {isLoading ? (
-                <div className="flex justify-center mt-4">
-                    <span className="loading loading-spinner loading-lg"></span>
-                </div>
-            ) : error ? (
-                <div className="alert alert-error mt-4">
-                    <span>{error}</span>
-                </div>
-            ) : templates.length === 0 ? (
-                <div className="alert alert-info mt-4">
-                    <span>No templates found. Create one to get started!</span>
-                </div>
-            ) : (
-                <div className="grid grid-cols-3 gap-4 mt-4">
-                    {templates.map((template) => (
-                        <div key={template.id} className="card bg-base-300 shadow-xl">
-                            <div className="card-body">
-                                <h2 className="card-title">{template.name}</h2>
-                                <p className="whitespace-pre-wrap">{template.template}</p>
-                                <div className="card-actions justify-end mt-4">
-                                    <button 
-                                        className="btn btn-outline btn-sm"
-                                        onClick={() => handleEditTemplate(template)}
-                                    >
-                                        <FaEdit className="mr-1" /> Edit
-                                    </button>
-                                    <button 
-                                        className="btn btn-primary btn-sm"
-                                        onClick={() => handleDeleteTemplate(template.id)}
-                                    >
-                                        <FaTrash className="mr-1" /> Delete
-                                    </button>
-                                </div>
-                            </div>
-                        </div>
-                    ))}
-                </div>
-            )}
+            {renderTemplates()}
 
             <dialog id="alert_modal" className="modal">
                 <div className="modal-box">
