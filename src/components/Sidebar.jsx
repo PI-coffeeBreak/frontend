@@ -1,7 +1,7 @@
 import { useState } from "react";
 import { Link, useLocation } from "react-router-dom";
 import { VscLayoutSidebarLeft, VscLayoutSidebarLeftOff } from "react-icons/vsc";
-import { FaHome, FaCalendarAlt, FaPen, FaUserPlus } from "react-icons/fa";
+import { FaHome, FaPen } from "react-icons/fa";
 import { RiApps2AddLine } from "react-icons/ri";
 import DropdownMenu from "./DropdownMenu.jsx";
 import { useKeycloak } from "@react-keycloak/web";
@@ -58,6 +58,7 @@ export default function Sidebar() {
                                 isVisible={isVisible}
                                 links={[
                                     { label: "Colors", path: "eventmaker/colors" },
+                                    { label: "Menus", path: "eventmaker/menus" },
                                     { label: "Pages", path: "eventmaker/pages" },
                                     { label: "Choose Plugins", path: "eventmaker/choose-plugins" }
                                 ]}
