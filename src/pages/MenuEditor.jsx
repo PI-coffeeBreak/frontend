@@ -25,7 +25,6 @@ function SortableMenuItem({ option, onEdit, onDelete }) {
     transition
   };
 
-  // Use getIconComponent to support all icon libraries
   const IconComponent = getIconComponent(option.icon);
 
   return (
@@ -79,13 +78,11 @@ SortableMenuItem.propTypes = {
   onDelete: PropTypes.func.isRequired
 };
 
-// Update the AddOptionModal component for better spacing
 function AddOptionModal({ isOpen, onClose, newOption, setNewOption, onAdd }) {
   // Generate unique IDs for form controls
   const labelInputId = React.useId();
   const urlInputId = React.useId();
   const modalRef = React.useRef(null);
-  // Track if icon selector is open to adjust layout
   const [isIconSelectorOpen, setIsIconSelectorOpen] = useState(false);
 
   // Control dialog open/close state
@@ -115,7 +112,6 @@ function AddOptionModal({ isOpen, onClose, newOption, setNewOption, onAdd }) {
       <div className="modal-box w-11/12 max-w-lg max-h-[90vh] overflow-y-auto">
         <h3 className="font-bold text-xl mb-4">Add New Menu Option</h3>
         
-        {/* Icon selector with dynamic height based on open state */}
         <div className={`icon-selector-container ${isIconSelectorOpen ? 'h-[450px]' : 'h-auto'} transition-all duration-300`}>
           <IconSelector 
             value={newOption.icon} 
@@ -125,7 +121,7 @@ function AddOptionModal({ isOpen, onClose, newOption, setNewOption, onAdd }) {
           />
         </div>
         
-        {/* Compact form fields with consistent spacing */}
+        {/* form fields */}
         <div className="space-y-3 mt-3">
           <div>
             <label 
@@ -236,7 +232,7 @@ function EditOptionModal({ isOpen, onClose, editingOption, setEditingOption, onU
         
         {editingOption && (
           <>
-            {/* Icon selector with dynamic height based on open state */}
+            {/* Icon selector */}
             <div className={`icon-selector-container ${isIconSelectorOpen ? 'h-[450px]' : 'h-auto'} transition-all duration-300`}>
               <IconSelector 
                 value={editingOption.icon} 
