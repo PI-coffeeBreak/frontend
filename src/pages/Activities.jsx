@@ -5,19 +5,21 @@ import { FaTrash } from "react-icons/fa";
 import { FaExclamationTriangle } from "react-icons/fa";
 import { FaCheck } from "react-icons/fa";
 import CreateCard from "../components/CreateCard.jsx";
-import {useState, useEffect} from "react";
+import { useState, useEffect } from "react";
 import Activity from "../components/Activity.jsx";
 import { MdError } from "react-icons/md";
 import * as XLSX from "xlsx";
-import axios from 'axios';
 import { baseUrl, MAX_FILE_SIZE } from "../consts.js";
 import { useActivities } from "../contexts/ActivitiesContext";
+import { useKeycloak } from "@react-keycloak/web";
+import { axiosWithAuth } from '../utils/axiosWithAuth';
 
 const activitiesBaseUrl = `${baseUrl}/activities`;
 const activityTypesBaseUrl = `${baseUrl}/activity-types`;
 
 export default function Activities() {
     const { activities, activityTypes, fetchActivities, fetchActivityTypes, getActivityTypeID, getActivityType } = useActivities();
+    const { keycloak } = useKeycloak();
 
     const [newSession, setNewSession] = useState({
         name: "",
@@ -28,7 +30,7 @@ export default function Activities() {
         type_id: 1,
         topic: "",
         speaker: "",
-        facilitator:  ""
+        facilitator: ""
     });
     const [searchQuery, setSearchQuery] = useState("");
     const [selectedType, setSelectedType] = useState("");
@@ -81,17 +83,17 @@ export default function Activities() {
     };
 
 
-    var ExcelToJSON = function() {
-        this.parseExcel = function(file) {
+    var ExcelToJSON = function () {
+        this.parseExcel = function (file) {
             return new Promise((resolve, reject) => {
                 const reader = new FileReader();
-                reader.onload = function(e) {
+                reader.onload = function (e) {
                     const data = e.target.result;
-                    const workbook = XLSX.read(data, {type: 'binary'});
+                    const workbook = XLSX.read(data, { type: 'binary' });
 
                     let jsonData = [];
 
-                    workbook.SheetNames.forEach(function(sheetName) {
+                    workbook.SheetNames.forEach(function (sheetName) {
                         const XL_row_object = XLSX.utils.sheet_to_row_object_array(workbook.Sheets[sheetName]);
                         console.log(`Data from sheet: ${sheetName}`);
                         console.log(XL_row_object);
@@ -101,7 +103,7 @@ export default function Activities() {
 
                     resolve(jsonData);
                 };
-                reader.onerror = function(ex) {
+                reader.onerror = function (ex) {
                     reject(ex);
                 };
                 reader.readAsBinaryString(file);
@@ -128,9 +130,9 @@ export default function Activities() {
             }).catch(error => {
                 console.error("Error processing excel file:", error);
             }
-        );
+            );
 
-        return importedActivities
+            return importedActivities
 
         } else {
             console.log("No file selected.");
@@ -155,7 +157,7 @@ export default function Activities() {
     const handleExcelSubmit = async (e) => {
         e.preventDefault()
         try {
-            const response = await axios.post(activitiesBaseUrl + '/batch', activities);
+            const response = await axiosWithAuth(keycloak).post(activitiesBaseUrl + '/batch', activities);
             console.log('Data sent successfully', response);
             setFeedbackMessage("Activities added successfully!");
             setErrorMessage("");
@@ -189,7 +191,7 @@ export default function Activities() {
             setImagePreview(URL.createObjectURL(file));
         }
     };
-    
+
 
     const handleSubmit = async (e) => {
         e.preventDefault();
@@ -213,9 +215,8 @@ export default function Activities() {
             facilitator: newSession.facilitator
         }
 
-
         try {
-            const response = await axios.post(activitiesBaseUrl, activity);
+            const response = await axiosWithAuth(keycloak).post(activitiesBaseUrl, activity);
             setFeedbackMessage("Activities added successfully!");
             setErrorMessage("");
             document.getElementById("excel_modal").close();
@@ -238,7 +239,7 @@ export default function Activities() {
             } else {
                 setErrorMessage("Error creating activity.");
             }
-        } catch{
+        } catch {
             setErrorMessage("Error creating activity.");
         }
     };
@@ -325,13 +326,13 @@ export default function Activities() {
 
                 {feedbackMessage && (
                     <div role="alert" className="alert alert-success my-4 w-1/2">
-                        <span className="flex gap-4"><FaCheck className="text-white text-xl"/>{feedbackMessage}</span>
+                        <span className="flex gap-4"><FaCheck className="text-white text-xl" />{feedbackMessage}</span>
                     </div>
                 )}
                 {errorMessage && (
                     <div role="alert" className="alert alert-error my-4 w-1/2">
                         <span className="flex gap-4"><FaExclamationTriangle
-                            className="text-white text-xl"/>{errorMessage}</span>
+                            className="text-white text-xl" />{errorMessage}</span>
                     </div>
                 )}
 
@@ -340,7 +341,7 @@ export default function Activities() {
                         <label className="input">
                             <svg className="h-[1em] opacity-50" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
                                 <g strokeLinejoin="round" strokeLinecap="round" strokeWidth="2.5" fill="none"
-                                   stroke="currentColor">
+                                    stroke="currentColor">
                                     <circle cx="11" cy="11" r="8"></circle>
                                     <path d="m21 21-4.3-4.3"></path>
                                 </g>
@@ -350,7 +351,7 @@ export default function Activities() {
                                 className="grow"
                                 placeholder="Search activities"
                                 value={searchQuery}
-                                onChange={handleSearchChange}/>
+                                onChange={handleSearchChange} />
                         </label>
                     </div>
 

@@ -53,7 +53,6 @@ export const PluginsProvider = ({ children }) => {
 
         try {
             await axiosWithAuth(keycloak).post(endpoint, { plugin_name: plugin.name });
-
             // Update the local state
             setPlugins((prevPlugins) =>
                 prevPlugins.map((p) =>

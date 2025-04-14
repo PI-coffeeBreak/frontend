@@ -1,12 +1,14 @@
 import React, { createContext, useContext, useState, useEffect, useMemo } from "react";
 import PropTypes from "prop-types";
-import axios from "axios";
 import { baseUrl } from "../consts";
+import { useKeycloak } from "@react-keycloak/web";
+import { axiosWithAuth } from '../utils/axiosWithAuth';
 
 const ThemeContext = createContext();
 
 export const ThemeProvider = ({ children }) => {
     const colorThemeBaseUrl = `${baseUrl}/ui/color-theme/color-theme`;
+    const { keycloak } = useKeycloak();
 
     const initialTheme = {
         "base-100": "#f3faff",
@@ -36,7 +38,7 @@ export const ThemeProvider = ({ children }) => {
     // Fetch theme colors from the server
     const fetchThemeColors = async () => {
         try {
-            const response = await axios.get(colorThemeBaseUrl);
+            const response = await axiosWithAuth(keycloak).get(colorThemeBaseUrl);
 
             const transformedTheme = Object.keys(response.data).reduce((acc, key) => {
                 const newKey = key.replace(/_/g, "-"); // Convert underscores to hyphens
@@ -67,7 +69,7 @@ export const ThemeProvider = ({ children }) => {
                 return acc;
             }, {});
 
-            const response = await axios.put(colorThemeBaseUrl, transformedTheme);
+            const response = await axiosWithAuth(keycloak).put(colorThemeBaseUrl, transformedTheme);
             console.log("Server response after updating theme colors:", response.data);
 
             const updatedTheme = Object.keys(response.data).reduce((acc, key) => {
