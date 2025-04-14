@@ -1,13 +1,13 @@
 import React, { useState, useEffect } from "react";
-import PropTypes from "prop-types"; // Import PropTypes
+import PropTypes from "prop-types";
 import { useMenus } from "../contexts/MenuContext.jsx";
 import { useNotification } from "../contexts/NotificationContext";
 import { DndContext, closestCenter, KeyboardSensor, PointerSensor, useSensor, useSensors } from "@dnd-kit/core";
 import { SortableContext, arrayMove, verticalListSortingStrategy, useSortable } from "@dnd-kit/sortable";
 import { restrictToVerticalAxis } from '@dnd-kit/modifiers';
 import { CSS } from "@dnd-kit/utilities";
-import { FaPlus, FaEdit, FaTrash, FaBars, FaChevronUp, FaChevronDown, FaSearch } from "react-icons/fa";
-import * as IconLibrary from "react-icons/fa";
+import { FaPlus, FaEdit, FaTrash, FaBars, FaSearch } from "react-icons/fa";
+import { IconSelector } from "../components/IconSelector";
 
 function SortableMenuItem({ option, onEdit, onDelete }) {
   const {
@@ -17,14 +17,16 @@ function SortableMenuItem({ option, onEdit, onDelete }) {
     transform,
     transition
   } = useSortable({ id: option.id });
+  
+  const { getIconComponent } = useMenus();
 
   const style = {
     transform: CSS.Transform.toString(transform),
     transition
   };
 
-  // Get the icon component from the icon name
-  const IconComponent = IconLibrary[option.icon] || IconLibrary.FaQuestion;
+  // Use getIconComponent to support all icon libraries
+  const IconComponent = getIconComponent(option.icon);
 
   return (
     <div 
@@ -77,119 +79,14 @@ SortableMenuItem.propTypes = {
   onDelete: PropTypes.func.isRequired
 };
 
-function IconSelector({ value, onChange }) {
-  const [isOpen, setIsOpen] = useState(false);
-  const [searchIconTerm, setSearchIconTerm] = useState("");
-  
-  // Common FA icons for navigation
-  const commonIcons = [
-    "FaHome", "FaUser", "FaBook", "FaCalendar", "FaCog", "FaBell", 
-    "FaEnvelope", "FaSearch", "FaShoppingCart", "FaHeart", "FaStar", 
-    "FaChartBar", "FaListUl", "FaFileAlt", "FaLink", "FaQuestion",
-    "FaImage", "FaVideo", "FaMusic", "FaGamepad", "FaMap"
-  ];
-  
-  const filteredIcons = commonIcons.filter(iconName => 
-    iconName && typeof iconName === 'string' ? 
-      iconName.toLowerCase().includes((searchIconTerm || '').toLowerCase()) : 
-      false
-  );
-  
-  const IconComponent = IconLibrary[value] || IconLibrary.FaQuestion;
-  
-  // Generate unique IDs for form controls
-  const iconSelectorId = React.useId();
-  const searchInputId = React.useId();
-  const datalistId = React.useId();
-  
-  return (
-    <div className="relative mb-4">
-      <label 
-        htmlFor={iconSelectorId}
-        className="block text-sm font-medium text-gray-700 mb-1"
-      >
-        Icon
-      </label>
-      
-      <div className="relative">
-        {/* Main icon selector with current value */}
-        <button
-          id={iconSelectorId}
-          type="button"
-          onClick={() => setIsOpen(!isOpen)}
-          className="flex items-center justify-between w-full p-2 border border-gray-300 rounded-md"
-          aria-expanded={isOpen}
-        >
-          <div className="flex items-center gap-2">
-            <IconComponent className="text-lg" />
-            <span>{value}</span>
-          </div>
-          {isOpen ? <FaChevronUp /> : <FaChevronDown />}
-        </button>
-        
-        {/* Dropdown panel using native elements where possible */}
-        {isOpen && (
-          <div className="absolute z-50 mt-1 w-full bg-white border border-gray-300 rounded-md shadow-lg max-h-60 overflow-auto">
-            <div className="sticky top-0 p-2 bg-white border-b border-gray-200">
-              <label htmlFor={searchInputId} className="sr-only">Search icons</label>
-              
-              <input
-                id={searchInputId}
-                type="text"
-                value={searchIconTerm}
-                onChange={(e) => setSearchIconTerm(e.target.value)}
-                placeholder="Search icons..."
-                className="w-full p-2 border border-gray-300 rounded-md"
-                list={datalistId}
-              />
-              
-              <datalist id={datalistId}>
-                {commonIcons.map(iconName => (
-                  <option key={iconName} value={iconName} />
-                ))}
-              </datalist>
-            </div>
-            
-            <fieldset className="p-2">
-              <legend className="sr-only">Available icons</legend>
-              <div className="grid grid-cols-4 gap-2">
-                {filteredIcons.map((iconName) => {
-                  const Icon = IconLibrary[iconName];
-                  return (
-                    <button
-                      key={iconName}
-                      type="button"
-                      className={`flex flex-col items-center justify-center p-2 hover:bg-gray-100 rounded-md ${value === iconName ? 'bg-primary/10 border border-primary/30' : ''}`}
-                      onClick={() => {
-                        onChange(iconName);
-                        setIsOpen(false);
-                      }}
-                      aria-pressed={value === iconName}
-                    >
-                      <Icon className="text-xl mb-1" />
-                      <span className="text-xs text-gray-600 truncate w-full text-center">{iconName.replace(/^Fa/, '')}</span>
-                    </button>
-                  );
-                })}
-              </div>
-            </fieldset>
-          </div>
-        )}
-      </div>
-    </div>
-  );
-}
-
-IconSelector.propTypes = {
-  value: PropTypes.string.isRequired,
-  onChange: PropTypes.func.isRequired
-};
-
+// Update the AddOptionModal component for better spacing
 function AddOptionModal({ isOpen, onClose, newOption, setNewOption, onAdd }) {
   // Generate unique IDs for form controls
   const labelInputId = React.useId();
   const urlInputId = React.useId();
   const modalRef = React.useRef(null);
+  // Track if icon selector is open to adjust layout
+  const [isIconSelectorOpen, setIsIconSelectorOpen] = useState(false);
 
   // Control dialog open/close state
   React.useEffect(() => {
@@ -215,49 +112,57 @@ function AddOptionModal({ isOpen, onClose, newOption, setNewOption, onAdd }) {
       ref={modalRef}
       onClose={handleDialogClose}
     >
-      <div className="modal-box w-11/12 max-w-md">
+      <div className="modal-box w-11/12 max-w-lg max-h-[90vh] overflow-y-auto">
         <h3 className="font-bold text-xl mb-4">Add New Menu Option</h3>
         
-        <IconSelector 
-          value={newOption.icon} 
-          onChange={(icon) => setNewOption({...newOption, icon})} 
-        />
-        
-        <div className="mb-4">
-          <label 
-            htmlFor={labelInputId} 
-            className="block text-sm font-medium text-gray-700 mb-1"
-          >
-            Label
-          </label>
-          <input
-            id={labelInputId}
-            type="text"
-            value={newOption.label}
-            onChange={(e) => setNewOption({...newOption, label: e.target.value})}
-            className="w-full p-2 border border-gray-300 rounded-md"
-            placeholder="Menu item label"
+        {/* Icon selector with dynamic height based on open state */}
+        <div className={`icon-selector-container ${isIconSelectorOpen ? 'h-[450px]' : 'h-auto'} transition-all duration-300`}>
+          <IconSelector 
+            value={newOption.icon} 
+            onChange={(icon) => setNewOption({...newOption, icon})}
+            maxDisplayIcons={200}
+            onSelectorToggle={setIsIconSelectorOpen}
           />
         </div>
         
-        <div className="mb-6">
-          <label 
-            htmlFor={urlInputId}
-            className="block text-sm font-medium text-gray-700 mb-1"
-          >
-            URL / Path
-          </label>
-          <input
-            id={urlInputId}
-            type="text"
-            value={newOption.href}
-            onChange={(e) => setNewOption({...newOption, href: e.target.value})}
-            className="w-full p-2 border border-gray-300 rounded-md"
-            placeholder="/path/to/page"
-          />
+        {/* Compact form fields with consistent spacing */}
+        <div className="space-y-3 mt-3">
+          <div>
+            <label 
+              htmlFor={labelInputId} 
+              className="block text-sm font-medium text-gray-700 mb-1"
+            >
+              Label
+            </label>
+            <input
+              id={labelInputId}
+              type="text"
+              value={newOption.label}
+              onChange={(e) => setNewOption({...newOption, label: e.target.value})}
+              className="w-full p-2 border border-gray-300 rounded-md"
+              placeholder="Menu item label"
+            />
+          </div>
+          
+          <div>
+            <label 
+              htmlFor={urlInputId}
+              className="block text-sm font-medium text-gray-700 mb-1"
+            >
+              URL / Path
+            </label>
+            <input
+              id={urlInputId}
+              type="text"
+              value={newOption.href}
+              onChange={(e) => setNewOption({...newOption, href: e.target.value})}
+              className="w-full p-2 border border-gray-300 rounded-md"
+              placeholder="/path/to/page"
+            />
+          </div>
         </div>
         
-        <div className="modal-action">
+        <div className="modal-action mt-4">
           <button
             type="button"
             className="btn btn-outline"
@@ -293,11 +198,14 @@ AddOptionModal.propTypes = {
   onAdd: PropTypes.func.isRequired
 };
 
+// Update the EditOptionModal component for better spacing
 function EditOptionModal({ isOpen, onClose, editingOption, setEditingOption, onUpdate }) {
   // Generate unique IDs for form controls
   const editLabelInputId = React.useId();
   const editUrlInputId = React.useId();
   const modalRef = React.useRef(null);
+  // Track if icon selector is open to adjust layout
+  const [isIconSelectorOpen, setIsIconSelectorOpen] = useState(false);
 
   // Control dialog open/close state
   React.useEffect(() => {
@@ -323,51 +231,59 @@ function EditOptionModal({ isOpen, onClose, editingOption, setEditingOption, onU
       ref={modalRef}
       onClose={handleDialogClose}
     >
-      <div className="modal-box w-11/12 max-w-md">
+      <div className="modal-box w-11/12 max-w-lg max-h-[90vh] overflow-y-auto">
         <h3 className="font-bold text-xl mb-4">Edit Menu Option</h3>
         
         {editingOption && (
           <>
-            <IconSelector 
-              value={editingOption.icon} 
-              onChange={(icon) => setEditingOption({...editingOption, icon})} 
-            />
-            
-            <div className="mb-4">
-              <label 
-                htmlFor={editLabelInputId}
-                className="block text-sm font-medium text-gray-700 mb-1"
-              >
-                Label
-              </label>
-              <input
-                id={editLabelInputId}
-                type="text"
-                value={editingOption.label}
-                onChange={(e) => setEditingOption({...editingOption, label: e.target.value})}
-                className="w-full p-2 border border-gray-300 rounded-md"
+            {/* Icon selector with dynamic height based on open state */}
+            <div className={`icon-selector-container ${isIconSelectorOpen ? 'h-[450px]' : 'h-auto'} transition-all duration-300`}>
+              <IconSelector 
+                value={editingOption.icon} 
+                onChange={(icon) => setEditingOption({...editingOption, icon})}
+                maxDisplayIcons={200}
+                onSelectorToggle={setIsIconSelectorOpen}
               />
             </div>
             
-            <div className="mb-6">
-              <label 
-                htmlFor={editUrlInputId}
-                className="block text-sm font-medium text-gray-700 mb-1"
-              >
-                URL / Path
-              </label>
-              <input
-                id={editUrlInputId}
-                type="text"
-                value={editingOption.href}
-                onChange={(e) => setEditingOption({...editingOption, href: e.target.value})}
-                className="w-full p-2 border border-gray-300 rounded-md"
-              />
+            {/* form fields */}
+            <div className="space-y-3 mt-3">
+              <div>
+                <label 
+                  htmlFor={editLabelInputId}
+                  className="block text-sm font-medium text-gray-700 mb-1"
+                >
+                  Label
+                </label>
+                <input
+                  id={editLabelInputId}
+                  type="text"
+                  value={editingOption.label}
+                  onChange={(e) => setEditingOption({...editingOption, label: e.target.value})}
+                  className="w-full p-2 border border-gray-300 rounded-md"
+                />
+              </div>
+              
+              <div>
+                <label 
+                  htmlFor={editUrlInputId}
+                  className="block text-sm font-medium text-gray-700 mb-1"
+                >
+                  URL / Path
+                </label>
+                <input
+                  id={editUrlInputId}
+                  type="text"
+                  value={editingOption.href}
+                  onChange={(e) => setEditingOption({...editingOption, href: e.target.value})}
+                  className="w-full p-2 border border-gray-300 rounded-md"
+                />
+              </div>
             </div>
           </>
         )}
         
-        <div className="modal-action">
+        <div className="modal-action mt-4">
           <button
             type="button"
             className="btn btn-outline"

@@ -1,7 +1,7 @@
 import { useState } from "react";
 import { Link, useLocation } from "react-router-dom";
 import { VscLayoutSidebarLeft, VscLayoutSidebarLeftOff } from "react-icons/vsc";
-import { FaHome, FaCalendarAlt, FaPen, FaUserPlus } from "react-icons/fa";
+import { FaHome, FaPen } from "react-icons/fa";
 import { RiApps2AddLine } from "react-icons/ri";
 import DropdownMenu from "./DropdownMenu.jsx";
 import { useKeycloak } from "@react-keycloak/web";
