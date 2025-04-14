@@ -4,10 +4,12 @@ import { baseUrl } from "../consts";
 import { useKeycloak } from "@react-keycloak/web";
 import { axiosWithAuth } from '../utils/axiosWithAuth';
 import axios from 'axios'; // Keep this for geoapify API calls
+import { useAlerts } from "../contexts/AlertsContext";
 
 export default function EventSetup() {
     const navigate = useNavigate();
     const { keycloak } = useKeycloak();
+    const { createAlertTemplate } = useAlerts();
     const [step, setStep] = useState(1);
     const [isSubmitting, setIsSubmitting] = useState(false);
     const [submitError, setSubmitError] = useState(null);
@@ -23,7 +25,9 @@ export default function EventSetup() {
         startDate: '',
         endDate: '',
         location: '',
-        image: null
+        image: null,
+        alertTemplateName: '',
+        alertTemplateContent: ''
     });
 
     const [errors, setErrors] = useState({});
@@ -46,6 +50,10 @@ export default function EventSetup() {
                     newErrors.endDate = 'End date must be after start date';
                 }
                 if (!formData.location) newErrors.location = 'Location is required';
+                break;
+            case 4:
+                if (!formData.alertTemplateName) newErrors.alertTemplateName = 'Template name is required';
+                if (!formData.alertTemplateContent) newErrors.alertTemplateContent = 'Template content is required';
                 break;
         }
 
@@ -120,6 +128,7 @@ export default function EventSetup() {
             setIsSubmitting(true);
             setSubmitError(null);
             try {
+                // Create the event
                 const eventData = {
                     name: formData.eventName,
                     description: formData.description,
@@ -131,6 +140,23 @@ export default function EventSetup() {
 
                 const response = await axiosWithAuth(keycloak).post(`${baseUrl}/event-info/event`, eventData);
                 console.log('Event created successfully:', response.data);
+                
+                // Create alert template if data was provided
+                if (formData.alertTemplateName && formData.alertTemplateContent) {
+                    try {
+                        const templateData = {
+                            name: formData.alertTemplateName,
+                            template: formData.alertTemplateContent
+                        };
+                        
+                        await createAlertTemplate(templateData);
+                        console.log('Alert template created successfully');
+                    } catch (templateError) {
+                        console.error('Error creating alert template:', templateError);
+                        // Continue with navigation even if template creation fails
+                    }
+                }
+                
                 navigate('/instantiate/eventmaker');
             } catch (error) {
                 console.error('Error creating event:', error);
@@ -389,6 +415,46 @@ export default function EventSetup() {
                         </div>
                     </div>
                 );
+            case 4:
+                return (
+                    <div className="w-full">
+                        <h2 className="text-2xl font-semibold mb-6">Alert Template</h2>
+                        <div className="space-y-4">
+                            <div>
+                                <label htmlFor="alertTemplateName" className="block mb-2">
+                                    Template Name
+                                </label>
+                                <input
+                                    type="text"
+                                    id="alertTemplateName"
+                                    name="alertTemplateName"
+                                    value={formData.alertTemplateName}
+                                    onChange={handleInputChange}
+                                    placeholder="Enter a name for this alert template"
+                                    className={`p-4 w-full bg-base-200 h-16 rounded-xl ${errors.alertTemplateName ? 'border-red-500' : ''}`}
+                                />
+                                {errors.alertTemplateName && <p className="text-red-500 mt-1">{errors.alertTemplateName}</p>}
+                            </div>
+                            <div>
+                                <label htmlFor="alertTemplateContent" className="block mb-2">
+                                    Template Content
+                                </label>
+                                <textarea
+                                    id="alertTemplateContent"
+                                    name="alertTemplateContent"
+                                    value={formData.alertTemplateContent}
+                                    onChange={handleInputChange}
+                                    placeholder="Enter the content of your alert template"
+                                    className={`p-4 w-full bg-base-200 h-32 rounded-xl ${errors.alertTemplateContent ? 'border-red-500' : ''}`}
+                                />
+                                {errors.alertTemplateContent && <p className="text-red-500 mt-1">{errors.alertTemplateContent}</p>}
+                                <p className="text-sm text-base-content/70 mt-2">
+                                    You can use variables like {'{name}'}, {'{date}'}, etc. in your template.
+                                </p>
+                            </div>
+                        </div>
+                    </div>
+                );
         }
     };
 
@@ -400,6 +466,7 @@ export default function EventSetup() {
                     <div className={`step ${step >= 1 ? 'step-primary' : ''}`}>Basic Info</div>
                     <div className={`step ${step >= 2 ? 'step-primary' : ''}`}>Event Image</div>
                     <div className={`step ${step >= 3 ? 'step-primary' : ''}`}>Details</div>
+                    <div className={`step ${step >= 4 ? 'step-primary' : ''}`}>Alerts</div>
                 </div>
             </div>
 
@@ -427,7 +494,7 @@ export default function EventSetup() {
                                     Back
                                 </button>
                             )}
-                            {step < 3 ? (
+                            {step < 4 ? (
                                 <button
                                     onClick={handleNext}
                                     className="btn btn-primary ml-auto"
