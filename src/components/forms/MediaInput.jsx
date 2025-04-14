@@ -117,23 +117,35 @@ export function MediaInput({
         event.preventDefault();
     };
 
+    const handleKeyDown = (event) => {
+        if (event.key === 'Enter' || event.key === ' ') {
+            event.preventDefault();
+            fileInputRef.current?.click();
+        }
+    };
+
     return (
-        <div
-            className={className}
-            onDrop={handleDrop}
-            onDragOver={handleDragOver}
-        >
+        <div className={className}>
             <input
                 ref={fileInputRef}
                 type="file"
                 accept={accept}
                 multiple={multiple}
                 onChange={handleFileChange}
+                id={`file-input-${name}`}
+                name={name}
+                aria-label="Choose file"
                 style={{ display: "none" }}
                 disabled={isUploading}
             />
-            <div
-                onClick={() => !isUploading && fileInputRef.current?.click()}
+            <label
+                htmlFor={`file-input-${name}`}
+                onDrop={handleDrop}
+                onDragOver={handleDragOver}
+                onKeyDown={handleKeyDown}
+                tabIndex="0"
+                role="button"
+                aria-disabled={isUploading}
                 style={{
                     border: "2px dashed var(--color-primary)",
                     borderRadius: "8px",
@@ -142,13 +154,14 @@ export function MediaInput({
                     cursor: isUploading ? "default" : "pointer",
                     backgroundColor: "var(--color-base-100)",
                     color: "var(--color-base-content)",
-                    opacity: isUploading ? 0.7 : 1
+                    opacity: isUploading ? 0.7 : 1,
+                    display: "block"
                 }}
             >
                 {isUploading ? (
-                    <p>Uploading...</p>
+                    <p role="status" aria-live="polite">Uploading...</p>
                 ) : preview ? (
-                    <div>
+                    <>
                         <img
                             src={preview}
                             alt="Preview"
@@ -159,20 +172,23 @@ export function MediaInput({
                             }}
                         />
                         <p>Click or drag to change file</p>
-                    </div>
+                    </>
                 ) : (
                     <p>Click or drag files here</p>
                 )}
                 {error && (
-                    <p style={{
-                        color: "var(--color-error)",
-                        marginTop: "10px",
-                        fontSize: "0.875rem"
-                    }}>
+                    <p
+                        role="alert"
+                        style={{
+                            color: "var(--color-error)",
+                            marginTop: "10px",
+                            fontSize: "0.875rem"
+                        }}
+                    >
                         {error}
                     </p>
                 )}
-            </div>
+            </label>
         </div>
     );
 }

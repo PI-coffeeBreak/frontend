@@ -120,110 +120,93 @@ AnyOfInput.propTypes = {
     onPropertyChange: PropTypes.func.isRequired
 };
 
-function PropertyInput({ propertyName, propertySchema, value, onChange, isRequired, schema }) {
-    console.log('PropertyInput called with:', {
+// Helper functions for PropertyInput
+function createMediaInput(propertyName, label, value, onChange, isRequired) {
+    console.log('Rendering MediaInput');
+    return (
+        <MediaInput
+            key={propertyName}
+            name={propertyName}
+            label={`${label}${isRequired ? " *" : ""}`}
+            value={value}
+            onChange={onChange}
+        />
+    );
+}
+
+function createColorSelector(propertyName, enumDef, value, propertySchema, onChange) {
+    console.log('Using ColorSelector for:', {
         propertyName,
-        propertySchema,
-        value,
-        isRequired
+        enum: enumDef.enum,
+        value
     });
 
-    const label = propertySchema.title || propertyName;
-    const description = propertySchema.description;
+    const colorOptions = enumDef.enum.map(value => ({
+        value,
+        label: value.split('-').map(word =>
+            word.charAt(0).toUpperCase() + word.slice(1)
+        ).join(' '),
+        color: `var(--color-${value})`
+    }));
 
-    // Handle Media type
-    if (propertySchema.$ref === '#/$defs/Media') {
-        console.log('Rendering MediaInput');
-        return (
-            <MediaInput
-                key={propertyName}
-                name={propertyName}
-                label={`${label}${isRequired ? " *" : ""}`}
-                value={value}
-                onChange={onChange}
-            />
-        );
+    return (
+        <ColorSelector
+            key={propertyName}
+            name={propertyName}
+            value={value || propertySchema.default || ""}
+            onChange={onChange}
+            options={colorOptions}
+        />
+    );
+}
+
+function createSelectInput(propertyName, label, value, options, onChange, propertySchema, isRequired) {
+    return (
+        <SelectInput
+            key={propertyName}
+            label={`${label}${isRequired ? " *" : ""}`}
+            name={propertyName}
+            value={value || propertySchema.default || ""}
+            options={options}
+            onChange={onChange}
+        />
+    );
+}
+
+function formatEnumOptions(enumValues) {
+    return enumValues.map(value => ({
+        value,
+        label: typeof value === 'string'
+            ? value.split('-').map(word =>
+                word.charAt(0).toUpperCase() + word.slice(1)
+            ).join(' ')
+            : value
+    }));
+}
+
+function handleEnumReference(propertyName, schema, propertySchema, value, onChange, label, isRequired) {
+    const enumName = propertySchema.$ref.split('/').pop();
+    const enumDef = schema?.$defs?.[enumName];
+
+    if (!enumDef?.enum) return null;
+
+    if (enumName === "Color") {
+        return createColorSelector(propertyName, enumDef, value, propertySchema, onChange);
     }
 
-    // Handle enum references
-    if (propertySchema.$ref) {
-        console.log('Handling enum reference:', propertySchema.$ref);
-        const enumName = propertySchema.$ref.split('/').pop();
-        const enumDef = schema?.$defs?.[enumName];
-        if (enumDef?.enum) {
-            console.log('Found enum definition:', enumDef);
+    return createSelectInput(
+        propertyName,
+        label,
+        value,
+        formatEnumOptions(enumDef.enum),
+        onChange,
+        propertySchema,
+        isRequired
+    );
+}
 
-            // Check if this is a color selector (based on enum name)
-            if (enumName === "Color") {
-                console.log('Using ColorSelector for:', {
-                    propertyName,
-                    enumName,
-                    enum: enumDef.enum,
-                    value
-                });
-
-                const colorOptions = enumDef.enum.map(value => ({
-                    value,
-                    label: value.split('-').map(word =>
-                        word.charAt(0).toUpperCase() + word.slice(1)
-                    ).join(' '),
-                    color: `var(--color-${value})`
-                }));
-
-                console.log('ColorSelector options:', colorOptions);
-
-                return (
-                    <ColorSelector
-                        key={propertyName}
-                        name={propertyName}
-                        value={value || propertySchema.default || ""}
-                        onChange={onChange}
-                        options={colorOptions}
-                    />
-                );
-            }
-
-            return (
-                <SelectInput
-                    key={propertyName}
-                    label={`${label}${isRequired ? " *" : ""}`}
-                    name={propertyName}
-                    value={value || propertySchema.default || ""}
-                    options={enumDef.enum.map(value => ({
-                        value,
-                        label: value.split('-').map(word =>
-                            word.charAt(0).toUpperCase() + word.slice(1)
-                        ).join(' ')
-                    }))}
-                    onChange={onChange}
-                />
-            );
-        }
-    }
-
-    // Handle direct enums
-    if (propertySchema.enum) {
-        console.log('Using SelectInput for enum');
-        return (
-            <SelectInput
-                key={propertyName}
-                label={`${label}${isRequired ? " *" : ""}`}
-                name={propertyName}
-                value={value || propertySchema.default || ""}
-                options={propertySchema.enum.map(value => ({
-                    value,
-                    label: typeof value === 'string'
-                        ? value.split('-').map(word =>
-                            word.charAt(0).toUpperCase() + word.slice(1)
-                        ).join(' ')
-                        : value
-                }))}
-                onChange={onChange}
-            />
-        );
-    }
-
-    switch (propertySchema.type) {
+function createBasicInput(type, propertyName, label, value, onChange, propertySchema, isRequired, description) {
+    switch (type) {
         case "string":
             return (
                 <TextInput
@@ -259,24 +242,62 @@ function PropertyInput({ propertyName, propertySchema, value, onChange, isRequir
                     required={isRequired}
                     min={propertySchema.minimum}
                     max={propertySchema.maximum}
-                    step={propertySchema.type === "integer" ? 1 : propertySchema.multipleOf}
+                    step={type === "integer" ? 1 : propertySchema.multipleOf}
                 />
             );
 
         default:
-            console.warn(`Unsupported property type: ${propertySchema.type} for ${propertyName}`);
+            console.warn(`Unsupported property type: ${type} for ${propertyName}`);
             return null;
     }
 }
 
-PropertyInput.propTypes = {
-    propertyName: PropTypes.string.isRequired,
-    propertySchema: PropTypes.object.isRequired,
-    value: PropTypes.any,
-    onChange: PropTypes.func.isRequired,
-    isRequired: PropTypes.bool,
-    schema: PropTypes.object
-};
+function PropertyInput({ propertyName, propertySchema, value, onChange, isRequired, schema }) {
+    console.log('PropertyInput called with:', {
+        propertyName,
+        propertySchema,
+        value,
+        isRequired
+    });
+
+    const label = propertySchema.title || propertyName;
+    const description = propertySchema.description;
+
+    // Handle Media type
+    if (propertySchema.$ref === '#/$defs/Media') {
+        return createMediaInput(propertyName, label, value, onChange, isRequired);
+    }
+
+    // Handle enum references
+    if (propertySchema.$ref) {
+        return handleEnumReference(propertyName, schema, propertySchema, value, onChange, label, isRequired);
+    }
+
+    // Handle direct enums
+    if (propertySchema.enum) {
+        return createSelectInput(
+            propertyName,
+            label,
+            value,
+            formatEnumOptions(propertySchema.enum),
+            onChange,
+            propertySchema,
+            isRequired
+        );
+    }
+
+    // Handle basic input types
+    return createBasicInput(
+        propertySchema.type,
+        propertyName,
+        label,
+        value,
+        onChange,
+        propertySchema,
+        isRequired,
+        description
+    );
+}
 
 export function DynamicComponentConfiguration({ id, componentData = { name: "", props: {} }, onComponentTypeChange, onComponentPropsChange, onRemove }) {
     console.log('DynamicComponentConfiguration rendered with:', {
