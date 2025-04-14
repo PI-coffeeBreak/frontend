@@ -58,32 +58,47 @@ export function IconSelector({ value, onChange, maxDisplayIcons = 200, onSelecto
     } 
     // Search across all libraries
     else {
-      // Flatten all libraries for searching, but limit to top matches
-      const searchResults = [];
-      const lowerSearchTerm = searchIconTerm.toLowerCase();
-      
-      // First look for exact matches
-      for (const [prefix, icons] of Object.entries(allIconLibraries)) {
-        for (const iconName of icons) {
-          const lowerIconName = iconName.toLowerCase();
-          // Exact match at beginning gets priority
-          if (lowerIconName.startsWith(lowerSearchTerm)) {
-            searchResults.push(iconName);
-          }
-          // Then includes matches
-          else if (lowerIconName.includes(lowerSearchTerm)) {
-            searchResults.push(iconName);
-          }
+      // Search function to find matches across libraries
+      const findMatches = () => {
+        const searchResults = [];
+        const lowerSearchTerm = searchIconTerm.toLowerCase();
+        const maxResults = 500; // Limit search results for performance
+        
+        // Search through each library
+        for (const [, icons] of Object.entries(allIconLibraries)) {
+          // Early exit if we've reached our limit
+          if (searchResults.length >= maxResults) break;
           
-          // Limit to prevent excessive searching
-          if (searchResults.length >= 500) break;
+          // Filter icons that match the search term
+          const matchingIcons = icons.filter(iconName => {
+            const lowerIconName = iconName.toLowerCase();
+            return lowerIconName.startsWith(lowerSearchTerm) || 
+                   lowerIconName.includes(lowerSearchTerm);
+          });
+          
+          // Sort matches to prioritize "startsWith" over "includes"
+          matchingIcons.sort((a, b) => {
+            const aLower = a.toLowerCase();
+            const bLower = b.toLowerCase();
+            const aStartsWith = aLower.startsWith(lowerSearchTerm);
+            const bStartsWith = bLower.startsWith(lowerSearchTerm);
+            
+            if (aStartsWith && !bStartsWith) return -1;
+            if (!aStartsWith && bStartsWith) return 1;
+            return 0;
+          });
+          
+          // Add matches to results, respecting the limit
+          searchResults.push(...matchingIcons.slice(0, maxResults - searchResults.length));
         }
-        if (searchResults.length >= 500) break;
-      }
+        
+        return searchResults;
+      };
       
-      iconsToFilter = searchResults;
+      iconsToFilter = findMatches();
     }
     
+    // Apply additional filters here if needed (e.g., sorting)
     return iconsToFilter;
   }, [allIconLibraries, commonIcons, searchIconTerm, selectedLibrary]);
   

@@ -39,7 +39,7 @@ export const MenuProvider = ({ children }) => {
         // Go through each icon library and check if the icon exists
         const allLibraries = { Fa, Fi, Ai, Bi, Bs, Ci, Di, Gi, Go, Hi, Im, Io, Io5, Md, Ri, Si, Ti, Wi };
         
-        for (const [prefix, library] of Object.entries(allLibraries)) {
+        for (const [, library] of Object.entries(allLibraries)) {
             if (library[iconName]) {
                 return library[iconName];
             }
