@@ -1,4 +1,4 @@
-import { useEffect, useState, useRef } from "react";
+import { useState, useRef } from "react";
 import { useNavigate } from "react-router-dom";
 import { baseUrl } from "../consts";
 import { useKeycloak } from "@react-keycloak/web";
@@ -128,8 +128,7 @@ export default function EventSetup() {
                     start_time: formData.startDate,
                     end_time: formData.endDate,
                     location: formData.location,
-                    id: 0,
-                    image_id: imageId
+                    first_user_id: keycloak.tokenParsed.sub,
                 };
 
                 const response = await axiosWithAuth(keycloak).post(`${baseUrl}/event-info/event`, eventData);
@@ -198,6 +197,31 @@ export default function EventSetup() {
             location: suggestion.name
         }));
         setLocationSuggestions([]);
+    };
+
+    const renderLocationSuggestions = () => {
+        if (!locationSuggestions.length && !isLoadingLocations) return null;
+        
+        return (
+            <div className="absolute w-full mt-1 bg-base-100 rounded-xl shadow-lg z-50 max-h-60 overflow-auto">
+                {isLoadingLocations ? (
+                    <div className="p-4 text-center">
+                        <span className="loading loading-spinner loading-md"></span>
+                    </div>
+                ) : (
+                    locationSuggestions.map((suggestion, index) => (
+                        <button
+                            key={index}
+                            type="button"
+                            className="w-full text-left px-4 py-2 hover:bg-base-200 cursor-pointer"
+                            onClick={() => handleLocationSelect(suggestion)}
+                        >
+                            {suggestion.name}
+                        </button>
+                    ))
+                )}
+            </div>
+        );
     };
 
     const renderStep = () => {
@@ -343,26 +367,7 @@ export default function EventSetup() {
                                 {errors.location && <p className="text-red-500 mt-1">{errors.location}</p>}
 
                                 {/* Location Suggestions Dropdown */}
-                                {(locationSuggestions.length > 0 || isLoadingLocations) && (
-                                    <div className="absolute w-full mt-1 bg-base-100 rounded-xl shadow-lg z-50 max-h-60 overflow-auto">
-                                        {isLoadingLocations ? (
-                                            <div className="p-4 text-center">
-                                                <span className="loading loading-spinner loading-md"></span>
-                                            </div>
-                                        ) : (
-                                            locationSuggestions.map((suggestion, index) => (
-                                                <button
-                                                    key={index}
-                                                    type="button"
-                                                    className="w-full text-left px-4 py-2 hover:bg-base-200 cursor-pointer"
-                                                    onClick={() => handleLocationSelect(suggestion)}
-                                                >
-                                                    {suggestion.name}
-                                                </button>
-                                            ))
-                                        )}
-                                    </div>
-                                )}
+                                {renderLocationSuggestions()}
                             </div>
                         </div>
                     </div>

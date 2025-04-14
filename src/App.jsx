@@ -70,7 +70,7 @@ export default function App() {
                             <Route path="create-page" element={<CreatePage />} />
                           </Route>
                           <Route path="plugins">
-                            <Route path="alerts" element={<Alerts />} />
+                            <Route path="alert-system-plugin" element={<Alerts />} />
                             <Route path="schedule" element={<Schedule />} />
                           </Route>
                         </Route>

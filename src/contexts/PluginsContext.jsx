@@ -3,6 +3,7 @@ import PropTypes from "prop-types";
 import { baseUrl } from "../consts";
 import { axiosWithAuth } from "../utils/axiosWithAuth";
 import { useKeycloak } from "@react-keycloak/web";
+import axios from "axios";
 
 const PluginsContext = createContext();
 
