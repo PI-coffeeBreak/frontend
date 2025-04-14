@@ -1,5 +1,6 @@
 import { useState } from "react";
 import { FaCog } from "react-icons/fa";
+import { AiOutlineLoading3Quarters } from "react-icons/ai";
 import Pagination from "../components/Pagination";
 import PluginSettingsModal from "../components/PluginSettingsModal";
 import { usePlugins } from "../contexts/PluginsContext";
@@ -11,6 +12,7 @@ export default function Plugins() {
     const [searchTerm, setSearchTerm] = useState("");
     const [currentPage, setCurrentPage] = useState(1);
     const pluginsPerPage = 4;
+    const [loadingPlugin, setLoadingPlugin] = useState(null);
 
     const filteredPlugins = plugins.filter((plugin) =>
         plugin.formatted_name.toLowerCase().includes(searchTerm.toLowerCase())
@@ -37,6 +39,15 @@ export default function Plugins() {
         setSelectedPlugin(null);
     };
 
+    const handleTogglePlugin = async (plugin) => {
+        setLoadingPlugin(plugin.name);
+        try {
+            await togglePlugin(plugin);
+        } finally {
+            setLoadingPlugin(null);
+        }
+    };
+
     return (
         <div className="w-full min-h-svh p-8">
             <h1 className="text-3xl font-bold mb-6">Plugins</h1>
@@ -60,7 +71,7 @@ export default function Plugins() {
                             <th>Name</th>
                             <th>Description</th>
                             <th>Enable</th>
-                            <th>Settings</th>
+                            <th></th>
                         </tr>
                     </thead>
 
@@ -71,21 +82,25 @@ export default function Plugins() {
                                 <td className="p-3">{plugin.description}</td>
                                 <td className="p-3 text-center">
                                     <label className="flex items-center justify-center cursor-pointer">
-                                        <input
-                                            type="checkbox"
-                                            className="hidden"
-                                            checked={plugin.is_loaded}
-                                            onChange={() => togglePlugin(plugin)}
-                                        />
-                                        <div
-                                            className={`w-10 h-5 flex items-center bg-gray-300 rounded-full p-1 transition duration-300 ${plugin.is_loaded ? "bg-primary" : "bg-gray-400"
-                                                }`}
-                                        >
-                                            <div
-                                                className={`bg-white w-4 h-4 rounded-full shadow-md transform transition duration-300 ${plugin.is_loaded ? "translate-x-4" : "translate-x-0"
-                                                    }`}
-                                            ></div>
-                                        </div>
+                                        {loadingPlugin === plugin.name ? (
+                                            <AiOutlineLoading3Quarters className="animate-spin text-primary text-xl" />
+                                        ) : (
+                                            <>
+                                                <input
+                                                    type="checkbox"
+                                                    className="hidden"
+                                                    checked={plugin.is_loaded}
+                                                    onChange={() => handleTogglePlugin(plugin)}
+                                                />
+                                                <div
+                                                    className={`w-10 h-5 flex items-center bg-gray-300 rounded-full p-1 transition duration-300 ${plugin.is_loaded ? "bg-primary" : "bg-gray-400"}`}
+                                                >
+                                                    <div
+                                                        className={`bg-white w-4 h-4 rounded-full shadow-md transform transition duration-300 ${plugin.is_loaded ? "translate-x-4" : "translate-x-0"}`}
+                                                    ></div>
+                                                </div>
+                                            </>
+                                        )}
                                     </label>
                                 </td>
                                 <td className="p-3 text-center">
