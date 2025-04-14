@@ -11,7 +11,6 @@ export const UsersProvider = ({ children }) => {
     const usersBaseUrl = `${baseUrl}/users`;
     const usersRolesUrl = `${baseUrl}/users/roles/users`;
     const { keycloak, initialized } = useKeycloak();
-
     const [users, setUsers] = useState([]);
     const [usersGroupedByRole, setUsersGroupedByRole] = useState({});
     const [isLoading, setIsLoading] = useState(false);
@@ -77,7 +76,7 @@ export const UsersProvider = ({ children }) => {
             const existingUser = users.find((user) => user.id === userId);
             if (existingUser) return existingUser;
 
-            const response = await axios.get(`${usersBaseUrl}/${userId}`);
+            const response = await axiosWithAuth(keycloak).get(`${usersBaseUrl}/${userId}`);
             return response.data;
         } catch (error) {
             console.error(`Error fetching user with ID ${userId}:`, error);

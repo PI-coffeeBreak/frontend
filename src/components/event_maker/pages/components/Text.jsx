@@ -1,24 +1,26 @@
 import React from "react";
 import PropTypes from "prop-types";
-import { useTheme } from "../../../../contexts/ThemeContext";
-import { getThemeColor } from "./utils";
+import { getColorVariable } from "./utils";
 
 export function Text({
     text = "Default Text",
-    color = "base-content",
+    color = "primary-content",
     bold = false,
     italic = false,
     underline = false,
     className = "",
 }) {
-    const { theme } = useTheme();
-    const fontStyle = `${bold ? "font-bold" : ""} ${italic ? "italic" : ""} ${underline ? "underline" : ""}`;
-    const textColor = getThemeColor(theme, color);
+    const styles = {
+        color: getColorVariable(color),
+        fontWeight: bold ? "bold" : "normal",
+        fontStyle: italic ? "italic" : "normal",
+        textDecoration: underline ? "underline" : "none",
+    };
 
     return (
         <p
-            className={`${fontStyle} ${className}`}
-            style={{ color: textColor }}
+            className={className}
+            style={styles}
         >
             {text}
         </p>

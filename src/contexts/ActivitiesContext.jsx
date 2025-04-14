@@ -1,13 +1,15 @@
 import React, { createContext, useContext, useState, useEffect, useMemo } from "react";
 import PropTypes from "prop-types";
-import axios from "axios";
 import { baseUrl } from "../consts";
+import { useKeycloak } from "@react-keycloak/web";
+import { axiosWithAuth } from '../utils/axiosWithAuth';
 
 const ActivitiesContext = createContext();
 
 export const ActivitiesProvider = ({ children }) => {
     const activitiesBaseUrl = `${baseUrl}/activities`;
     const activityTypesBaseUrl = `${baseUrl}/activity-types`;
+    const { keycloak } = useKeycloak();
 
     const [activities, setActivities] = useState([]);
     const [activityTypes, setActivityTypes] = useState([]);
@@ -16,7 +18,7 @@ export const ActivitiesProvider = ({ children }) => {
 
     const fetchActivities = async () => {
         try {
-            const response = await axios.get(activitiesBaseUrl);
+            const response = await axiosWithAuth(keycloak).get(activitiesBaseUrl);
             const data = response.data;
 
             const calendarEvents = data.filter(
@@ -36,7 +38,7 @@ export const ActivitiesProvider = ({ children }) => {
 
     const fetchActivityTypes = async () => {
         try {
-            const response = await axios.get(activityTypesBaseUrl);
+            const response = await axiosWithAuth(keycloak).get(activityTypesBaseUrl);
             setActivityTypes(response.data);
         } catch (error) {
             console.error("Error fetching activity types:", error);
@@ -53,7 +55,7 @@ export const ActivitiesProvider = ({ children }) => {
 
             const updatedActivity = { ...activity, ...updates };
 
-            await axios.put(`${activitiesBaseUrl}/${activityId}`, updatedActivity);
+            await axiosWithAuth(keycloak).put(`${activitiesBaseUrl}/${activityId}`, updatedActivity);
 
             fetchActivities();
         } catch (error) {

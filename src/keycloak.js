@@ -22,6 +22,7 @@ console.log("Keycloak configuration:", {
   clientId: keycloakClientId,
 });
 
+
 // Configure better token refresh handling
 keycloak.onTokenExpired = () => {
   console.log("Token expired, refreshing...");

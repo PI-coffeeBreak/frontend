@@ -99,7 +99,7 @@ export function EditPage() {
     const handleNavigateAway = (destination) => {
         if (hasUnsavedChanges) {
             const userConfirmed = window.confirm(
-                "Você tem alterações não salvas. Deseja realmente sair desta página? Todas as alterações serão perdidas."
+                "You have unsaved changes. Do you really want to leave this page? All changes will be lost."
             );
             if (!userConfirmed) {
                 return;
