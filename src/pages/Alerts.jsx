@@ -4,6 +4,7 @@ import { BiSolidBellPlus } from "react-icons/bi";
 import React, { useState, useEffect, useRef } from "react";
 import { useAlerts } from "../contexts/AlertsContext";
 import { useNotification } from "../contexts/NotificationContext";
+import { FaEdit, FaTrash } from "react-icons/fa";
 
 export default function Alerts() {
     const [selectedTemplate, setSelectedTemplate] = useState("");
@@ -14,9 +15,8 @@ export default function Alerts() {
     const [editingTemplate, setEditingTemplate] = useState(null);
     
     // Alert form state
-    const [alertTitle, setAlertTitle] = useState("");
     const [alertMessage, setAlertMessage] = useState("");
-    const [alertPriority, setAlertPriority] = useState("");
+    const [highPriority, setHighPriority] = useState("");
     const alertMessageRef = useRef(null);
 
     useEffect(() => {
@@ -75,17 +75,16 @@ export default function Alerts() {
 
     const handleCreateAlert = async (e) => {
         e.preventDefault();
-        if (!alertTitle || !alertMessage || !alertPriority) {
-            showNotification("Title, message and priority are required to create an alert", "error");
+        if (!alertMessage || highPriority === "") {
+            showNotification("Message and high priority setting are required", "error");
             return;
         }
 
         try {
             // Call the API to create the alert
             const result = await createAlert({
-                title: alertTitle,
                 message: alertMessage,
-                priority: alertPriority,
+                priority: highPriority === "Yes" ? "High" : "Low",
                 template_id: selectedTemplate || null
             });
             
@@ -111,11 +110,6 @@ export default function Alerts() {
             if (selectedTemplateData) {
                 console.log("Setting message to:", selectedTemplateData.template);
                 setAlertMessage(selectedTemplateData.template);
-                
-                // If there's a title in the template name, suggest it for the alert title
-                if (!alertTitle && selectedTemplateData.name) {
-                    setAlertTitle(selectedTemplateData.name);
-                }
                 
                 // Focus on the message field after updating for better UX
                 setTimeout(() => {
@@ -165,10 +159,9 @@ export default function Alerts() {
     };
 
     const resetAlertForm = () => {
-        setAlertTitle("");
         setAlertMessage("");
         setSelectedTemplate("");
-        setAlertPriority("");
+        setHighPriority("");
     };
 
     return (
@@ -215,27 +208,16 @@ export default function Alerts() {
                                 <p className="whitespace-pre-wrap">{template.template}</p>
                                 <div className="card-actions justify-end mt-4">
                                     <button 
-                                        className="btn btn-success btn-sm"
-                                        onClick={() => {
-                                            setSelectedTemplate(String(template.id));
-                                            setAlertTitle(template.name);
-                                            setAlertMessage(template.template);
-                                            openAlertModal();
-                                        }}
+                                        className="btn btn-outline btn-sm"
+                                        onClick={() => handleEditTemplate(template)}
                                     >
-                                        Use
+                                        <FaEdit className="mr-1" /> Edit
                                     </button>
                                     <button 
                                         className="btn btn-primary btn-sm"
-                                        onClick={() => handleEditTemplate(template)}
-                                    >
-                                        Edit
-                                    </button>
-                                    <button 
-                                        className="btn btn-error btn-sm"
                                         onClick={() => handleDeleteTemplate(template.id)}
                                     >
-                                        Delete
+                                        <FaTrash className="mr-1" /> Delete
                                     </button>
                                 </div>
                             </div>
@@ -243,8 +225,6 @@ export default function Alerts() {
                     ))}
                 </div>
             )}
-
-            <h1 className="text-3xl font-bold mt-8">Scheduled Alerts</h1>
 
             <dialog id="alert_modal" className="modal">
                 <div className="modal-box">
@@ -257,18 +237,6 @@ export default function Alerts() {
                     <h3 className="text-lg font-bold">Create New Alert</h3>
                     <p className="py-4">Fill in the details to create a new alert.</p>
                     <form onSubmit={handleCreateAlert}>
-                        <div>
-                            <label htmlFor="alertTitle">Title</label>
-                            <input 
-                                type="text" 
-                                id="alertTitle" 
-                                placeholder="Enter the alert title" 
-                                className="text-base-100 input w-full h-12 bg-secondary rounded-xl"
-                                value={alertTitle}
-                                onChange={(e) => setAlertTitle(e.target.value)}
-                                required
-                            />
-                        </div>
                         <div className="mt-4">
                             <label htmlFor="alertTemplate" className="block">Choose Template</label>
                             <select
@@ -297,18 +265,17 @@ export default function Alerts() {
                             ></textarea>
                         </div>
                         <div className="mt-4">
-                            <label htmlFor="alertPriority" className="block">Priority</label>
+                            <label htmlFor="highPriority" className="block">High Priority</label>
                             <select
-                                id="alertPriority"
+                                id="highPriority"
                                 className="text-base-100 input w-full h-12 bg-secondary rounded-xl"
-                                value={alertPriority}
-                                onChange={(e) => setAlertPriority(e.target.value)}
+                                value={highPriority}
+                                onChange={(e) => setHighPriority(e.target.value)}
                                 required
                             >
-                                <option value="">Choose Priority</option>
-                                <option value="Low">Low</option>
-                                <option value="Medium">Medium</option>
-                                <option value="High">High</option>
+                                <option value="">Select</option>
+                                <option value="Yes">Yes</option>
+                                <option value="No">No</option>
                             </select>
                         </div>
                         <button 
