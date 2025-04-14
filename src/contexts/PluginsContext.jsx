@@ -3,7 +3,6 @@ import PropTypes from "prop-types";
 import { baseUrl } from "../consts";
 import { axiosWithAuth } from "../utils/axiosWithAuth";
 import { useKeycloak } from "@react-keycloak/web";
-import axios from "axios";
 
 const PluginsContext = createContext();
 
@@ -23,16 +22,6 @@ export const PluginsProvider = ({ children }) => {
 
     const [plugins, setPlugins] = useState([]);
     const [pluginsConfig, setPluginsConfig] = useState([]);
-
-    // Configure axios with authentication header
-    const axiosWithAuth = () => {
-        const token = keycloak?.token;
-        return axios.create({
-            headers: {
-                Authorization: token ? `Bearer ${token}` : '',
-            },
-        });
-    };
 
     // Fetch plugins
     const fetchPlugins = async () => {
