@@ -3,6 +3,28 @@ import PropTypes from "prop-types";
 import { FaChevronDown, FaChevronUp } from "react-icons/fa";
 import { ColorThemeLayout } from "./ColorThemeLayout";
 
+function ColorCircle({ color }) {
+  return (
+    <ColorThemeLayout>
+      <span
+        style={{
+          width: '16px',
+          height: '16px',
+          borderRadius: '50%',
+          border: '1px solid black',
+          backgroundColor: color,
+          display: 'inline-block',
+          marginRight: '8px'
+        }}
+      />
+    </ColorThemeLayout>
+  );
+}
+
+ColorCircle.propTypes = {
+  color: PropTypes.string.isRequired,
+};
+
 export function ColorSelector({ name, value, onChange, options }) {
   const [isOpen, setIsOpen] = useState(false);
   const selectorRef = useRef(null);
@@ -23,22 +45,6 @@ export function ColorSelector({ name, value, onChange, options }) {
       document.removeEventListener("mousedown", handleClickOutside);
     };
   }, []);
-
-  const ColorCircle = ({ color }) => (
-    <ColorThemeLayout>
-      <span
-        style={{
-          width: '16px',
-          height: '16px',
-          borderRadius: '50%',
-          border: '1px solid black',
-          backgroundColor: color,
-          display: 'inline-block',
-          marginRight: '8px'
-        }}
-      />
-    </ColorThemeLayout>
-  );
 
   return (
     <div className="my-2">

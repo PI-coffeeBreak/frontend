@@ -117,9 +117,8 @@ export function MediaInput({
         event.preventDefault();
     };
 
-    const handleKeyDown = (event) => {
-        if (event.key === 'Enter' || event.key === ' ') {
-            event.preventDefault();
+    const handleClick = () => {
+        if (!isUploading) {
             fileInputRef.current?.click();
         }
     };
@@ -138,14 +137,14 @@ export function MediaInput({
                 style={{ display: "none" }}
                 disabled={isUploading}
             />
-            <label
-                htmlFor={`file-input-${name}`}
+            <button
+                type="button"
+                onClick={handleClick}
                 onDrop={handleDrop}
                 onDragOver={handleDragOver}
-                onKeyDown={handleKeyDown}
-                tabIndex="0"
-                role="button"
-                aria-disabled={isUploading}
+                disabled={isUploading}
+                aria-label={preview ? "Change file" : "Choose file"}
+                className="w-full"
                 style={{
                     border: "2px dashed var(--color-primary)",
                     borderRadius: "8px",
@@ -188,7 +187,7 @@ export function MediaInput({
                         {error}
                     </p>
                 )}
-            </label>
+            </button>
         </div>
     );
 }

@@ -1,8 +1,6 @@
 import React from 'react';
 import PropTypes from 'prop-types';
 import { useColorTheme } from '../contexts/ColorThemeContext';
-import { Outlet } from "react-router-dom";
-import Navbar from "./Navbar";
 
 export function ColorThemeLayout({ children }) {
   const { colorTheme, loading, error } = useColorTheme();
