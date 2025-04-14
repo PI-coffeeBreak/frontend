@@ -14,12 +14,13 @@ import Plugins from "./pages/Plugins.jsx";
 import Colors from "./pages/Colors.jsx";
 import keycloak from "./keycloak.js";
 import PrivateRoute from "./PrivateRoute.js";
-import { PageEditorWrapper } from "./pages/PageEditorWrapper.jsx";
 import { PagesList } from "./pages/PagesList.jsx";
 import { MenuEditor } from "./pages/MenuEditor.jsx";
 import EventSetup from "./pages/EventSetup.jsx";
 import EventMaker from "./pages/EventMaker.jsx";
 import Instantiate from "./pages/Instantiate.jsx";
+import { CreatePage } from "./pages/page_editor/CreatePage.jsx";
+import { EditPage } from "./pages/page_editor/EditPage.jsx";
 
 import { ActivitiesProvider } from "./contexts/ActivitiesContext.jsx";
 import { PluginsProvider } from "./contexts/PluginsContext.jsx";
@@ -48,7 +49,7 @@ export default function App() {
                 <ActivitiesProvider>
                   <UsersProvider>
                     <MenuProvider>
-                      <PagesProvider>       
+                      <PagesProvider>
                         <Router>
                           <Routes>
                             <Route element={<Layout />}>
@@ -71,8 +72,8 @@ export default function App() {
                                   <Route path="menus" element={<MenuEditor />} />
                                   <Route path="pages" element={<PagesList />} />
                                   <Route path="choose-plugins" element={<Plugins />} />
-                                  <Route path="edit-page/:pageTitle" element={<PageEditorWrapper />} />
-                                  <Route path="create-page" element={<PageEditorWrapper />} />
+                                  <Route path="edit-page/:pageTitle" element={<EditPage />} />
+                                  <Route path="create-page" element={<CreatePage />} />
                                 </Route>
                                 <Route path="plugins">
                                   <Route path="alerts" element={<Alerts />} />

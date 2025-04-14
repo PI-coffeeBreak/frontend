@@ -13,7 +13,7 @@ export default function Plugins() {
     const pluginsPerPage = 4;
 
     const filteredPlugins = plugins.filter((plugin) =>
-        plugin.name.toLowerCase().includes(searchTerm.toLowerCase())
+        plugin.formatted_name.toLowerCase().includes(searchTerm.toLowerCase())
     );
 
     const totalPages = Math.ceil(filteredPlugins.length / pluginsPerPage);
@@ -23,7 +23,13 @@ export default function Plugins() {
     const openModal = (plugin) => {
         const pluginConfig = pluginsConfig.find((config) => config.title === plugin.name);
         if (pluginConfig) {
-            setSelectedPlugin({ ...plugin, config: pluginConfig });
+            setSelectedPlugin({
+                ...plugin,
+                config: {
+                    ...pluginConfig,
+                    formatted_name: plugin.formatted_name
+                }
+            });
         }
     };
 
@@ -61,7 +67,7 @@ export default function Plugins() {
                     <tbody>
                         {currentPlugins.map((plugin, index) => (
                             <tr key={index} className="hover:bg-gray-50">
-                                <td className="p-3">{plugin.name}</td>
+                                <td className="p-3">{plugin.formatted_name}</td>
                                 <td className="p-3">{plugin.description}</td>
                                 <td className="p-3 text-center">
                                     <label className="flex items-center justify-center cursor-pointer">
@@ -72,14 +78,12 @@ export default function Plugins() {
                                             onChange={() => togglePlugin(plugin)}
                                         />
                                         <div
-                                            className={`w-10 h-5 flex items-center bg-gray-300 rounded-full p-1 transition duration-300 ${
-                                                plugin.is_loaded ? "bg-primary" : "bg-gray-400"
-                                            }`}
+                                            className={`w-10 h-5 flex items-center bg-gray-300 rounded-full p-1 transition duration-300 ${plugin.is_loaded ? "bg-primary" : "bg-gray-400"
+                                                }`}
                                         >
                                             <div
-                                                className={`bg-white w-4 h-4 rounded-full shadow-md transform transition duration-300 ${
-                                                    plugin.is_loaded ? "translate-x-4" : "translate-x-0"
-                                                }`}
+                                                className={`bg-white w-4 h-4 rounded-full shadow-md transform transition duration-300 ${plugin.is_loaded ? "translate-x-4" : "translate-x-0"
+                                                    }`}
                                             ></div>
                                         </div>
                                     </label>
