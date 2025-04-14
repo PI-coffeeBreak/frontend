@@ -120,8 +120,6 @@ export default function EventSetup() {
             setIsSubmitting(true);
             setSubmitError(null);
             try {
-                let imageId = '';
-
                 const eventData = {
                     name: formData.eventName,
                     description: formData.description,
@@ -269,11 +267,12 @@ export default function EventSetup() {
                         <h2 className="text-2xl font-semibold mb-6">Event Image</h2>
                         <div className="space-y-4">
                             <div>
-                                <label className="block mb-2">
+                                <label className="block mb-2" htmlFor="eventImage">
                                     Upload Event Image
                                 </label>
                                 <input
                                     type="file"
+                                    id="eventImage"
                                     ref={fileInputRef}
                                     className="hidden"
                                     accept="image/*"
@@ -282,6 +281,15 @@ export default function EventSetup() {
                                 <div
                                     className="w-full h-48 bg-base-200 rounded-xl flex items-center justify-center cursor-pointer relative overflow-hidden"
                                     onClick={handleImageClick}
+                                    onKeyDown={(e) => {
+                                        if (e.key === 'Enter' || e.key === ' ') {
+                                            e.preventDefault();
+                                            handleImageClick();
+                                        }
+                                    }}
+                                    role="button"
+                                    tabIndex="0"
+                                    aria-label="Upload event image"
                                 >
                                     {imagePreview ? (
                                         <>
@@ -296,7 +304,16 @@ export default function EventSetup() {
                                                     e.stopPropagation();
                                                     removeImage();
                                                 }}
+                                                onKeyDown={(e) => {
+                                                    if (e.key === 'Enter' || e.key === ' ') {
+                                                        e.stopPropagation();
+                                                        e.preventDefault();
+                                                        removeImage();
+                                                    }
+                                                }}
                                                 className="absolute top-2 right-2 btn btn-circle btn-sm btn-error"
+                                                tabIndex="0"
+                                                aria-label="Remove image"
                                             >
                                                 ×
                                             </button>
