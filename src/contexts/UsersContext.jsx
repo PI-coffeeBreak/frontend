@@ -408,6 +408,153 @@ export const UsersProvider = ({ children }) => {
         }
     };
 
+    // Assign a role directly by role name without relying on existing user data
+    const assignRoleByName = async (userId, roleName) => {
+        setIsLoading(true);
+        setError(null);
+        try {
+            // Map frontend role names to backend role names
+            const reverseRoleMapping = {
+                Participant: "cb-attendee",
+                Speaker: "cb-speaker",
+                Admin: "cb-customization",
+                Organizer: "cb-organizer",
+                Staff: "cb-staff",
+            };
+            
+            const backendRoleName = reverseRoleMapping[roleName] || roleName;
+            
+            // Make direct API call to assign role
+            const response = await axiosWithAuth(keycloak).post(
+                `${usersBaseUrl}/${userId}/roles/${backendRoleName}`
+            );
+            
+            // Refresh user data
+            await fetchUsers();
+            
+            return { 
+                success: true, 
+                message: `Role ${roleName} assigned successfully` 
+            };
+        } catch (error) {
+            console.error(`Error assigning role to user ${userId}:`, error);
+            setError(`Failed to assign role ${roleName}. Please try again later.`);
+            throw error;
+        } finally {
+            setIsLoading(false);
+        }
+    };
+
+    // Create a new user
+    const createUser = async (userData) => {
+        setIsLoading(true);
+        setError(null);
+        try {
+            console.log("Creating new user:", userData);
+            
+            // Prepare user data for the API
+            const userToCreate = {
+                firstName: userData.firstName,
+                lastName: userData.lastName,
+                email: userData.email,
+                username: userData.email, // Using email as username by default
+                enabled: true,
+                emailVerified: true,
+                role: userData.role || "Participant",
+                // Optional fields
+                attributes: userData.attributes || {},
+                // Temporary password that user will need to change
+                password: userData.temporaryPassword,
+                temporary: true
+            };
+            
+            // Use the dedicated endpoint for user creation
+            const response = await axiosWithAuth(keycloak).post(`${usersBaseUrl}`, userToCreate);
+            console.log("User created successfully:", response.data);
+            
+            // Refresh users list to make sure the new user is in the users array
+            await fetchUsers();
+            
+            return { 
+                success: true, 
+                userId: response.data.id, 
+                message: "User created successfully"
+            };
+        } catch (error) {
+            console.error("Error creating user:", error);
+            setError("Failed to create user. Please try again later.");
+            throw error;
+        } finally {
+            setIsLoading(false);
+        }
+    };
+
+    // Create multiple users from array
+    const createMultipleUsers = async (usersData) => {
+        setIsLoading(true);
+        setError(null);
+        const results = {
+            success: 0,
+            failed: 0,
+            total: usersData.length,
+            errors: []
+        };
+        
+        try {
+            console.log(`Creating ${usersData.length} users from bulk import`);
+            
+            // Format the data for the batch endpoint
+            const formattedUsers = usersData.map(user => ({
+                firstName: user.firstName,
+                lastName: user.lastName,
+                email: user.email,
+                username: user.email, // Using email as username by default
+                enabled: true,
+                emailVerified: true,
+                role: user.role || "Participant",
+                // Optional fields
+                attributes: user.attributes || {},
+                // Temporary password
+                password: user.temporaryPassword,
+                temporary: true
+            }));
+            
+            // Use the dedicated batch endpoint
+            const response = await axiosWithAuth(keycloak).post(`${usersBaseUrl}/batch`, formattedUsers);
+            console.log("Batch user creation response:", response.data);
+            
+            // Calculate results based on the response
+            if (response.data && Array.isArray(response.data.results)) {
+                response.data.results.forEach(result => {
+                    if (result.success) {
+                        results.success++;
+                    } else {
+                        results.failed++;
+                        results.errors.push({
+                            user: result.email || "Unknown",
+                            error: result.message || "Unknown error"
+                        });
+                    }
+                });
+            } else {
+                // If response format is different, estimate success count
+                results.success = usersData.length;
+                results.failed = 0;
+            }
+            
+            // Refresh users list
+            await fetchUsers();
+            
+            return results;
+        } catch (error) {
+            console.error("Error during bulk user creation:", error);
+            setError("Error during bulk user creation. Some users may not have been created.");
+            throw error;
+        } finally {
+            setIsLoading(false);
+        }
+    };
+
     // Fetch roles on init
     useEffect(() => {
         if (initialized && keycloak?.authenticated) {
@@ -441,7 +588,11 @@ export const UsersProvider = ({ children }) => {
             createRole,
             getRolePermissions,
             addPermissionToRole,
-            removePermissionFromRole
+            removePermissionFromRole,
+            // User management functions
+            createUser,
+            assignRoleByName,
+            createMultipleUsers
         }),
         [users, usersGroupedByRole, isLoading, error, allRoles, allPermissions, userRoles, userPermissions]
     );
