@@ -7,7 +7,6 @@ import DropdownMenu from "./DropdownMenu.jsx";
 import { useKeycloak } from "@react-keycloak/web";
 import { usePlugins } from "../contexts/PluginsContext";
 import { useEvent } from "../contexts/EventContext";
-import { useMedia } from "../contexts/MediaContext";
 import { Image } from "./event_maker/pages/components/Image";
 
 export default function Sidebar() {
@@ -17,8 +16,7 @@ export default function Sidebar() {
     const location = useLocation();
     const pathnames = location.pathname.split("/").filter((x) => x);
     const { plugins } = usePlugins();
-    const { eventInfo, isLoading: eventLoading, error: eventError, getEventInfo } = useEvent();
-    const { getMediaUrl } = useMedia();
+    const { eventInfo, isLoading: eventLoading } = useEvent();
 
     
     // Fetch user profile from Keycloak when initialized

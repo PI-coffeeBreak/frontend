@@ -50,7 +50,7 @@ export const MediaProvider = ({ children }) => {
         setIsLoading(true);
         setError(null);
         
-        if (!eventInfo || !eventInfo.image_id) {
+        if (!eventInfo?.image_id) {
             setIsLoading(false);
             setError("No event image available");
             return null;

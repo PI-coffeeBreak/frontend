@@ -16,7 +16,7 @@ export function Image({
     if (typeof src === 'object' && src?.uuid) {
         // Use Media context for UUID-based media
         imgSrc = getMediaUrl(src.uuid);
-    } else if (typeof src === 'string' && src.match(/^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i)) {
+    } else if (typeof src === 'string' && RegExp(/^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i).exec(src)) {
         // It's a UUID string, use Media context
         imgSrc = getMediaUrl(src);
     } else {
