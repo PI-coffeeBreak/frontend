@@ -21,6 +21,7 @@ import EventMaker from "./pages/EventMaker.jsx";
 import Instantiate from "./pages/Instantiate.jsx";
 import { CreatePage } from "./pages/page_editor/CreatePage.jsx";
 import { EditPage } from "./pages/page_editor/EditPage.jsx";
+import AuthRedirect from "./pages/AuthRedirect";
 
 import { ActivitiesProvider } from "./contexts/ActivitiesContext.jsx";
 import { PluginsProvider } from "./contexts/PluginsContext.jsx";
@@ -88,6 +89,7 @@ export default function App() {
                                       <Route path="schedule" element={<Schedule />} />
                                     </Route>
                                   </Route>
+                                  <Route path="/auth-redirect" element={<AuthRedirect />} />
                                 </Routes>
                               </Router>
                             </MediaProvider>
