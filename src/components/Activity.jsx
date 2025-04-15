@@ -1,3 +1,5 @@
+import PropTypes from 'prop-types';
+
 export default function Activity({id, title, description, image, category, type }) {
     return (
         <div
@@ -28,3 +30,18 @@ export default function Activity({id, title, description, image, category, type 
         </div>
     );
 }
+
+Activity.propTypes = {
+    id: PropTypes.oneOfType([PropTypes.string, PropTypes.number]).isRequired,
+    title: PropTypes.string.isRequired,
+    description: PropTypes.string,
+    image: PropTypes.string,
+    category: PropTypes.string,
+    type: PropTypes.string.isRequired
+};
+
+Activity.defaultProps = {
+    description: '',
+    image: '',
+    category: ''
+};

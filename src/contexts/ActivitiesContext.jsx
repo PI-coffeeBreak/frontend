@@ -93,6 +93,25 @@ export const ActivitiesProvider = ({ children }) => {
         return "Type not found";
     };
 
+    /**
+     * Create a new activity type
+     * @param {Object} typeData - The new type data { type: string }
+     * @returns {Promise<Object>} The created activity type
+     */
+    const createActivityType = async (typeData) => {
+        try {
+            const response = await axiosWithAuth(keycloak).post(`${baseUrl}/activity-types`, typeData);
+            
+            // Update the activity types list
+            setActivityTypes(prev => [...prev, response.data]);
+            
+            return response.data;
+        } catch (error) {
+            console.error("Error creating activity type:", error);
+            throw error;
+        }
+    };
+
     useEffect(() => {
         fetchActivities();
         fetchActivityTypes();
@@ -114,6 +133,7 @@ export const ActivitiesProvider = ({ children }) => {
             getActivityType,
             setCalendarActivities,
             setOutsideActivities,
+            createActivityType,
         }),
         [
             activities,

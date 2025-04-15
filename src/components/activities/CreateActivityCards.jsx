@@ -1,5 +1,5 @@
 import PropTypes from 'prop-types';
-import { FaFileExcel, FaPlus, FaCalendarAlt } from 'react-icons/fa';
+import { FaFileExcel, FaPlus } from 'react-icons/fa';
 import CreateCard from "../CreateCard.jsx";
 
 /**

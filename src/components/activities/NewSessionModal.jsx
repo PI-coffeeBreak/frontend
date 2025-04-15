@@ -11,7 +11,7 @@ import { FaCloudUploadAlt, FaExclamationTriangle } from "react-icons/fa";
  */
 export function NewSessionModal({ isOpen, onClose, onSubmit }) {
   // Get activity types from context
-  const { activityTypes, loading } = useActivities();
+  const { activityTypes, loading, createActivityType } = useActivities();
   const { showNotification } = useNotification();
   
   const initialValues = {
@@ -38,6 +38,9 @@ export function NewSessionModal({ isOpen, onClose, onSubmit }) {
   
   const [imagePreview, setImagePreview] = useState(null);
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [isAddingTypeInline, setIsAddingTypeInline] = useState(false);
+  const [newTypeName, setNewTypeName] = useState("");
+  const [isAddingType, setIsAddingType] = useState(false);
 
   // Set default type_id when activityTypes are loaded
   useEffect(() => {
@@ -144,6 +147,36 @@ export function NewSessionModal({ isOpen, onClose, onSubmit }) {
     onClose();
   };
 
+  const handleSaveInlineType = async () => {
+    if (!newTypeName.trim()) return;
+    
+    setIsAddingType(true);
+    
+    try {
+      // Simplified type object as per the API's expected format
+      const typeData = {
+        type: newTypeName.trim()
+      };
+      
+      const newType = await createActivityType(typeData);
+      
+      // Select the newly created type
+      setFieldValue('type_id', newType.id);
+      
+      // Reset and close inline form
+      setNewTypeName("");
+      setIsAddingTypeInline(false);
+      
+      // Show success notification
+      showNotification(`Activity type "${newTypeName}" was created successfully`, "success");
+    } catch (error) {
+      console.error("Error creating activity type:", error);
+      showNotification("Failed to create activity type", "error");
+    } finally {
+      setIsAddingType(false);
+    }
+  };
+
   return (
     <Modal
       isOpen={isOpen}
@@ -191,26 +224,81 @@ export function NewSessionModal({ isOpen, onClose, onSubmit }) {
               {errors.description && <p className="text-error text-sm mt-1">{errors.description}</p>}
             </div>
 
-            {/* Type field */}
+            {/* Type field with inline create option */}
             <div>
               <label htmlFor="type_id" className="block text-sm font-medium mb-1">
                 Type <span className="text-error">*</span>
               </label>
-              <select
-                id="type_id"
-                name="type_id"
-                value={values.type_id}
-                onChange={handleChange}
-                className={`select select-bordered w-full ${errors.type_id ? 'select-error' : ''}`}
-              >
-                <option value="" disabled>Select a type</option>
-                {activityTypes.map((type) => (
-                  <option key={type.id} value={type.id}>
-                    {type.type}
-                  </option>
-                ))}
-              </select>
-              {errors.type_id && <p className="text-error text-sm mt-1">{errors.type_id}</p>}
+              
+              <div className={`relative ${errors.type_id ? 'border-error' : 'border-base-300'}`}>
+                {isAddingTypeInline ? (
+                  <div className="flex items-center border rounded-lg overflow-hidden">
+                    <input
+                      type="text"
+                      placeholder="Enter new type name"
+                      value={newTypeName}
+                      onChange={(e) => setNewTypeName(e.target.value)}
+                      className="input input-sm flex-grow border-none focus:outline-none"
+                    />
+                    {isAddingType ? (
+                      <span className="loading loading-spinner loading-sm mx-2"></span>
+                    ) : (
+                      <div className="flex border-l">
+                        <button
+                          type="button"
+                          className="btn btn-sm btn-ghost px-2"
+                          onClick={() => setIsAddingTypeInline(false)}
+                        >
+                          Cancel
+                        </button>
+                        <button
+                          type="button"
+                          className="btn btn-sm btn-primary px-2"
+                          onClick={handleSaveInlineType}
+                          disabled={!newTypeName.trim()}
+                        >
+                          Save
+                        </button>
+                      </div>
+                    )}
+                  </div>
+                ) : (
+                  <div className="border rounded-lg overflow-hidden">
+                    <select
+                      id="type_id"
+                      name="type_id"
+                      value={values.type_id}
+                      onChange={handleChange}
+                      className={`select w-full border-none ${errors.type_id ? 'select-error' : ''}`}
+                    >
+                      <option value="" disabled>Select a type</option>
+                      {activityTypes.map((type) => (
+                        <option key={type.id} value={type.id}>
+                          {type.type}
+                        </option>
+                      ))}
+                    </select>
+                    
+                    <div className="border-t border-base-300 px-3 py-2">
+                      <button
+                        type="button"
+                        className="btn btn-sm btn-ghost btn-block text-primary justify-start px-0"
+                        onClick={() => {
+                          setIsAddingTypeInline(true);
+                          setNewTypeName("");
+                        }}
+                      >
+                        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" className="w-4 h-4 mr-2 stroke-current">
+                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M12 4v16m8-8H4"></path>
+                        </svg>
+                        Add New Type
+                      </button>
+                    </div>
+                  </div>
+                )}
+                
+                {errors.type_id && <p className="text-error text-sm mt-1">{errors.type_id}</p>}
+              </div>
             </div>
 
             {/* Date and Duration fields */}
@@ -348,14 +436,16 @@ export function NewSessionModal({ isOpen, onClose, onSubmit }) {
                 />
                 
                 {!imagePreview ? (
-                  <div 
+                  <button
+                    type="button"
                     onClick={() => document.getElementById('image').click()}
-                    className="cursor-pointer"
+                    className="w-full h-full py-4 flex flex-col items-center cursor-pointer bg-transparent"
+                    aria-label="Upload image"
                   >
                     <FaCloudUploadAlt className="mx-auto text-3xl text-gray-400" />
                     <p className="mt-2">Click to upload an image</p>
                     <p className="text-xs text-gray-500">JPG, PNG or WebP (max 5MB)</p>
-                  </div>
+                  </button>
                 ) : (
                   <div className="relative">
                     <img 
@@ -370,8 +460,9 @@ export function NewSessionModal({ isOpen, onClose, onSubmit }) {
                         setImagePreview(null);
                         setFieldValue('image', null);
                       }}
+                      aria-label="Remove image"
                     >
-                      <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                      <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
                         <line x1="18" y1="6" x2="6" y2="18"></line>
                         <line x1="6" y1="6" x2="18" y2="18"></line>
                       </svg>
@@ -402,14 +493,14 @@ export function NewSessionModal({ isOpen, onClose, onSubmit }) {
               className="btn btn-primary"
               disabled={isSubmitting}
             >
-              {isSubmitting ? (
-                <>
-                  <span className="loading loading-spinner loading-sm"></span>
-                  Creating...
-                </>
-              ) : (
+                {isSubmitting ? (
+                <div className="flex items-center gap-2">
+                    <span className="loading loading-spinner loading-sm"></span>
+                    <span>Creating...</span>
+                </div>
+                ) : (
                 "Create Session"
-              )}
+                )}
             </button>
           </div>
         </form>

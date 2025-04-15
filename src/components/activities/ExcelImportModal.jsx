@@ -4,7 +4,6 @@ import { FiUpload } from "react-icons/fi";
 import { FaFile, FaTrash, FaDownload, FaSpinner } from "react-icons/fa";
 import { Modal } from "../common/Modal";
 import { useNotification } from "../../contexts/NotificationContext";
-import { useActivities } from "../../contexts/ActivitiesContext";
 import { useForm } from "../../hooks/useForm";
 
 // Constants
@@ -32,7 +31,6 @@ export function ExcelImportModal({ isOpen, onClose, onImport }) {
   const fileInputRef = useRef(null);
   
   const { showNotification } = useNotification();
-  const { activityTypes } = useActivities();
 
   // Reset form when modal closes
   const handleClose = () => {
@@ -230,16 +228,17 @@ export function ExcelImportModal({ isOpen, onClose, onImport }) {
           )}
         </button>
 
-        <div
-          className={`border-dashed border-2 rounded-xl p-4 mt-4 text-center cursor-pointer ${
+        <button
+          type="button"
+          className={`w-full border-dashed border-2 rounded-xl p-4 mt-4 text-center bg-transparent ${
             errors.file ? 'border-error' : 'border-gray-400'
           }`}
+          onClick={handleBrowseClick}
           onDrop={handleDrop}
           onDragOver={(e) => e.preventDefault()}
-          onClick={handleBrowseClick}
         >
           <div className="rounded-full bg-base-content w-16 h-16 mx-auto my-4 flex items-center justify-center">
-            <FiUpload className="text-base-100 text-2xl" />
+            <FiUpload className="text-base-100 text-2xl" aria-hidden="true" />
           </div>
           
           <p>
@@ -250,7 +249,7 @@ export function ExcelImportModal({ isOpen, onClose, onImport }) {
           <p className="text-sm text-gray-400">
             Maximum file size: 1MB
           </p>
-        </div>
+        </button>
 
         {errors.file && (
           <div className="mt-2 text-sm text-error">
@@ -272,7 +271,8 @@ export function ExcelImportModal({ isOpen, onClose, onImport }) {
               type="button"
               aria-label="Remove file"
             >
-              <FaTrash />
+              <FaTrash aria-hidden="true" />
+              <span className="sr-only">Remove file</span>
             </button>
             
             <div className="flex items-center gap-3">
@@ -321,12 +321,12 @@ export function ExcelImportModal({ isOpen, onClose, onImport }) {
             disabled={!values.file || isLoading}
           >
             {isLoading ? (
-              <>
+            <>
                 <span className="loading loading-spinner loading-sm"></span>
-                Processing...
-              </>
+                {' Processing...'}
+            </>
             ) : (
-              "Import Activities"
+            "Import Activities"
             )}
           </button>
         </div>
