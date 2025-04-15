@@ -70,7 +70,18 @@ export function Modal({ isOpen, onClose, title, description, children }) {
 
         <div className="mt-4">{children}</div>
       </div>
-      <div className="modal-backdrop" onClick={onClose}></div>
+      {/* Fix the backdrop to be properly accessible */}
+      <button 
+        className="modal-backdrop"
+        onClick={onClose}
+        onKeyDown={(e) => {
+          if (e.key === 'Enter' || e.key === ' ') {
+            onClose();
+          }
+        }}
+        aria-label="Close modal"
+        tabIndex={0}
+      />
     </dialog>
   );
 }
