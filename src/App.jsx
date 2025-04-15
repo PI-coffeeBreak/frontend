@@ -3,9 +3,9 @@ import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
 import { ReactKeycloakProvider } from '@react-keycloak/web';
 
 import Home from "./pages/Home";
-import Layout from "./components/Layout";
-import LayoutAuth from "./components/LayoutAuth";
-import LayoutInstantiate from "./components/LayoutInstantiate.jsx";
+import Layout from "./components/layout/Layout.jsx";
+import LayoutAuth from "./components/layout/LayoutAuth.jsx";
+import LayoutInstantiate from "./components/layout/LayoutInstantiate.jsx";
 import Users from "./pages/Users.jsx";
 import Alerts from "./pages/Alerts.jsx";
 import Activities from "./pages/Activities.jsx";
@@ -23,7 +23,6 @@ import { CreatePage } from "./pages/page_editor/CreatePage.jsx";
 import { EditPage } from "./pages/page_editor/EditPage.jsx";
 import AuthRedirect from "./pages/AuthRedirect";
 import { Sponsors } from "./pages/Sponsors.jsx";
-
 import { ActivitiesProvider } from "./contexts/ActivitiesContext.jsx";
 import { PluginsProvider } from "./contexts/PluginsContext.jsx";
 import { ThemeProvider } from "./contexts/ThemeContext";
@@ -89,7 +88,6 @@ export default function App() {
                                       <Route path="alert-system-plugin" element={<Alerts />} />
                                       <Route path="event-schedule-plugin" element={<Schedule />} />
                                       <Route path="sponsors-promotion-plugin" element={<Sponsors />} />
-
                                       <Route path="schedule" element={<Schedule />} />
                                     </Route>
                                   </Route>

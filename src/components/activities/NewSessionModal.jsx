@@ -26,23 +26,17 @@ FormField.propTypes = {
   children: PropTypes.node.isRequired
 };
 
-/**
- * Modal for creating a new activity/session
- */
+
 export function NewSessionModal({ isOpen, onClose, onSubmit }) {
-  // Add this function at the top of your NewSessionModal component
   const stopPropagation = (e) => {
-    // Stop the event from bubbling up to parent elements
     e.stopPropagation();
   };
 
-  // Create a wrapper for handleChange that stops propagation
   const handleChangeWithStop = (e) => {
     stopPropagation(e);
     handleChange(e);
   };
 
-  // Get activity types from context
   const { activityTypes, loading, createActivityType } = useActivities();
   const { showNotification } = useNotification();
   
@@ -74,27 +68,23 @@ export function NewSessionModal({ isOpen, onClose, onSubmit }) {
   const [newTypeName, setNewTypeName] = useState("");
   const [isAddingType, setIsAddingType] = useState(false);
 
-  // Set default type_id when activityTypes are loaded
   useEffect(() => {
     if (activityTypes?.length > 0 && !values.type_id) {
       setFieldValue('type_id', activityTypes[0]?.id || "");
     }
   }, [activityTypes, values.type_id, setFieldValue]);
 
-  // Extract validation to a separate function
   const validate = () => {
     const newErrors = {};
     
     if (!values.name.trim()) newErrors.name = "Name is required";
     if (!values.description.trim()) newErrors.description = "Description is required";
     if (!values.type_id) newErrors.type_id = "Type is required";
-    
-    // Validate date if present
+
     if (values.date) {
       validateDate(values.date, newErrors);
     }
-    
-    // Validate meeting link if session is online
+
     if (values.is_online && !values.meeting_link) {
       newErrors.meeting_link = "Meeting link is required for online sessions";
     }
@@ -103,7 +93,6 @@ export function NewSessionModal({ isOpen, onClose, onSubmit }) {
     return Object.keys(newErrors).length === 0;
   };
 
-  // Extract date validation
   const validateDate = (date, errors) => {
     try {
       const sessionDate = new Date(date);
@@ -117,27 +106,22 @@ export function NewSessionModal({ isOpen, onClose, onSubmit }) {
     }
   };
 
-  // Extract file handling
   const handleFileSelect = (e) => {
     const file = e.target.files[0];
     if (!file) return;
-    
-    // Validate file size and type
+
     if (!validateFile(file)) return;
     
     handleFileChange(e);
     setImagePreview(URL.createObjectURL(file));
   };
 
-  // Extract file validation
   const validateFile = (file) => {
-    // Validate file size (max 5MB)
     if (file.size > 5 * 1024 * 1024) {
       showNotification("Image size must be less than 5MB", "error");
       return false;
     }
-    
-    // Validate file type
+
     const allowedTypes = ['image/jpeg', 'image/png', 'image/webp'];
     if (!allowedTypes.includes(file.type)) {
       showNotification("Only JPEG, PNG and WebP images are allowed", "error");
@@ -147,7 +131,6 @@ export function NewSessionModal({ isOpen, onClose, onSubmit }) {
     return true;
   };
 
-  // Extract data formatting
   const formatDataForSubmission = () => {
     return {
       name: values.name,
@@ -170,7 +153,6 @@ export function NewSessionModal({ isOpen, onClose, onSubmit }) {
     setIsSubmitting(true);
     
     try {
-      // Format data according to API expectations
       const formattedData = formatDataForSubmission();
 
       console.log("Submitting session data:", formattedData);
@@ -218,20 +200,19 @@ export function NewSessionModal({ isOpen, onClose, onSubmit }) {
     }
   };
 
-  // Extract type selector to a separate component
   const renderTypeSelector = () => {
     if (isAddingTypeInline) {
       return renderTypeCreator();
     }
     
     return (
-      <div className="border rounded-lg overflow-hidden">
+      <div className="">
         <select
           id="type_id"
           name="type_id"
           value={values.type_id}
           onChange={handleChangeWithStop}
-          className={`select w-full border-none ${errors.type_id ? 'select-error' : ''}`}
+          className="select w-full"
         >
           <option value="" disabled>Select a type</option>
           {activityTypes.map((type) => (
@@ -240,27 +221,10 @@ export function NewSessionModal({ isOpen, onClose, onSubmit }) {
             </option>
           ))}
         </select>
-        
-        <div className="border-t border-base-300 px-3 py-2">
-          <button
-            type="button"
-            className="btn btn-sm btn-ghost btn-block text-primary justify-start px-0"
-            onClick={() => {
-              setIsAddingTypeInline(true);
-              setNewTypeName("");
-            }}
-          >
-            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" className="w-4 h-4 mr-2 stroke-current">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M12 4v16m8-8H4"></path>
-            </svg>
-            Add New Type
-          </button>
-        </div>
       </div>
     );
   };
 
-  // Extract type creator to a separate component
   const renderTypeCreator = () => {
     return (
       <div className="flex items-center border rounded-lg overflow-hidden">
@@ -296,7 +260,6 @@ export function NewSessionModal({ isOpen, onClose, onSubmit }) {
     );
   };
 
-  // Extract image upload to a separate component
   const renderImageUploader = () => {
     return (
       <div className="border-2 border-dashed border-gray-300 rounded-lg p-4 text-center">
@@ -352,7 +315,7 @@ export function NewSessionModal({ isOpen, onClose, onSubmit }) {
       isOpen={isOpen}
       onClose={handleCloseModal}
       title="Create New Session"
-      description="Fill in the details to create a new session."
+      description=""
     >
       {loading ? (
         <div className="flex justify-center my-8">
@@ -360,8 +323,7 @@ export function NewSessionModal({ isOpen, onClose, onSubmit }) {
         </div>
       ) : (
         <form onSubmit={handleSubmitForm}>
-          <div className="space-y-4">
-            {/* Name field */}
+          <div className="space-y-2">
             <FormField label="Name" id="name" required error={errors.name}>
               <input
                 type="text"
@@ -373,8 +335,6 @@ export function NewSessionModal({ isOpen, onClose, onSubmit }) {
                 className={`input input-bordered w-full ${errors.name ? 'input-error' : ''}`}
               />
             </FormField>
-
-            {/* Description field */}
             <FormField label="Description" id="description" required error={errors.description}>
               <textarea
                 id="description"
@@ -385,15 +345,11 @@ export function NewSessionModal({ isOpen, onClose, onSubmit }) {
                 className={`textarea textarea-bordered w-full h-24 ${errors.description ? 'textarea-error' : ''}`}
               />
             </FormField>
-
-            {/* Type field with inline create option */}
             <FormField label="Type" id="type_id" required error={errors.type_id}>
               <div className={`relative ${errors.type_id ? 'border-error' : 'border-base-300'}`}>
                 {renderTypeSelector()}
               </div>
             </FormField>
-
-            {/* Date and Duration fields */}
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
               <FormField label="Date & Time" id="date" error={errors.date}>
                 <input
@@ -418,8 +374,6 @@ export function NewSessionModal({ isOpen, onClose, onSubmit }) {
                 />
               </FormField>
             </div>
-
-            {/* Registration Options */}
             <div className="bg-base-200 p-3 rounded-lg">
               <div className="flex items-center mb-3">
                 <input
@@ -455,68 +409,37 @@ export function NewSessionModal({ isOpen, onClose, onSubmit }) {
                 </div>
               )}
             </div>
-
-            {/* Topic field */}
-            <FormField label="Topic" id="topic">
-              <input
-                type="text"
-                id="topic"
-                name="topic"
-                value={values.topic}
-                onChange={handleChangeWithStop}
-                placeholder="Enter the session topic"
-                className="input input-bordered w-full"
-              />
-            </FormField>
-
-            {/* Speaker and Facilitator fields */}
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-              <FormField label="Speaker" id="speaker">
+              <FormField label="Activity Owner" id="activity_owner">
                 <input
                   type="text"
-                  id="speaker"
-                  name="speaker"
+                  id="activity_owner"
+                  name="activity_owner"
                   value={values.speaker}
                   onChange={handleChangeWithStop}
-                  placeholder="Enter the speaker's name"
+                  placeholder="Enter the activity owner name"
                   className="input input-bordered w-full"
                 />
               </FormField>
-              
-              <FormField label="Facilitator" id="facilitator">
+              <FormField label="Topic" id="topic">
                 <input
-                  type="text"
-                  id="facilitator"
-                  name="facilitator"
-                  value={values.facilitator}
-                  onChange={handleChangeWithStop}
-                  placeholder="Enter the facilitator's name"
-                  className="input input-bordered w-full"
+                    type="text"
+                    id="topic"
+                    name="topic"
+                    value={values.topic}
+                    onChange={handleChangeWithStop}
+                    placeholder="Enter the session topic"
+                    className="input input-bordered w-full"
                 />
               </FormField>
             </div>
 
-            {/* Image field */}
             <FormField label="Image" id="image">
               {renderImageUploader()}
             </FormField>
-
-            {/* Required fields note */}
-            <div className="text-xs text-gray-500 flex items-center gap-1">
-              <FaExclamationTriangle />
-              <span>Fields marked with <span className="text-error">*</span> are required</span>
-            </div>
           </div>
 
           <div className="mt-6 flex justify-end gap-2">
-            <button
-              type="button"
-              className="btn btn-outline"
-              onClick={handleCloseModal}
-            >
-              Cancel
-            </button>
-            
             <button
               type="submit"
               className="btn btn-primary"
