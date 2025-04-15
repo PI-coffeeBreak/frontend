@@ -23,6 +23,7 @@ import { CreatePage } from "./pages/page_editor/CreatePage.jsx";
 import { EditPage } from "./pages/page_editor/EditPage.jsx";
 import SpeakerManagement from './pages/SpeakerManagement';
 import AuthRedirect from "./pages/AuthRedirect";
+import { Sponsors } from "./pages/Sponsors.jsx";
 
 import { ActivitiesProvider } from "./contexts/ActivitiesContext.jsx";
 import { PluginsProvider } from "./contexts/PluginsContext.jsx";
@@ -87,8 +88,10 @@ export default function App() {
                                     </Route>
                                     <Route path="plugins">
                                       <Route path="alert-system-plugin" element={<Alerts />} />
+                                      <Route path="event-schedule-plugin" element={<Schedule />} />
+                                      <Route path="sponsors-promotion-plugin" element={<Sponsors />} />
+                                       <Route path="speaker-presentation-plugin" element={<SpeakerManagement />} />
                                       <Route path="schedule" element={<Schedule />} />
-                                <Route path="speaker-presentation-plugin" element={<SpeakerManagement />} />
                                     </Route>
                                   </Route>
                                   <Route path="/auth-redirect" element={<AuthRedirect />} />
