@@ -9,3 +9,4 @@ export const keycloakAdminClientId = import.meta.env.VITE_KEYCLOAK_ADMIN_CLIENT_
 export const keycloakServiceAccountSecret = import.meta.env.VITE_KEYCLOAK_SERVICE_ACCOUNT_SECRET;
 
 export const MAX_FILE_SIZE = 1024 * 1024; // 1 MB
+export const ALLOWED_FILE_TYPE = "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet";

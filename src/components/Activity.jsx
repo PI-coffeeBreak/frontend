@@ -1,5 +1,5 @@
 import PropTypes from 'prop-types';
-import { FaTrash } from 'react-icons/fa'; // Import trash icon
+import { FaTrash } from 'react-icons/fa';
 
 export default function Activity({id, title, description, image, category, type, onDelete }) {
     return (
@@ -8,11 +8,10 @@ export default function Activity({id, title, description, image, category, type,
             data-id={id}
             data-title={title}
         >
-            {/* Delete button in top-right corner */}
             {onDelete && (
                 <button
                     onClick={(e) => {
-                        e.stopPropagation(); // Prevent event bubbling to parent
+                        e.stopPropagation();
                         onDelete(id);
                     }}
                     className="absolute top-2 right-2 p-2 text-gray-400 hover:text-error rounded-full hover:bg-gray-100 transition-colors"
