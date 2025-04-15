@@ -340,10 +340,6 @@ export default function Users() {
                     {/* Roles Tab Content */}
                     {activeTab === "roles" && (
                         <div className="overflow-x-auto">
-                            <div className="alert alert-info mb-4">
-                                <FaShieldAlt />
-                                <span>Roles are used to group permissions. All role names start with "cb-".</span>
-                            </div>
                             <table className="table table-zebra w-full">
                                 <thead>
                                     <tr>
@@ -389,10 +385,6 @@ export default function Users() {
                     {/* Permissions Tab Content */}
                     {activeTab === "permissions" && (
                         <div className="overflow-x-auto">
-                            <div className="alert alert-info mb-4">
-                                <FaLock />
-                                <span>Permissions provide fine-grained access control for specific actions.</span>
-                            </div>
                             <table className="table table-zebra w-full">
                                 <thead>
                                     <tr>

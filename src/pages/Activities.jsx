@@ -1,612 +1,253 @@
-import { FiUpload } from "react-icons/fi";
-import { FaPlus, FaFile } from "react-icons/fa";
-import { FaFileExcel } from "react-icons/fa6";
-import { FaTrash } from "react-icons/fa";
-import { FaExclamationTriangle } from "react-icons/fa";
-import { FaCheck } from "react-icons/fa";
-import CreateCard from "../components/CreateCard.jsx";
-import { useState, useEffect } from "react";
-import Activity from "../components/Activity.jsx";
-import { MdError } from "react-icons/md";
-import * as XLSX from "xlsx";
-import { baseUrl, MAX_FILE_SIZE } from "../consts.js";
+import { useState } from "react";
+import { ActivityList } from "../components/activities/ActivityList";
+import { ActivityFilters } from "../components/activities/ActivityFilters";
+import { CreateActivityCards } from "../components/activities/CreateActivityCards";
+import { ExcelImportModal } from "../components/activities/ExcelImportModal";
+import { NewSessionModal } from "../components/activities/NewSessionModal";
 import { useActivities } from "../contexts/ActivitiesContext";
+import { useNotification } from "../contexts/NotificationContext";
 import { useKeycloak } from "@react-keycloak/web";
-import { axiosWithAuth } from '../utils/axiosWithAuth';
+import { axiosWithAuth } from "../utils/axiosWithAuth";
+import { baseUrl } from "../consts";
 
-const activitiesBaseUrl = `${baseUrl}/activities`;
-const activityTypesBaseUrl = `${baseUrl}/activity-types`;
-
+/**
+ * Activities page component for managing event sessions and activities
+ */
 export default function Activities() {
-    const { activities, activityTypes, fetchActivities, fetchActivityTypes, getActivityTypeID, getActivityType } = useActivities();
-    const { keycloak } = useKeycloak();
+  // Use the ActivitiesContext to access activities data and operations
+  const { 
+    activities, 
+    activityTypes,
+    fetchActivities,
+    getActivityType // Using getActivityType function from context
+  } = useActivities();
 
-    const [newSession, setNewSession] = useState({
-        name: "",
-        description: "",
-        image: "",
-        date: "",
-        duration: 30,
-        type_id: 1,
-        topic: "",
-        speaker: "",
-        facilitator: ""
-    });
-    const [searchQuery, setSearchQuery] = useState("");
-    const [selectedType, setSelectedType] = useState("");
-    const [errorMessage, setErrorMessage] = useState("");
-    const [imagePreview, setImagePreview] = useState(null);
-    const [feedbackMessage, setFeedbackMessage] = useState("");
-    const [selectedFile, setSelectedFile] = useState(null);
-    const [uploadProgress, setUploadProgress] = useState(0);
+  // Use notification context for feedback messages
+  const { showNotification } = useNotification();
+  
+  // Get keycloak for role/permission checks
+  const { keycloak } = useKeycloak();
 
+  // Check if user can create activities based on their roles
+  const canCreateActivities = () => {
+    if (!keycloak?.authenticated) {
+      return false;
+    }
+    
+    const roles = keycloak.tokenParsed?.realm_access?.roles || [];
+    const allowedRoles = ['cb-staff', 'cb-organizer', 'cb-customization'];
+    
+    return allowedRoles.some(role => roles.includes(role));
+  };
 
-    //FILTERS
-    const handleSearchChange = (e) => {
-        setSearchQuery(e.target.value);
-    };
+  // Modal state
+  const [isExcelModalOpen, setIsExcelModalOpen] = useState(false);
+  const [isNewSessionModalOpen, setIsNewSessionModalOpen] = useState(false);
+  
+  // Filters state
+  const [searchQuery, setSearchQuery] = useState("");
+  const [selectedType, setSelectedType] = useState("");
 
-    const handleTypeChange = (e) => {
-        setSelectedType(e.target.value);
-    };
+  // Filter activities based on search term and selected type
+  const filteredActivities = activities.filter(activity => {
+    const matchesSearch = !searchQuery || 
+      activity.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
+      activity.description?.toLowerCase().includes(searchQuery.toLowerCase());
+      
+    const matchesType = !selectedType || activity.type_id.toString() === selectedType;
+    
+    return matchesSearch && matchesType;
+  });
 
-    const filteredActivities = activities.filter((activity) => {
-        const matchesSearch = activity.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
-            activity.description.toLowerCase().includes(searchQuery.toLowerCase());
+  // Map activity data to include type name instead of just ID
+  const mappedActivities = filteredActivities.map(activity => ({
+    ...activity,
+    type: getActivityType(activity.type_id) // Add type name using the getActivityType function
+  }));
 
-        const matchesType = selectedType ? activity.type_id === parseInt(selectedType) : true;
+  // Handler for opening the Excel import modal
+  const openExcelModal = () => setIsExcelModalOpen(true);
+  
+  // Handler for closing the Excel import modal
+  const closeExcelModal = () => setIsExcelModalOpen(false);
+  
+  // Handler for opening the new session modal
+  const openNewSessionModal = () => setIsNewSessionModalOpen(true);
+  
+  // Handler for closing the new session modal
+  const closeNewSessionModal = () => setIsNewSessionModalOpen(false);
 
-        return matchesSearch && matchesType;
-    });
-
-
-    const prepareDataForPost = (json) => {
-        const activities = [];
-        for (let i = 0; i < json.length; i++) {
-            json[i].type_id = getActivityTypeID(json[i].type);
-            delete json[i].type;
-
-            activities.push({
-                name: json[i].name,
-                description: json[i].description,
-                image: json[i].image,
-                date: json[i].date,
-                duration: json[i].duration,
-                type_id: json[i].type_id,
-                topic: json[i].topic,
-                speaker: json[i].speaker,
-                facilitator: json[i].facilitator
-            })
+  /**
+   * Handle importing activities from Excel
+   * @param {Array} activitiesData - Array of activity objects
+   */
+  const handleImportExcel = async (activitiesData) => {
+    try {
+      console.log("Importing activities:", activitiesData);
+      
+      // Send the array directly to the batch endpoint
+      const response = await axiosWithAuth(keycloak).post(
+        `${baseUrl}/activities/batch`,
+        activitiesData,
+        {
+          headers: {
+            'Content-Type': 'application/json'
+          }
         }
+      );
+      
+      // Show success notification
+      showNotification("Activities successfully imported", "success");
+      
+      // Refresh activities list
+      fetchActivities();
+      
+      // Close the import modal
+      closeExcelModal();
+      
+      return response.data;
+    } catch (error) {
+      console.error("Error importing activities:", error);
+      
+      // Handle different error formats
+      if (error.response?.data?.detail) {
+        // FastAPI validation error format
+        const errorMessages = Array.isArray(error.response.data.detail) 
+          ? error.response.data.detail.map(err => `${err.loc.join('.')} - ${err.msg}`).join('\n')
+          : error.response.data.detail;
+        showNotification(errorMessages, "error");
+      } else {
+        showNotification(
+          error.response?.data?.message || "Failed to import activities", 
+          "error"
+        );
+      }
+      throw error;
+    }
+  };
 
-        return activities;
-    };
+  /**
+   * Handle creating a new session/activity
+   * @param {Object} sessionData - New session data
+   */
+  const handleCreateSession = async (sessionData) => {
+    try {
+      // Format data for API submission
+      const payload = {
+        name: sessionData.name,
+        description: sessionData.description,
+        // Rename date to start_time for the API
+        start_time: sessionData.date,
+        duration: parseInt(sessionData.duration, 10),
+        type_id: typeof sessionData.type_id === 'string' 
+          ? parseInt(sessionData.type_id, 10) 
+          : sessionData.type_id,
+        topic: sessionData.topic || "",
+        speaker: sessionData.speaker || "",
+        facilitator: sessionData.facilitator || ""
+      };
 
+      console.log("Sending activity data:", payload);
+      
+      let response;
+      
+      if (sessionData.image) {
+        // If there's an image, we still need to use FormData
+        const formData = new FormData();
+        
+        // Add the image file
+        formData.append('image', sessionData.image);
+        
+        // Add the JSON data as a string in a field called 'data'
+        Object.entries(payload).forEach(([key, value]) => {
+          if (value !== null && value !== undefined) {
+            formData.append(key, value);
+          }
+        });
+        
+        response = await axiosWithAuth(keycloak).post(`${baseUrl}/activities`, formData, {
+          headers: { 
+            'Content-Type': 'multipart/form-data'
+          }
+        });
+      } else {
+        // If no image, we can use JSON directly
+        response = await axiosWithAuth(keycloak).post(`${baseUrl}/activities`, payload, {
+          headers: { 
+            'Content-Type': 'application/json'
+          }
+        });
+      }
+      
+      // Show success notification
+      showNotification("Session created successfully", "success");
+      
+      // Refresh activities list
+      fetchActivities();
+      
+      // Close the session modal
+      closeNewSessionModal();
+      
+      return response.data;
+    } catch (error) {
+      console.error("Error creating session:", error);
+      
+      // Handle different error formats
+      if (error.response?.data?.detail) {
+        // FastAPI validation error format
+        const errorMessages = Array.isArray(error.response.data.detail) 
+          ? error.response.data.detail.map(err => `${err.loc[1]}: ${err.msg}`).join(', ')
+          : error.response.data.detail;
+        showNotification(errorMessages, "error");
+      } else {
+        // Generic error message
+        showNotification(
+          error.response?.data?.message || "Failed to create session", 
+          "error"
+        );
+      }
+      throw error;
+    }
+  };
 
-    var ExcelToJSON = function () {
-        this.parseExcel = function (file) {
-            return new Promise((resolve, reject) => {
-                const reader = new FileReader();
-                reader.onload = function (e) {
-                    const data = e.target.result;
-                    const workbook = XLSX.read(data, { type: 'binary' });
+  return (
+    <div className="w-full min-h-svh p-2 lg:p-8">
+      <h1 className="text-3xl font-bold">Create Sessions</h1>
 
-                    let jsonData = [];
+      {/* Action cards to create activities */}
+      <CreateActivityCards 
+        onOpenExcelModal={openExcelModal}
+        onOpenNewSessionModal={openNewSessionModal}
+        canCreateActivities={canCreateActivities()}
+      />
 
-                    workbook.SheetNames.forEach(function (sheetName) {
-                        const XL_row_object = XLSX.utils.sheet_to_row_object_array(workbook.Sheets[sheetName]);
-                        console.log(`Data from sheet: ${sheetName}`);
-                        console.log(XL_row_object);
+      <h1 className="text-3xl font-bold mt-8">Sessions</h1>
 
-                        jsonData = jsonData.concat(XL_row_object);
-                    });
+      {/* Search and filter section */}
+      <ActivityFilters
+        activityTypes={activityTypes}
+        searchQuery={searchQuery}
+        onSearchChange={setSearchQuery}
+        selectedType={selectedType}
+        onTypeChange={setSelectedType}
+      />
 
-                    resolve(jsonData);
-                };
-                reader.onerror = function (ex) {
-                    reject(ex);
-                };
-                reader.readAsBinaryString(file);
-            });
-        };
-    };
+      {/* Activity list with mapped activities */}
+      <ActivityList activities={mappedActivities} />
 
-    const handleInputChange = (e) => {
-        const { name, value } = e.target;
-        setNewSession((prev) => ({
-            ...prev,
-            [name]: value
-        }));
-    };
+      {/* Import Excel modal */}
+      <ExcelImportModal 
+        isOpen={isExcelModalOpen}
+        onClose={closeExcelModal}
+        onImport={handleImportExcel}
+      />
 
-    const handleExcelFileChange = (e) => {
-        const file = e.target.files[0];
-
-        if (file) {
-            const excelToJson = new ExcelToJSON();
-            excelToJson.parseExcel(file).then(jsonData => {
-                importedActivities = prepareDataForPost(jsonData);
-                setSelectedFile(file);
-            }).catch(error => {
-                console.error("Error processing excel file:", error);
-            }
-            );
-
-            return importedActivities
-
-        } else {
-            console.log("No file selected.");
-        }
-
-    };
-
-    const handleExcelFileChangeDrop = (file) => {
-        if (file) {
-            const excelToJson = new ExcelToJSON();
-            excelToJson.parseExcel(file).then(jsonData => {
-                importedActivities = prepareDataForPost(jsonData);
-                console.log(importedActivities);
-            }).catch(error => {
-                console.error("Error processing excel file:", error);
-            });
-        } else {
-            console.log("No file selected.");
-        }
-    };
-
-    const handleExcelSubmit = async (e) => {
-        e.preventDefault()
-        try {
-            const response = await axiosWithAuth(keycloak).post(activitiesBaseUrl + '/batch', activities);
-            console.log('Data sent successfully', response);
-            setFeedbackMessage("Activities added successfully!");
-            setErrorMessage("");
-            document.getElementById("excel_modal").close();
-        } catch (error) {
-            console.error('Error sending the data:', error);
-
-            if (error.response) {
-                setErrorMessage(`API Error: ${error.response.data.message || 'An error occurred'}`);
-                document.getElementById("excel_modal").close();
-            } else if (error.request) {
-                setErrorMessage('No response received from the server. Please try again later.');
-                document.getElementById("excel_modal").close();
-            } else {
-                setErrorMessage(`Unexpected error: ${error.message}`);
-                document.getElementById("excel_modal").close();
-            }
-        }
-
-        fetchActivities();
-    };
-
-
-    const handleFileChange = (e) => {
-        const file = e.target.files[0];
-        if (file) {
-            setNewSession((prev) => ({
-                ...prev,
-                image: file
-            }));
-            setImagePreview(URL.createObjectURL(file));
-        }
-    };
-
-
-    const handleSubmit = async (e) => {
-        e.preventDefault();
-
-        if (!newSession.name || !newSession.description || !newSession.type_id) {
-            setErrorMessage("Name, Description, and Type are required.");
-            return;
-        }
-
-        console.log(newSession.date)
-
-        const activity = {
-            name: newSession.name,
-            description: newSession.description,
-            image: newSession.image,
-            date: newSession.date,
-            duration: newSession.duration,
-            type_id: newSession.type_id,
-            topic: newSession.topic,
-            speaker: newSession.speaker,
-            facilitator: newSession.facilitator
-        }
-
-        try {
-            const response = await axiosWithAuth(keycloak).post(activitiesBaseUrl, activity);
-            setFeedbackMessage("Activities added successfully!");
-            setErrorMessage("");
-            document.getElementById("excel_modal").close();
-            if (response.ok) {
-                setNewSession({
-                    name: "",
-                    description: "",
-                    image: "",
-                    date: "",
-                    duration: 30,
-                    type_id: 1,
-                    topic: "",
-                    speaker: "",
-                    facilitator: ""
-                });
-                setImagePreview(null);
-                setErrorMessage("");
-                alert("Activity created successfully!");
-                fetchActivities();
-            } else {
-                setErrorMessage("Error creating activity.");
-            }
-        } catch {
-            setErrorMessage("Error creating activity.");
-        }
-    };
-
-    const handleBrowseClick = () => {
-        document.getElementById('file-input').click();
-    };
-
-    const simulateUpload = () => {
-        let progress = 0;
-        const interval = setInterval(() => {
-            progress += 10;
-            setUploadProgress(progress);
-            if (progress >= 100) {
-                clearInterval(interval);
-            }
-        }, 50);
-    };
-
-    const handleDragOver = (event) => {
-        event.preventDefault();
-        event.stopPropagation();
-    };
-
-    const handleDrop = (event) => {
-        event.preventDefault();
-        event.stopPropagation();
-
-        const files = event.dataTransfer.files;
-
-        if (files.length > 0) {
-            const file = files[0];
-
-            if (file.size > MAX_FILE_SIZE) {
-                setFeedbackMessage("File size exceeds the 5MB limit. Please drop a smaller file.");
-            } else if (file.type !== "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet") {
-                setFeedbackMessage("Please drop a valid Excel file.");
-            } else {
-                setSelectedFile(file);
-                console.log(selectedFile)
-                setFeedbackMessage("File dropped successfully!");
-                simulateUpload();
-
-
-                handleExcelFileChangeDrop(file);
-            }
-        }
-    };
-
-    const handleClearFile = () => {
-        setSelectedFile(null);
-        setFeedbackMessage("");
-        setUploadProgress(0);
-    };
-
-    const openExcelModal = () => {
-        document.getElementById('excel_modal').showModal();
-    };
-
-    const openNewSessionModal = () => {
-        document.getElementById('new_session_modal').showModal();
-    };
-
-    return (
-        <>
-            <div className="w-full min-h-svh p-2 lg:p-8">
-                <h1 className="text-3xl font-bold">Create Sessions</h1>
-
-                <div className="grid grid-cols-3 gap-4 mt-8">
-                    <CreateCard
-                        icon={FaFileExcel}
-                        title="Add with an excel file"
-                        description="Upload an Excel file to quickly add multiple sessions at once."
-                        onClick={openExcelModal}
-                    />
-                    <CreateCard
-                        icon={FaPlus}
-                        title="Create a new session"
-                        description="Create a new session manually."
-                        onClick={openNewSessionModal}
-                    />
-                </div>
-                <h1 className="text-3xl font-bold mt-8">Sessions</h1>
-
-                {feedbackMessage && (
-                    <div role="alert" className="alert alert-success my-4 w-1/2">
-                        <span className="flex gap-4"><FaCheck className="text-white text-xl" />{feedbackMessage}</span>
-                    </div>
-                )}
-                {errorMessage && (
-                    <div role="alert" className="alert alert-error my-4 w-1/2">
-                        <span className="flex gap-4"><FaExclamationTriangle
-                            className="text-white text-xl" />{errorMessage}</span>
-                    </div>
-                )}
-
-                <div className="flex gap-8 mt-4">
-                    <div className="flex gap-4">
-                        <label className="input">
-                            <svg className="h-[1em] opacity-50" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
-                                <g strokeLinejoin="round" strokeLinecap="round" strokeWidth="2.5" fill="none"
-                                    stroke="currentColor">
-                                    <circle cx="11" cy="11" r="8"></circle>
-                                    <path d="m21 21-4.3-4.3"></path>
-                                </g>
-                            </svg>
-                            <input
-                                type="text"
-                                className="grow"
-                                placeholder="Search activities"
-                                value={searchQuery}
-                                onChange={handleSearchChange} />
-                        </label>
-                    </div>
-
-
-                    <form className="filter">
-                        <input className="btn btn-square" type="reset" value="×" onClick={() => setSelectedType("")} />
-                        {activityTypes.map((type) => (
-                            <input
-                                key={type.id}
-                                type="radio"
-                                name="frameworks"
-                                value={type.id}
-                                onChange={handleTypeChange}
-                                className="btn btn-primary"
-                                aria-label={type.type}
-                            />
-                        ))}
-                    </form>
-                </div>
-                {filteredActivities.length > 0 ? (
-                    <div className="w-full grid grid-cols-1 gap-4 overflow-hidden mt-6 md:grid-cols-2 lg:grid-cols-3">
-                        {filteredActivities.map((activity) => (
-                            <Activity
-                                key={activity.id}
-                                id={activity.id}
-                                title={activity.name}
-                                description={activity.description}
-                                image={activity.image}
-                                category={activity.topic}
-                                type={getActivityType(activity.type_id)}
-                            />
-                        ))}
-                    </div>
-                ) : (
-                    <p className="text-7xl flex justify-center items-center text-center">No activities found.</p>
-                )}
-
-            </div>
-
-            <dialog id="excel_modal" className="modal">
-                <div className="modal-box">
-                    <form method="dialog">
-                        <button className="btn btn-sm btn-circle btn-ghost absolute right-2 top-2">✕</button>
-                    </form>
-                    <h3 className="text-lg font-bold">Upload Excel File</h3>
-                    <p className="py-4">Select an Excel file to upload multiple sessions at once.</p>
-
-                    <a href="/template.xlsx" download>
-                        <button className="btn btn-secondary mt-4 w-full">Download Excel Template</button>
-                    </a>
-
-                    <div
-                        id="drop-area"
-                        className="border-dashed border-2 rounded-xl border-gray-400 p-4 mt-4 text-center"
-                        onDrop={handleDrop}
-                        onDragOver={handleDragOver}
-                    >
-                        <div className="rounded-full bg-base-content w-24 mx-auto my-4 h-24 flex items-center justify-center">
-                            <FiUpload className="text-base-100 text-4xl mb-2" />
-                        </div>
-                        <p>Drag and drop your Excel file here or <span className="text-primary font-bold hover:underline hover:cursor-pointer" onClick={handleBrowseClick}>Browse</span></p>
-                        <p className="text-sm text-gray-300">Pick up a file up to 1MB</p>
-                        {feedbackMessage && (
-                            <>
-                                <div className="mt-4 text-center text-sm text-red-500">{feedbackMessage}</div>
-                                <div className="bg-secondary w-full h-20 mt-4 mx-auto rounded-lg relative">
-                                    <button
-                                        onClick={handleClearFile}
-                                        className="text-primary hover:cursor-pointer absolute right-3 top-3"
-                                    >
-                                        <FaTrash />
-                                    </button>
-                                    {selectedFile && (
-                                        <>
-                                            <div className="flex text-4xl gap-4">
-                                                <div className="mt-3 ml-1">
-                                                    <FaFile />
-                                                </div>
-                                                <div className="mt-1">
-                                                    <p className="text-lg text-left">{selectedFile.name}</p>
-                                                    <p className="text-sm text-left">{(selectedFile.size / 1024).toFixed(2)} KB</p>
-                                                </div>
-                                            </div>
-                                            <div>
-                                                <progress className="progress progress-primary w-88 absolute left-2 bottom-2" value={uploadProgress} max="100"></progress>
-                                                <p className="absolute right-2 bottom-1">{uploadProgress}%</p>
-                                            </div>
-                                        </>
-                                    )}
-                                </div>
-                            </>
-                        )}
-                    </div>
-                    <form>
-                        <input
-                            type="file"
-                            id="file-input"
-                            style={{ display: 'none' }}
-                            accept=".xlsx,.xls"
-                            onChange={handleExcelFileChange}
-                        />
-                        <button
-                            className="btn btn-primary mt-4 mx-auto w-1/3 flex items-center justify-center"
-                            onClick={handleExcelSubmit}
-                        >
-                            Submit
-                        </button>
-                    </form>
-
-                </div>
-
-
-                <form method="dialog" className="modal-backdrop bg-opacity-10">
-                    <button>close</button>
-                </form>
-            </dialog>
-
-            <dialog id="new_session_modal" className="modal">
-                <div className="modal-box">
-                    <form method="dialog">
-                        <button className="btn btn-sm btn-circle btn-ghost absolute right-2 top-2">✕</button>
-                    </form>
-                    <h3 className="text-lg font-bold">Create New Session</h3>
-                    <p className="py-4">Fill in the details to create a new session.</p>
-                    <form onSubmit={handleSubmit}>
-                        <div>
-                            <label htmlFor="name">Name</label>
-                            <input
-                                type="text"
-                                id="name"
-                                name="name"
-                                value={newSession.name}
-                                onChange={handleInputChange}
-                                placeholder="Enter the session title"
-                                className="input w-full h-12 bg-secondary rounded-xl"
-                            />
-                        </div>
-                        <div className="mt-4">
-                            <label htmlFor="description">Description</label>
-                            <textarea
-                                id="description"
-                                name="description"
-                                value={newSession.description}
-                                onChange={handleInputChange}
-                                placeholder="Enter the session description"
-                                className="input w-full h-24 bg-secondary rounded-xl"
-                            />
-                        </div>
-                        <div className="mt-4">
-                            <label htmlFor="type_id" className="select w-full h-12 bg-secondary rounded-xl">
-                                <span className="label">Type</span>
-                                <select
-                                    id="type_id"
-                                    name="type_id"
-                                    value={newSession.type_id}
-                                    onChange={handleInputChange}
-                                >
-                                    {activityTypes.map((type) => (
-                                        <option key={type.id} value={type.id}>
-                                            {type.type}
-                                        </option>
-                                    ))}
-                                </select>
-                            </label>
-                        </div>
-                        <div className="flex gap-4 mt-4">
-                            <div className="w-1/2">
-                                <label htmlFor="date">Date</label>
-                                <input
-                                    type="datetime-local"
-                                    id="date"
-                                    name="date"
-                                    value={newSession.date}
-                                    onChange={handleInputChange}
-                                    className="input w-full h-12 bg-secondary rounded-xl"
-                                />
-                            </div>
-                            <div className="w-1/2">
-                                <label htmlFor="duration">Duration (minutes)</label>
-                                <input
-                                    type="number"
-                                    id="duration"
-                                    name="duration"
-                                    value={newSession.duration}
-                                    onChange={handleInputChange}
-                                    className="input w-full h-12 bg-secondary rounded-xl"
-                                />
-                            </div>
-                        </div>
-                        <div className="mt-4">
-                            <label htmlFor="topic">Topic</label>
-                            <input
-                                type="text"
-                                id="topic"
-                                name="topic"
-                                value={newSession.topic}
-                                onChange={handleInputChange}
-                                placeholder="Enter the session topic"
-                                className="input w-full h-12 bg-secondary rounded-xl"
-                            />
-                        </div>
-                        <div className="mt-4">
-                            <label htmlFor="speaker">Speaker</label>
-                            <input
-                                type="text"
-                                id="speaker"
-                                name="speaker"
-                                value={newSession.speaker}
-                                onChange={handleInputChange}
-                                placeholder="Enter the speaker's name"
-                                className="input w-full h-12 bg-secondary rounded-xl"
-                            />
-                        </div>
-                        <div className="mt-4">
-                            <label htmlFor="facilitator">Facilitator</label>
-                            <input
-                                type="text"
-                                id="facilitator"
-                                name="facilitator"
-                                value={newSession.facilitator}
-                                onChange={handleInputChange}
-                                placeholder="Enter the facilitator's name"
-                                className="input w-full h-12 bg-secondary rounded-xl"
-                            />
-                        </div>
-                        <div className="mt-4">
-                            <label htmlFor="image">Image</label>
-                            <input
-                                type="file"
-                                id="image"
-                                accept="image/*"
-                                onChange={handleFileChange}
-                                className="file-input w-full h-12 bg-secondary rounded-xl"
-                            />
-                        </div>
-
-                        {imagePreview && (
-                            <div className="mt-4">
-                                <img src={imagePreview} alt="Preview" className="w-full h-32 object-cover rounded-xl" />
-                            </div>
-                        )}
-
-                        {errorMessage && (
-                            <div className="text-red-500 mt-4">{errorMessage}</div>
-                        )}
-
-                        <button className="btn btn-primary mt-4 w-full">Create Session</button>
-                    </form>
-                </div>
-
-                <form method="dialog" className="modal-backdrop bg-opacity-10">
-                    <button>close</button>
-                </form>
-            </dialog>
-
-        </>
-    );
+      {/* Create new session modal */}
+      <NewSessionModal 
+        isOpen={isNewSessionModalOpen}
+        onClose={closeNewSessionModal}
+        onSubmit={handleCreateSession}
+      />
+    </div>
+  );
 }

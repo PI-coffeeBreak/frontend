@@ -50,7 +50,7 @@ export const hasUserManagementPermissions = (keycloak) => {
   console.log("User roles from token:", realm_access.roles);
 
   // Check for the relevant admin roles
-  const requiredRoles = ["admin", "realm-admin", "manage-users", "cb-organizer", "Organizer"];
+  const requiredRoles = ["manage-users", "cb-organizer", "Organizer"];
   const hasRole = requiredRoles.some(role => realm_access.roles.includes(role));
   
   console.log("User has required role:", hasRole);
