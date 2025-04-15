@@ -62,6 +62,35 @@ export const hasUserManagementPermissions = (keycloak) => {
 };
 
 /**
+ * Check if the current user token has role management permissions
+ */
+export const hasRoleManagementPermissions = (keycloak) => {
+  if (!keycloak || !keycloak.tokenParsed) {
+    console.log("No keycloak token parsed");
+    return false;
+  }
+  
+  const { realm_access } = keycloak.tokenParsed;
+  if (!realm_access || !realm_access.roles) {
+    console.log("No realm_access or roles in token");
+    return false;
+  }
+  
+  console.log("User roles from token:", realm_access.roles);
+
+  // Check for the relevant role management roles
+  const requiredRoles = ["realm-admin", "create-realm", "manage-realm","cb-organizer","cb-admin", "admin"];
+  const hasRole = requiredRoles.some(role => realm_access.roles.includes(role));
+  
+  console.log("User has role management permissions:", hasRole);
+  if (!hasRole) {
+    console.log("User is missing one of these roles needed for role management:", requiredRoles);
+  }
+  
+  return hasRole;
+};
+
+/**
  * Format role name for display
  */
 export const formatRoleName = (roleName) => {

@@ -3,18 +3,13 @@ import { useUsers } from "../contexts/UsersContext";
 import { useKeycloak } from "@react-keycloak/web";
 import Pagination from "../components/Pagination.jsx";
 import CreateCard from "../components/CreateCard.jsx";
-import { FaUsers, FaUser, FaUsersCog, FaPlus, FaTrash, FaCheck, FaLock, FaShieldAlt, FaKey } from "react-icons/fa";
+import { FaUsers, FaUser, FaUsersCog, FaPlus, FaTrash, FaCheck, FaLock, FaShieldAlt, FaKey, FaExclamationTriangle } from "react-icons/fa";
 import KeycloakAdminService from "../services/KeycloakAdminService";
 
 export default function Users() {
     const { keycloak } = useKeycloak();
     const hasAdminPermissions = KeycloakAdminService.hasAdminPermissions(keycloak);
-    
-    // Debug code
-    console.log("Token parsed:", keycloak?.tokenParsed);
-    console.log("Realm access:", keycloak?.tokenParsed?.realm_access);
-    console.log("Roles:", keycloak?.tokenParsed?.realm_access?.roles);
-    console.log("Has admin permissions:", hasAdminPermissions);
+    const hasRoleManagementPermissions = KeycloakAdminService.hasRoleManagementPermissions(keycloak);
     
     // Get users data and functions from context
     const { 
@@ -51,6 +46,7 @@ export default function Users() {
     // Role management state
     const [roleManagementTab, setRoleManagementTab] = useState("create");
     const [newRoleName, setNewRoleName] = useState("");
+    const [roleCreationError, setRoleCreationError] = useState("");
     
     // Role permissions management state
     const [selectedRole, setSelectedRole] = useState(null);
@@ -119,6 +115,7 @@ export default function Users() {
     const handleCreateRole = async () => {
         if (!newRoleName) return;
         
+        setRoleCreationError("");
         try {
             await createRole(newRoleName);
             setNewRoleName("");
@@ -137,6 +134,13 @@ export default function Users() {
             }
         } catch (error) {
             console.error("Failed to create role:", error);
+            if (error.response?.status === 403) {
+                setRoleCreationError("Permission denied. You don't have sufficient privileges to create roles.");
+            } else if (error.response?.data?.errorMessage) {
+                setRoleCreationError(error.response.data.errorMessage);
+            } else {
+                setRoleCreationError("Failed to create role. Please try again later.");
+            }
         }
     };
 
@@ -403,6 +407,16 @@ export default function Users() {
                     {roleManagementTab === "create" && (
                         <div className="space-y-4">
                          
+                            {!hasRoleManagementPermissions && (
+                                <div className="alert alert-warning">
+                                    <FaExclamationTriangle />
+                                    <span>
+                                        You don't have role management permissions. You need one of these roles: 
+                                        realm-admin, create-realm, manage-realm, cb-admin, or admin.
+                                        The role creation might fail with a permission error.
+                                    </span>
+                                </div>
+                            )}
                             
                             <div className="form-control">
                                 <label className="label">
@@ -417,6 +431,12 @@ export default function Users() {
                                     onChange={(e) => setNewRoleName(e.target.value)}
                                 />
                             </div>
+                            
+                            {roleCreationError && (
+                                <div className="alert alert-error">
+                                    <span>{roleCreationError}</span>
+                                </div>
+                            )}
                             
                             <button 
                                 className="btn btn-primary w-full" 

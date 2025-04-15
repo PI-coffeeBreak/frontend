@@ -1,6 +1,6 @@
 import axios from "axios";
 import { keycloakUrl, keycloakRealm } from "../consts";
-import { formatRoleName, getAdminToken, hasUserManagementPermissions } from "../utils/keycloakAdminUtils";
+import { formatRoleName, getAdminToken, hasUserManagementPermissions, hasRoleManagementPermissions } from "../utils/keycloakAdminUtils";
 
 class KeycloakAdminService {
   constructor(token) {
@@ -176,6 +176,11 @@ class KeycloakAdminService {
     return hasUserManagementPermissions(keycloak);
   }
 
+  // Check if the provided token has role management permissions
+  static hasRoleManagementPermissions(keycloak) {
+    return hasRoleManagementPermissions(keycloak);
+  }
+
   // Create a new role
   async createRole(roleName, description = "") {
     try {
@@ -184,15 +189,47 @@ class KeycloakAdminService {
       
       console.log(`Creating new role: ${formattedRoleName}`);
       
-      const response = await this.client.post(`${this.baseUrl}/roles`, {
-        name: formattedRoleName,
-        description: description
-      });
-      
-      return {
-        success: true,
-        role: response.data
-      };
+      try {
+        // First try with user's token
+        const response = await this.client.post(`${this.baseUrl}/roles`, {
+          name: formattedRoleName,
+          description: description
+        });
+        
+        return {
+          success: true,
+          role: response.data
+        };
+      } catch (error) {
+        // If user's token doesn't have permission, try with admin token
+        if (error.response?.status === 403) {
+          console.log("User token doesn't have permission, trying with admin token");
+          
+          try {
+            // Get admin token and create admin service instance
+            const adminInstance = await KeycloakAdminService.getAdminInstance();
+            
+            // Try creating the role with admin token
+            const adminResponse = await adminInstance.client.post(`${adminInstance.baseUrl}/roles`, {
+              name: formattedRoleName,
+              description: description
+            });
+            
+            return {
+              success: true,
+              role: adminResponse.data,
+              note: "Created using admin token"
+            };
+          } catch (adminError) {
+            console.error("Error creating role with admin token:", adminError);
+            console.error("Admin error details:", adminError.response?.data || "No response data");
+            throw adminError; // Rethrow the admin error
+          }
+        } else {
+          // If it's not a permission issue, rethrow the original error
+          throw error;
+        }
+      }
     } catch (error) {
       console.error("Error creating role:", error);
       console.error("Error details:", error.response?.data || "No response data");
