@@ -2,7 +2,8 @@
 import React, { useState, useEffect } from "react";
 import { useUsers } from "../contexts/UsersContext";
 import Pagination from "../components/Pagination.jsx";
-
+import CreateCard from "../components/CreateCard.jsx";
+import { FaUsers, FaUser, FaUsersCog } from "react-icons/fa";
 
 export default function Users() {
     // Get users data and functions from context
@@ -71,41 +72,59 @@ export default function Users() {
     return (
         <>
             <div className="w-full min-h-svh p-8">
-                <h1 className="text-3xl font-bold mb-6">Users</h1>
+                <h1 className="text-3xl font-bold">Create Users</h1>
+                    <div className="grid grid-cols-3 gap-4 mt-8">
+                        <CreateCard
+                            icon={FaUsers}
+                            title="Add with an excel file"
+                            description="Upload an Excel file to quickly add multiple users at once."
+                        />
+                        <CreateCard
+                            icon={FaUser}
+                            title="Create a new user"
+                            description="Create a new user manually."
+                        />
+                        <CreateCard
+                            icon={FaUsersCog}
+                            title="Manage roles"
+                            description="Create or change a role."
+                        />
+                    </div>
+
+                    <h1 className="text-3xl font-bold mt-8">Users</h1>
+
+                <div className="flex gap-8 mt-4">
+                    <div className="flex gap-4">
+                        <label className="input">
+                            <svg className="h-[1em] opacity-50" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
+                                <g strokeLinejoin="round" strokeLinecap="round" strokeWidth="2.5" fill="none"
+                                   stroke="currentColor">
+                                    <circle cx="11" cy="11" r="8"></circle>
+                                    <path d="m21 21-4.3-4.3"></path>
+                                </g>
+                            </svg>
+                            <input
+                                type="text"
+                                className="grow"
+                                placeholder="Search users"
+                                />
+                        </label>
+                    </div>
+                </div>
                 
                 {error && (
                     <div className="alert alert-error mb-4">
                         <span>{error}</span>
                     </div>
                 )}
-                
-                <div className="mb-6 flex flex-wrap gap-4 items-center">
-                    <input
-                        type="text"
-                        placeholder="Search by name..."
-                        className="p-2 border rounded-lg shadow-sm"
-                        onChange={(e) => setSearchTerm(e.target.value)}
-                        value={searchTerm}
-                    />
-                    <select
-                        className="p-2 border rounded-lg shadow-sm"
-                        onChange={(e) => setFilterRole(e.target.value)}
-                        value={filterRole}
-                    >
-                        <option value="">All Roles</option>
-                        <option value="Organizer">Organizer</option>
-                        <option value="Staff">Staff</option>
-                        <option value="Speaker">Speaker</option>
-                        <option value="Participant">Participant</option>
-                    </select>
-                </div>
+            
                 {isLoading ? (
                     <div className="flex justify-center items-center p-8">
                         <span className="loading loading-spinner loading-lg"></span>
                     </div>
                 ) : (
                     <>
-                        <div className="overflow-x-auto">
+                        <div className="overflow-x-auto mt-8">
                             <table className="table">
                                 <thead>
                                     <tr>
@@ -130,7 +149,6 @@ export default function Users() {
                                                     </div>
                                                     <div>
                                                         <div className="font-bold">{user.firstName} {user.lastName}</div>
-                                                        <div className="text-sm opacity-50">{user.nationality || "Unknown nationality"}</div>
                                                     </div>
                                                 </div>
                                             </td>
@@ -157,14 +175,10 @@ export default function Users() {
                                 </tbody>
                             </table>
                         </div>
-                        <Pagination
-                          currentPage={currentPage}
-                          totalPages={totalPages}
-                          onPageChange={handlePageChange}
-                        />
+                        
         
                         {totalPages > 1 && (
-                            <div className="flex justify-center mt-4">
+                            <div className="flex justify-center mt-2">
                                 <div className="join">
                                     {Array.from({ length: totalPages }, (_, i) => (
                                         <button
