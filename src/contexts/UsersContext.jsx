@@ -47,12 +47,19 @@ export const UsersProvider = ({ children }) => {
         setError(null);
         try {
             console.log("Fetching users with auth status:", keycloak.authenticated);
-            const response = await axiosWithAuth(keycloak).get(usersRolesUrl);
-            console.log("Users grouped by role fetched successfully:", response.data);
 
-            setUsersGroupedByRole(response.data);
+            // Fetch all users first
+            const allUsersResponse = await axiosWithAuth(keycloak).get(usersBaseUrl);
+            console.log("All users fetched successfully:", allUsersResponse.data);
 
-            const flattenedUsers = transformGroupedUsersToFlat(response.data);
+            // Then fetch users grouped by role
+            const groupedUsersResponse = await axiosWithAuth(keycloak).get(usersRolesUrl);
+            console.log("Users grouped by role fetched successfully:", groupedUsersResponse.data);
+
+            // Transform the data
+            const flattenedUsers = transformGroupedUsersToFlat(groupedUsersResponse.data, allUsersResponse.data);
+
+            setUsersGroupedByRole(groupedUsersResponse.data);
             setUsers(flattenedUsers);
 
             return flattenedUsers;
@@ -65,7 +72,7 @@ export const UsersProvider = ({ children }) => {
         }
     };
 
-    const transformGroupedUsersToFlat = (groupedUsers) => {
+    const transformGroupedUsersToFlat = (groupedUsers, allUsers) => {
         const userMap = new Map(); // Map to store unique users by ID
         const roleMapping = {
             "cb-attendee": "Participant",
@@ -75,6 +82,17 @@ export const UsersProvider = ({ children }) => {
             "cb-staff": "Staff",
         };
 
+        // First, add all users to the map without roles
+        allUsers.forEach((user) => {
+            userMap.set(user.id, {
+                ...user,
+                roles: [], // Initialize empty roles array
+                role: "No role", // Default role text
+                banned: !user.enabled,
+            });
+        });
+
+        // Then, add roles to users that have them
         Object.entries(groupedUsers).forEach(([roleKey, usersInRole]) => {
             const roleName = roleMapping[roleKey] || roleKey;
 
@@ -85,15 +103,11 @@ export const UsersProvider = ({ children }) => {
                     // If user already exists, add the new role to their roles array
                     if (!existingUser.roles.includes(roleName)) {
                         existingUser.roles.push(roleName);
+                        // Update the single role field with the first role (for backward compatibility)
+                        if (existingUser.role === "No role") {
+                            existingUser.role = roleName;
+                        }
                     }
-                } else {
-                    // If this is a new user, create them with an array of roles
-                    userMap.set(user.id, {
-                        ...user,
-                        role: roleName, // Keep the single role field for backward compatibility
-                        roles: [roleName], // Add an array of roles
-                        banned: !user.enabled,
-                    });
                 }
             });
         });
@@ -335,10 +349,10 @@ export const UsersProvider = ({ children }) => {
         try {
             console.log("Creating new role:", roleName);
             const result = await adminService.createRole(roleName, description);
-            
+
             // Refresh roles after creation
             await fetchAllRolesAndPermissions();
-            
+
             return result;
         } catch (error) {
             console.error("Error creating role:", error);
@@ -432,20 +446,20 @@ export const UsersProvider = ({ children }) => {
                 Organizer: "cb-organizer",
                 Staff: "cb-staff",
             };
-            
+
             const backendRoleName = reverseRoleMapping[roleName] || roleName;
-            
+
             // Make direct API call to assign role
             const response = await axiosWithAuth(keycloak).post(
                 `${usersBaseUrl}/${userId}/roles/${backendRoleName}`
             );
-            
+
             // Refresh user data
             await fetchUsers();
-            
-            return { 
-                success: true, 
-                message: `Role ${roleName} assigned successfully` 
+
+            return {
+                success: true,
+                message: `Role ${roleName} assigned successfully`
             };
         } catch (error) {
             console.error(`Error assigning role to user ${userId}:`, error);
@@ -462,7 +476,7 @@ export const UsersProvider = ({ children }) => {
         setError(null);
         try {
             console.log("Creating new user:", userData);
-            
+
             // Prepare user data for the API
             const userToCreate = {
                 firstName: userData.firstName,
@@ -478,17 +492,17 @@ export const UsersProvider = ({ children }) => {
                 password: userData.temporaryPassword,
                 temporary: true
             };
-            
+
             // Use the dedicated endpoint for user creation
             const response = await axiosWithAuth(keycloak).post(`${usersBaseUrl}`, userToCreate);
             console.log("User created successfully:", response.data);
-            
+
             // Refresh users list to make sure the new user is in the users array
             await fetchUsers();
-            
-            return { 
-                success: true, 
-                userId: response.data.id, 
+
+            return {
+                success: true,
+                userId: response.data.id,
                 message: "User created successfully"
             };
         } catch (error) {
@@ -510,10 +524,10 @@ export const UsersProvider = ({ children }) => {
             total: usersData.length,
             errors: []
         };
-        
+
         try {
             console.log(`Creating ${usersData.length} users from bulk import`);
-            
+
             // Format the data for the batch endpoint
             const formattedUsers = usersData.map(user => ({
                 firstName: user.firstName,
@@ -529,11 +543,11 @@ export const UsersProvider = ({ children }) => {
                 password: user.temporaryPassword,
                 temporary: true
             }));
-            
+
             // Use the dedicated batch endpoint
             const response = await axiosWithAuth(keycloak).post(`${usersBaseUrl}/batch`, formattedUsers);
             console.log("Batch user creation response:", response.data);
-            
+
             // Calculate results based on the response
             if (response.data && Array.isArray(response.data.results)) {
                 response.data.results.forEach(result => {
@@ -552,10 +566,10 @@ export const UsersProvider = ({ children }) => {
                 results.success = usersData.length;
                 results.failed = 0;
             }
-            
+
             // Refresh users list
             await fetchUsers();
-            
+
             return results;
         } catch (error) {
             console.error("Error during bulk user creation:", error);
