@@ -323,12 +323,17 @@ export default function Users() {
 
     // Open user creation modal
     const openUserCreationModal = () => {
-        // Reset form state
+        // Get a default role to reset the form
+        const defaultRole = allRoles.length > 0 
+            ? (allRoles.find(r => r.name === "Participant" || r.name === "cb-attendee")?.name || allRoles[0].name)
+            : "Participant";
+            
+        // Reset form and clear input fields after successful creation
         setNewUserData({
             firstName: "",
             lastName: "",
             email: "",
-            role: "Participant",
+            role: defaultRole,
             temporaryPassword: ""
         });
         setFormErrors({});
@@ -339,6 +344,12 @@ export default function Users() {
     // Handle input change for user creation form
     const handleInputChange = (e) => {
         const { name, value } = e.target;
+        
+        // Debug log for role selection
+        if (name === 'role') {
+            console.log(`Role selected: ${value}`);
+        }
+        
         setNewUserData(prev => ({
             ...prev,
             [name]: value
@@ -397,16 +408,23 @@ export default function Users() {
             return;
         }
         
+        console.log("Submitting user data:", newUserData);
+        
         try {
             const result = await createUser(newUserData);
             setCreateSuccess(true);
+            
+            // Get a default role to reset the form
+            const defaultRole = allRoles.length > 0 
+                ? (allRoles.find(r => r.name === "Participant" || r.name === "cb-attendee")?.name || allRoles[0].name)
+                : "Participant";
             
             // Reset form and clear input fields after successful creation
             setNewUserData({
                 firstName: "",
                 lastName: "",
                 email: "",
-                role: "Participant",
+                role: defaultRole,
                 temporaryPassword: ""
             });
             
@@ -555,22 +573,6 @@ export default function Users() {
                 <h1 className="text-3xl font-bold mt-8">Users</h1>
 
                 {!hasAdminPermissions && <AdminPermissionsWarning />}
-
-                {/* Debug section */}
-                <div className="mt-4 mb-4">
-                    <button
-                        className="btn btn-sm btn-outline"
-                        onClick={() => {
-                            const roles = keycloak?.tokenParsed?.realm_access?.roles || [];
-                            console.log("Your roles:", roles);
-                            alert("Your roles: " + roles.join(", ") +
-                                "\n\nRequired roles: admin, realm-admin, manage-users, cb-organizer, Organizer" +
-                                "\n\nCheck console for more details.");
-                        }}
-                    >
-                        Check My Roles
-                    </button>
-                </div>
 
                 <div className="flex gap-8 mt-4">
                     <div className="flex gap-4">
@@ -980,10 +982,20 @@ export default function Users() {
                                     value={newUserData.role}
                                     onChange={handleInputChange}
                                 >
-                                    <option value="Organizer">Organizer</option>
-                                    <option value="Staff">Staff</option>
-                                    <option value="Speaker">Speaker</option>
-                                    <option value="Participant">Participant</option>
+                                    {allRoles.length > 0 ? (
+                                        allRoles.map(role => (
+                                            <option key={role.id} value={role.name}>
+                                                {role.displayName || role.name}
+                                            </option>
+                                        ))
+                                    ) : (
+                                        <>
+                                            <option value="Participant">Participant</option>
+                                            <option value="Speaker">Speaker</option>
+                                            <option value="Staff">Staff</option>
+                                            <option value="Organizer">Organizer</option>
+                                        </>
+                                    )}
                                 </select>
                             </div>
                             

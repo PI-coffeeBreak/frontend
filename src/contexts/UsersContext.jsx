@@ -475,7 +475,7 @@ export const UsersProvider = ({ children }) => {
         setIsLoading(true);
         setError(null);
         try {
-            console.log("Creating new user:", userData);
+            console.log("Creating new user with data:", userData);
 
             // Prepare user data for the API
             const userToCreate = {
@@ -492,6 +492,8 @@ export const UsersProvider = ({ children }) => {
                 password: userData.temporaryPassword,
                 temporary: true
             };
+
+            console.log("Formatted user data for API:", userToCreate);
 
             // Use the dedicated endpoint for user creation
             const response = await axiosWithAuth(keycloak).post(`${usersBaseUrl}`, userToCreate);
