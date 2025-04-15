@@ -15,6 +15,7 @@ export function ActivityList({ activities }) {
         showNotification("Activity deleted successfully", "success");
       } catch (error) {
         showNotification("Failed to delete activity", "error");
+        console.error("Error deleting activity:", error);
       }
     }
   };

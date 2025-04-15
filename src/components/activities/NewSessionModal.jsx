@@ -100,6 +100,8 @@ export function NewSessionModal({ isOpen, onClose, onSubmit }) {
       }
     } catch (e) {
       errors.date = "Invalid date format";
+        showNotification("Invalid date format", "error");
+        console.error("Invalid date format:", e);
     }
   };
 
