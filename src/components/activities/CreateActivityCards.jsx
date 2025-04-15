@@ -2,15 +2,6 @@ import PropTypes from 'prop-types';
 import { FaFileExcel, FaPlus, FaTags } from 'react-icons/fa';
 import CreateCard from "../CreateCard.jsx";
 
-/**
- * Component displaying cards for creating different types of activities
- * 
- * @param {Object} props - Component props
- * @param {Function} props.onOpenExcelModal - Function to open the Excel import modal
- * @param {Function} props.onOpenNewSessionModal - Function to open the new session modal
- * @param {Function} props.onOpenNewSessionTypeModal - Function to open the new session type modal
- * @param {boolean} props.canCreateActivities - Whether the user has permission to create activities
- */
 export function CreateActivityCards({
   onOpenNewSessionTypeModal,
   onOpenExcelModal, 

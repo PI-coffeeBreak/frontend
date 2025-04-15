@@ -119,7 +119,6 @@ export default function Activities() {
 
       fetchActivities();
       closeNewSessionModal();
-      fetchActivities();
   };
 
   const handleCreateSessionType = async (typeData) => {

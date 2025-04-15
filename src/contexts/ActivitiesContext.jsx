@@ -93,16 +93,10 @@ export const ActivitiesProvider = ({ children }) => {
         return "Type not found";
     };
 
-    /**
-     * Create a new activity type
-     * @param {Object} typeData - The new type data { type: string }
-     * @returns {Promise<Object>} The created activity type
-     */
     const createActivityType = async (typeData) => {
         try {
             const response = await axiosWithAuth(keycloak).post(`${baseUrl}/activity-types`, typeData);
-            
-            // Update the activity types list
+
             setActivityTypes(prev => [...prev, response.data]);
             
             return response.data;
@@ -127,9 +121,7 @@ export const ActivitiesProvider = ({ children }) => {
         } catch (error) {
             console.error("Error importing activities:", error);
 
-            // Handle different error formats
             if (error.response?.data?.detail) {
-                // FastAPI validation error format
                 const errorMessages = Array.isArray(error.response.data.detail)
                     ? error.response.data.detail.map(err => `${err.loc.join('.')} - ${err.msg}`).join('\n')
                     : error.response.data.detail;
@@ -161,11 +153,8 @@ export const ActivitiesProvider = ({ children }) => {
 
     const deleteActivity = async (activityId) => {
         try {
-            // Call the API to delete the activity
-            console.log("Deleting activity with ID:", activityId);
             await axiosWithAuth(keycloak).delete(`${activitiesBaseUrl}/${activityId}`);
-            
-            // Update local state by removing the deleted activity
+
             setActivities(prev => prev.filter(activity => activity.id !== activityId));
             setCalendarActivities(prev => prev.filter(activity => activity.id !== activityId));
             setOutsideActivities(prev => prev.filter(activity => activity.id !== activityId));

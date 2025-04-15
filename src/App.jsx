@@ -3,9 +3,9 @@ import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
 import { ReactKeycloakProvider } from '@react-keycloak/web';
 
 import Home from "./pages/Home";
-import Layout from "./components/Layout";
-import LayoutAuth from "./components/LayoutAuth";
-import LayoutInstantiate from "./components/LayoutInstantiate.jsx";
+import Layout from "./components/layout/Layout.jsx";
+import LayoutAuth from "./components/layout/LayoutAuth.jsx";
+import LayoutInstantiate from "./components/layout/LayoutInstantiate.jsx";
 import Users from "./pages/Users.jsx";
 import Alerts from "./pages/Alerts.jsx";
 import Activities from "./pages/Activities.jsx";

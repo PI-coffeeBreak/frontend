@@ -2,12 +2,8 @@ import { useState } from "react";
 import PropTypes from "prop-types";
 import { Modal } from "../common/Modal";
 import { useForm } from "../../hooks/useForm";
-import { useActivities } from "../../contexts/ActivitiesContext";
 import { useNotification } from "../../contexts/NotificationContext";
 
-/**
- * Modal for creating a new session type
- */
 export function NewSessionTypeModal({ isOpen, onClose, onSubmit }) {
   const initialValues = {
     type: "",
@@ -81,14 +77,6 @@ export function NewSessionTypeModal({ isOpen, onClose, onSubmit }) {
           </div>
 
           <div className="flex justify-end gap-2 mt-6">
-            <button
-              type="button"
-              className="btn btn-outline"
-              onClick={handleCloseModal}
-              disabled={isSubmitting}
-            >
-              Cancel
-            </button>
             <button
               type="submit"
               className="btn btn-primary"
