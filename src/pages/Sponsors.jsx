@@ -51,7 +51,7 @@ export function Sponsors() {
       try {
         response = await axiosWithAuth(keycloak).get(levelApiUrl);
       } catch (error) {
-        
+        console.error("Error fetching levels:", error);
       }
       
       setLevels(response.data);
@@ -161,12 +161,12 @@ export function Sponsors() {
     }
   };
   
-  // Handle sponsor form input changes
+  // Corrected handleSponsorInputChange function
   const handleSponsorInputChange = (e) => {
     const { name, value } = e.target;
     setSponsorForm({
-      [name]: value,
       ...sponsorForm,
+      [name]: value,
     });
   };
   
