@@ -22,7 +22,7 @@ export const UsersProvider = ({ children }) => {
     const [allPermissions, setAllPermissions] = useState([]);
     const [userRoles, setUserRoles] = useState({});
     const [userPermissions, setUserPermissions] = useState({});
-    
+
     // Initialize Keycloak Admin Service
     const initKeycloakAdminService = () => {
         if (!initialized || !keycloak?.authenticated || !keycloak?.token) {
@@ -66,7 +66,7 @@ export const UsersProvider = ({ children }) => {
     };
 
     const transformGroupedUsersToFlat = (groupedUsers) => {
-        const flatList = [];
+        const userMap = new Map(); // Map to store unique users by ID
         const roleMapping = {
             "cb-attendee": "Participant",
             "cb-speaker": "Speaker",
@@ -79,15 +79,26 @@ export const UsersProvider = ({ children }) => {
             const roleName = roleMapping[roleKey] || roleKey;
 
             usersInRole.forEach((user) => {
-                flatList.push({
-                    ...user,
-                    role: roleName,
-                    banned: !user.enabled,
-                });
+                const existingUser = userMap.get(user.id);
+
+                if (existingUser) {
+                    // If user already exists, add the new role to their roles array
+                    if (!existingUser.roles.includes(roleName)) {
+                        existingUser.roles.push(roleName);
+                    }
+                } else {
+                    // If this is a new user, create them with an array of roles
+                    userMap.set(user.id, {
+                        ...user,
+                        role: roleName, // Keep the single role field for backward compatibility
+                        roles: [roleName], // Add an array of roles
+                        banned: !user.enabled,
+                    });
+                }
             });
         });
 
-        return flatList;
+        return Array.from(userMap.values());
     };
 
     const fetchUserById = async (userId) => {
@@ -221,14 +232,14 @@ export const UsersProvider = ({ children }) => {
             console.log("Calling adminService.getAllRoles()");
             const rolesData = await adminService.getAllRoles();
             console.log("Roles data received:", rolesData);
-            
+
             const { roles, permissions } = adminService.filterRolesAndPermissions(rolesData);
             console.log("Filtered roles:", roles);
             console.log("Filtered permissions:", permissions);
-            
+
             setAllRoles(roles);
             setAllPermissions(permissions);
-            
+
             return { roles, permissions };
         } catch (error) {
             console.error("Error fetching roles and permissions:", error);
@@ -250,11 +261,11 @@ export const UsersProvider = ({ children }) => {
         try {
             const userRolesData = await adminService.getUserRoles(userId);
             const { roles, permissions } = adminService.filterRolesAndPermissions(userRolesData);
-            
+
             // Update state
             setUserRoles(prev => ({ ...prev, [userId]: roles }));
             setUserPermissions(prev => ({ ...prev, [userId]: permissions }));
-            
+
             return { roles, permissions };
         } catch (error) {
             console.error(`Error fetching roles for user ${userId}:`, error);
@@ -274,10 +285,10 @@ export const UsersProvider = ({ children }) => {
         setError(null);
         try {
             await adminService.assignRoleToUser(userId, role);
-            
+
             // Update local state after successful assignment
             await fetchUserRolesAndPermissions(userId);
-            
+
             return { success: true, message: `Role ${role.name} assigned successfully` };
         } catch (error) {
             console.error(`Error assigning role to user ${userId}:`, error);
@@ -297,10 +308,10 @@ export const UsersProvider = ({ children }) => {
         setError(null);
         try {
             await adminService.removeRoleFromUser(userId, role);
-            
+
             // Update local state after successful removal
             await fetchUserRolesAndPermissions(userId);
-            
+
             return { success: true, message: `Role ${role.name} removed successfully` };
         } catch (error) {
             console.error(`Error removing role from user ${userId}:`, error);
