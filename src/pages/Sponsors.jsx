@@ -1,5 +1,5 @@
-import { useState, useEffect, useRef } from 'react';
-import { FaPlus, FaTrash, FaEdit, FaLink, FaGlobe } from 'react-icons/fa';
+import { useState, useEffect } from 'react';
+import { FaPlus, FaTrash, FaEdit, FaGlobe } from 'react-icons/fa';
 import { useKeycloak } from '@react-keycloak/web';
 import { axiosWithAuth } from '../utils/axiosWithAuth';
 import { baseUrl } from '../consts';
@@ -17,9 +17,6 @@ export function Sponsors() {
   const [isEditingSponsor, setIsEditingSponsor] = useState(false);
   const [newLevelName, setNewLevelName] = useState('');
   const [selectedSponsor, setSelectedSponsor] = useState(null);
-  
-  // Refs
-  const fileInputRef = useRef(null);
   
   // Form state for new/edit sponsor
   const [sponsorForm, setSponsorForm] = useState({
@@ -286,12 +283,6 @@ export function Sponsors() {
     });
   };
   
-  // Get level name by ID
-  const getLevelNameById = (levelId) => {
-    const level = levels.find(level => level.id === levelId);
-    return level ? level.name : 'Unknown Level';
-  };
-  
   // Group sponsors by level
   const sponsorsByLevel = levels.map(level => ({
     ...level,
@@ -433,7 +424,7 @@ export function Sponsors() {
                 </h3>
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                   <div>
-                    <label className="block text-sm font-medium mb-1">
+                    <label className="block text-sm font-medium mb-1" htmlFor='name'>
                       Name <span className="text-red-500">*</span>
                     </label>
                     <input
@@ -447,7 +438,7 @@ export function Sponsors() {
                   </div>
                   
                   <div>
-                    <label className="block text-sm font-medium mb-1">
+                    <label className="block text-sm font-medium mb-1" htmlFor='level_id'>
                       Level <span className="text-red-500">*</span>
                     </label>
                     <select
@@ -466,7 +457,7 @@ export function Sponsors() {
                   </div>
                   
                   <div>
-                    <label className="block text-sm font-medium mb-1">
+                    <label className="block text-sm font-medium mb-1" htmlFor='website_url'>
                       Website URL
                     </label>
                     <input
@@ -480,7 +471,7 @@ export function Sponsors() {
                   </div>
                   
                   <div>
-                    <label className="block text-sm font-medium mb-1">
+                    <label className="block text-sm font-medium mb-1" htmlFor='logo_url'>
                       Logo URL
                     </label>
                     <div className="flex flex-col gap-2">
@@ -509,7 +500,7 @@ export function Sponsors() {
                   </div>
                   
                   <div className="md:col-span-2">
-                    <label className="block text-sm font-medium mb-1">
+                    <label className="block text-sm font-medium mb-1" htmlFor='description'>
                       Description
                     </label>
                     <textarea
