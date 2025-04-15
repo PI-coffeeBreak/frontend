@@ -5,6 +5,7 @@ import { FaFile, FaTrash, FaDownload, FaSpinner } from "react-icons/fa";
 import * as XLSX from 'xlsx';
 import { useNotification } from "../../contexts/NotificationContext";
 import { useForm } from "../../hooks/useForm";
+import { generateRandomPassword } from "../../utils/passwordUtils";
 
 // Constants
 const MAX_FILE_SIZE = 1024 * 1024; // 1MB
@@ -14,39 +15,6 @@ const ALLOWED_FILE_TYPE = "application/vnd.openxmlformats-officedocument.spreads
 const isValidEmail = (email) => {
   if (!email) return false;
   return email.includes('@') && email.includes('.');
-};
-
-const generateRandomPassword = () => {
-  const charSets = {
-    uppercase: "ABCDEFGHIJKLMNOPQRSTUVWXYZ",
-    lowercase: "abcdefghijklmnopqrstuvwxyz",
-    numbers: "0123456789",
-    special: "!@#$%^&*"
-  };
-
-  const length = 12;
-  const crypto = window.crypto || window.msCrypto;
-  const randomValues = new Uint32Array(length);
-  crypto.getRandomValues(randomValues);
-
-  const password = [
-    charSets.uppercase[randomValues[0] % charSets.uppercase.length],
-    charSets.lowercase[randomValues[1] % charSets.lowercase.length],
-    charSets.numbers[randomValues[2] % charSets.numbers.length],
-    charSets.special[randomValues[3] % charSets.special.length]
-  ];
-
-  const allChars = Object.values(charSets).join('');
-  for (let i = 4; i < length; i++) {
-    password.push(allChars[randomValues[i] % allChars.length]);
-  }
-
-  for (let i = password.length - 1; i > 0; i--) {
-    const j = randomValues[i] % (i + 1);
-    [password[i], password[j]] = [password[j], password[i]];
-  }
-
-  return password.join('');
 };
 
 // Main Excel parsing function

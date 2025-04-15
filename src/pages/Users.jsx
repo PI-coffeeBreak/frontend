@@ -6,6 +6,7 @@ import CreateCard from "../components/CreateCard.jsx";
 import { FaUsers, FaUser, FaUsersCog, FaPlus, FaTrash, FaCheck, FaLock, FaShieldAlt, FaKey, FaExclamationTriangle } from "react-icons/fa";
 import KeycloakAdminService from "../services/KeycloakAdminService";
 import { UserExcelImport } from "../components/users/UserExcelImport";
+import { generateRandomPassword } from "../utils/passwordUtils";
 
 export default function Users() {
     const { keycloak } = useKeycloak();
@@ -61,7 +62,7 @@ export default function Users() {
     // Role permissions management state
     const [selectedRole, setSelectedRole] = useState(null);
     const [selectedRolePermissions, setSelectedRolePermissions] = useState([]);
-    
+
     // User creation form state
     const [newUserData, setNewUserData] = useState({
         firstName: "",
@@ -81,22 +82,22 @@ export default function Users() {
     // Calculate password strength
     const calculatePasswordStrength = (password) => {
         if (!password) return 0;
-        
+
         let strength = 0;
-        
+
         // Length check
         if (password.length >= 8) strength += 1;
         if (password.length >= 12) strength += 1;
-        
+
         // Complexity checks
         if (/[A-Z]/.test(password)) strength += 1; // Has uppercase
         if (/[a-z]/.test(password)) strength += 1; // Has lowercase
         if (/[0-9]/.test(password)) strength += 1; // Has number
         if (/[^A-Za-z0-9]/.test(password)) strength += 1; // Has special char
-        
+
         return Math.min(5, strength); // Maximum strength of 5
     };
-    
+
     // Get strength description
     const getPasswordStrengthText = (strength) => {
         switch (strength) {
@@ -109,7 +110,7 @@ export default function Users() {
             default: return "";
         }
     };
-    
+
     // Get strength color
     const getPasswordStrengthColor = (strength) => {
         switch (strength) {
@@ -324,10 +325,10 @@ export default function Users() {
     // Open user creation modal
     const openUserCreationModal = () => {
         // Get a default role to reset the form
-        const defaultRole = allRoles.length > 0 
+        const defaultRole = allRoles.length > 0
             ? (allRoles.find(r => r.name === "Participant" || r.name === "cb-attendee")?.name || allRoles[0].name)
             : "Participant";
-            
+
         // Reset form and clear input fields after successful creation
         setNewUserData({
             firstName: "",
@@ -344,17 +345,17 @@ export default function Users() {
     // Handle input change for user creation form
     const handleInputChange = (e) => {
         const { name, value } = e.target;
-        
+
         // Debug log for role selection
         if (name === 'role') {
             console.log(`Role selected: ${value}`);
         }
-        
+
         setNewUserData(prev => ({
             ...prev,
             [name]: value
         }));
-        
+
         // Clear any errors for this field
         if (formErrors[name]) {
             setFormErrors(prev => ({
@@ -373,52 +374,52 @@ export default function Users() {
     // Validate user creation form
     const validateUserForm = () => {
         const errors = {};
-        
+
         if (!newUserData.firstName) {
             errors.firstName = "First name is required";
         }
-        
+
         if (!newUserData.lastName) {
             errors.lastName = "Last name is required";
         }
-        
+
         if (!newUserData.email) {
             errors.email = "Email is required";
         } else if (!isValidEmail(newUserData.email)) {
             errors.email = "Email is invalid. An email address must have an @-sign.";
         }
-        
+
         if (!newUserData.temporaryPassword) {
             errors.temporaryPassword = "Temporary password is required";
         } else if (newUserData.temporaryPassword.length < 8) {
             errors.temporaryPassword = "Password must be at least 8 characters";
         }
-        
+
         return errors;
     };
 
     // Handle user creation form submission
     const handleCreateUser = async (e) => {
         e.preventDefault();
-        
+
         // Validate form
         const errors = validateUserForm();
         if (Object.keys(errors).length > 0) {
             setFormErrors(errors);
             return;
         }
-        
+
         console.log("Submitting user data:", newUserData);
-        
+
         try {
             const result = await createUser(newUserData);
             setCreateSuccess(true);
-            
+
             // Get a default role to reset the form
-            const defaultRole = allRoles.length > 0 
+            const defaultRole = allRoles.length > 0
                 ? (allRoles.find(r => r.name === "Participant" || r.name === "cb-attendee")?.name || allRoles[0].name)
                 : "Participant";
-            
+
             // Reset form and clear input fields after successful creation
             setNewUserData({
                 firstName: "",
@@ -427,7 +428,7 @@ export default function Users() {
                 role: defaultRole,
                 temporaryPassword: ""
             });
-            
+
             // Close modal after a delay
             setTimeout(() => {
                 document.getElementById('create_user_modal').close();
@@ -435,65 +436,36 @@ export default function Users() {
             }, 2000);
         } catch (error) {
             console.error("Error creating user:", error);
-            
+
             // Show specific error if it's an API validation error
             if (error.response?.data?.detail) {
                 const apiError = error.response.data.detail;
                 const newErrors = {};
-                
+
                 // Handle email validation errors from the API
                 if (apiError.some(err => err.loc?.includes("email"))) {
                     const emailError = apiError.find(err => err.loc?.includes("email"));
                     newErrors.email = emailError.msg || "Invalid email format";
                 }
-                
+
                 // Set the form errors
                 if (Object.keys(newErrors).length > 0) {
-                    setFormErrors(prev => ({...prev, ...newErrors}));
+                    setFormErrors(prev => ({ ...prev, ...newErrors }));
                 } else {
                     // Set a general error if we can't parse the specific fields
                     setFormErrors(prev => ({
-                        ...prev, 
+                        ...prev,
                         submit: "Failed to create user. Please check your input and try again."
                     }));
                 }
             } else {
                 // Generic error handling
                 setFormErrors(prev => ({
-                    ...prev, 
+                    ...prev,
                     submit: error.message || "Failed to create user. Please try again later."
                 }));
             }
         }
-    };
-
-    // Generate a random password
-    const generateRandomPassword = () => {
-        const chars = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789!@#$%^&*";
-        const length = 12;
-        let password = "";
-        
-        // Ensure at least one uppercase, one lowercase, one number, and one special character
-        password += chars.charAt(Math.floor(Math.random() * 26));  // Uppercase
-        password += chars.charAt(26 + Math.floor(Math.random() * 26));  // Lowercase
-        password += chars.charAt(52 + Math.floor(Math.random() * 10));  // Number
-        password += chars.charAt(62 + Math.floor(Math.random() * 8));   // Special
-        
-        // Fill the rest randomly
-        for (let i = 4; i < length; i++) {
-            password += chars.charAt(Math.floor(Math.random() * chars.length));
-        }
-        
-        // Shuffle the password
-        password = password.split('').sort(() => 0.5 - Math.random()).join('');
-        
-        setNewUserData(prev => ({
-            ...prev,
-            temporaryPassword: password
-        }));
-        
-        // Show password when generated
-        setShowPassword(true);
     };
 
     // Toggle password visibility
@@ -501,17 +473,29 @@ export default function Users() {
         setShowPassword(!showPassword);
     };
 
+    // Generate a random password and update state
+    const handleGeneratePassword = () => {
+        const password = generateRandomPassword();
+        setNewUserData(prev => ({
+            ...prev,
+            temporaryPassword: password
+        }));
+
+        // Show password when generated
+        setShowPassword(true);
+    };
+
     // Open Excel import modal
     const openExcelImportModal = () => {
         setIsExcelImportOpen(true);
     };
-    
+
     // Close Excel import modal
     const closeExcelImportModal = () => {
         setIsExcelImportOpen(false);
         setImportStats(null);
     };
-    
+
     // Handle Excel import
     const handleImportUsers = async (userData) => {
         try {
@@ -561,8 +545,8 @@ export default function Users() {
                                 )}
                             </div>
                         </div>
-                        <button 
-                            className="btn btn-sm" 
+                        <button
+                            className="btn btn-sm"
                             onClick={() => setImportStats(null)}
                         >
                             Dismiss
@@ -902,28 +886,28 @@ export default function Users() {
                             <button className="btn btn-sm btn-circle btn-ghost absolute right-2 top-2">✕</button>
                         </form>
                         <h3 className="font-bold text-lg mb-4">Create New User</h3>
-                        
+
                         {createSuccess && (
                             <div className="alert alert-success mb-4">
                                 <FaCheck className="h-6 w-6" />
                                 <span>User created successfully!</span>
                             </div>
                         )}
-                        
+
                         {formErrors.submit && (
                             <div className="alert alert-error mb-4">
                                 <FaExclamationTriangle className="h-6 w-6" />
                                 <span>{formErrors.submit}</span>
                             </div>
                         )}
-                        
+
                         <form onSubmit={handleCreateUser}>
                             <div className="form-control mb-4">
                                 <label className="label">
                                     <span className="label-text">First Name</span>
                                 </label>
-                                <input 
-                                    type="text" 
+                                <input
+                                    type="text"
                                     name="firstName"
                                     className={`input input-bordered w-full ${formErrors.firstName ? 'input-error' : ''}`}
                                     value={newUserData.firstName}
@@ -935,13 +919,13 @@ export default function Users() {
                                     </label>
                                 )}
                             </div>
-                            
+
                             <div className="form-control mb-4">
                                 <label className="label">
                                     <span className="label-text">Last Name</span>
                                 </label>
-                                <input 
-                                    type="text" 
+                                <input
+                                    type="text"
                                     name="lastName"
                                     className={`input input-bordered w-full ${formErrors.lastName ? 'input-error' : ''}`}
                                     value={newUserData.lastName}
@@ -953,13 +937,13 @@ export default function Users() {
                                     </label>
                                 )}
                             </div>
-                            
+
                             <div className="form-control mb-4">
                                 <label className="label">
                                     <span className="label-text">Email Address</span>
                                 </label>
-                                <input 
-                                    type="email" 
+                                <input
+                                    type="email"
                                     name="email"
                                     className={`input input-bordered w-full ${formErrors.email ? 'input-error' : ''}`}
                                     value={newUserData.email}
@@ -971,7 +955,7 @@ export default function Users() {
                                     </label>
                                 )}
                             </div>
-                            
+
                             <div className="form-control mb-4">
                                 <label className="label">
                                     <span className="label-text">Role</span>
@@ -998,20 +982,20 @@ export default function Users() {
                                     )}
                                 </select>
                             </div>
-                            
+
                             <div className="form-control mb-4">
                                 <label className="label">
                                     <span className="label-text">Temporary Password</span>
                                 </label>
                                 <div className="input-group">
-                                    <input 
+                                    <input
                                         type={showPassword ? "text" : "password"}
                                         name="temporaryPassword"
                                         className={`input input-bordered w-full ${formErrors.temporaryPassword ? 'input-error' : ''}`}
                                         value={newUserData.temporaryPassword}
                                         onChange={handleInputChange}
                                     />
-                                    <button 
+                                    <button
                                         type="button"
                                         className="btn btn-square"
                                         onClick={togglePasswordVisibility}
@@ -1019,7 +1003,7 @@ export default function Users() {
                                         {showPassword ? "Hide" : "Show"}
                                     </button>
                                 </div>
-                                
+
                                 {/* Password strength indicator */}
                                 {newUserData.temporaryPassword && (
                                     <div className="mt-2">
@@ -1027,14 +1011,14 @@ export default function Users() {
                                             <span className="text-sm">Password Strength: {strengthText}</span>
                                         </div>
                                         <div className="w-full bg-gray-200 rounded-full h-2.5">
-                                            <div 
-                                                className={`h-2.5 rounded-full ${strengthColor}`} 
+                                            <div
+                                                className={`h-2.5 rounded-full ${strengthColor}`}
                                                 style={{ width: `${(passwordStrength / 5) * 100}%` }}
                                             ></div>
                                         </div>
                                     </div>
                                 )}
-                                
+
                                 {formErrors.temporaryPassword && (
                                     <label className="label">
                                         <span className="label-text-alt text-error">{formErrors.temporaryPassword}</span>
@@ -1044,16 +1028,16 @@ export default function Users() {
                                     <label className="label">
                                         <span className="label-text-alt">User will be prompted to change this password on first login.</span>
                                     </label>
-                                    <button 
-                                        type="button" 
+                                    <button
+                                        type="button"
                                         className="btn btn-sm btn-secondary"
-                                        onClick={generateRandomPassword}
+                                        onClick={handleGeneratePassword}
                                     >
                                         Generate Password
                                     </button>
                                 </div>
                             </div>
-                            
+
                             <div className="modal-action">
                                 <button type="submit" className="btn btn-primary" disabled={isLoading}>
                                     {isLoading ? <span className="loading loading-spinner"></span> : <FaUser className="mr-2" />}
