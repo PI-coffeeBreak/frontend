@@ -1,5 +1,5 @@
-import { useEffect, useRef } from 'react';
-import PropTypes from 'prop-types';
+import { useEffect, useRef } from "react";
+import PropTypes from "prop-types";
 
 export function Modal({ isOpen, onClose, title, description, children }) {
   const modalRef = useRef(null);
@@ -10,20 +10,26 @@ export function Modal({ isOpen, onClose, title, description, children }) {
       modalRef.current?.showModal();
       document.body.classList.add('modal-open');
       
-      // Focus the close button when modal opens for keyboard accessibility
-      closeButtonRef.current?.focus();
+      // Don't automatically focus the close button - this can cause issues with forms
+      // closeButtonRef.current?.focus();
       
-      // Add event listener to document or window instead of the dialog element
+      // This is the problematic code that needs to be fixed:
       const handleEscapeKey = (e) => {
-        if (e.key === 'Escape') {
+        // Check if the active element is a form element before handling Escape
+        const activeElement = document.activeElement;
+        const isFormElement = 
+          activeElement.tagName === 'INPUT' || 
+          activeElement.tagName === 'TEXTAREA' || 
+          activeElement.tagName === 'SELECT';
+        
+        // Only handle Escape if not in a form element
+        if (e.key === 'Escape' && !isFormElement) {
           onClose();
         }
       };
       
-      // Add the event listener to the document
       document.addEventListener('keydown', handleEscapeKey);
       
-      // Clean up function
       return () => {
         document.removeEventListener('keydown', handleEscapeKey);
       };
@@ -41,43 +47,30 @@ export function Modal({ isOpen, onClose, title, description, children }) {
     <dialog
       ref={modalRef}
       className="modal"
+      onClose={() => onClose()}
+      onCancel={(e) => {
+        // Prevent default dialog behavior on cancel (when ESC is pressed)
+        e.preventDefault(); 
+      }}
     >
       <div className="modal-box max-w-2xl">
-        <button 
+        <div className="mb-6">
+          <h3 className="font-bold text-lg">{title}</h3>
+          {description && <p className="text-sm text-gray-500 mt-1">{description}</p>}
+        </div>
+
+        <button
           ref={closeButtonRef}
+          className="btn btn-sm btn-circle absolute right-2 top-2"
           onClick={onClose}
-          className="btn btn-sm btn-circle btn-ghost absolute right-2 top-2"
-          aria-label="Close dialog"
-          type="button"
+          aria-label="Close"
         >
           ✕
         </button>
-        
-        <h3 className="font-bold text-lg" id="dialog-title">{title}</h3>
-        
-        {description && (
-          <p className="py-4" id="dialog-description">{description}</p>
-        )}
-        
-        {children}
+
+        <div className="mt-4">{children}</div>
       </div>
-      
-      <form 
-        method="dialog" 
-        className="modal-backdrop"
-        onSubmit={(e) => {
-          e.preventDefault();
-          onClose();
-        }}
-      >
-        <button 
-          type="submit"
-          className="w-full h-full cursor-default"
-          aria-label="Close dialog"
-        >
-          <span className="sr-only">Close dialog</span>
-        </button>
-      </form>
+      <div className="modal-backdrop" onClick={onClose}></div>
     </dialog>
   );
 }
@@ -87,5 +80,5 @@ Modal.propTypes = {
   onClose: PropTypes.func.isRequired,
   title: PropTypes.string.isRequired,
   description: PropTypes.string,
-  children: PropTypes.node
+  children: PropTypes.node.isRequired
 };
