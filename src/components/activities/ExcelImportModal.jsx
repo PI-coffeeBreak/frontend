@@ -2,6 +2,7 @@ import { useRef, useState } from 'react';
 import PropTypes from 'prop-types';
 import { FiUpload } from "react-icons/fi";
 import { FaFile, FaTrash, FaDownload, FaSpinner } from "react-icons/fa";
+import * as XLSX from 'xlsx';
 import { Modal } from "../common/Modal";
 import { useNotification } from "../../contexts/NotificationContext";
 import { useForm } from "../../hooks/useForm";
@@ -9,6 +10,68 @@ import { useForm } from "../../hooks/useForm";
 // Constants
 const MAX_FILE_SIZE = 1024 * 1024; // 1MB
 const ALLOWED_FILE_TYPE = "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet";
+
+// Helper function to convert raw Excel data to the API format
+const formatExcelData = (rawData) => {
+  return rawData.map(row => ({
+    name: row.name || "",
+    description: row.description || "",
+    image: row.image || "",
+    date: row.start_time || null, // Map from start_time to date
+    duration: isNaN(parseInt(row.duration)) ? 0 : parseInt(row.duration),
+    type_id: isNaN(parseInt(row.type_id)) ? 0 : parseInt(row.type_id),
+    topic: row.topic || "",
+    speaker: row.speaker || "",
+    facilitator: row.facilitator || ""
+  }));
+};
+
+// Helper function to process workbook data
+const processWorkbook = (data) => {
+  const workbook = XLSX.read(new Uint8Array(data), { type: 'array' });
+  
+  // Get the first sheet only
+  const firstSheetName = workbook.SheetNames[0];
+  if (!firstSheetName) {
+    throw new Error("Excel file contains no sheets");
+  }
+  
+  const worksheet = workbook.Sheets[firstSheetName];
+  
+  // Convert to JSON with header row as keys
+  return XLSX.utils.sheet_to_json(worksheet, {
+    raw: false, // Convert all values to strings
+    defval: ""  // Default empty cells to empty string
+  });
+};
+
+// Main Excel parsing function
+const parseExcel = (file) => {
+  return new Promise((resolve, reject) => {
+    const reader = new FileReader();
+    
+    reader.onload = (e) => {
+      try {
+        // Process the workbook and get raw data
+        const rawData = processWorkbook(e.target.result);
+        
+        // Format data to match the API's expected structure
+        const formattedData = formatExcelData(rawData);
+        
+        console.log("Parsed Excel data:", formattedData);
+        resolve(formattedData);
+      } catch (error) {
+        console.error("Error parsing Excel:", error);
+        reject(new Error("Failed to parse Excel file. Please ensure it's a valid Excel format."));
+      }
+    };
+    
+    reader.onerror = (error) => reject(error);
+    
+    // Use modern ArrayBuffer reading method
+    reader.readAsArrayBuffer(file);
+  });
+};
 
 /**
  * Modal for importing activities from Excel file
@@ -113,34 +176,36 @@ export function ExcelImportModal({ isOpen, onClose, onImport }) {
     setIsTemplateLoading(true);
     
     try {
-      // Generate template URL based on activity types
-      const templateUrl = '/api/activities/template?format=xlsx';
+      // Create a template with the exact structure expected by the API
+      const worksheet = XLSX.utils.json_to_sheet([
+        {
+          name: "Example Activity",
+          description: "Description of the activity",
+          start_time: "2025-04-20T10:00:00",
+          duration: 60,
+          type_id: 1,
+          topic: "Example Topic",
+          speaker: "Example Speaker",
+          facilitator: "Example Facilitator"
+        }
+      ]);
       
-      // Fetch the template
-      const response = await fetch(templateUrl);
+      // Adjust column widths for better readability
+      const wscols = [
+        {wch:20}, {wch:30}, {wch:20}, {wch:20}, {wch:10}, {wch:10}, {wch:20}, {wch:20}, {wch:20}
+      ];
+      worksheet['!cols'] = wscols;
       
-      if (!response.ok) {
-        throw new Error('Failed to download template');
-      }
+      const workbook = XLSX.utils.book_new();
+      XLSX.utils.book_append_sheet(workbook, worksheet, "Activities");
       
-      // Create a blob and trigger download
-      const blob = await response.blob();
-      const url = window.URL.createObjectURL(blob);
-      const a = document.createElement('a');
-      a.style.display = 'none';
-      a.href = url;
-      a.download = 'activity_template.xlsx';
-      document.body.appendChild(a);
-      a.click();
-      
-      // Clean up
-      window.URL.revokeObjectURL(url);
-      document.body.removeChild(a);
+      // Generate and download the file
+      XLSX.writeFile(workbook, "activity_template.xlsx");
       
       showNotification("Template downloaded successfully", "success");
     } catch (error) {
-      console.error("Error downloading template:", error);
-      showNotification("Failed to download template", "error");
+      console.error("Error generating template:", error);
+      showNotification("Failed to generate template", "error");
     } finally {
       setIsTemplateLoading(false);
     }
@@ -158,45 +223,31 @@ export function ExcelImportModal({ isOpen, onClose, onImport }) {
     setIsLoading(true);
     
     try {
-      // Use FileReader to read the file content
-      const reader = new FileReader();
+      // Parse the Excel file to JSON and format for API
+      const activitiesData = await parseExcel(values.file);
       
-      reader.onload = async (event) => {
-        try {
-          // Create FormData for file upload
-          const formData = new FormData();
-          formData.append('file', values.file);
-          
-          // Call the import function provided as prop
-          await onImport(formData);
-          
-          // Clear the file after successful import
-          resetForm();
-          
-          // Close the modal
-          onClose();
-        } catch (error) {
-          console.error("Error processing file:", error);
-          setErrors({ 
-            submit: error.message || "Failed to process file" 
-          });
-          showNotification(error.message || "Failed to process file", "error");
-        } finally {
-          setIsLoading(false);
-        }
-      };
+      if (!activitiesData.length) {
+        throw new Error("No valid activities found in the Excel file");
+      }
       
-      reader.onerror = () => {
-        setErrors({ submit: "Error reading file" });
-        showNotification("Error reading file", "error");
-        setIsLoading(false);
-      };
+      // Call the import function provided as prop
+      // The API expects a JSON array directly, not FormData
+      await onImport(activitiesData);
       
-      reader.readAsArrayBuffer(values.file);
+      // Clear the file after successful import
+      resetForm();
+      
+      // Close the modal
+      onClose();
+      
+      showNotification("Activities successfully imported", "success");
     } catch (error) {
-      console.error("Error handling file:", error);
-      setErrors({ submit: error.message || "Failed to process file" });
+      console.error("Error processing file:", error);
+      setErrors({ 
+        submit: error.message || "Failed to process file" 
+      });
       showNotification(error.message || "Failed to process file", "error");
+    } finally {
       setIsLoading(false);
     }
   };
@@ -216,15 +267,15 @@ export function ExcelImportModal({ isOpen, onClose, onImport }) {
           disabled={isTemplateLoading}
         >
           {isTemplateLoading ? (
-            <>
-              <FaSpinner className="animate-spin mr-2" />
-              Generating Template...
-            </>
+            <div className="flex items-center gap-2">
+              <FaSpinner className="animate-spin" />
+              <span>Generating Template...</span>
+            </div>
           ) : (
-            <>
-              <FaDownload className="mr-2" />
-              Download Excel Template
-            </>
+            <div className="flex items-center gap-2">
+              <FaDownload />
+              <span>Download Excel Template</span>
+            </div>
           )}
         </button>
 
@@ -242,7 +293,8 @@ export function ExcelImportModal({ isOpen, onClose, onImport }) {
           </div>
           
           <p>
-            Drag and drop your Excel file here or{" "}
+            Drag and drop your Excel file here or
+            {' '}
             <span className="text-primary font-bold">Browse</span>
           </p>
           
@@ -321,12 +373,12 @@ export function ExcelImportModal({ isOpen, onClose, onImport }) {
             disabled={!values.file || isLoading}
           >
             {isLoading ? (
-            <>
+              <div className="flex items-center gap-2">
                 <span className="loading loading-spinner loading-sm"></span>
-                {' Processing...'}
-            </>
+                <span>Processing...</span>
+              </div>
             ) : (
-            "Import Activities"
+              "Import Activities"
             )}
           </button>
         </div>

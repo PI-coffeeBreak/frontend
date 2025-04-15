@@ -112,6 +112,24 @@ export const ActivitiesProvider = ({ children }) => {
         }
     };
 
+    const deleteActivity = async (activityId) => {
+        try {
+            // Call the API to delete the activity
+            console.log("Deleting activity with ID:", activityId);
+            await axiosWithAuth(keycloak).delete(`${activitiesBaseUrl}/${activityId}`);
+            
+            // Update local state by removing the deleted activity
+            setActivities(prev => prev.filter(activity => activity.id !== activityId));
+            setCalendarActivities(prev => prev.filter(activity => activity.id !== activityId));
+            setOutsideActivities(prev => prev.filter(activity => activity.id !== activityId));
+            
+            return true;
+        } catch (error) {
+            console.error("Error deleting activity:", error);
+            throw error;
+        }
+    };
+
     useEffect(() => {
         fetchActivities();
         fetchActivityTypes();
@@ -134,6 +152,7 @@ export const ActivitiesProvider = ({ children }) => {
             setCalendarActivities,
             setOutsideActivities,
             createActivityType,
+            deleteActivity,
         }),
         [
             activities,

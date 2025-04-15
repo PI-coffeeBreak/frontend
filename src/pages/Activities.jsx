@@ -79,15 +79,22 @@ export default function Activities() {
 
   /**
    * Handle importing activities from Excel
-   * @param {FormData} formData - FormData containing the Excel file
+   * @param {Array} activitiesData - Array of activity objects
    */
-  const handleImportExcel = async (formData) => {
+  const handleImportExcel = async (activitiesData) => {
     try {
-      const response = await axiosWithAuth(keycloak).post(`${baseUrl}/activities/batch`, formData, {
-        headers: {
-          'Content-Type': 'multipart/form-data'
+      console.log("Importing activities:", activitiesData);
+      
+      // Send the array directly to the batch endpoint
+      const response = await axiosWithAuth(keycloak).post(
+        `${baseUrl}/activities/batch`,
+        activitiesData,
+        {
+          headers: {
+            'Content-Type': 'application/json'
+          }
         }
-      });
+      );
       
       // Show success notification
       showNotification("Activities successfully imported", "success");
@@ -101,10 +108,20 @@ export default function Activities() {
       return response.data;
     } catch (error) {
       console.error("Error importing activities:", error);
-      showNotification(
-        error.response?.data?.message || "Failed to import activities", 
-        "error"
-      );
+      
+      // Handle different error formats
+      if (error.response?.data?.detail) {
+        // FastAPI validation error format
+        const errorMessages = Array.isArray(error.response.data.detail) 
+          ? error.response.data.detail.map(err => `${err.loc.join('.')} - ${err.msg}`).join('\n')
+          : error.response.data.detail;
+        showNotification(errorMessages, "error");
+      } else {
+        showNotification(
+          error.response?.data?.message || "Failed to import activities", 
+          "error"
+        );
+      }
       throw error;
     }
   };

@@ -1,8 +1,24 @@
 import PropTypes from 'prop-types';
 import Activity from "../Activity.jsx";
 import { FaSearch } from "react-icons/fa";
+import { useActivities } from "../../contexts/ActivitiesContext";
+import { useNotification } from "../../contexts/NotificationContext";
 
 export function ActivityList({ activities }) {
+  const { deleteActivity } = useActivities();
+  const { showNotification } = useNotification();
+  
+  const handleDelete = async (id) => {
+    if (window.confirm("Are you sure you want to delete this activity?")) {
+      try {
+        await deleteActivity(id);
+        showNotification("Activity deleted successfully", "success");
+      } catch (error) {
+        showNotification("Failed to delete activity", "error");
+      }
+    }
+  };
+
   if (activities.length === 0) {
     return (
       <div className="text-center py-12">
@@ -24,6 +40,7 @@ export function ActivityList({ activities }) {
           image={activity.image}
           category={activity.topic}
           type={activity.type}
+          onDelete={handleDelete}
         />
       ))}
     </div>
