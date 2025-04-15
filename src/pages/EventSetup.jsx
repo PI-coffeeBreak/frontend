@@ -133,6 +133,38 @@ export default function EventSetup() {
                 const response = await axiosWithAuth(keycloak).post(`${baseUrl}/event-info/event`, eventData);
                 console.log('Event created successfully:', response.data);
                 
+                // Get the event ID from the response
+                const eventId = response.data.id;
+                
+                const event = await axiosWithAuth(keycloak).get(`${baseUrl}/event-info/event/`);
+
+                console.log('Event:', event.data.image_id);
+
+                // Upload image if one is selected
+                if (formData.image) {
+                    try {
+                        // Create form data for the image upload
+                        const imageFormData = new FormData();
+                        imageFormData.append('file', formData.image);
+                        
+                        // Upload the image using the event ID as the UUID
+                        const imageResponse = await axiosWithAuth(keycloak).post(
+                            `${baseUrl}/media/${event.data.image_id}`, 
+                            imageFormData,
+                            {
+                                headers: {
+                                    'Content-Type': 'multipart/form-data'
+                                }
+                            }
+                        );
+                        
+                        console.log('Image uploaded successfully:', imageResponse.data);
+                    } catch (imageError) {
+                        console.error('Error uploading image:', imageError);
+                        // We'll continue even if image upload fails
+                    }
+                }
+                
                 navigate('/instantiate/eventmaker');
             } catch (error) {
                 console.error('Error creating event:', error);
