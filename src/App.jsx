@@ -32,6 +32,8 @@ import { ComponentsProvider } from "./contexts/ComponentsContext.jsx";
 import { MenuProvider } from "./contexts/MenuContext.jsx";
 import { ColorThemeProvider } from './contexts/ColorThemeContext';
 import { AlertsProvider } from "./contexts/AlertsContext.jsx";
+import { EventProvider } from "./contexts/EventContext.jsx";
+import { MediaProvider } from "./contexts/MediaContext.jsx";
 
 
 export default function App() {
@@ -54,38 +56,42 @@ export default function App() {
                     <MenuProvider>
                       <PagesProvider>
                         <AlertsProvider>
-                          <Router>
-                            <Routes>
-                              <Route element={<Layout />}>
-                                <Route index element={<Home />} />
-                              </Route>
-                              <Route element={<LayoutAuth />}>
-                                <Route path="setup" element={<EventSetup />} />
-                              </Route>
+                          <EventProvider>
+                            <MediaProvider>
+                              <Router>
+                                <Routes>
+                                  <Route element={<Layout />}>
+                                    <Route index element={<Home />} />
+                                  </Route>
+                                  <Route element={<LayoutAuth />}>
+                                    <Route path="setup" element={<EventSetup />} />
+                                  </Route>
 
-                              <Route path="instantiate" element={<PrivateRoute><LayoutInstantiate /></PrivateRoute>}>
-                                <Route index element={<Instantiate />} />
-                                <Route path="home">
-                                  <Route path="users" element={<Users />} />
-                                  <Route path="sessions" element={<Activities />} />
-                                  <Route path="alerts" element={<Alerts />} />
-                                </Route>
-                                <Route path="eventmaker">
-                                  <Route index element={<EventMaker />} />
-                                  <Route path="colors" element={<Colors />} />
-                                  <Route path="menus" element={<MenuEditor />} />
-                                  <Route path="pages" element={<PagesList />} />
-                                  <Route path="choose-plugins" element={<Plugins />} />
-                                  <Route path="edit-page/:pageTitle" element={<EditPage />} />
-                                  <Route path="create-page" element={<CreatePage />} />
-                                </Route>
-                                <Route path="plugins">
-                                  <Route path="alert-system-plugin" element={<Alerts />} />
-                                  <Route path="schedule" element={<Schedule />} />
-                                </Route>
-                              </Route>
-                            </Routes>
-                          </Router>
+                                  <Route path="instantiate" element={<PrivateRoute><LayoutInstantiate /></PrivateRoute>}>
+                                    <Route index element={<Instantiate />} />
+                                    <Route path="home">
+                                      <Route path="users" element={<Users />} />
+                                      <Route path="sessions" element={<Activities />} />
+                                      <Route path="alerts" element={<Alerts />} />
+                                    </Route>
+                                    <Route path="eventmaker">
+                                      <Route index element={<EventMaker />} />
+                                      <Route path="colors" element={<Colors />} />
+                                      <Route path="menus" element={<MenuEditor />} />
+                                      <Route path="pages" element={<PagesList />} />
+                                      <Route path="choose-plugins" element={<Plugins />} />
+                                      <Route path="edit-page/:pageTitle" element={<EditPage />} />
+                                      <Route path="create-page" element={<CreatePage />} />
+                                    </Route>
+                                    <Route path="plugins">
+                                      <Route path="alert-system-plugin" element={<Alerts />} />
+                                      <Route path="schedule" element={<Schedule />} />
+                                    </Route>
+                                  </Route>
+                                </Routes>
+                              </Router>
+                            </MediaProvider>
+                          </EventProvider>
                         </AlertsProvider>
                       </PagesProvider>
                     </MenuProvider>
