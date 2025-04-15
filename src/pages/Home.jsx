@@ -5,7 +5,7 @@ import { useEvent } from "../contexts/EventContext";
 
 export default function Home() {
     const { keycloak, initialized } = useKeycloak();
-    const { eventInfo, getEventInfo } = useEvent();
+    const { getEventInfo } = useEvent();
     const [hasEvent, setHasEvent] = useState(false);
     const [isLoading, setIsLoading] = useState(true);
 
@@ -71,7 +71,7 @@ export default function Home() {
                         {isLoading ? (
                             <button className="btn btn-primary rounded-xl" disabled>
                                 <span className="loading loading-spinner loading-xs mr-2"></span>
-                                Loading...
+                                    Loading...
                             </button>
                         ) : (
                             <NavLink 

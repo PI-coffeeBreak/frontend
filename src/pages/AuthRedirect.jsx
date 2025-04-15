@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { useKeycloak } from "@react-keycloak/web";
 import { useEvent } from "../contexts/EventContext";
@@ -7,7 +7,6 @@ export default function AuthRedirect() {
   const { keycloak, initialized } = useKeycloak();
   const { getEventInfo } = useEvent();
   const navigate = useNavigate();
-  const [isLoading, setIsLoading] = useState(true);
 
   useEffect(() => {
     const checkEventAndRedirect = async () => {
@@ -27,8 +26,6 @@ export default function AuthRedirect() {
           console.log("Error during auth redirect:", error);
           // Default to setup on error
           navigate('/setup', { replace: true });
-        } finally {
-          setIsLoading(false);
         }
       } else if (initialized && !keycloak.authenticated) {
         // Not authenticated, redirect to home
