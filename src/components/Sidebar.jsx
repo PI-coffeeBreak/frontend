@@ -62,7 +62,7 @@ export default function Sidebar() {
 
     // Replace image with user icon placeholder
     const userAvatar = (
-        <div className={`flex items-center justify-center bg-primary rounded-full w-12 h-12 border-2 border-white ${isVisible ? "mx-2" : "mx-auto"}`}>
+        <div className="flex items-center justify-center bg-primary rounded-full w-16 h-16 border-2 border-white mx-auto mb-2">
             <FaUser className="text-white text-xl" />
         </div>
     );
@@ -117,18 +117,19 @@ export default function Sidebar() {
                     </nav>
                 </div>
                 
-                <div className="flex flex-col items-center mb-6">
-                    <div className="flex-col mx-auto items-center gap-4 mb-4">
-                        {userAvatar}
-                        <span className={`transition-all duration-300 text-left ${isVisible ? "opacity-100 w-auto mt-2" : "opacity-0 w-0"}`}>
+                <div className="flex flex-col items-center mb-6 px-2">
+                    {userAvatar}
+                    
+                    {isVisible && (
+                        <div className="text-center w-full mb-3">
                             <p className="font-semibold">{userDisplayName}</p>
                             <p className="text-sm text-gray-300">{userEmail}</p>
-                        </span>
-                    </div>
+                        </div>
+                    )}
 
                     <button 
                         onClick={handleLogout} 
-                        className={`btn btn-primary rounded-xl w-full mx-4 mt-2 flex items-center gap-2 ${isVisible ? "w-auto px-4" : "w-12"}`}>
+                        className={`btn btn-primary rounded-xl mt-2 flex items-center justify-center gap-2 ${isVisible ? "w-full" : "w-12 mx-auto"}`}>
                         <FaSignOutAlt className="text-white" />
                         {isVisible && <span>Logout</span>}
                     </button>
