@@ -7,7 +7,7 @@ import DropdownMenu from "./DropdownMenu.jsx";
 import { useKeycloak } from "@react-keycloak/web";
 import { usePlugins } from "../contexts/PluginsContext";
 import { useEvent } from "../contexts/EventContext";
-import { Image } from "./event_maker/pages/components/Image";
+import { baseUrl } from "../consts";
 
 export default function Sidebar() {
     const { keycloak, initialized } = useKeycloak();
@@ -18,7 +18,6 @@ export default function Sidebar() {
     const { plugins } = usePlugins();
     const { eventInfo, isLoading: eventLoading } = useEvent();
 
-    
     // Fetch user profile from Keycloak when initialized
     useEffect(() => {
         if (initialized && keycloak.authenticated) {
@@ -47,10 +46,30 @@ export default function Sidebar() {
         keycloak.logout({ redirectUri: window.location.origin + '/' });
     };
 
-    // Get event logo or use default
-    const eventLogo = eventInfo?.logo_id 
-        ? <Image src={eventInfo.logo_id} alt="Event Logo" />
-        : <img src="/stu@deti.png" width="50" height="50" alt="Logo" />;
+    // Get event logo or use default with dynamic sizing based on sidebar state
+    const eventLogo = eventInfo?.image_id ? (
+        <div className={`overflow-hidden flex-shrink-0 bg-base-200 transition-all duration-300 ${
+            isVisible ? "w-16 h-16" : "w-10 h-10"
+        }`}>
+            <img 
+                src={`${baseUrl}/media/${eventInfo.image_id}`}
+                alt="Event Logo"
+                className="w-full h-full object-cover"
+                onError={(e) => {
+                    console.error("Failed to load event image");
+                    e.target.src = "/stu@deti.png"; // Fallback image
+                }}
+            />
+        </div>
+    ) : (
+        <img 
+            src="/stu@deti.png" 
+            className={`flex-shrink-0 transition-all duration-300 ${
+                isVisible ? "w-[50px] h-[50px]" : "w-[35px] h-[35px]"
+            }`}
+            alt="Logo" 
+        />
+    );
 
     // Get user information, prioritizing Keycloak profile over event info
     const userDisplayName = userProfile?.firstName && userProfile?.lastName 
