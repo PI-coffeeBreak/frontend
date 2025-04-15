@@ -240,27 +240,10 @@ export function NewSessionModal({ isOpen, onClose, onSubmit }) {
             </option>
           ))}
         </select>
-        
-        <div className="border-t border-base-300 px-3 py-2">
-          <button
-            type="button"
-            className="btn btn-sm btn-ghost btn-block text-primary justify-start px-0"
-            onClick={() => {
-              setIsAddingTypeInline(true);
-              setNewTypeName("");
-            }}
-          >
-            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" className="w-4 h-4 mr-2 stroke-current">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M12 4v16m8-8H4"></path>
-            </svg>
-            Add New Type
-          </button>
-        </div>
       </div>
     );
   };
 
-  // Extract type creator to a separate component
   const renderTypeCreator = () => {
     return (
       <div className="flex items-center border rounded-lg overflow-hidden">

@@ -112,6 +112,53 @@ export const ActivitiesProvider = ({ children }) => {
         }
     };
 
+    const createActivitiesBatch = async (activitiesData) => {
+        try {
+            const response = await axiosWithAuth(keycloak).post(
+                `${baseUrl}/activities/batch`,
+                activitiesData,
+                {
+                    headers: {
+                        'Content-Type': 'application/json'
+                    }
+                }
+            );
+            return response.data;
+        } catch (error) {
+            console.error("Error importing activities:", error);
+
+            // Handle different error formats
+            if (error.response?.data?.detail) {
+                // FastAPI validation error format
+                const errorMessages = Array.isArray(error.response.data.detail)
+                    ? error.response.data.detail.map(err => `${err.loc.join('.')} - ${err.msg}`).join('\n')
+                    : error.response.data.detail;
+                console.error(errorMessages);
+            } else {
+                console.error(error.response?.data?.message || "Failed to import activities");
+            }
+            throw error;
+        }
+    }
+
+    const createActivity = async (activityData) => {
+        try {
+            const response = await axiosWithAuth(keycloak).post(
+                `${baseUrl}/activities/`,
+                activityData,
+                {
+                    headers: {
+                        'Content-Type': 'application/json'
+                    }
+                }
+            );
+            return response.data;
+        } catch (error) {
+            console.error("Error creating activity:", error);
+            throw error;
+        }
+    }
+
     const deleteActivity = async (activityId) => {
         try {
             // Call the API to delete the activity
@@ -149,6 +196,8 @@ export const ActivitiesProvider = ({ children }) => {
             removeActivityFromCalendar,
             getActivityTypeID,
             getActivityType,
+            createActivitiesBatch,
+            createActivity,
             setCalendarActivities,
             setOutsideActivities,
             createActivityType,
