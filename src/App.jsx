@@ -21,6 +21,7 @@ import EventMaker from "./pages/EventMaker.jsx";
 import Instantiate from "./pages/Instantiate.jsx";
 import { CreatePage } from "./pages/page_editor/CreatePage.jsx";
 import { EditPage } from "./pages/page_editor/EditPage.jsx";
+import SpeakerManagement from './pages/SpeakerManagement';
 import AuthRedirect from "./pages/AuthRedirect";
 
 import { ActivitiesProvider } from "./contexts/ActivitiesContext.jsx";
@@ -87,6 +88,7 @@ export default function App() {
                                     <Route path="plugins">
                                       <Route path="alert-system-plugin" element={<Alerts />} />
                                       <Route path="schedule" element={<Schedule />} />
+                                <Route path="speaker-presentation-plugin" element={<SpeakerManagement />} />
                                     </Route>
                                   </Route>
                                   <Route path="/auth-redirect" element={<AuthRedirect />} />
