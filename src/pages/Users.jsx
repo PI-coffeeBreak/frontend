@@ -11,14 +11,20 @@ export default function Users() {
     const { keycloak } = useKeycloak();
     const hasAdminPermissions = KeycloakAdminService.hasAdminPermissions(keycloak);
     const hasRoleManagementPermissions = KeycloakAdminService.hasRoleManagementPermissions(keycloak);
-    
+
+    // Debug code
+    console.log("Token parsed:", keycloak?.tokenParsed);
+    console.log("Realm access:", keycloak?.tokenParsed?.realm_access);
+    console.log("Roles:", keycloak?.tokenParsed?.realm_access?.roles);
+    console.log("Has admin permissions:", hasAdminPermissions);
+
     // Get users data and functions from context
-    const { 
-        users, 
-        isLoading, 
-        error, 
-        fetchUsers, 
-        updateUserRole, 
+    const {
+        users,
+        isLoading,
+        error,
+        fetchUsers,
+        updateUserRole,
         toggleUserBan,
         allRoles,
         allPermissions,
@@ -37,7 +43,7 @@ export default function Users() {
         createUser,
         createMultipleUsers
     } = useUsers();
-    
+
     // Local state for UI controls
     const [searchTerm, setSearchTerm] = useState("");
     const [filterRole, setFilterRole] = useState("");
@@ -51,7 +57,7 @@ export default function Users() {
     const [roleManagementTab, setRoleManagementTab] = useState("create");
     const [newRoleName, setNewRoleName] = useState("");
     const [roleCreationError, setRoleCreationError] = useState("");
-    
+
     // Role permissions management state
     const [selectedRole, setSelectedRole] = useState(null);
     const [selectedRolePermissions, setSelectedRolePermissions] = useState([]);
@@ -131,8 +137,8 @@ export default function Users() {
     // Filter users based on search term and role filter
     const filteredUsers = users.filter(
         user =>
-        (user.firstName?.toLowerCase() + " " + user.lastName?.toLowerCase()).includes(searchTerm.toLowerCase()) &&
-        (filterRole === "" || user.role === filterRole)
+            (user.firstName?.toLowerCase() + " " + user.lastName?.toLowerCase()).includes(searchTerm.toLowerCase()) &&
+            (filterRole === "" || user.role === filterRole)
     );
     const totalPages = Math.ceil(filteredUsers.length / usersPerPage);
     const indexOfLastUser = currentPage * usersPerPage;
@@ -149,7 +155,7 @@ export default function Users() {
     const openRoleManagementModal = () => {
         setRoleManagementTab("create");
         setNewRoleName("");
-        
+
         // If there are roles, select the first one for permissions management
         if (allRoles.length > 0) {
             setSelectedRole(allRoles[0]);
@@ -158,10 +164,10 @@ export default function Users() {
             setSelectedRole(null);
             setSelectedRolePermissions([]);
         }
-        
+
         document.getElementById('role_management_modal').showModal();
     };
-    
+
     // Load permissions for a role
     const loadRolePermissions = async (role) => {
         try {
@@ -184,14 +190,14 @@ export default function Users() {
     // Handle role creation
     const handleCreateRole = async () => {
         if (!newRoleName) return;
-        
+
         setRoleCreationError("");
         try {
             await createRole(newRoleName);
             setNewRoleName("");
             // Refresh roles
             const result = await fetchAllRolesAndPermissions();
-            
+
             // After creating a role, switch to permissions tab with the new role selected
             if (result && result.roles.length > 0) {
                 // Find the newly created role
@@ -222,7 +228,7 @@ export default function Users() {
     // Handle adding permission to role
     const handleAddPermissionToRole = async (permission) => {
         if (!selectedRole) return;
-        
+
         try {
             await addPermissionToRole(selectedRole.name, permission);
             // Refresh permissions for this role
@@ -235,7 +241,7 @@ export default function Users() {
     // Handle removing permission from role
     const handleRemovePermissionFromRole = async (permission) => {
         if (!selectedRole) return;
-        
+
         try {
             await removePermissionFromRole(selectedRole.name, permission);
             // Refresh permissions for this role
@@ -249,10 +255,10 @@ export default function Users() {
     const openRoleModal = (userId, currentRole) => {
         setSelectedUserId(userId);
         setSelectedRoleForUser(currentRole || "");
-        
+
         // Fetch user's current roles and permissions
         fetchUserRolesAndPermissions(userId);
-        
+
         document.getElementById('keycloak_role_modal').showModal();
     };
 
@@ -504,58 +510,74 @@ export default function Users() {
         <>
             <div className="w-full min-h-svh p-8">
                 <h1 className="text-3xl font-bold">Create Users</h1>
-                    <div className="grid grid-cols-3 gap-4 mt-8">
-                        <CreateCard
-                            icon={FaUsers}
-                            title="Add with an excel file"
-                            description="Upload an Excel file to quickly add multiple users at once."
-                            onClick={openExcelImportModal}
-                        />
-                        <CreateCard
-                            icon={FaUser}
-                            title="Create a new user"
-                            description="Create a new user manually."
-                            onClick={openUserCreationModal}
-                        />
-                        <CreateCard
-                            icon={FaUsersCog}
-                            title="Manage roles"
-                            description="Create roles and assign permissions."
-                            onClick={openRoleManagementModal}
-                        />
-                    </div>
+                <div className="grid grid-cols-3 gap-4 mt-8">
+                    <CreateCard
+                        icon={FaUsers}
+                        title="Add with an excel file"
+                        description="Upload an Excel file to quickly add multiple users at once."
+                        onClick={openExcelImportModal}
+                    />
+                    <CreateCard
+                        icon={FaUser}
+                        title="Create a new user"
+                        description="Create a new user manually."
+                        onClick={openUserCreationModal}
+                    />
+                    <CreateCard
+                        icon={FaUsersCog}
+                        title="Manage roles"
+                        description="Create roles and assign permissions."
+                        onClick={openRoleManagementModal}
+                    />
+                </div>
 
-                    {/* Import stats display */}
-                    {importStats && (
-                        <div className={`alert ${importStats.failed > 0 ? 'alert-warning' : 'alert-success'} mt-6`}>
-                            <div>
-                                <h3 className="font-bold">Import Results</h3>
-                                <div className="text-sm">
-                                    Successfully imported {importStats.success} of {importStats.total} users
-                                    {importStats.failed > 0 && (
-                                        <p>Failed to import {importStats.failed} users. Check console for details.</p>
-                                    )}
-                                </div>
+                {/* Import stats display */}
+                {importStats && (
+                    <div className={`alert ${importStats.failed > 0 ? 'alert-warning' : 'alert-success'} mt-6`}>
+                        <div>
+                            <h3 className="font-bold">Import Results</h3>
+                            <div className="text-sm">
+                                Successfully imported {importStats.success} of {importStats.total} users
+                                {importStats.failed > 0 && (
+                                    <p>Failed to import {importStats.failed} users. Check console for details.</p>
+                                )}
                             </div>
-                            <button 
-                                className="btn btn-sm" 
-                                onClick={() => setImportStats(null)}
-                            >
-                                Dismiss
-                            </button>
                         </div>
-                    )}
+                        <button 
+                            className="btn btn-sm" 
+                            onClick={() => setImportStats(null)}
+                        >
+                            Dismiss
+                        </button>
+                    </div>
+                )}
 
-                    <h1 className="text-3xl font-bold mt-8">Users</h1>
+                <h1 className="text-3xl font-bold mt-8">Users</h1>
 
                 {!hasAdminPermissions && <AdminPermissionsWarning />}
+
+                {/* Debug section */}
+                <div className="mt-4 mb-4">
+                    <button
+                        className="btn btn-sm btn-outline"
+                        onClick={() => {
+                            const roles = keycloak?.tokenParsed?.realm_access?.roles || [];
+                            console.log("Your roles:", roles);
+                            alert("Your roles: " + roles.join(", ") +
+                                "\n\nRequired roles: admin, realm-admin, manage-users, cb-organizer, Organizer" +
+                                "\n\nCheck console for more details.");
+                        }}
+                    >
+                        Check My Roles
+                    </button>
+                </div>
 
                 <div className="flex gap-8 mt-4">
                     <div className="flex gap-4">
                         <label className="input">
                             <svg className="h-[1em] opacity-50" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
                                 <g strokeLinejoin="round" strokeLinecap="round" strokeWidth="2.5" fill="none"
-                                   stroke="currentColor">
+                                    stroke="currentColor">
                                     <circle cx="11" cy="11" r="8"></circle>
                                     <path d="m21 21-4.3-4.3"></path>
                                 </g>
@@ -566,17 +588,17 @@ export default function Users() {
                                 placeholder="Search users"
                                 value={searchTerm}
                                 onChange={(e) => setSearchTerm(e.target.value)}
-                                />
+                            />
                         </label>
                     </div>
                 </div>
-                
+
                 {error && (
                     <div className="alert alert-error mb-4">
                         <span>{error}</span>
                     </div>
                 )}
-            
+
                 {isLoading ? (
                     <div className="flex justify-center items-center p-8">
                         <span className="loading loading-spinner loading-lg"></span>
@@ -613,17 +635,27 @@ export default function Users() {
                                             </td>
                                             <td>{user.email}</td>
                                             <td>
-                                                <div className="badge badge-primary w-24">{user.role || "No role"}</div>
+                                                {user.roles ? (
+                                                    <div className="flex flex-wrap gap-1">
+                                                        {user.roles.map((role, index) => (
+                                                            <div key={index} className="badge badge-primary">
+                                                                {role}
+                                                            </div>
+                                                        ))}
+                                                    </div>
+                                                ) : (
+                                                    <div className="badge badge-primary w-24">{user.role || "No role"}</div>
+                                                )}
                                             </td>
                                             <th>
-                                                <button 
+                                                <button
                                                     className="btn mr-2 btn-secondary btn-xs"
                                                     onClick={() => openRoleModal(user.id, user.role)}
                                                     disabled={!hasAdminPermissions}
                                                 >
                                                     <FaShieldAlt className="mr-1" /> Assign Roles
                                                 </button>
-                                                <button 
+                                                <button
                                                     className={`btn ${user.banned ? "btn-success" : "btn-error"} btn-xs`}
                                                     onClick={() => handleToggleBan(user.id, user.banned)}
                                                     disabled={!hasAdminPermissions}
@@ -636,8 +668,7 @@ export default function Users() {
                                 </tbody>
                             </table>
                         </div>
-                        
-        
+
                         {totalPages > 1 && (
                             <div className="flex justify-center mt-2">
                                 <div className="join">
@@ -655,414 +686,381 @@ export default function Users() {
                         )}
                     </>
                 )}
-            
-            {/* Role Management Modal */}
-            <dialog id="role_management_modal" className="modal">
-                <div className="modal-box max-w-4xl">
-                    <form method="dialog">
-                        <button className="btn btn-sm btn-circle btn-ghost absolute right-2 top-2">✕</button>
-                    </form>
-                    <h3 className="font-bold text-lg mb-4">Role Management</h3>
-                    
-                    {/* Tabs */}
-                    <div className="tabs tabs-boxed mb-4">
-                        <button 
-                            className={`tab ${roleManagementTab === "create" ? "tab-active" : ""}`}
-                            onClick={() => setRoleManagementTab("create")}
-                        >
-                            <FaPlus className="mr-2" /> Create Role
-                        </button>
-                        <button 
-                            className={`tab ${roleManagementTab === "permissions" ? "tab-active" : ""}`}
-                            onClick={() => setRoleManagementTab("permissions")}
-                            disabled={allRoles.length === 0}
-                        >
-                            <FaKey className="mr-2" /> Manage Permissions
-                        </button>
-                    </div>
-                    
-                    {/* Create Role Tab */}
-                    {roleManagementTab === "create" && (
-                        <div className="space-y-4">
-                         
-                            {!hasRoleManagementPermissions && (
-                                <div className="alert alert-warning">
-                                    <FaExclamationTriangle />
-                                    <span>
-                                        You don't have role management permissions. You need one of these roles: 
-                                        realm-admin, create-realm, manage-realm, cb-admin, or admin.
-                                        The role creation might fail with a permission error.
-                                    </span>
-                                </div>
-                            )}
-                            
-                            <div className="form-control">
-                                <label className="label">
-                                    <span className="label-text">Role Name</span>
-                                 
-                                </label>
-                                <input
-                                    type="text"
-                                    className="input input-bordered w-full"
-                                    placeholder="organizer"
-                                    value={newRoleName}
-                                    onChange={(e) => setNewRoleName(e.target.value)}
-                                />
-                            </div>
-                            
-                            {roleCreationError && (
-                                <div className="alert alert-error">
-                                    <span>{roleCreationError}</span>
-                                </div>
-                            )}
-                            
-                            <button 
-                                className="btn btn-primary w-full" 
-                                onClick={handleCreateRole}
-                                disabled={!newRoleName}
+
+                {/* Role Management Modal */}
+                <dialog id="role_management_modal" className="modal">
+                    <div className="modal-box max-w-4xl">
+                        <form method="dialog">
+                            <button className="btn btn-sm btn-circle btn-ghost absolute right-2 top-2">✕</button>
+                        </form>
+                        <h3 className="font-bold text-lg mb-4">Role Management</h3>
+
+                        {/* Tabs */}
+                        <div className="tabs tabs-boxed mb-4">
+                            <button
+                                className={`tab ${roleManagementTab === "create" ? "tab-active" : ""}`}
+                                onClick={() => setRoleManagementTab("create")}
                             >
-                                Create Role
+                                <FaPlus className="mr-2" /> Create Role
+                            </button>
+                            <button
+                                className={`tab ${roleManagementTab === "permissions" ? "tab-active" : ""}`}
+                                onClick={() => setRoleManagementTab("permissions")}
+                                disabled={allRoles.length === 0}
+                            >
+                                <FaKey className="mr-2" /> Manage Permissions
                             </button>
                         </div>
-                    )}
-                    
-                    {/* Manage Permissions Tab */}
-                    {roleManagementTab === "permissions" && (
-                        <div>
-                            {selectedRole ? (
-                                <>
-                                
-                                    
-                                    <div className="mb-4">
-                                        <label className="label">
-                                            <span className="label-text font-bold">Select Role:</span>
-                                        </label>
-                                        <select 
-                                            className="select select-bordered w-full"
-                                            value={selectedRole.name}
-                                            onChange={handleRoleChange}
-                                        >
-                                            {allRoles.map(role => (
-                                                <option key={role.id} value={role.name}>
-                                                    {role.displayName || role.name}
-                                                </option>
-                                            ))}
-                                        </select>
+
+                        {/* Create Role Tab */}
+                        {roleManagementTab === "create" && (
+                            <div className="space-y-4">
+                                {!hasRoleManagementPermissions && (
+                                    <div className="alert alert-warning">
+                                        <FaExclamationTriangle />
+                                        <span>
+                                            You don't have role management permissions. You need one of these roles:
+                                            realm-admin, create-realm, manage-realm, cb-admin, or admin.
+                                            The role creation might fail with a permission error.
+                                        </span>
                                     </div>
-                                    
-                                    <div className="overflow-x-auto">
-                                        <table className="table table-zebra w-full">
-                                            <thead>
-                                                <tr>
-                                                    <th>Permission Name</th>
-                                                    <th>Description</th>
-                                                    <th>Actions</th>
-                                                </tr>
-                                            </thead>
-                                            <tbody>
-                                                {allPermissions.map(permission => (
-                                                    <tr key={permission.id}>
-                                                        <td>{permission.displayName || permission.name}</td>
-                                                        <td>{permission.description || "No description"}</td>
-                                                        <td>
-                                                            {roleHasPermission(permission.name) ? (
-                                                                <div className="flex items-center gap-2">
-                                                                    <span className="badge badge-success gap-1">
-                                                                        <FaCheck size={12} /> Assigned
-                                                                    </span>
-                                                                    <button 
-                                                                        className="btn btn-error btn-xs"
-                                                                        onClick={() => handleRemovePermissionFromRole(permission)}
-                                                                    >
-                                                                        <FaTrash size={12} />
-                                                                    </button>
-                                                                </div>
-                                                            ) : (
-                                                                <button 
-                                                                    className="btn btn-primary btn-xs"
-                                                                    onClick={() => handleAddPermissionToRole(permission)}
-                                                                >
-                                                                    <FaPlus size={12} /> Assign
-                                                                </button>
-                                                            )}
-                                                        </td>
-                                                    </tr>
-                                                ))}
-                                            </tbody>
-                                        </table>
-                                    </div>
-                                </>
-                            ) : (
-                                <div className="alert alert-warning">
-                                    <span>No roles available. Create a role first.</span>
+                                )}
+
+                                <div className="form-control">
+                                    <label className="label">
+                                        <span className="label-text">Role Name</span>
+                                    </label>
+                                    <input
+                                        type="text"
+                                        className="input input-bordered w-full"
+                                        placeholder="organizer"
+                                        value={newRoleName}
+                                        onChange={(e) => setNewRoleName(e.target.value)}
+                                    />
                                 </div>
-                            )}
+
+                                {roleCreationError && (
+                                    <div className="alert alert-error">
+                                        <span>{roleCreationError}</span>
+                                    </div>
+                                )}
+
+                                <button
+                                    className="btn btn-primary w-full"
+                                    onClick={handleCreateRole}
+                                    disabled={!newRoleName}
+                                >
+                                    Create Role
+                                </button>
+                            </div>
+                        )}
+
+                        {/* Manage Permissions Tab */}
+                        {roleManagementTab === "permissions" && (
+                            <div>
+                                {selectedRole ? (
+                                    <>
+                                        <div className="mb-4">
+                                            <label className="label">
+                                                <span className="label-text font-bold">Select Role:</span>
+                                            </label>
+                                            <select
+                                                className="select select-bordered w-full"
+                                                value={selectedRole.name}
+                                                onChange={handleRoleChange}
+                                            >
+                                                {allRoles.map(role => (
+                                                    <option key={role.id} value={role.name}>
+                                                        {role.displayName || role.name}
+                                                    </option>
+                                                ))}
+                                            </select>
+                                        </div>
+
+                                        <div className="overflow-x-auto">
+                                            <table className="table table-zebra w-full">
+                                                <thead>
+                                                    <tr>
+                                                        <th>Permission Name</th>
+                                                        <th>Description</th>
+                                                        <th>Actions</th>
+                                                    </tr>
+                                                </thead>
+                                                <tbody>
+                                                    {allPermissions.map(permission => (
+                                                        <tr key={permission.id}>
+                                                            <td>{permission.displayName || permission.name}</td>
+                                                            <td>{permission.description || "No description"}</td>
+                                                            <td>
+                                                                {roleHasPermission(permission.name) ? (
+                                                                    <div className="flex items-center gap-2">
+                                                                        <span className="badge badge-success gap-1">
+                                                                            <FaCheck size={12} /> Assigned
+                                                                        </span>
+                                                                        <button
+                                                                            className="btn btn-error btn-xs"
+                                                                            onClick={() => handleRemovePermissionFromRole(permission)}
+                                                                        >
+                                                                            <FaTrash size={12} />
+                                                                        </button>
+                                                                    </div>
+                                                                ) : (
+                                                                    <button
+                                                                        className="btn btn-primary btn-xs"
+                                                                        onClick={() => handleAddPermissionToRole(permission)}
+                                                                    >
+                                                                        <FaPlus size={12} /> Assign
+                                                                    </button>
+                                                                )}
+                                                            </td>
+                                                        </tr>
+                                                    ))}
+                                                </tbody>
+                                            </table>
+                                        </div>
+                                    </>
+                                ) : (
+                                    <div className="alert alert-warning">
+                                        <span>No roles available. Create a role first.</span>
+                                    </div>
+                                )}
+                            </div>
+                        )}
+
+                        <div className="modal-action">
+                            <form method="dialog">
+                                <button className="btn">Close</button>
+                            </form>
                         </div>
-                    )}
-                    
-                    <div className="modal-action">
-                        <form method="dialog">
-                            <button className="btn">Close</button>
-                        </form>
                     </div>
-                </div>
-            </dialog>
+                </dialog>
 
-            {/* Legacy Role Management Modal */}
-            <dialog id="role_modal" className="modal">
-                <div className="modal-box">
-                    <form method="dialog">
-                        <button className="btn btn-sm btn-circle btn-ghost absolute right-2 top-2">✕</button>
-                    </form>
-                    <h3 className="font-bold text-lg">Manage User Role</h3>
-                    <div className="py-4">
-                        <select
-                            className="select select-bordered w-full"
-                            value={selectedRoleForUser}
-                            onChange={(e) => setSelectedRoleForUser(e.target.value)}
-                        >
-                            <option value="" disabled>Select a role</option>
-                            <option value="Organizer">Organizer</option>
-                            <option value="Staff">Staff</option>
-                            <option value="Speaker">Speaker</option>
-                            <option value="Participant">Participant</option>
-                        </select>
-                    </div>
-                    <div className="modal-action">
-                        <button className="btn btn-primary" onClick={handleRoleSave}>Save Changes</button>
+                {/* Keycloak Role and Permission Management Modal */}
+                <dialog id="keycloak_role_modal" className="modal">
+                    <div className="modal-box max-w-2xl">
                         <form method="dialog">
-                            <button className="btn">Cancel</button>
+                            <button className="btn btn-sm btn-circle btn-ghost absolute right-2 top-2">✕</button>
                         </form>
-                    </div>
-                </div>
-            </dialog>
+                        <h3 className="font-bold text-lg mb-4">Assign Roles to User</h3>
 
-            {/* Keycloak Role and Permission Management Modal */}
-            <dialog id="keycloak_role_modal" className="modal">
-                <div className="modal-box max-w-2xl">
-                    <form method="dialog">
-                        <button className="btn btn-sm btn-circle btn-ghost absolute right-2 top-2">✕</button>
-                    </form>
-                    <h3 className="font-bold text-lg mb-4">Assign Roles to User</h3>
-                    
-                    <div className="overflow-x-auto">
-                        <table className="table table-zebra w-full">
-                            <thead>
-                                <tr>
-                                    <th>Role Name</th>
-                                    <th>Description</th>
-                                    <th>Actions</th>
-                                </tr>
-                            </thead>
-                            <tbody>
-                                {allRoles.map(role => (
-                                    <tr key={role.id}>
-                                        <td>{role.displayName || role.name}</td>
-                                        <td>{role.description || "No description"}</td>
-                                        <td>
-                                            {userHasRole(selectedUserId, role.name) ? (
-                                                <div className="flex items-center gap-2">
-                                                    <span className="badge badge-success gap-1">
-                                                        <FaCheck size={12} /> Assigned
-                                                    </span>
-                                                    <button 
-                                                        className="btn btn-error btn-xs"
-                                                        onClick={() => handleRemoveRole(selectedUserId, role)}
-                                                    >
-                                                        <FaTrash size={12} />
-                                                    </button>
-                                                </div>
-                                            ) : (
-                                                <button 
-                                                    className="btn btn-primary btn-xs"
-                                                    onClick={() => handleAssignRole(selectedUserId, role)}
-                                                >
-                                                    <FaPlus size={12} /> Assign
-                                                </button>
-                                            )}
-                                        </td>
+                        <div className="overflow-x-auto">
+                            <table className="table table-zebra w-full">
+                                <thead>
+                                    <tr>
+                                        <th>Role Name</th>
+                                        <th>Description</th>
+                                        <th>Actions</th>
                                     </tr>
-                                ))}
-                            </tbody>
-                        </table>
-                    </div>
-                    
-                    <div className="modal-action">
-                        <form method="dialog">
-                            <button className="btn">Close</button>
-                        </form>
-                    </div>
-                </div>
-            </dialog>
+                                </thead>
+                                <tbody>
+                                    {allRoles.map(role => (
+                                        <tr key={role.id}>
+                                            <td>{role.displayName || role.name}</td>
+                                            <td>{role.description || "No description"}</td>
+                                            <td>
+                                                {userHasRole(selectedUserId, role.name) ? (
+                                                    <div className="flex items-center gap-2">
+                                                        <span className="badge badge-success gap-1">
+                                                            <FaCheck size={12} /> Assigned
+                                                        </span>
+                                                        <button
+                                                            className="btn btn-error btn-xs"
+                                                            onClick={() => handleRemoveRole(selectedUserId, role)}
+                                                        >
+                                                            <FaTrash size={12} />
+                                                        </button>
+                                                    </div>
+                                                ) : (
+                                                    <button
+                                                        className="btn btn-primary btn-xs"
+                                                        onClick={() => handleAssignRole(selectedUserId, role)}
+                                                    >
+                                                        <FaPlus size={12} /> Assign
+                                                    </button>
+                                                )}
+                                            </td>
+                                        </tr>
+                                    ))}
+                                </tbody>
+                            </table>
+                        </div>
 
-            {/* User Creation Modal */}
-            <dialog id="create_user_modal" className="modal">
-                <div className="modal-box max-w-xl">
-                    <form method="dialog">
-                        <button className="btn btn-sm btn-circle btn-ghost absolute right-2 top-2">✕</button>
-                    </form>
-                    <h3 className="font-bold text-lg mb-4">Create New User</h3>
-                    
-                    {createSuccess && (
-                        <div className="alert alert-success mb-4">
-                            <FaCheck className="h-6 w-6" />
-                            <span>User created successfully!</span>
+                        <div className="modal-action">
+                            <form method="dialog">
+                                <button className="btn">Close</button>
+                            </form>
                         </div>
-                    )}
-                    
-                    {formErrors.submit && (
-                        <div className="alert alert-error mb-4">
-                            <FaExclamationTriangle className="h-6 w-6" />
-                            <span>{formErrors.submit}</span>
-                        </div>
-                    )}
-                    
-                    <form onSubmit={handleCreateUser}>
-                        <div className="form-control mb-4">
-                            <label className="label">
-                                <span className="label-text">First Name</span>
-                            </label>
-                            <input 
-                                type="text" 
-                                name="firstName"
-                                className={`input input-bordered w-full ${formErrors.firstName ? 'input-error' : ''}`}
-                                value={newUserData.firstName}
-                                onChange={handleInputChange}
-                            />
-                            {formErrors.firstName && (
+                    </div>
+                </dialog>
+
+                {/* User Creation Modal */}
+                <dialog id="create_user_modal" className="modal">
+                    <div className="modal-box max-w-xl">
+                        <form method="dialog">
+                            <button className="btn btn-sm btn-circle btn-ghost absolute right-2 top-2">✕</button>
+                        </form>
+                        <h3 className="font-bold text-lg mb-4">Create New User</h3>
+                        
+                        {createSuccess && (
+                            <div className="alert alert-success mb-4">
+                                <FaCheck className="h-6 w-6" />
+                                <span>User created successfully!</span>
+                            </div>
+                        )}
+                        
+                        {formErrors.submit && (
+                            <div className="alert alert-error mb-4">
+                                <FaExclamationTriangle className="h-6 w-6" />
+                                <span>{formErrors.submit}</span>
+                            </div>
+                        )}
+                        
+                        <form onSubmit={handleCreateUser}>
+                            <div className="form-control mb-4">
                                 <label className="label">
-                                    <span className="label-text-alt text-error">{formErrors.firstName}</span>
+                                    <span className="label-text">First Name</span>
                                 </label>
-                            )}
-                        </div>
-                        
-                        <div className="form-control mb-4">
-                            <label className="label">
-                                <span className="label-text">Last Name</span>
-                            </label>
-                            <input 
-                                type="text" 
-                                name="lastName"
-                                className={`input input-bordered w-full ${formErrors.lastName ? 'input-error' : ''}`}
-                                value={newUserData.lastName}
-                                onChange={handleInputChange}
-                            />
-                            {formErrors.lastName && (
-                                <label className="label">
-                                    <span className="label-text-alt text-error">{formErrors.lastName}</span>
-                                </label>
-                            )}
-                        </div>
-                        
-                        <div className="form-control mb-4">
-                            <label className="label">
-                                <span className="label-text">Email Address</span>
-                            </label>
-                            <input 
-                                type="email" 
-                                name="email"
-                                className={`input input-bordered w-full ${formErrors.email ? 'input-error' : ''}`}
-                                value={newUserData.email}
-                                onChange={handleInputChange}
-                            />
-                            {formErrors.email && (
-                                <label className="label">
-                                    <span className="label-text-alt text-error">{formErrors.email}</span>
-                                </label>
-                            )}
-                        </div>
-                        
-                        <div className="form-control mb-4">
-                            <label className="label">
-                                <span className="label-text">Role</span>
-                            </label>
-                            <select
-                                name="role"
-                                className="select select-bordered w-full"
-                                value={newUserData.role}
-                                onChange={handleInputChange}
-                            >
-                                <option value="Organizer">Organizer</option>
-                                <option value="Staff">Staff</option>
-                                <option value="Speaker">Speaker</option>
-                                <option value="Participant">Participant</option>
-                            </select>
-                        </div>
-                        
-                        <div className="form-control mb-4">
-                            <label className="label">
-                                <span className="label-text">Temporary Password</span>
-                            </label>
-                            <div className="input-group">
                                 <input 
-                                    type={showPassword ? "text" : "password"}
-                                    name="temporaryPassword"
-                                    className={`input input-bordered w-full ${formErrors.temporaryPassword ? 'input-error' : ''}`}
-                                    value={newUserData.temporaryPassword}
+                                    type="text" 
+                                    name="firstName"
+                                    className={`input input-bordered w-full ${formErrors.firstName ? 'input-error' : ''}`}
+                                    value={newUserData.firstName}
                                     onChange={handleInputChange}
                                 />
-                                <button 
-                                    type="button"
-                                    className="btn btn-square"
-                                    onClick={togglePasswordVisibility}
-                                >
-                                    {showPassword ? "Hide" : "Show"}
-                                </button>
+                                {formErrors.firstName && (
+                                    <label className="label">
+                                        <span className="label-text-alt text-error">{formErrors.firstName}</span>
+                                    </label>
+                                )}
                             </div>
                             
-                            {/* Password strength indicator */}
-                            {newUserData.temporaryPassword && (
-                                <div className="mt-2">
-                                    <div className="flex justify-between mb-1">
-                                        <span className="text-sm">Password Strength: {strengthText}</span>
-                                    </div>
-                                    <div className="w-full bg-gray-200 rounded-full h-2.5">
-                                        <div 
-                                            className={`h-2.5 rounded-full ${strengthColor}`} 
-                                            style={{ width: `${(passwordStrength / 5) * 100}%` }}
-                                        ></div>
-                                    </div>
+                            <div className="form-control mb-4">
+                                <label className="label">
+                                    <span className="label-text">Last Name</span>
+                                </label>
+                                <input 
+                                    type="text" 
+                                    name="lastName"
+                                    className={`input input-bordered w-full ${formErrors.lastName ? 'input-error' : ''}`}
+                                    value={newUserData.lastName}
+                                    onChange={handleInputChange}
+                                />
+                                {formErrors.lastName && (
+                                    <label className="label">
+                                        <span className="label-text-alt text-error">{formErrors.lastName}</span>
+                                    </label>
+                                )}
+                            </div>
+                            
+                            <div className="form-control mb-4">
+                                <label className="label">
+                                    <span className="label-text">Email Address</span>
+                                </label>
+                                <input 
+                                    type="email" 
+                                    name="email"
+                                    className={`input input-bordered w-full ${formErrors.email ? 'input-error' : ''}`}
+                                    value={newUserData.email}
+                                    onChange={handleInputChange}
+                                />
+                                {formErrors.email && (
+                                    <label className="label">
+                                        <span className="label-text-alt text-error">{formErrors.email}</span>
+                                    </label>
+                                )}
+                            </div>
+                            
+                            <div className="form-control mb-4">
+                                <label className="label">
+                                    <span className="label-text">Role</span>
+                                </label>
+                                <select
+                                    name="role"
+                                    className="select select-bordered w-full"
+                                    value={newUserData.role}
+                                    onChange={handleInputChange}
+                                >
+                                    <option value="Organizer">Organizer</option>
+                                    <option value="Staff">Staff</option>
+                                    <option value="Speaker">Speaker</option>
+                                    <option value="Participant">Participant</option>
+                                </select>
+                            </div>
+                            
+                            <div className="form-control mb-4">
+                                <label className="label">
+                                    <span className="label-text">Temporary Password</span>
+                                </label>
+                                <div className="input-group">
+                                    <input 
+                                        type={showPassword ? "text" : "password"}
+                                        name="temporaryPassword"
+                                        className={`input input-bordered w-full ${formErrors.temporaryPassword ? 'input-error' : ''}`}
+                                        value={newUserData.temporaryPassword}
+                                        onChange={handleInputChange}
+                                    />
+                                    <button 
+                                        type="button"
+                                        className="btn btn-square"
+                                        onClick={togglePasswordVisibility}
+                                    >
+                                        {showPassword ? "Hide" : "Show"}
+                                    </button>
                                 </div>
-                            )}
+                                
+                                {/* Password strength indicator */}
+                                {newUserData.temporaryPassword && (
+                                    <div className="mt-2">
+                                        <div className="flex justify-between mb-1">
+                                            <span className="text-sm">Password Strength: {strengthText}</span>
+                                        </div>
+                                        <div className="w-full bg-gray-200 rounded-full h-2.5">
+                                            <div 
+                                                className={`h-2.5 rounded-full ${strengthColor}`} 
+                                                style={{ width: `${(passwordStrength / 5) * 100}%` }}
+                                            ></div>
+                                        </div>
+                                    </div>
+                                )}
+                                
+                                {formErrors.temporaryPassword && (
+                                    <label className="label">
+                                        <span className="label-text-alt text-error">{formErrors.temporaryPassword}</span>
+                                    </label>
+                                )}
+                                <div className="flex justify-between items-center mt-2">
+                                    <label className="label">
+                                        <span className="label-text-alt">User will be prompted to change this password on first login.</span>
+                                    </label>
+                                    <button 
+                                        type="button" 
+                                        className="btn btn-sm btn-secondary"
+                                        onClick={generateRandomPassword}
+                                    >
+                                        Generate Password
+                                    </button>
+                                </div>
+                            </div>
                             
-                            {formErrors.temporaryPassword && (
-                                <label className="label">
-                                    <span className="label-text-alt text-error">{formErrors.temporaryPassword}</span>
-                                </label>
-                            )}
-                            <div className="flex justify-between items-center mt-2">
-                                <label className="label">
-                                    <span className="label-text-alt">User will be prompted to change this password on first login.</span>
-                                </label>
-                                <button 
-                                    type="button" 
-                                    className="btn btn-sm btn-secondary"
-                                    onClick={generateRandomPassword}
-                                >
-                                    Generate Password
+                            <div className="modal-action">
+                                <button type="submit" className="btn btn-primary" disabled={isLoading}>
+                                    {isLoading ? <span className="loading loading-spinner"></span> : <FaUser className="mr-2" />}
+                                    Create User
+                                </button>
+                                <button type="button" className="btn" onClick={() => document.getElementById('create_user_modal').close()}>
+                                    Cancel
                                 </button>
                             </div>
-                        </div>
-                        
-                        <div className="modal-action">
-                            <button type="submit" className="btn btn-primary" disabled={isLoading}>
-                                {isLoading ? <span className="loading loading-spinner"></span> : <FaUser className="mr-2" />}
-                                Create User
-                            </button>
-                            <button type="button" className="btn" onClick={() => document.getElementById('create_user_modal').close()}>
-                                Cancel
-                            </button>
-                        </div>
-                    </form>
-                </div>
-            </dialog>
+                        </form>
+                    </div>
+                </dialog>
 
-            {/* Excel Import Modal */}
-            <UserExcelImport
-                isOpen={isExcelImportOpen}
-                onClose={closeExcelImportModal}
-                onImport={handleImportUsers}
-            />
+                {/* Excel Import Modal */}
+                <UserExcelImport
+                    isOpen={isExcelImportOpen}
+                    onClose={closeExcelImportModal}
+                    onImport={handleImportUsers}
+                />
             </div>
         </>
     );
