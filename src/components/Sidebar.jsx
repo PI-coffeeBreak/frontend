@@ -17,7 +17,7 @@ export default function Sidebar() {
     const location = useLocation();
     const pathnames = location.pathname.split("/").filter((x) => x);
     const { plugins } = usePlugins();
-    const { eventInfo } = useEvent();
+    const { eventInfo, isLoading: eventLoading, error: eventError, getEventInfo } = useEvent();
     const { getMediaUrl } = useMedia();
 
     // Fetch user profile from Keycloak when initialized
@@ -62,7 +62,7 @@ export default function Sidebar() {
 
     // Replace image with user icon placeholder
     const userAvatar = (
-        <div className={`flex items-center justify-center bg-primary rounded-full w-16 h-16 border-2 border-white mx-auto mb-3`}>
+        <div className={`flex items-center justify-center bg-primary rounded-full w-12 h-12 border-2 border-white ${isVisible ? "mx-2" : "mx-auto"}`}>
             <FaUser className="text-white text-xl" />
         </div>
     );
@@ -74,8 +74,12 @@ export default function Sidebar() {
                     <div className={`flex items-center p-4 ${isVisible ? "gap-4" : "gap-0"}`}>
                         {eventLogo}
                         <span className={`overflow-hidden transition-all duration-300 ${isVisible ? "opacity-100 w-auto" : "opacity-0 w-0"}`}>
-                            <h1 className="font-bold text-lg">{eventInfo?.name || "students@DETI"}</h1>
-                            <p className="text-md text-base-content">{eventInfo?.subtitle || "Event"}</p>
+                            <h1 className="font-bold text-lg">
+                                {eventLoading ? 'Loading...' : (eventInfo?.name || "students@DETI")}
+                            </h1>
+                            <p className="text-md text-base-content">
+                                {eventInfo?.subtitle || "Event"}
+                            </p>
                         </span>
                     </div>
 
@@ -113,19 +117,18 @@ export default function Sidebar() {
                     </nav>
                 </div>
                 
-                <div className="flex flex-col items-center mb-6 px-2">
-                    {userAvatar}
-                    
-                    {isVisible && (
-                        <div className="text-center mb-3">
+                <div className="flex flex-col items-center mb-6">
+                    <div className="flex-col mx-auto items-center gap-4 mb-4">
+                        {userAvatar}
+                        <span className={`transition-all duration-300 text-left ${isVisible ? "opacity-100 w-auto mt-2" : "opacity-0 w-0"}`}>
                             <p className="font-semibold">{userDisplayName}</p>
                             <p className="text-sm text-gray-300">{userEmail}</p>
-                        </div>
-                    )}
+                        </span>
+                    </div>
 
                     <button 
                         onClick={handleLogout} 
-                        className={`btn btn-primary rounded-xl mt-2 flex items-center justify-center gap-2 ${isVisible ? "w-full" : "w-12"}`}>
+                        className={`btn btn-primary rounded-xl w-full mx-4 mt-2 flex items-center gap-2 ${isVisible ? "w-auto px-4" : "w-12"}`}>
                         <FaSignOutAlt className="text-white" />
                         {isVisible && <span>Logout</span>}
                     </button>
