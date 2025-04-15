@@ -168,55 +168,9 @@ export function Sponsors() {
   const handleSponsorInputChange = (e) => {
     const { name, value } = e.target;
     setSponsorForm({
+      [name]: value,
       ...sponsorForm,
-      [name]: value
     });
-  };
-  
-  // Handle logo file selection
-  const handleLogoUpload = async (e) => {
-    const file = e.target.files[0];
-    if (!file) return;
-    
-    // Validate file type
-    if (!file.type.match('image.*')) {
-      showNotification("Please select an image file", "error");
-      return;
-    }
-    
-    // Validate file size (max 2MB)
-    if (file.size > 2 * 1024 * 1024) {
-      showNotification("File size must be less than 2MB", "error");
-      return;
-    }
-    
-    try {
-      // Create form data for file upload
-      const formData = new FormData();
-      formData.append('file', file);
-      
-      // In a real application, you would upload the file to your server or a cloud storage
-      // For simplicity, we'll just use a data URL here
-      const reader = new FileReader();
-      reader.onload = (event) => {
-        setSponsorForm({
-          ...sponsorForm,
-          logo_url: event.target.result
-        });
-      };
-      reader.readAsDataURL(file);
-      
-    } catch (error) {
-      console.error("Error uploading logo:", error);
-      if (error.response) {
-        console.error("API Error Details:", {
-          status: error.response.status,
-          headers: error.response.headers,
-          data: error.response.data
-        });
-      }
-      showNotification("Failed to upload logo", "error");
-    }
   };
   
   // Create new sponsor
@@ -232,6 +186,8 @@ export function Sponsors() {
     }
     
     try {
+        console.log("Attempting to create sponsor with data:", sponsorForm);
+        console.log("Using API URL:", sponsorApiUrl);
       const response = await axiosWithAuth(keycloak).post(sponsorApiUrl, sponsorForm);
       
       setSponsors([...sponsors, response.data]);
@@ -525,36 +481,31 @@ export function Sponsors() {
                   
                   <div>
                     <label className="block text-sm font-medium mb-1">
-                      Logo
+                      Logo URL
                     </label>
-                    <div className="flex items-center gap-2">
+                    <div className="flex flex-col gap-2">
                       <input
-                        ref={fileInputRef}
-                        type="file"
-                        accept="image/*"
-                        className="hidden"
-                        onChange={handleLogoUpload}
+                        type="url"
+                        name="logo_url"
+                        value={sponsorForm.logo_url}
+                        onChange={handleSponsorInputChange}
+                        placeholder="https://example.com/logo.png"
+                        className="input input-bordered w-full"
                       />
-                      <button
-                        type="button"
-                        onClick={() => fileInputRef.current?.click()}
-                        className="btn btn-outline btn-sm"
-                      >
-                        Choose Logo
-                      </button>
                       {sponsorForm.logo_url && (
-                        <span className="text-sm text-success">Logo selected</span>
+                        <div className="mt-2">
+                          <img 
+                            src={sponsorForm.logo_url} 
+                            alt="Logo preview" 
+                            className="h-16 object-contain"
+                            onError={(e) => {
+                              e.target.onerror = null;
+                              e.target.src = "https://placehold.co/200x100?text=Invalid+Image+URL";
+                            }}
+                          />
+                        </div>
                       )}
                     </div>
-                    {sponsorForm.logo_url && (
-                      <div className="mt-2">
-                        <img 
-                          src={sponsorForm.logo_url} 
-                          alt="Logo preview" 
-                          className="h-16 object-contain"
-                        />
-                      </div>
-                    )}
                   </div>
                   
                   <div className="md:col-span-2">
