@@ -30,6 +30,18 @@ FormField.propTypes = {
  * Modal for creating a new activity/session
  */
 export function NewSessionModal({ isOpen, onClose, onSubmit }) {
+  // Add this function at the top of your NewSessionModal component
+  const stopPropagation = (e) => {
+    // Stop the event from bubbling up to parent elements
+    e.stopPropagation();
+  };
+
+  // Create a wrapper for handleChange that stops propagation
+  const handleChangeWithStop = (e) => {
+    stopPropagation(e);
+    handleChange(e);
+  };
+
   // Get activity types from context
   const { activityTypes, loading, createActivityType } = useActivities();
   const { showNotification } = useNotification();
@@ -218,7 +230,7 @@ export function NewSessionModal({ isOpen, onClose, onSubmit }) {
           id="type_id"
           name="type_id"
           value={values.type_id}
-          onChange={handleChange}
+          onChange={handleChangeWithStop}
           className={`select w-full border-none ${errors.type_id ? 'select-error' : ''}`}
         >
           <option value="" disabled>Select a type</option>
@@ -356,7 +368,7 @@ export function NewSessionModal({ isOpen, onClose, onSubmit }) {
                 id="name"
                 name="name"
                 value={values.name}
-                onChange={handleChange}
+                onChange={handleChangeWithStop}
                 placeholder="Enter the session title"
                 className={`input input-bordered w-full ${errors.name ? 'input-error' : ''}`}
               />
@@ -368,7 +380,7 @@ export function NewSessionModal({ isOpen, onClose, onSubmit }) {
                 id="description"
                 name="description"
                 value={values.description}
-                onChange={handleChange}
+                onChange={handleChangeWithStop}
                 placeholder="Enter the session description"
                 className={`textarea textarea-bordered w-full h-24 ${errors.description ? 'textarea-error' : ''}`}
               />
@@ -389,7 +401,7 @@ export function NewSessionModal({ isOpen, onClose, onSubmit }) {
                   id="date"
                   name="date"
                   value={values.date}
-                  onChange={handleChange}
+                  onChange={handleChangeWithStop}
                   className={`input input-bordered w-full ${errors.date ? 'input-error' : ''}`}
                 />
               </FormField>
@@ -400,7 +412,7 @@ export function NewSessionModal({ isOpen, onClose, onSubmit }) {
                   id="duration"
                   name="duration"
                   value={values.duration}
-                  onChange={handleChange}
+                  onChange={handleChangeWithStop}
                   min="1"
                   className="input input-bordered w-full"
                 />
@@ -415,7 +427,7 @@ export function NewSessionModal({ isOpen, onClose, onSubmit }) {
                   id="requires_registration"
                   name="requires_registration"
                   checked={values.requires_registration}
-                  onChange={handleChange}
+                  onChange={handleChangeWithStop}
                   className="checkbox checkbox-primary"
                 />
                 <label htmlFor="requires_registration" className="ml-2 block font-medium">
@@ -433,7 +445,7 @@ export function NewSessionModal({ isOpen, onClose, onSubmit }) {
                     id="max_participants"
                     name="max_participants"
                     value={values.max_participants}
-                    onChange={handleChange}
+                    onChange={handleChangeWithStop}
                     min="0"
                     className="input input-bordered w-full"
                   />
@@ -451,7 +463,7 @@ export function NewSessionModal({ isOpen, onClose, onSubmit }) {
                 id="topic"
                 name="topic"
                 value={values.topic}
-                onChange={handleChange}
+                onChange={handleChangeWithStop}
                 placeholder="Enter the session topic"
                 className="input input-bordered w-full"
               />
@@ -465,7 +477,7 @@ export function NewSessionModal({ isOpen, onClose, onSubmit }) {
                   id="speaker"
                   name="speaker"
                   value={values.speaker}
-                  onChange={handleChange}
+                  onChange={handleChangeWithStop}
                   placeholder="Enter the speaker's name"
                   className="input input-bordered w-full"
                 />
@@ -477,7 +489,7 @@ export function NewSessionModal({ isOpen, onClose, onSubmit }) {
                   id="facilitator"
                   name="facilitator"
                   value={values.facilitator}
-                  onChange={handleChange}
+                  onChange={handleChangeWithStop}
                   placeholder="Enter the facilitator's name"
                   className="input input-bordered w-full"
                 />
