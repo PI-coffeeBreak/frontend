@@ -5,6 +5,7 @@ import dayGridPlugin from "@fullcalendar/daygrid";
 import timeGridPlugin from "@fullcalendar/timegrid";
 import Activity from "../components/Activity.jsx";
 import { useActivities } from "../contexts/ActivitiesContext";
+import { useNotification } from "../contexts/NotificationContext";
 
 // Helper function to find an activity by ID
 const findActivityById = (activities, activityId) => {
@@ -40,6 +41,8 @@ export default function DragDropCalendar() {
         setCalendarActivities,
         setOutsideActivities,
     } = useActivities();
+
+    const { showNotification } = useNotification();
 
     useEffect(() => {
         fetchActivityTypes();
@@ -125,6 +128,19 @@ export default function DragDropCalendar() {
         }
     };
 
+    const handleDelete = async (id) => {
+        if (window.confirm("Are you sure you want to delete this activity?")) {
+            try {
+                await deleteActivity(id);
+                setOutsideActivities(prev => prev.filter(activity => activity.id !== parseInt(id)));
+                showNotification("Activity deleted successfully", "success");
+            } catch (error) {
+                showNotification("Failed to delete activity", "error");
+                console.error("Error deleting activity:", error);
+            }
+        }
+    };
+
     return (
         <div className="container mx-auto">
             <h3 className="font-bold mb-2">Atividades</h3>
@@ -139,6 +155,7 @@ export default function DragDropCalendar() {
                         image={activity.image}
                         category={activity.topic}
                         type={activityTypes.find((type) => type.id === activity.type_id)?.type}
+                        onDelete={handleDelete}
                     />
                 ))}
             </div>

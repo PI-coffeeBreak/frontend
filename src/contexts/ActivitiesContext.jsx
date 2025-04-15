@@ -93,6 +93,43 @@ export const ActivitiesProvider = ({ children }) => {
         return "Type not found";
     };
 
+    /**
+     * Create a new activity type
+     * @param {Object} typeData - The new type data { type: string }
+     * @returns {Promise<Object>} The created activity type
+     */
+    const createActivityType = async (typeData) => {
+        try {
+            const response = await axiosWithAuth(keycloak).post(`${baseUrl}/activity-types`, typeData);
+            
+            // Update the activity types list
+            setActivityTypes(prev => [...prev, response.data]);
+            
+            return response.data;
+        } catch (error) {
+            console.error("Error creating activity type:", error);
+            throw error;
+        }
+    };
+
+    const deleteActivity = async (activityId) => {
+        try {
+            // Call the API to delete the activity
+            console.log("Deleting activity with ID:", activityId);
+            await axiosWithAuth(keycloak).delete(`${activitiesBaseUrl}/${activityId}`);
+            
+            // Update local state by removing the deleted activity
+            setActivities(prev => prev.filter(activity => activity.id !== activityId));
+            setCalendarActivities(prev => prev.filter(activity => activity.id !== activityId));
+            setOutsideActivities(prev => prev.filter(activity => activity.id !== activityId));
+            
+            return true;
+        } catch (error) {
+            console.error("Error deleting activity:", error);
+            throw error;
+        }
+    };
+
     useEffect(() => {
         fetchActivities();
         fetchActivityTypes();
@@ -114,6 +151,8 @@ export const ActivitiesProvider = ({ children }) => {
             getActivityType,
             setCalendarActivities,
             setOutsideActivities,
+            createActivityType,
+            deleteActivity,
         }),
         [
             activities,
