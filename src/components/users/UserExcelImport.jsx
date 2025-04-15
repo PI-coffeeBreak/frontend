@@ -16,32 +16,44 @@ const isValidEmail = (email) => {
   return email.includes('@') && email.includes('.');
 };
 
-// Generate a random password
 const generateRandomPassword = () => {
-  const chars = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789!@#$%^&*";
+  const charSets = {
+    uppercase: "ABCDEFGHIJKLMNOPQRSTUVWXYZ",
+    lowercase: "abcdefghijklmnopqrstuvwxyz",
+    numbers: "0123456789",
+    special: "!@#$%^&*"
+  };
+
   const length = 12;
-  let password = "";
-  
-  // Ensure at least one uppercase, one lowercase, one number, and one special character
-  password += chars.charAt(Math.floor(Math.random() * 26));  // Uppercase
-  password += chars.charAt(26 + Math.floor(Math.random() * 26));  // Lowercase
-  password += chars.charAt(52 + Math.floor(Math.random() * 10));  // Number
-  password += chars.charAt(62 + Math.floor(Math.random() * 8));   // Special
-  
-  // Fill the rest randomly
+  const crypto = window.crypto || window.msCrypto;
+  const randomValues = new Uint32Array(length);
+  crypto.getRandomValues(randomValues);
+
+  const password = [
+    charSets.uppercase[randomValues[0] % charSets.uppercase.length],
+    charSets.lowercase[randomValues[1] % charSets.lowercase.length],
+    charSets.numbers[randomValues[2] % charSets.numbers.length],
+    charSets.special[randomValues[3] % charSets.special.length]
+  ];
+
+  const allChars = Object.values(charSets).join('');
   for (let i = 4; i < length; i++) {
-    password += chars.charAt(Math.floor(Math.random() * chars.length));
+    password.push(allChars[randomValues[i] % allChars.length]);
   }
-  
-  // Shuffle the password
-  return password.split('').sort(() => 0.5 - Math.random()).join('');
+
+  for (let i = password.length - 1; i > 0; i--) {
+    const j = randomValues[i] % (i + 1);
+    [password[i], password[j]] = [password[j], password[i]];
+  }
+
+  return password.join('');
 };
 
 // Main Excel parsing function
 const parseExcel = (file) => {
   return new Promise((resolve, reject) => {
     const reader = new FileReader();
-    
+
     reader.onload = (e) => {
       try {
         // Process the workbook and get raw data
@@ -55,7 +67,7 @@ const parseExcel = (file) => {
           raw: false,
           defval: ""
         });
-        
+
         // Filter out rows with invalid emails
         const validData = allRows
           .filter(row => isValidEmail(row.email || ''))
@@ -66,13 +78,13 @@ const parseExcel = (file) => {
             role: row.role || "Participant",
             temporaryPassword: row.password || row.temporaryPassword || generateRandomPassword(),
           }));
-        
+
         // Count invalid emails
         const invalidCount = allRows.length - validData.length;
-        
+
         console.log("Parsed Excel data:", validData);
-        resolve({ 
-          validData, 
+        resolve({
+          validData,
           stats: {
             total: allRows.length,
             valid: validData.length,
@@ -84,9 +96,9 @@ const parseExcel = (file) => {
         reject(new Error("Failed to parse Excel file. Please ensure it's a valid Excel format."));
       }
     };
-    
+
     reader.onerror = (error) => reject(error);
-    
+
     // Use modern ArrayBuffer reading method
     reader.readAsArrayBuffer(file);
   });
@@ -97,23 +109,23 @@ const parseExcel = (file) => {
  */
 export function UserExcelImport({ isOpen, onClose, onImport }) {
   // Use the form hook for state management
-  const { 
-    values, 
-    errors, 
+  const {
+    values,
+    errors,
     setErrors,
-    handleFileChange, 
-    resetForm 
+    handleFileChange,
+    resetForm
   } = useForm({
     file: null
   });
-  
+
   const [uploadProgress, setUploadProgress] = useState(0);
   const [isLoading, setIsLoading] = useState(false);
   const [isTemplateLoading, setIsTemplateLoading] = useState(false);
   const [userData, setUserData] = useState([]);
   const [fileStats, setFileStats] = useState(null);
   const fileInputRef = useRef(null);
-  
+
   const { showNotification } = useNotification();
 
   // Reset form when modal closes
@@ -124,7 +136,7 @@ export function UserExcelImport({ isOpen, onClose, onImport }) {
     setFileStats(null);
     onClose();
   };
-  
+
   const handleFileInputChange = (e) => {
     const file = e.target.files[0];
     processFile(file);
@@ -140,24 +152,24 @@ export function UserExcelImport({ isOpen, onClose, onImport }) {
 
   const processFile = async (file) => {
     if (!file) return;
-    
+
     // Reset errors
     setErrors({});
-    
+
     // Validate file size
     if (file.size > MAX_FILE_SIZE) {
       setErrors({ file: "File size exceeds the 1MB limit. Please select a smaller file." });
       showNotification("File size exceeds the 1MB limit", "error");
       return;
     }
-    
+
     // Validate file type
     if (file.type !== ALLOWED_FILE_TYPE) {
       setErrors({ file: "Please select a valid Excel file (.xlsx)." });
       showNotification("Invalid file type. Please select an Excel file (.xlsx)", "error");
       return;
     }
-    
+
     // Create synthetic event for the form hook
     const syntheticEvent = {
       target: {
@@ -165,23 +177,29 @@ export function UserExcelImport({ isOpen, onClose, onImport }) {
         files: [file]
       }
     };
-    
+
     handleFileChange(syntheticEvent);
     simulateUpload();
-    
+
     try {
       // Parse Excel file
       const { validData, stats } = await parseExcel(file);
-      
-      setUserData(validData);
+
+      // Add UPDATE_PASSWORD required action for Keycloak
+      const validDataWithRequiredActions = validData.map(user => ({
+        ...user,
+        requiredActions: ["UPDATE_PASSWORD"]
+      }));
+
+      setUserData(validDataWithRequiredActions);
       setFileStats(stats);
-      
+
       // Show warnings about invalid emails
       if (stats.invalid > 0) {
         const warningMessage = `${stats.invalid} of ${stats.total} entries have invalid email addresses and will be skipped.`;
         showNotification(warningMessage, "warning");
       }
-      
+
       if (validData.length === 0) {
         setErrors({ file: "No valid user data found in the file. Please check that all email addresses are valid." });
       } else {
@@ -196,7 +214,7 @@ export function UserExcelImport({ isOpen, onClose, onImport }) {
   const simulateUpload = () => {
     let progress = 0;
     setUploadProgress(0);
-    
+
     const interval = setInterval(() => {
       progress += 10;
       setUploadProgress(progress);
@@ -222,7 +240,7 @@ export function UserExcelImport({ isOpen, onClose, onImport }) {
 
   const handleDownloadTemplate = async () => {
     setIsTemplateLoading(true);
-    
+
     try {
       // Create a template with the structure expected for users
       const worksheet = XLSX.utils.json_to_sheet([
@@ -241,19 +259,19 @@ export function UserExcelImport({ isOpen, onClose, onImport }) {
           temporaryPassword: "Temp5678!"
         }
       ]);
-      
+
       // Adjust column widths for better readability
       const wscols = [
-        {wch:15}, {wch:15}, {wch:25}, {wch:15}, {wch:20}
+        { wch: 15 }, { wch: 15 }, { wch: 25 }, { wch: 15 }, { wch: 20 }
       ];
       worksheet['!cols'] = wscols;
-      
+
       const workbook = XLSX.utils.book_new();
       XLSX.utils.book_append_sheet(workbook, worksheet, "Users");
-      
+
       // Generate and download the file
       XLSX.writeFile(workbook, "users_template.xlsx");
-      
+
       showNotification("Template downloaded successfully", "success");
     } catch (error) {
       console.error("Error generating template:", error);
@@ -265,44 +283,44 @@ export function UserExcelImport({ isOpen, onClose, onImport }) {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    
+
     // Validate before submission
     if (!values.file) {
       setErrors({ file: "Please select a file to import" });
       return;
     }
-    
+
     if (userData.length === 0) {
       setErrors({ file: "No valid user data found in the file. Please check that all email addresses include the @ symbol." });
       return;
     }
-    
+
     setIsLoading(true);
-    
+
     try {
       // All validation was already done during file processing
       await onImport(userData);
-      
+
       // Clear the file after successful import
       resetForm();
       setUserData([]);
       setFileStats(null);
-      
+
       // Close the modal
       onClose();
-      
+
       showNotification(`Successfully imported ${userData.length} users`, "success");
     } catch (error) {
       console.error("Error importing users:", error);
-      setErrors({ 
-        submit: error.message || "Failed to import users" 
+      setErrors({
+        submit: error.message || "Failed to import users"
       });
       showNotification(error.message || "Failed to import users", "error");
     } finally {
       setIsLoading(false);
     }
   };
-  
+
   const preventDefaults = (e) => {
     e.preventDefault();
     e.stopPropagation();
@@ -323,17 +341,17 @@ export function UserExcelImport({ isOpen, onClose, onImport }) {
     <div className="modal modal-open">
       <div className="modal-box max-w-4xl">
         <h3 className="font-bold text-xl mb-6">Import Users from Excel</h3>
-        
+
         {/* Error message for submission */}
         {errors.submit && (
           <div className="alert alert-error mb-4">
             <span>{errors.submit}</span>
           </div>
         )}
-        
+
         <form onSubmit={handleSubmit}>
           {/* File upload area */}
-          <div 
+          <div
             className={`border-2 border-dashed rounded-lg p-6 text-center mb-6 ${errors.file ? 'border-error' : 'border-gray-300'}`}
             {...dragEvents}
           >
@@ -344,7 +362,7 @@ export function UserExcelImport({ isOpen, onClose, onImport }) {
               className="hidden"
               accept=".xlsx"
             />
-            
+
             {!values.file ? (
               <div className="py-8">
                 <FiUpload className="mx-auto text-4xl mb-4 text-gray-400" />
@@ -371,15 +389,15 @@ export function UserExcelImport({ isOpen, onClose, onImport }) {
                     <FaTrash />
                   </button>
                 </div>
-                
+
                 {/* Progress bar */}
                 <div className="w-full bg-gray-200 rounded-full h-2.5 mb-4">
-                  <div 
-                    className="bg-primary h-2.5 rounded-full" 
+                  <div
+                    className="bg-primary h-2.5 rounded-full"
                     style={{ width: `${uploadProgress}%` }}
                   ></div>
                 </div>
-                
+
                 <div className="text-sm">
                   <span className="text-success">File processed</span>
                   {fileStats && (
@@ -397,12 +415,12 @@ export function UserExcelImport({ isOpen, onClose, onImport }) {
                 </div>
               </div>
             )}
-            
+
             {errors.file && (
               <div className="mt-2 text-error text-sm">{errors.file}</div>
             )}
           </div>
-          
+
           {/* Template download and import buttons */}
           <div className="flex flex-col sm:flex-row justify-between gap-4 mt-6">
             <button
@@ -414,7 +432,7 @@ export function UserExcelImport({ isOpen, onClose, onImport }) {
               {isTemplateLoading ? <FaSpinner className="animate-spin mr-2" /> : <FaDownload className="mr-2" />}
               Download Template
             </button>
-            
+
             <div className="flex gap-4">
               <button
                 type="button"
@@ -424,7 +442,7 @@ export function UserExcelImport({ isOpen, onClose, onImport }) {
               >
                 Cancel
               </button>
-              
+
               <button
                 type="submit"
                 className="btn btn-primary"
