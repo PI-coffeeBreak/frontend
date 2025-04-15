@@ -65,7 +65,6 @@ export default function Activities() {
 
   const openExcelModal = () => setIsExcelModalOpen(true);
   const closeExcelModal = () => setIsExcelModalOpen(false);
-  
 
   const openNewSessionModal = () => setIsNewSessionModalOpen(true);
   const closeNewSessionModal = () => setIsNewSessionModalOpen(false);
