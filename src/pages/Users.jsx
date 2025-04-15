@@ -3,7 +3,7 @@ import { useUsers } from "../contexts/UsersContext";
 import { useKeycloak } from "@react-keycloak/web";
 import Pagination from "../components/Pagination.jsx";
 import CreateCard from "../components/CreateCard.jsx";
-import { FaUsers, FaUser, FaUsersCog, FaPlus, FaTrash, FaCheck, FaLock, FaShieldAlt } from "react-icons/fa";
+import { FaUsers, FaUser, FaUsersCog, FaPlus, FaTrash, FaCheck, FaLock, FaShieldAlt, FaKey } from "react-icons/fa";
 import KeycloakAdminService from "../services/KeycloakAdminService";
 
 export default function Users() {
@@ -31,7 +31,12 @@ export default function Users() {
         fetchAllRolesAndPermissions,
         fetchUserRolesAndPermissions,
         assignRoleToUser,
-        removeRoleFromUser
+        removeRoleFromUser,
+        // New role management functions
+        createRole,
+        getRolePermissions,
+        addPermissionToRole,
+        removePermissionFromRole
     } = useUsers();
     
     // Local state for UI controls
@@ -43,6 +48,14 @@ export default function Users() {
     const [activeTab, setActiveTab] = useState("roles");
     const usersPerPage = 5;
 
+    // Role management state
+    const [roleManagementTab, setRoleManagementTab] = useState("create");
+    const [newRoleName, setNewRoleName] = useState("");
+    
+    // Role permissions management state
+    const [selectedRole, setSelectedRole] = useState(null);
+    const [selectedRolePermissions, setSelectedRolePermissions] = useState([]);
+    
     // Refresh users when component mounts
     useEffect(() => {
         fetchUsers();
@@ -63,6 +76,98 @@ export default function Users() {
     const handlePageChange = (pageNumber) => {
         if (pageNumber >= 1 && pageNumber <= totalPages) {
             setCurrentPage(pageNumber);
+        }
+    };
+
+    // Open modal for managing roles
+    const openRoleManagementModal = () => {
+        setRoleManagementTab("create");
+        setNewRoleName("");
+        
+        // If there are roles, select the first one for permissions management
+        if (allRoles.length > 0) {
+            setSelectedRole(allRoles[0]);
+            loadRolePermissions(allRoles[0]);
+        } else {
+            setSelectedRole(null);
+            setSelectedRolePermissions([]);
+        }
+        
+        document.getElementById('role_management_modal').showModal();
+    };
+    
+    // Load permissions for a role
+    const loadRolePermissions = async (role) => {
+        try {
+            const permissions = await getRolePermissions(role.name);
+            setSelectedRolePermissions(permissions);
+        } catch (error) {
+            console.error("Error fetching role permissions:", error);
+        }
+    };
+
+    // Handle role selection change
+    const handleRoleChange = (e) => {
+        const role = allRoles.find(r => r.name === e.target.value);
+        if (role) {
+            setSelectedRole(role);
+            loadRolePermissions(role);
+        }
+    };
+
+    // Handle role creation
+    const handleCreateRole = async () => {
+        if (!newRoleName) return;
+        
+        try {
+            await createRole(newRoleName);
+            setNewRoleName("");
+            // Refresh roles
+            const result = await fetchAllRolesAndPermissions();
+            
+            // After creating a role, switch to permissions tab with the new role selected
+            if (result && result.roles.length > 0) {
+                // Find the newly created role
+                const newRole = result.roles.find(r => r.name === `cb-${newRoleName}` || r.name === newRoleName);
+                if (newRole) {
+                    setSelectedRole(newRole);
+                    setRoleManagementTab("permissions");
+                    loadRolePermissions(newRole);
+                }
+            }
+        } catch (error) {
+            console.error("Failed to create role:", error);
+        }
+    };
+
+    // Check if a role has a specific permission
+    const roleHasPermission = (permissionName) => {
+        return selectedRolePermissions.some(permission => permission.name === permissionName);
+    };
+
+    // Handle adding permission to role
+    const handleAddPermissionToRole = async (permission) => {
+        if (!selectedRole) return;
+        
+        try {
+            await addPermissionToRole(selectedRole.name, permission);
+            // Refresh permissions for this role
+            loadRolePermissions(selectedRole);
+        } catch (error) {
+            console.error("Error adding permission to role:", error);
+        }
+    };
+
+    // Handle removing permission from role
+    const handleRemovePermissionFromRole = async (permission) => {
+        if (!selectedRole) return;
+        
+        try {
+            await removePermissionFromRole(selectedRole.name, permission);
+            // Refresh permissions for this role
+            loadRolePermissions(selectedRole);
+        } catch (error) {
+            console.error("Error removing permission from role:", error);
         }
     };
 
@@ -154,29 +259,14 @@ export default function Users() {
                         <CreateCard
                             icon={FaUsersCog}
                             title="Manage roles"
-                            description="Create or change a role."
+                            description="Create roles and assign permissions."
+                            onClick={openRoleManagementModal}
                         />
                     </div>
 
                     <h1 className="text-3xl font-bold mt-8">Users</h1>
 
                 {!hasAdminPermissions && <AdminPermissionsWarning />}
-
-                {/* Debug section */}
-                <div className="mt-4 mb-4">
-                    <button 
-                        className="btn btn-sm btn-outline" 
-                        onClick={() => {
-                            const roles = keycloak?.tokenParsed?.realm_access?.roles || [];
-                            console.log("Your roles:", roles);
-                            alert("Your roles: " + roles.join(", ") + 
-                                "\n\nRequired roles: admin, realm-admin, manage-users, cb-organizer, Organizer" +
-                                "\n\nCheck console for more details.");
-                        }}
-                    >
-                        Check My Roles
-                    </button>
-                </div>
 
                 <div className="flex gap-8 mt-4">
                     <div className="flex gap-4">
@@ -249,7 +339,7 @@ export default function Users() {
                                                     onClick={() => openRoleModal(user.id, user.role)}
                                                     disabled={!hasAdminPermissions}
                                                 >
-                                                    <FaShieldAlt className="mr-1" /> Manage Roles & Permissions
+                                                    <FaShieldAlt className="mr-1" /> Assign Roles
                                                 </button>
                                                 <button 
                                                     className={`btn ${user.banned ? "btn-success" : "btn-error"} btn-xs`}
@@ -284,6 +374,142 @@ export default function Users() {
                     </>
                 )}
             
+            {/* Role Management Modal */}
+            <dialog id="role_management_modal" className="modal">
+                <div className="modal-box max-w-4xl">
+                    <form method="dialog">
+                        <button className="btn btn-sm btn-circle btn-ghost absolute right-2 top-2">✕</button>
+                    </form>
+                    <h3 className="font-bold text-lg mb-4">Role Management</h3>
+                    
+                    {/* Tabs */}
+                    <div className="tabs tabs-boxed mb-4">
+                        <button 
+                            className={`tab ${roleManagementTab === "create" ? "tab-active" : ""}`}
+                            onClick={() => setRoleManagementTab("create")}
+                        >
+                            <FaPlus className="mr-2" /> Create Role
+                        </button>
+                        <button 
+                            className={`tab ${roleManagementTab === "permissions" ? "tab-active" : ""}`}
+                            onClick={() => setRoleManagementTab("permissions")}
+                            disabled={allRoles.length === 0}
+                        >
+                            <FaKey className="mr-2" /> Manage Permissions
+                        </button>
+                    </div>
+                    
+                    {/* Create Role Tab */}
+                    {roleManagementTab === "create" && (
+                        <div className="space-y-4">
+                         
+                            
+                            <div className="form-control">
+                                <label className="label">
+                                    <span className="label-text">Role Name</span>
+                                 
+                                </label>
+                                <input
+                                    type="text"
+                                    className="input input-bordered w-full"
+                                    placeholder="organizer"
+                                    value={newRoleName}
+                                    onChange={(e) => setNewRoleName(e.target.value)}
+                                />
+                            </div>
+                            
+                            <button 
+                                className="btn btn-primary w-full" 
+                                onClick={handleCreateRole}
+                                disabled={!newRoleName}
+                            >
+                                Create Role
+                            </button>
+                        </div>
+                    )}
+                    
+                    {/* Manage Permissions Tab */}
+                    {roleManagementTab === "permissions" && (
+                        <div>
+                            {selectedRole ? (
+                                <>
+                                
+                                    
+                                    <div className="mb-4">
+                                        <label className="label">
+                                            <span className="label-text font-bold">Select Role:</span>
+                                        </label>
+                                        <select 
+                                            className="select select-bordered w-full"
+                                            value={selectedRole.name}
+                                            onChange={handleRoleChange}
+                                        >
+                                            {allRoles.map(role => (
+                                                <option key={role.id} value={role.name}>
+                                                    {role.displayName || role.name}
+                                                </option>
+                                            ))}
+                                        </select>
+                                    </div>
+                                    
+                                    <div className="overflow-x-auto">
+                                        <table className="table table-zebra w-full">
+                                            <thead>
+                                                <tr>
+                                                    <th>Permission Name</th>
+                                                    <th>Description</th>
+                                                    <th>Actions</th>
+                                                </tr>
+                                            </thead>
+                                            <tbody>
+                                                {allPermissions.map(permission => (
+                                                    <tr key={permission.id}>
+                                                        <td>{permission.displayName || permission.name}</td>
+                                                        <td>{permission.description || "No description"}</td>
+                                                        <td>
+                                                            {roleHasPermission(permission.name) ? (
+                                                                <div className="flex items-center gap-2">
+                                                                    <span className="badge badge-success gap-1">
+                                                                        <FaCheck size={12} /> Assigned
+                                                                    </span>
+                                                                    <button 
+                                                                        className="btn btn-error btn-xs"
+                                                                        onClick={() => handleRemovePermissionFromRole(permission)}
+                                                                    >
+                                                                        <FaTrash size={12} />
+                                                                    </button>
+                                                                </div>
+                                                            ) : (
+                                                                <button 
+                                                                    className="btn btn-primary btn-xs"
+                                                                    onClick={() => handleAddPermissionToRole(permission)}
+                                                                >
+                                                                    <FaPlus size={12} /> Assign
+                                                                </button>
+                                                            )}
+                                                        </td>
+                                                    </tr>
+                                                ))}
+                                            </tbody>
+                                        </table>
+                                    </div>
+                                </>
+                            ) : (
+                                <div className="alert alert-warning">
+                                    <span>No roles available. Create a role first.</span>
+                                </div>
+                            )}
+                        </div>
+                    )}
+                    
+                    <div className="modal-action">
+                        <form method="dialog">
+                            <button className="btn">Close</button>
+                        </form>
+                    </div>
+                </div>
+            </dialog>
+
             {/* Legacy Role Management Modal */}
             <dialog id="role_modal" className="modal">
                 <div className="modal-box">
@@ -319,113 +545,49 @@ export default function Users() {
                     <form method="dialog">
                         <button className="btn btn-sm btn-circle btn-ghost absolute right-2 top-2">✕</button>
                     </form>
-                    <h3 className="font-bold text-lg mb-4">Manage User Roles & Permissions</h3>
+                    <h3 className="font-bold text-lg mb-4">Assign Roles to User</h3>
                     
-                    {/* Tabs */}
-                    <div className="tabs tabs-boxed mb-4">
-                        <button 
-                            className={`tab ${activeTab === "roles" ? "tab-active" : ""}`}
-                            onClick={() => setActiveTab("roles")}
-                        >
-                            <FaUsersCog className="mr-2" /> Roles
-                        </button>
-                        <button 
-                            className={`tab ${activeTab === "permissions" ? "tab-active" : ""}`}
-                            onClick={() => setActiveTab("permissions")}
-                        >
-                            <FaLock className="mr-2" /> Permissions
-                        </button>
+                    <div className="overflow-x-auto">
+                        <table className="table table-zebra w-full">
+                            <thead>
+                                <tr>
+                                    <th>Role Name</th>
+                                    <th>Description</th>
+                                    <th>Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {allRoles.map(role => (
+                                    <tr key={role.id}>
+                                        <td>{role.displayName || role.name}</td>
+                                        <td>{role.description || "No description"}</td>
+                                        <td>
+                                            {userHasRole(selectedUserId, role.name) ? (
+                                                <div className="flex items-center gap-2">
+                                                    <span className="badge badge-success gap-1">
+                                                        <FaCheck size={12} /> Assigned
+                                                    </span>
+                                                    <button 
+                                                        className="btn btn-error btn-xs"
+                                                        onClick={() => handleRemoveRole(selectedUserId, role)}
+                                                    >
+                                                        <FaTrash size={12} />
+                                                    </button>
+                                                </div>
+                                            ) : (
+                                                <button 
+                                                    className="btn btn-primary btn-xs"
+                                                    onClick={() => handleAssignRole(selectedUserId, role)}
+                                                >
+                                                    <FaPlus size={12} /> Assign
+                                                </button>
+                                            )}
+                                        </td>
+                                    </tr>
+                                ))}
+                            </tbody>
+                        </table>
                     </div>
-                    
-                    {/* Roles Tab Content */}
-                    {activeTab === "roles" && (
-                        <div className="overflow-x-auto">
-                            <table className="table table-zebra w-full">
-                                <thead>
-                                    <tr>
-                                        <th>Role Name</th>
-                                        <th>Description</th>
-                                        <th>Actions</th>
-                                    </tr>
-                                </thead>
-                                <tbody>
-                                    {allRoles.map(role => (
-                                        <tr key={role.id}>
-                                            <td>{role.displayName || role.name}</td>
-                                            <td>{role.description || "No description"}</td>
-                                            <td>
-                                                {userHasRole(selectedUserId, role.name) ? (
-                                                    <div className="flex items-center gap-2">
-                                                        <span className="badge badge-success gap-1">
-                                                            <FaCheck size={12} /> Assigned
-                                                        </span>
-                                                        <button 
-                                                            className="btn btn-error btn-xs"
-                                                            onClick={() => handleRemoveRole(selectedUserId, role)}
-                                                        >
-                                                            <FaTrash size={12} />
-                                                        </button>
-                                                    </div>
-                                                ) : (
-                                                    <button 
-                                                        className="btn btn-primary btn-xs"
-                                                        onClick={() => handleAssignRole(selectedUserId, role)}
-                                                    >
-                                                        <FaPlus size={12} /> Assign
-                                                    </button>
-                                                )}
-                                            </td>
-                                        </tr>
-                                    ))}
-                                </tbody>
-                            </table>
-                        </div>
-                    )}
-                    
-                    {/* Permissions Tab Content */}
-                    {activeTab === "permissions" && (
-                        <div className="overflow-x-auto">
-                            <table className="table table-zebra w-full">
-                                <thead>
-                                    <tr>
-                                        <th>Permission Name</th>
-                                        <th>Description</th>
-                                        <th>Actions</th>
-                                    </tr>
-                                </thead>
-                                <tbody>
-                                    {allPermissions.map(permission => (
-                                        <tr key={permission.id}>
-                                            <td>{permission.displayName || permission.name}</td>
-                                            <td>{permission.description || "No description"}</td>
-                                            <td>
-                                                {userHasPermission(selectedUserId, permission.name) ? (
-                                                    <div className="flex items-center gap-2">
-                                                        <span className="badge badge-success gap-1">
-                                                            <FaCheck size={12} /> Assigned
-                                                        </span>
-                                                        <button 
-                                                            className="btn btn-error btn-xs"
-                                                            onClick={() => handleRemoveRole(selectedUserId, permission)}
-                                                        >
-                                                            <FaTrash size={12} />
-                                                        </button>
-                                                    </div>
-                                                ) : (
-                                                    <button 
-                                                        className="btn btn-primary btn-xs"
-                                                        onClick={() => handleAssignRole(selectedUserId, permission)}
-                                                    >
-                                                        <FaPlus size={12} /> Assign
-                                                    </button>
-                                                )}
-                                            </td>
-                                        </tr>
-                                    ))}
-                                </tbody>
-                            </table>
-                        </div>
-                    )}
                     
                     <div className="modal-action">
                         <form method="dialog">

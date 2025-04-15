@@ -311,6 +311,103 @@ export const UsersProvider = ({ children }) => {
         }
     };
 
+    // Create a new role
+    const createRole = async (roleName, description = "") => {
+        const adminService = initKeycloakAdminService();
+        if (!adminService) {
+            console.error("Could not initialize admin service - missing token or authentication");
+            return;
+        }
+
+        setIsLoading(true);
+        setError(null);
+        try {
+            console.log("Creating new role:", roleName);
+            const result = await adminService.createRole(roleName, description);
+            
+            // Refresh roles after creation
+            await fetchAllRolesAndPermissions();
+            
+            return result;
+        } catch (error) {
+            console.error("Error creating role:", error);
+            console.error("Error details:", error.response ? error.response.data : "No response data");
+            setError("Failed to create role. Please try again later.");
+            throw error;
+        } finally {
+            setIsLoading(false);
+        }
+    };
+
+    // Get permissions for a specific role
+    const getRolePermissions = async (roleName) => {
+        const adminService = initKeycloakAdminService();
+        if (!adminService) {
+            console.error("Could not initialize admin service - missing token or authentication");
+            return [];
+        }
+
+        setIsLoading(true);
+        setError(null);
+        try {
+            console.log("Getting permissions for role:", roleName);
+            const permissions = await adminService.getRolePermissions(roleName);
+            return permissions;
+        } catch (error) {
+            console.error(`Error getting permissions for role ${roleName}:`, error);
+            setError("Failed to get role permissions. Please try again later.");
+            return [];
+        } finally {
+            setIsLoading(false);
+        }
+    };
+
+    // Add permission to role
+    const addPermissionToRole = async (roleName, permission) => {
+        const adminService = initKeycloakAdminService();
+        if (!adminService) {
+            console.error("Could not initialize admin service - missing token or authentication");
+            return;
+        }
+
+        setIsLoading(true);
+        setError(null);
+        try {
+            console.log(`Adding permission ${permission.name} to role ${roleName}`);
+            const result = await adminService.addPermissionToRole(roleName, permission);
+            return result;
+        } catch (error) {
+            console.error(`Error adding permission to role ${roleName}:`, error);
+            setError("Failed to add permission to role. Please try again later.");
+            throw error;
+        } finally {
+            setIsLoading(false);
+        }
+    };
+
+    // Remove permission from role
+    const removePermissionFromRole = async (roleName, permission) => {
+        const adminService = initKeycloakAdminService();
+        if (!adminService) {
+            console.error("Could not initialize admin service - missing token or authentication");
+            return;
+        }
+
+        setIsLoading(true);
+        setError(null);
+        try {
+            console.log(`Removing permission ${permission.name} from role ${roleName}`);
+            const result = await adminService.removePermissionFromRole(roleName, permission);
+            return result;
+        } catch (error) {
+            console.error(`Error removing permission from role ${roleName}:`, error);
+            setError("Failed to remove permission from role. Please try again later.");
+            throw error;
+        } finally {
+            setIsLoading(false);
+        }
+    };
+
     // Fetch roles on init
     useEffect(() => {
         if (initialized && keycloak?.authenticated) {
@@ -331,7 +428,7 @@ export const UsersProvider = ({ children }) => {
             updateUserRole,
             toggleUserBan,
             getUserCountByRole,
-            // New Keycloak Admin API functions
+            // Keycloak Admin API functions
             allRoles,
             allPermissions,
             userRoles,
@@ -339,7 +436,12 @@ export const UsersProvider = ({ children }) => {
             fetchAllRolesAndPermissions,
             fetchUserRolesAndPermissions,
             assignRoleToUser,
-            removeRoleFromUser
+            removeRoleFromUser,
+            // New role management functions
+            createRole,
+            getRolePermissions,
+            addPermissionToRole,
+            removePermissionFromRole
         }),
         [users, usersGroupedByRole, isLoading, error, allRoles, allPermissions, userRoles, userPermissions]
     );

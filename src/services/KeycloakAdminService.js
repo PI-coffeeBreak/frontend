@@ -175,6 +175,126 @@ class KeycloakAdminService {
   static hasAdminPermissions(keycloak) {
     return hasUserManagementPermissions(keycloak);
   }
+
+  // Create a new role
+  async createRole(roleName, description = "") {
+    try {
+      // Ensure the role name follows the cb- convention
+      const formattedRoleName = roleName.startsWith("cb-") ? roleName : `cb-${roleName}`;
+      
+      console.log(`Creating new role: ${formattedRoleName}`);
+      
+      const response = await this.client.post(`${this.baseUrl}/roles`, {
+        name: formattedRoleName,
+        description: description
+      });
+      
+      return {
+        success: true,
+        role: response.data
+      };
+    } catch (error) {
+      console.error("Error creating role:", error);
+      console.error("Error details:", error.response?.data || "No response data");
+      throw error;
+    }
+  }
+
+  // Get role by name
+  async getRoleByName(roleName) {
+    try {
+      console.log(`Getting role by name: ${roleName}`);
+      
+      const response = await this.client.get(`${this.baseUrl}/roles/${roleName}`);
+      return {
+        ...response.data,
+        displayName: formatRoleName(response.data.name)
+      };
+    } catch (error) {
+      console.error(`Error getting role ${roleName}:`, error);
+      console.error("Error details:", error.response?.data || "No response data");
+      throw error;
+    }
+  }
+
+  // Get role permissions (composite roles)
+  async getRolePermissions(roleName) {
+    try {
+      console.log(`Getting permissions for role: ${roleName}`);
+      
+      const response = await this.client.get(`${this.baseUrl}/roles/${roleName}/composites`);
+      
+      if (response.data && Array.isArray(response.data)) {
+        return response.data.map(role => ({
+          ...role,
+          displayName: formatRoleName(role.name)
+        }));
+      } else {
+        console.warn("Role permissions response data is not an array:", response.data);
+        return [];
+      }
+    } catch (error) {
+      console.error(`Error getting permissions for role ${roleName}:`, error);
+      console.error("Error details:", error.response?.data || "No response data");
+      return [];
+    }
+  }
+
+  // Add permission to role (make role composite)
+  async addPermissionToRole(roleName, permission) {
+    try {
+      // Clean permission object
+      const cleanPermission = {
+        id: permission.id,
+        name: permission.name,
+        description: permission.description,
+        composite: permission.composite,
+        clientRole: permission.clientRole,
+        containerId: permission.containerId
+      };
+      
+      console.log(`Adding permission ${permission.name} to role ${roleName}`);
+      
+      await this.client.post(
+        `${this.baseUrl}/roles/${roleName}/composites`,
+        [cleanPermission]
+      );
+      
+      return { success: true };
+    } catch (error) {
+      console.error(`Error adding permission to role ${roleName}:`, error);
+      console.error("Error details:", error.response?.data || "No response data");
+      throw error;
+    }
+  }
+
+  // Remove permission from role
+  async removePermissionFromRole(roleName, permission) {
+    try {
+      // Clean permission object
+      const cleanPermission = {
+        id: permission.id,
+        name: permission.name,
+        description: permission.description,
+        composite: permission.composite,
+        clientRole: permission.clientRole,
+        containerId: permission.containerId
+      };
+      
+      console.log(`Removing permission ${permission.name} from role ${roleName}`);
+      
+      await this.client.delete(
+        `${this.baseUrl}/roles/${roleName}/composites`,
+        { data: [cleanPermission] }
+      );
+      
+      return { success: true };
+    } catch (error) {
+      console.error(`Error removing permission from role ${roleName}:`, error);
+      console.error("Error details:", error.response?.data || "No response data");
+      throw error;
+    }
+  }
 }
 
 export default KeycloakAdminService; 
