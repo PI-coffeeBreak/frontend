@@ -20,6 +20,7 @@ export default function Sidebar() {
     const { eventInfo, isLoading: eventLoading, error: eventError, getEventInfo } = useEvent();
     const { getMediaUrl } = useMedia();
 
+    
     // Fetch user profile from Keycloak when initialized
     useEffect(() => {
         if (initialized && keycloak.authenticated) {
