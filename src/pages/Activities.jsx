@@ -19,7 +19,6 @@ export default function Activities() {
     activities, 
     activityTypes,
     fetchActivities,
-    updateActivity,
     getActivityType // Using getActivityType function from context
   } = useActivities();
 
@@ -31,7 +30,7 @@ export default function Activities() {
 
   // Check if user can create activities based on their roles
   const canCreateActivities = () => {
-    if (!keycloak || !keycloak.authenticated) {
+    if (!keycloak?.authenticated) {
       return false;
     }
     

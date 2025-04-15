@@ -24,10 +24,16 @@ export function useForm(initialValues = {}) {
   const handleChange = useCallback((e) => {
     const { name, value, type, checked } = e.target;
     
-    // Handle different input types appropriately
-    const newValue = type === 'checkbox' ? checked : 
-                    (type === 'number' && value !== '') ? Number(value) : 
-                    value;
+    // Determine the new value based on input type
+    let newValue;
+    
+    if (type === 'checkbox') {
+      newValue = checked;
+    } else if (type === 'number' && value !== '') {
+      newValue = Number(value);
+    } else {
+      newValue = value;
+    }
     
     setValues(prev => ({
       ...prev,
