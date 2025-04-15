@@ -61,7 +61,7 @@ export function Modal({ isOpen, onClose, title, description, children }) {
 
         <button
           ref={closeButtonRef}
-          className="btn btn-sm btn-circle absolute right-2 top-2"
+          className="btn absolute right-2 top-2"
           onClick={onClose}
           aria-label="Close"
         >
@@ -70,7 +70,7 @@ export function Modal({ isOpen, onClose, title, description, children }) {
 
         <div className="mt-4">{children}</div>
       </div>
-      {/* Fix the backdrop to be properly accessible */}
+
       <button 
         className="modal-backdrop"
         onClick={onClose}

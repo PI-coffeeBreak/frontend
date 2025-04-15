@@ -6,18 +6,15 @@ import * as XLSX from 'xlsx';
 import { Modal } from "../common/Modal";
 import { useNotification } from "../../contexts/NotificationContext";
 import { useForm } from "../../hooks/useForm";
+import {MAX_FILE_SIZE} from "../../consts.js";
+import {ALLOWED_FILE_TYPE} from "../../consts.js";
 
-// Constants
-const MAX_FILE_SIZE = 1024 * 1024; // 1MB
-const ALLOWED_FILE_TYPE = "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet";
-
-// Helper function to convert raw Excel data to the API format
 const formatExcelData = (rawData) => {
   return rawData.map(row => ({
     name: row.name || "",
     description: row.description || "",
     image: row.image || "",
-    date: row.start_time || null, // Map from start_time to date
+    date: row.start_time || null,
     duration: isNaN(parseInt(row.duration)) ? 0 : parseInt(row.duration),
     type_id: isNaN(parseInt(row.type_id)) ? 0 : parseInt(row.type_id),
     topic: row.topic || "",
@@ -26,36 +23,30 @@ const formatExcelData = (rawData) => {
   }));
 };
 
-// Helper function to process workbook data
 const processWorkbook = (data) => {
   const workbook = XLSX.read(new Uint8Array(data), { type: 'array' });
-  
-  // Get the first sheet only
+
   const firstSheetName = workbook.SheetNames[0];
   if (!firstSheetName) {
     throw new Error("Excel file contains no sheets");
   }
   
   const worksheet = workbook.Sheets[firstSheetName];
-  
-  // Convert to JSON with header row as keys
+
   return XLSX.utils.sheet_to_json(worksheet, {
-    raw: false, // Convert all values to strings
-    defval: ""  // Default empty cells to empty string
+    raw: false,
+    defval: ""
   });
 };
 
-// Main Excel parsing function
 const parseExcel = (file) => {
   return new Promise((resolve, reject) => {
     const reader = new FileReader();
     
     reader.onload = (e) => {
       try {
-        // Process the workbook and get raw data
         const rawData = processWorkbook(e.target.result);
-        
-        // Format data to match the API's expected structure
+
         const formattedData = formatExcelData(rawData);
         
         console.log("Parsed Excel data:", formattedData);
@@ -67,17 +58,14 @@ const parseExcel = (file) => {
     };
     
     reader.onerror = (error) => reject(error);
-    
-    // Use modern ArrayBuffer reading method
+
     reader.readAsArrayBuffer(file);
   });
 };
 
-/**
- * Modal for importing activities from Excel file
- */
+
 export function ExcelImportModal({ isOpen, onClose, onImport }) {
-  // Use the form hook for state management
+
   const { 
     values, 
     errors, 
@@ -95,7 +83,6 @@ export function ExcelImportModal({ isOpen, onClose, onImport }) {
   
   const { showNotification } = useNotification();
 
-  // Reset form when modal closes
   const handleClose = () => {
     resetForm();
     setUploadProgress(0);
@@ -117,25 +104,21 @@ export function ExcelImportModal({ isOpen, onClose, onImport }) {
 
   const processFile = (file) => {
     if (!file) return;
-    
-    // Reset errors
+
     setErrors({});
-    
-    // Validate file size
+
     if (file.size > MAX_FILE_SIZE) {
       setErrors({ file: "File size exceeds the 1MB limit. Please select a smaller file." });
       showNotification("File size exceeds the 1MB limit", "error");
       return;
     }
-    
-    // Validate file type
+
     if (file.type !== ALLOWED_FILE_TYPE) {
       setErrors({ file: "Please select a valid Excel file (.xlsx)." });
       showNotification("Invalid file type. Please select an Excel file (.xlsx)", "error");
       return;
     }
-    
-    // Create synthetic event for the form hook
+
     const syntheticEvent = {
       target: {
         name: 'file',
@@ -176,7 +159,6 @@ export function ExcelImportModal({ isOpen, onClose, onImport }) {
     setIsTemplateLoading(true);
     
     try {
-      // Create a template with the exact structure expected by the API
       const worksheet = XLSX.utils.json_to_sheet([
         {
           name: "Example Activity",
@@ -187,19 +169,13 @@ export function ExcelImportModal({ isOpen, onClose, onImport }) {
           topic: "Example Topic",
           speaker: "Example Speaker",
           facilitator: "Example Facilitator"
+
         }
       ]);
       
-      // Adjust column widths for better readability
-      const wscols = [
-        {wch:20}, {wch:30}, {wch:20}, {wch:20}, {wch:10}, {wch:10}, {wch:20}, {wch:20}, {wch:20}
-      ];
-      worksheet['!cols'] = wscols;
-      
       const workbook = XLSX.utils.book_new();
       XLSX.utils.book_append_sheet(workbook, worksheet, "Activities");
-      
-      // Generate and download the file
+
       XLSX.writeFile(workbook, "activity_template.xlsx");
       
       showNotification("Template downloaded successfully", "success");
@@ -213,8 +189,7 @@ export function ExcelImportModal({ isOpen, onClose, onImport }) {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    
-    // Validate before submission
+
     if (!values.file) {
       setErrors({ file: "Please select a file to import" });
       return;
@@ -223,21 +198,17 @@ export function ExcelImportModal({ isOpen, onClose, onImport }) {
     setIsLoading(true);
     
     try {
-      // Parse the Excel file to JSON and format for API
       const activitiesData = await parseExcel(values.file);
       
       if (!activitiesData.length) {
         throw new Error("No valid activities found in the Excel file");
       }
-      
-      // Call the import function provided as prop
+
       // The API expects a JSON array directly, not FormData
       await onImport(activitiesData);
-      
-      // Clear the file after successful import
+
       resetForm();
-      
-      // Close the modal
+
       onClose();
       
       showNotification("Activities successfully imported", "success");
@@ -359,14 +330,6 @@ export function ExcelImportModal({ isOpen, onClose, onImport }) {
         />
 
         <div className="mt-6 flex justify-end gap-2">
-          <button
-            type="button"
-            className="btn btn-outline"
-            onClick={handleClose}
-          >
-            Cancel
-          </button>
-          
           <button
             type="submit"
             className="btn btn-primary"
