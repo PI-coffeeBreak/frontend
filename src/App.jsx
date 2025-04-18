@@ -23,6 +23,8 @@ import { CreatePage } from "./pages/page_editor/CreatePage.jsx";
 import { EditPage } from "./pages/page_editor/EditPage.jsx";
 import AuthRedirect from "./pages/AuthRedirect";
 import { Sponsors } from "./pages/Sponsors.jsx";
+import { EventEditor } from "./pages/EventEditor.jsx";
+
 import { ActivitiesProvider } from "./contexts/ActivitiesContext.jsx";
 import { PluginsProvider } from "./contexts/PluginsContext.jsx";
 import { ThemeProvider } from "./contexts/ThemeContext";
@@ -77,6 +79,7 @@ export default function App() {
                                     </Route>
                                     <Route path="eventmaker">
                                       <Route index element={<EventMaker />} />
+                                      <Route path="edit" element={<EventEditor />} />
                                       <Route path="colors" element={<Colors />} />
                                       <Route path="menus" element={<MenuEditor />} />
                                       <Route path="pages" element={<PagesList />} />
