@@ -42,20 +42,6 @@ export default function Instantiate() {
                 </p>
 
                 <div className="flex flex-col lg:flex-row gap-12 mt-0">
-                    {/* Left side - Mobile preview */}
-                    <div className="flex justify-center mt-4">
-                        <div className="mockup-phone border-primary scale-70 origin-top">
-                            <div className="mockup-phone-camera"></div> 
-                            <div className="mockup-phone-display">
-                                <iframe 
-                                    /*src="http://localhost:5175/app" */
-                                    src="instantiate/home"
-                                    className="w-full h-full"
-                                    title="Mobile Preview"
-                                />
-                            </div>
-                        </div>
-                    </div>
 
                     {/* Right side - Quick access links */}
                     <div className="lg:w-1/2">
