@@ -55,7 +55,7 @@ export default function Sidebar() {
 
     // Get event logo or use default with dynamic sizing based on sidebar state
     const eventImageUrl = eventInfo?.image_id ? getMediaUrl(eventInfo.image_id) : null;
-
+    
     const eventLogo = eventImageUrl && !imageError ? (
         <div className={`overflow-hidden flex-shrink-0 rounded-lg shadow-md border border-base-300 transition-all duration-300 ${
             isVisible ? "w-16 h-16" : "w-10 h-10"
@@ -72,12 +72,21 @@ export default function Sidebar() {
             />
         </div>
     ) : (
-        <div className={`flex-shrink-0 bg-gradient-to-br from-primary to-secondary rounded-lg flex items-center justify-center transition-all duration-300 ${
+        <div className={`overflow-hidden flex-shrink-0 rounded-lg bg-base-200 shadow-md border border-base-300 transition-all duration-300 ${
             isVisible ? "w-16 h-16" : "w-10 h-10"
         }`}>
-            <span className="font-bold text-white text-xl">
-                {eventInfo?.name ? eventInfo.name.charAt(0).toUpperCase() : "E"}
-            </span>
+            <img 
+                src="/brown_bean.svg" 
+                alt="Default Event Logo" 
+                className="w-full h-full object-cover"
+                onError={(e) => {
+                    // Fallback in case even default image fails to load
+                    e.target.style.display = 'none';
+                    e.target.parentElement.innerHTML = `<span class="font-bold text-white text-xl flex items-center justify-center h-full bg-gradient-to-br from-primary to-secondary">
+                        ${eventInfo?.name ? eventInfo.name.charAt(0).toUpperCase() : "E"}
+                    </span>`;
+                }}
+            />
         </div>
     );
 
@@ -90,7 +99,8 @@ export default function Sidebar() {
 
     // Replace image with user icon placeholder
     const userAvatar = (
-        <div className="flex items-center justify-center bg-primary rounded-full w-16 h-16 border-2 border-white mx-auto mb-2">
+        <div className={`flex items-center justify-center bg-primary rounded-full border-2 border-white mx-auto mb-2 
+        ${isVisible ? "w-16 h-16" : "w-10 h-10"}`}>
             <FaUser className="text-white text-xl" />
         </div>
     );

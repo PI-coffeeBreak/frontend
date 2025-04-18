@@ -132,7 +132,7 @@ export default function Home() {
 
             <footer className="footer sm:footer-horizontal bg-secondary rounded-xl text-base-content p-10">
                 <aside>
-                    <img src="/giant_white_bean.svg" alt="giant white bean" width="90" height="90"/>
+                    <img src="/white_bean.svg" alt="giant white bean" width="90" height="90"/>
                     <p>
                         coffeeBreak.
                         <br/>
