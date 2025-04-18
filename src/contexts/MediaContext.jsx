@@ -20,7 +20,6 @@ export const MediaProvider = ({ children }) => {
         setIsLoading(true);
         setError(null);
         try {
-            // Check if we already have this media in state to prevent redundant fetches
             if (media[uuid]) {
                 setIsLoading(false);
                 return media[uuid];
@@ -28,8 +27,7 @@ export const MediaProvider = ({ children }) => {
 
             const response = await axiosWithAuth(keycloak).get(`${baseUrl}/media/${uuid}`);
             console.log(`Media with UUID ${uuid} fetched successfully:`, response.data);
-            
-            // Add media to state cache
+
             setMedia(prevMedia => ({
                 ...prevMedia,
                 [uuid]: response.data
@@ -96,7 +94,6 @@ export const MediaProvider = ({ children }) => {
             const formData = new FormData();
             formData.append('file', file);
             
-            // Use PUT for updates, POST for new uploads
             const method = isUpdate ? 'put' : 'post';
             
             await axiosWithAuth(keycloak)[method](
@@ -108,6 +105,12 @@ export const MediaProvider = ({ children }) => {
                     },
                 }
             );
+            
+            setMedia(prevMedia => {
+                const updatedMedia = {...prevMedia};
+                delete updatedMedia[uuid];
+                return updatedMedia;
+            });
             
             console.log(`Media ${isUpdate ? 'updated' : 'uploaded'} successfully`);
             return true;
@@ -129,7 +132,6 @@ export const MediaProvider = ({ children }) => {
         try {
             await axiosWithAuth(keycloak).delete(`${baseUrl}/media/${uuid}`);
             
-            // Remove from cache
             setMedia(prevMedia => {
                 const updatedMedia = {...prevMedia};
                 delete updatedMedia[uuid];
@@ -156,7 +158,7 @@ export const MediaProvider = ({ children }) => {
         getMediaUrl,
         registerMedia,
         uploadMedia,
-        deleteMedia
+        deleteMedia,
     }), [media, isLoading, error, eventInfo]);
 
     return (

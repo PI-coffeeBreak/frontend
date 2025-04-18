@@ -187,8 +187,8 @@ export function EventEditor() {
         e.preventDefault();
         
         if (!validateForm()) {
-        showNotification("Please correct the errors in the form", "error");
-        return;
+            showNotification("Please correct the errors in the form", "error");
+            return;
         }
         
         setIsSubmitting(true);
@@ -202,9 +202,10 @@ export function EventEditor() {
                 location: formData.location,
             };
 
-            // Get current image ID
+            // Get current image ID and track if this is a first-time image upload
             let imageId = eventInfo?.image_id;
             let oldImageId = imageId;
+            const isFirstTimeImageUpload = formData.image && !eventInfo?.image_id;
             
             // Handle image changes
             if (formData.image) {
@@ -244,29 +245,14 @@ export function EventEditor() {
                     await deleteMedia(oldImageId);
                 } catch (deleteError) {
                     console.error('Error deleting old image:', deleteError);
-                    // Don't show notification here, as it's not critical
                 }
             }
             
             // Refresh event info to get the latest data
             await getEventInfo();
             
-            // Add special data attribute to the sidebar image to target it
-            setTimeout(() => {
-                // Force refreshing the image in the sidebar by adding the timestamp
-                const sidebarImage = document.querySelector('.sidebar-event-image');
-                if (sidebarImage) {
-                    const timestamp = new Date().getTime();
-                    const currentSrc = sidebarImage.src;
-                    const newSrc = currentSrc.includes('?') 
-                        ? currentSrc.replace(/\?v=\d+/, `?v=${timestamp}`) 
-                        : `${currentSrc}?v=${timestamp}`;
-                    sidebarImage.src = newSrc;
-                }
-            }, 300);
-            
+            // Show success message
             showNotification("Event updated successfully", "success");
-            navigate('/instantiate/eventmaker');
         } catch (error) {
             console.error('Error updating event:', error);
             showNotification(error.response?.data?.message || "Failed to update event", "error");

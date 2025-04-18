@@ -36,7 +36,8 @@ export default function Sidebar() {
 
     useEffect(() => {
         setImageError(false);
-    }, [eventInfo?.image_id]);
+        console.log("Event info changed:", eventInfo);
+    }, [eventInfo]);
 
     const hasEnabledPlugins = plugins.some(plugin => plugin.is_loaded);
     const enabledPlugins = plugins.filter(plugin => plugin.is_loaded).map(plugin => ({
@@ -54,23 +55,23 @@ export default function Sidebar() {
 
     // Get event logo or use default with dynamic sizing based on sidebar state
     const eventImageUrl = eventInfo?.image_id ? getMediaUrl(eventInfo.image_id) : null;
+
     const eventLogo = eventImageUrl && !imageError ? (
         <div className={`overflow-hidden flex-shrink-0 rounded-lg shadow-md border border-base-300 transition-all duration-300 ${
             isVisible ? "w-16 h-16" : "w-10 h-10"
         }`}>
             <img 
-                src={`${eventImageUrl}?v=${Date.now()}`} // Add cache-busting parameter
+                src={`${eventImageUrl}?v=${Date.now()}`}
                 alt={eventInfo?.name || "Event"}
                 className="w-full h-full object-cover sidebar-event-image"
                 data-event-image
                 onError={(e) => {
                     console.error("Failed to load event image");
-                    setImageError(true); // Track the error state
+                    setImageError(true);
                 }}
             />
         </div>
     ) : (
-        // Better placeholder when no image is available
         <div className={`flex-shrink-0 bg-gradient-to-br from-primary to-secondary rounded-lg flex items-center justify-center transition-all duration-300 ${
             isVisible ? "w-16 h-16" : "w-10 h-10"
         }`}>
@@ -102,7 +103,7 @@ export default function Sidebar() {
                         {eventLogo}
                         <span className={`overflow-hidden transition-all duration-300 ${isVisible ? "opacity-100 w-auto" : "opacity-0 w-0"}`}>
                             <h1 className="font-bold text-lg">
-                                {eventLoading ? 'Loading...' : (eventInfo?.name || "students@DETI")}
+                                {eventLoading ? 'Loading...' : (eventInfo?.name || "Event")}
                             </h1>
                             <p className="text-md text-base-content">
                                 {eventInfo?.subtitle || "Event"}
