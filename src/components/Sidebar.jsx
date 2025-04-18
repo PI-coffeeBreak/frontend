@@ -7,7 +7,7 @@ import DropdownMenu from "./DropdownMenu.jsx";
 import { useKeycloak } from "@react-keycloak/web";
 import { usePlugins } from "../contexts/PluginsContext";
 import { useEvent } from "../contexts/EventContext";
-import { baseUrl } from "../consts";
+import { useMedia } from "../contexts/MediaContext";
 
 export default function Sidebar() {
     const { keycloak, initialized } = useKeycloak();
@@ -17,6 +17,7 @@ export default function Sidebar() {
     const pathnames = location.pathname.split("/").filter((x) => x);
     const { plugins } = usePlugins();
     const { eventInfo, isLoading: eventLoading } = useEvent();
+    const { getMediaUrl } = useMedia();
 
     // Fetch user profile from Keycloak when initialized
     useEffect(() => {
@@ -47,14 +48,16 @@ export default function Sidebar() {
     };
 
     // Get event logo or use default with dynamic sizing based on sidebar state
-    const eventLogo = eventInfo?.image_id ? (
+    const eventImageUrl = eventInfo?.image_id ? getMediaUrl(eventInfo.image_id) : null;
+    const eventLogo = eventImageUrl ? (
         <div className={`overflow-hidden flex-shrink-0 bg-base-200 transition-all duration-300 ${
             isVisible ? "w-16 h-16" : "w-10 h-10"
         }`}>
             <img 
-                src={`${baseUrl}/media/${eventInfo.image_id}`}
-                alt="Event Logo"
+                src={eventImageUrl}
+                alt={eventInfo?.name || "Event"}
                 className="w-full h-full object-cover"
+                data-event-image
                 onError={(e) => {
                     console.error("Failed to load event image");
                     e.target.src = "/stu@deti.png"; // Fallback image

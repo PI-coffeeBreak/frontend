@@ -71,13 +71,64 @@ export const MediaProvider = ({ children }) => {
         return `${baseUrl}/media/${uuid}`;
     };
 
+    // Register new media
+    const registerMedia = async () => {
+        setIsLoading(true);
+        setError(null);
+        try {
+            const response = await axiosWithAuth(keycloak).post(`${baseUrl}/media/register`);
+            console.log('Media registered with UUID:', response.data.uuid);
+            return response.data;
+        } catch (err) {
+            console.error('Error registering media:', err);
+            setError('Failed to register media');
+            throw err;
+        } finally {
+            setIsLoading(false);
+        }
+    };
+
+    // Upload media file
+    const uploadMedia = async (uuid, file, isUpdate = false) => {
+        setIsLoading(true);
+        setError(null);
+        try {
+            const formData = new FormData();
+            formData.append('file', file);
+            
+            // Use PUT for updates, POST for new uploads
+            const method = isUpdate ? 'put' : 'post';
+            
+            await axiosWithAuth(keycloak)[method](
+                `${baseUrl}/media/${uuid}`,
+                formData,
+                {
+                    headers: {
+                        'Content-Type': 'multipart/form-data',
+                    },
+                }
+            );
+            
+            console.log(`Media ${isUpdate ? 'updated' : 'uploaded'} successfully`);
+            return true;
+        } catch (err) {
+            console.error(`Error ${isUpdate ? 'updating' : 'uploading'} media:`, err);
+            setError(`Failed to ${isUpdate ? 'update' : 'upload'} media`);
+            throw err;
+        } finally {
+            setIsLoading(false);
+        }
+    };
+
     const contextValue = useMemo(() => ({
         media,
         isLoading,
         error,
         getMedia,
         getEventImage,
-        getMediaUrl
+        getMediaUrl,
+        registerMedia,
+        uploadMedia
     }), [media, isLoading, error, eventInfo]);
 
     return (
@@ -91,4 +142,4 @@ MediaProvider.propTypes = {
     children: PropTypes.node.isRequired,
 };
 
-export const useMedia = () => useContext(MediaContext); 
+export const useMedia = () => useContext(MediaContext);
