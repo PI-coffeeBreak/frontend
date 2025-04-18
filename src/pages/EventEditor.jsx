@@ -14,7 +14,7 @@ export function EventEditor() {
         updateEventInfo,
         getEventInfo,
     } = useEvent();
-    const { getMediaUrl, registerMedia, uploadMedia } = useMedia();
+    const { getMediaUrl, registerMedia, uploadMedia, deleteMedia } = useMedia();
     const { showNotification } = useNotification();
     const navigate = useNavigate();
     
@@ -202,67 +202,76 @@ export function EventEditor() {
                 location: formData.location,
             };
 
-        // Get current image ID
-        let imageId = eventInfo?.image_id;
-        
-        // Handle image changes
-        if (formData.image) {
-            try {
-            // Check if we're updating existing image or adding new one
-            const isUpdate = !!eventInfo?.image_id;
+            // Get current image ID
+            let imageId = eventInfo?.image_id;
+            let oldImageId = imageId;
             
-            // If updating existing image, use that ID, otherwise register new one
-            if (!isUpdate) {
-                const mediaData = await registerMedia();
-                imageId = mediaData.uuid;
-                // New image, use POST (isUpdate = false)
-                await uploadMedia(imageId, formData.image, false);
+            // Handle image changes
+            if (formData.image) {
+                try {
+                    // Check if we're updating existing image or adding new one
+                    const isUpdate = !!eventInfo?.image_id;
+                    
+                    // If updating existing image, use that ID, otherwise register new one
+                    if (!isUpdate) {
+                        const mediaData = await registerMedia();
+                        imageId = mediaData.uuid;
+                        await uploadMedia(imageId, formData.image, false);
+                    } else {
+                        await uploadMedia(imageId, formData.image, true);
+                    }
+                    
+                    // Update the event data with the image ID
+                    eventData.image_id = imageId;
+                } catch (imageError) {
+                    console.error('Error handling image:', imageError);
+                    showNotification("Failed to upload image. Event will be updated without image changes.", "warning");
+                }
+            } else if (formData.removeImage) {
+                // Set image ID to null if removing
+                eventData.image_id = null;
             } else {
-                // Existing image, use PUT (isUpdate = true)
-                await uploadMedia(imageId, formData.image, true);
+                // Keep existing image ID if not changing
+                eventData.image_id = imageId;
             }
             
-            // Update the event data with the image ID
-            eventData.image_id = imageId;
-            } catch (imageError) {
-            console.error('Error handling image:', imageError);
-            showNotification("Failed to upload image. Event will be updated without image changes.", "warning");
+            // Update the event with possibly modified data
+            await updateEventInfo(eventData);
+            
+            // Delete the old image if it was removed
+            if (formData.removeImage && oldImageId) {
+                try {
+                    await deleteMedia(oldImageId);
+                } catch (deleteError) {
+                    console.error('Error deleting old image:', deleteError);
+                    // Don't show notification here, as it's not critical
+                }
             }
-        } else if (formData.removeImage) {
-            // Set image ID to null if removing
-            eventData.image_id = null;
-        } else {
-            // Keep existing image ID if not changing
-            eventData.image_id = imageId;
-        }
-        
-        // Update the event with possibly modified data
-        await updateEventInfo(eventData);
-        
-        // Refresh event info
-        await getEventInfo();
-        
-        // Force a refresh of the image by adding a cache-busting parameter
-        if (eventData.image_id) {
-            // This will force the browser to reload the image
+            
+            // Refresh event info to get the latest data
+            await getEventInfo();
+            
+            // Add special data attribute to the sidebar image to target it
             setTimeout(() => {
-                const eventImage = document.querySelector('[data-event-image]');
-                if (eventImage) {
-                    const currentSrc = eventImage.src;
-                    eventImage.src = currentSrc.includes('?') 
-                        ? currentSrc.replace(/\?v=\d+/, `?v=${Date.now()}`) 
-                        : `${currentSrc}?v=${Date.now()}`;
+                // Force refreshing the image in the sidebar by adding the timestamp
+                const sidebarImage = document.querySelector('.sidebar-event-image');
+                if (sidebarImage) {
+                    const timestamp = new Date().getTime();
+                    const currentSrc = sidebarImage.src;
+                    const newSrc = currentSrc.includes('?') 
+                        ? currentSrc.replace(/\?v=\d+/, `?v=${timestamp}`) 
+                        : `${currentSrc}?v=${timestamp}`;
+                    sidebarImage.src = newSrc;
                 }
             }, 300);
-        }
-        
-        showNotification("Event updated successfully", "success");
-        navigate('/instantiate/eventmaker');
+            
+            showNotification("Event updated successfully", "success");
+            navigate('/instantiate/eventmaker');
         } catch (error) {
-        console.error('Error updating event:', error);
-        showNotification(error.response?.data?.message || "Failed to update event", "error");
+            console.error('Error updating event:', error);
+            showNotification(error.response?.data?.message || "Failed to update event", "error");
         } finally {
-        setIsSubmitting(false);
+            setIsSubmitting(false);
         }
     };
     

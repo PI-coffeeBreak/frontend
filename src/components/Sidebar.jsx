@@ -18,6 +18,7 @@ export default function Sidebar() {
     const { plugins } = usePlugins();
     const { eventInfo, isLoading: eventLoading } = useEvent();
     const { getMediaUrl } = useMedia();
+    const [imageError, setImageError] = useState(false);
 
     // Fetch user profile from Keycloak when initialized
     useEffect(() => {
@@ -32,6 +33,10 @@ export default function Sidebar() {
                 });
         }
     }, [keycloak, initialized]);
+
+    useEffect(() => {
+        setImageError(false);
+    }, [eventInfo?.image_id]);
 
     const hasEnabledPlugins = plugins.some(plugin => plugin.is_loaded);
     const enabledPlugins = plugins.filter(plugin => plugin.is_loaded).map(plugin => ({
@@ -49,29 +54,30 @@ export default function Sidebar() {
 
     // Get event logo or use default with dynamic sizing based on sidebar state
     const eventImageUrl = eventInfo?.image_id ? getMediaUrl(eventInfo.image_id) : null;
-    const eventLogo = eventImageUrl ? (
-        <div className={`overflow-hidden flex-shrink-0 bg-base-200 transition-all duration-300 ${
+    const eventLogo = eventImageUrl && !imageError ? (
+        <div className={`overflow-hidden flex-shrink-0 rounded-lg shadow-md border border-base-300 transition-all duration-300 ${
             isVisible ? "w-16 h-16" : "w-10 h-10"
         }`}>
             <img 
-                src={eventImageUrl}
+                src={`${eventImageUrl}?v=${Date.now()}`} // Add cache-busting parameter
                 alt={eventInfo?.name || "Event"}
-                className="w-full h-full object-cover"
+                className="w-full h-full object-cover sidebar-event-image"
                 data-event-image
                 onError={(e) => {
                     console.error("Failed to load event image");
-                    e.target.src = "/stu@deti.png"; // Fallback image
+                    setImageError(true); // Track the error state
                 }}
             />
         </div>
     ) : (
-        <img 
-            src="/stu@deti.png" 
-            className={`flex-shrink-0 transition-all duration-300 ${
-                isVisible ? "w-[50px] h-[50px]" : "w-[35px] h-[35px]"
-            }`}
-            alt="Logo" 
-        />
+        // Better placeholder when no image is available
+        <div className={`flex-shrink-0 bg-gradient-to-br from-primary to-secondary rounded-lg flex items-center justify-center transition-all duration-300 ${
+            isVisible ? "w-16 h-16" : "w-10 h-10"
+        }`}>
+            <span className="font-bold text-white text-xl">
+                {eventInfo?.name ? eventInfo.name.charAt(0).toUpperCase() : "E"}
+            </span>
+        </div>
     );
 
     // Get user information, prioritizing Keycloak profile over event info

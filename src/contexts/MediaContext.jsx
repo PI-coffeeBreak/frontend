@@ -120,6 +120,33 @@ export const MediaProvider = ({ children }) => {
         }
     };
 
+    // Delete media by UUID
+    const deleteMedia = async (uuid) => {
+        if (!uuid) return false;
+        
+        setIsLoading(true);
+        setError(null);
+        try {
+            await axiosWithAuth(keycloak).delete(`${baseUrl}/media/${uuid}`);
+            
+            // Remove from cache
+            setMedia(prevMedia => {
+                const updatedMedia = {...prevMedia};
+                delete updatedMedia[uuid];
+                return updatedMedia;
+            });
+            
+            console.log(`Media ${uuid} deleted successfully`);
+            return true;
+        } catch (err) {
+            console.error('Error deleting media:', err);
+            setError('Failed to delete media');
+            throw err;
+        } finally {
+            setIsLoading(false);
+        }
+    };
+
     const contextValue = useMemo(() => ({
         media,
         isLoading,
@@ -128,7 +155,8 @@ export const MediaProvider = ({ children }) => {
         getEventImage,
         getMediaUrl,
         registerMedia,
-        uploadMedia
+        uploadMedia,
+        deleteMedia
     }), [media, isLoading, error, eventInfo]);
 
     return (
