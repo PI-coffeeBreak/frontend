@@ -7,6 +7,29 @@ import axios from "axios";
 import { FaRegCalendarAlt, FaMapMarkerAlt, FaImage, FaInfoCircle } from "react-icons/fa";
 import PropTypes from "prop-types";
 
+const ImagePlaceholder = () => (
+    <div className="absolute inset-0 bg-base-100 rounded-lg border-2 border-dashed border-base-300 flex items-center justify-center">
+        <div className="flex flex-col items-center justify-center">
+            <svg xmlns="http://www.w3.org/2000/svg" className="h-12 w-12 mb-2 text-base-content/50" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z" />
+            </svg>
+            <p className="text-base-content/50 text-center">No image selected</p>
+        </div>
+    </div>
+);
+
+const ImageError = () => (
+    <div className="absolute inset-0 bg-base-100 flex items-center justify-center">
+        <div className="flex flex-col items-center justify-center">
+            <svg xmlns="http://www.w3.org/2000/svg" className="h-12 w-12 text-base-content/75" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" />
+            </svg>
+            <p className="text-base-content/75 mt-2">Unable to display image</p>
+            <p className="text-base-content/50 text-xs mt-1">The image may be missing or unavailable</p>
+        </div>
+    </div>
+);
+
 export function EventEditor() {
     const { 
         eventInfo, 
@@ -167,7 +190,7 @@ export function EventEditor() {
         const reader = new FileReader();
         reader.onloadend = () => {
             setImagePreview(reader.result);
-            setImageError(false); // Reset error state when changing image
+            setImageError(false);
         };
         reader.readAsDataURL(file);
         }
@@ -187,6 +210,40 @@ export function EventEditor() {
         if (fileInputRef.current) {
         fileInputRef.current.value = '';
         }
+    };
+
+    const renderImageContent = () => {
+        if (!imagePreview) {
+            return <ImagePlaceholder />;
+        }
+        
+        if (imageError) {
+            return <ImageError />;
+        }
+        
+        return (
+            <>
+                <div className="absolute inset-0 flex items-center justify-center">
+                    <img
+                        src={imagePreview}
+                        alt="Event preview"
+                        className="max-w-full max-h-full object-contain"
+                        onError={() => {
+                            console.error("Failed to load preview image");
+                            setImageError(true);
+                        }}
+                    />
+                </div>
+                <button
+                    type="button"
+                    onClick={removeImage}
+                    className="absolute top-2 right-2 btn btn-circle btn-sm btn-error z-10"
+                    aria-label="Remove image"
+                >
+                    ×
+                </button>
+            </>
+        );
     };
   
     const handleSubmit = async (e) => {
@@ -252,6 +309,7 @@ export function EventEditor() {
                     console.error('Error deleting old image:', deleteError);
                 }
             }
+            navigate('/instantiate/eventmaker');
             
             // Refresh event info to get the latest data
             await getEventInfo();
@@ -290,28 +348,6 @@ export function EventEditor() {
         </div>
         );
     };
-
-    const ImagePlaceholder = ({ message = "No image selected" }) => (
-        <div className="absolute inset-0 bg-base-100 rounded-lg border-2 border-dashed border-base-300 flex items-center justify-center">
-            <div className="flex flex-col items-center justify-center">
-                <svg xmlns="http://www.w3.org/2000/svg" className="h-12 w-12 mb-2 text-base-content/50" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z" />
-                </svg>
-                <p className="text-base-content/50 text-center">{message}</p>
-            </div>
-        </div>
-    );
-
-    const ImageError = () => (
-        <div className="absolute inset-0 bg-base-100 flex items-center justify-center">
-            <div className="flex flex-col items-center justify-center">
-                <svg xmlns="http://www.w3.org/2000/svg" className="h-12 w-12 text-base-content/50" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" />
-                </svg>
-                <p className="text-base-content/50 mt-2">Image could not be loaded</p>
-            </div>
-        </div>
-    );
   
     if (isEventLoading) {
         return (
@@ -476,35 +512,9 @@ export function EventEditor() {
                             {imagePreview ? "Change Image" : "Select Image"}
                             </button>
                             
-                            {/* Image container - consolidated for all states */}
+                            {/* Image container with extracted rendering logic */}
                             <div className="relative w-full h-48 bg-base-100 rounded-lg overflow-hidden border border-base-300">
-                                {!imagePreview ? (
-                                <ImagePlaceholder />
-                                ) : imageError ? (
-                                <ImageError />
-                                ) : (
-                                <>
-                                    <div className="absolute inset-0 flex items-center justify-center">
-                                        <img
-                                            src={imagePreview}
-                                            alt="Event preview"
-                                            className="max-w-full max-h-full object-contain"
-                                            onError={() => {
-                                                console.error("Failed to load preview image");
-                                                setImageError(true);
-                                            }}
-                                        />
-                                    </div>
-                                    <button
-                                        type="button"
-                                        onClick={removeImage}
-                                        className="absolute top-2 right-2 btn btn-circle btn-sm btn-error z-10"
-                                        aria-label="Remove image"
-                                    >
-                                        ×
-                                    </button>
-                                </>
-                                )}
+                                {renderImageContent()}
                             </div>
                         </div>
                     </div>
@@ -513,26 +523,26 @@ export function EventEditor() {
                 {/* Submit Button */}
                 <div className="flex justify-end gap-4">
                     <button
-                    type="button"
-                    onClick={() => navigate('/instantiate/eventmaker')}
-                    className="btn btn-outline"
-                    disabled={isSubmitting}
+                        type="button"
+                        onClick={() => navigate('/instantiate/eventmaker')}
+                        className="btn btn-outline"
+                        disabled={isSubmitting}
                     >
-                    Cancel
+                        Cancel
                     </button>
                     <button
-                    type="submit"
-                    className="btn btn-primary"
-                    disabled={isSubmitting}
+                        type="submit"
+                        className="btn btn-primary"
+                        disabled={isSubmitting}
                     >
-                    {isSubmitting ? (
-                        <>
-                        <span className="loading loading-spinner loading-sm"></span>
-                        Saving...
-                        </>
-                    ) : (
-                        "Save Changes"
-                    )}
+                        {isSubmitting ? (
+                            <>
+                                <span className="loading loading-spinner loading-sm"></span>
+                                {' '}Saving...
+                            </>
+                        ) : (
+                            "Save Changes"
+                        )}
                     </button>
                 </div>
             </form>
