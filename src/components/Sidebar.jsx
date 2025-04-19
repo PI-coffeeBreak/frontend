@@ -8,8 +8,8 @@ import { useKeycloak } from "@react-keycloak/web";
 import { usePlugins } from "../contexts/PluginsContext";
 import { useEvent } from "../contexts/EventContext";
 import { useMedia } from "../contexts/MediaContext";
+import PropTypes from "prop-types";
 
-// Extract breadcrumb component
 const Breadcrumbs = ({ pathnames }) => (
   <ul className="flex gap-2">
     {pathnames.map((name, index) => {

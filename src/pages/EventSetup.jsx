@@ -3,7 +3,8 @@ import { useNavigate } from "react-router-dom";
 import { baseUrl } from "../consts";
 import { useKeycloak } from "@react-keycloak/web";
 import { axiosWithAuth } from '../utils/axiosWithAuth';
-import axios from 'axios'; // Keep this for geoapify API calls
+import axios from 'axios';
+import { renderLocationSuggestions as renderLocationSuggestionsUtil } from '../utils/LocationUtils';
 
 export default function EventSetup() {
     const navigate = useNavigate();
@@ -232,27 +233,10 @@ export default function EventSetup() {
     };
 
     const renderLocationSuggestions = () => {
-        if (!locationSuggestions.length && !isLoadingLocations) return null;
-        
-        return (
-            <div className="absolute w-full mt-1 bg-base-100 rounded-xl shadow-lg z-50 max-h-60 overflow-auto">
-                {isLoadingLocations ? (
-                    <div className="p-4 text-center">
-                        <span className="loading loading-spinner loading-md"></span>
-                    </div>
-                ) : (
-                    locationSuggestions.map((suggestion, index) => (
-                        <button
-                            key={`location-${suggestion.lat}-${suggestion.lon}`}
-                            type="button"
-                            className="w-full text-left px-4 py-2 hover:bg-base-200 cursor-pointer"
-                            onClick={() => handleLocationSelect(suggestion)}
-                        >
-                            {suggestion.name}
-                        </button>
-                    ))
-                )}
-            </div>
+        return renderLocationSuggestionsUtil(
+            locationSuggestions,
+            isLoadingLocations,
+            handleLocationSelect
         );
     };
 
