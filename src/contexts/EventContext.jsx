@@ -75,4 +75,4 @@ EventProvider.propTypes = {
     children: PropTypes.node.isRequired,
 };
 
-export const useEvent = () => useContext(EventContext); 
+export const useEvent = () => useContext(EventContext);
