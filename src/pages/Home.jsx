@@ -1,8 +1,61 @@
-import {NavLink} from "react-router-dom";
-import divider from "daisyui/components/divider/index.js";
+import { NavLink } from "react-router-dom";
+import { useKeycloak } from "@react-keycloak/web";
+import { useEffect, useState } from "react";
+import { useEvent } from "../contexts/EventContext";
 
-export default function Home(){
-    return(
+export default function Home() {
+    const { keycloak, initialized } = useKeycloak();
+    const { getEventInfo } = useEvent();
+    const [hasEvent, setHasEvent] = useState(false);
+    const [isLoading, setIsLoading] = useState(true);
+
+    // Check if user is authenticated and has an event
+    useEffect(() => {
+        const checkEvent = async () => {
+            if (initialized && keycloak.authenticated) {
+                try {
+                    // Try to get event info
+                    const eventData = await getEventInfo();
+                    setHasEvent(!!eventData?.id);
+                } catch (error) {
+                    console.log("No event exists or error fetching event:", error);
+                    setHasEvent(false);
+                } finally {
+                    setIsLoading(false);
+                }
+            } else {
+                setIsLoading(false);
+            }
+        };
+
+        checkEvent();
+    }, [initialized, keycloak.authenticated, getEventInfo]);
+
+    // Determine where to redirect based on auth status and event existence
+    const getStartedPath = () => {
+        if (!keycloak.authenticated) {
+            return "/"; // Will trigger login redirect
+        } else if (!hasEvent) {
+            return "/setup"; // No event exists, go to setup
+        } else {
+            return "/instantiate"; // User is logged in and has an event
+        }
+    };
+
+    // Handle the click for login if needed
+    const handleGetStartedClick = (e) => {
+        if (!keycloak.authenticated) {
+            e.preventDefault();
+            
+            // We can't know if they have an event before login,
+            // so we'll redirect to a special route that checks and redirects
+            keycloak.login({ 
+                redirectUri: window.location.origin + '/auth-redirect'
+            });
+        }
+    };
+
+    return (
         <>
             <div className="mx-auto w-2/3 py-16 sm:py-28 lg:py-36">
                 <div className="text-center">
@@ -15,9 +68,23 @@ export default function Home(){
                         place. Simple tools, smart features, and a seamless experience for great events.
                     </p>
                     <div className="mt-10 flex items-center justify-center gap-x-6">
-                        <NavLink to="/register" className="btn btn-primary rounded-xl">Get Started</NavLink>
-                        <NavLink to="/about" className="text-sm/6 font-semibold text-gray-900"> Learn more <span
-                            aria-hidden="true">→</span></NavLink>
+                        {isLoading ? (
+                            <button className="btn btn-primary rounded-xl" disabled>
+                                <span className="loading loading-spinner loading-xs mr-2"></span>
+                                    Loading...
+                            </button>
+                        ) : (
+                            <NavLink 
+                                to={getStartedPath()} 
+                                className="btn btn-primary rounded-xl"
+                                onClick={handleGetStartedClick}
+                            >
+                                Get Started
+                            </NavLink>
+                        )}
+                        <NavLink to="/about" className="text-sm/6 font-semibold text-gray-900">
+                            Learn more <span aria-hidden="true">→</span>
+                        </NavLink>
                     </div>
                 </div>
             </div>
@@ -95,7 +162,5 @@ export default function Home(){
             </footer>
 
         </>
-
-
     );
 }

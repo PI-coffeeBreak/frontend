@@ -93,6 +93,79 @@ export const ActivitiesProvider = ({ children }) => {
         return "Type not found";
     };
 
+    const createActivityType = async (typeData) => {
+        try {
+            const response = await axiosWithAuth(keycloak).post(`${baseUrl}/activity-types`, typeData);
+
+            setActivityTypes(prev => [...prev, response.data]);
+            
+            return response.data;
+        } catch (error) {
+            console.error("Error creating activity type:", error);
+            throw error;
+        }
+    };
+
+    const createActivitiesBatch = async (activitiesData) => {
+        try {
+            const response = await axiosWithAuth(keycloak).post(
+                `${baseUrl}/activities/batch`,
+                activitiesData,
+                {
+                    headers: {
+                        'Content-Type': 'application/json'
+                    }
+                }
+            );
+            return response.data;
+        } catch (error) {
+            console.error("Error importing activities:", error);
+
+            if (error.response?.data?.detail) {
+                const errorMessages = Array.isArray(error.response.data.detail)
+                    ? error.response.data.detail.map(err => `${err.loc.join('.')} - ${err.msg}`).join('\n')
+                    : error.response.data.detail;
+                console.error(errorMessages);
+            } else {
+                console.error(error.response?.data?.message || "Failed to import activities");
+            }
+            throw error;
+        }
+    }
+
+    const createActivity = async (activityData) => {
+        try {
+            const response = await axiosWithAuth(keycloak).post(
+                `${baseUrl}/activities/`,
+                activityData,
+                {
+                    headers: {
+                        'Content-Type': 'application/json'
+                    }
+                }
+            );
+            return response.data;
+        } catch (error) {
+            console.error("Error creating activity:", error);
+            throw error;
+        }
+    }
+
+    const deleteActivity = async (activityId) => {
+        try {
+            await axiosWithAuth(keycloak).delete(`${activitiesBaseUrl}/${activityId}`);
+
+            setActivities(prev => prev.filter(activity => activity.id !== activityId));
+            setCalendarActivities(prev => prev.filter(activity => activity.id !== activityId));
+            setOutsideActivities(prev => prev.filter(activity => activity.id !== activityId));
+            
+            return true;
+        } catch (error) {
+            console.error("Error deleting activity:", error);
+            throw error;
+        }
+    };
+
     useEffect(() => {
         fetchActivities();
         fetchActivityTypes();
@@ -112,8 +185,12 @@ export const ActivitiesProvider = ({ children }) => {
             removeActivityFromCalendar,
             getActivityTypeID,
             getActivityType,
+            createActivitiesBatch,
+            createActivity,
             setCalendarActivities,
             setOutsideActivities,
+            createActivityType,
+            deleteActivity,
         }),
         [
             activities,

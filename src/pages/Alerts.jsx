@@ -1,18 +1,234 @@
 import CreateCard from "../components/CreateCard.jsx";
 import { HiTemplate } from "react-icons/hi";
 import { BiSolidBellPlus } from "react-icons/bi";
-import React, { useState } from "react";
+import React, { useState, useEffect, useRef } from "react";
+import { useAlerts } from "../contexts/AlertsContext";
+import { useNotification } from "../contexts/NotificationContext";
+import { FaEdit, FaTrash } from "react-icons/fa";
 
 export default function Alerts() {
-    const [template, setTemplate] = useState("");
+    const [selectedTemplate, setSelectedTemplate] = useState("");
     const [templateTitle, setTemplateTitle] = useState("");
     const [templateMessage, setTemplateMessage] = useState("");
+    const { templates, getAlertTemplates, createAlertTemplate, updateAlertTemplate, deleteAlertTemplate, createAlert, isLoading, error } = useAlerts();
+    const { showNotification } = useNotification();
+    const [editingTemplate, setEditingTemplate] = useState(null);
+    
+    // Alert form state
+    const [alertMessage, setAlertMessage] = useState("");
+    const [highPriority, setHighPriority] = useState("");
+    const alertMessageRef = useRef(null);
+
+    useEffect(() => {
+        // Fetch templates when component mounts
+        loadTemplates();
+    }, []);
+
+    useEffect(() => {
+        if (selectedTemplate && templates && templates.length > 0) {
+            const templateData = templates.find(t => String(t.id) === String(selectedTemplate));
+            if (templateData) {
+                setAlertMessage(templateData.template);
+            }
+        }
+    }, [templates, selectedTemplate]);
+
+    const loadTemplates = async () => {
+        try {
+            await getAlertTemplates();
+        } catch (error) {
+            console.error("Failed to load templates:", error);
+            showNotification("Failed to load templates", "error");
+        }
+    };
+
+    const handleCreateTemplate = async (e) => {
+        e.preventDefault();
+        if (!templateTitle || !templateMessage) {
+            showNotification("Template title and message are required", "error");
+            return;
+        }
+
+        try {
+            if (editingTemplate) {
+                await updateAlertTemplate(editingTemplate.id, {
+                    name: templateTitle,
+                    template: templateMessage
+                });
+                showNotification("Template updated successfully", "success");
+                setEditingTemplate(null);
+            } else {
+                await createAlertTemplate({
+                    name: templateTitle,
+                    template: templateMessage
+                });
+                showNotification("Template created successfully", "success");
+            }
+            setTemplateTitle("");
+            setTemplateMessage("");
+            document.getElementById('template_modal').close();
+        } catch (error) {
+            console.error("Error with template:", error);
+            showNotification(`Failed to ${editingTemplate ? 'update' : 'create'} template`, "error");
+        }
+    };
+
+    const handleCreateAlert = async (e) => {
+        e.preventDefault();
+        if (!alertMessage || highPriority === "") {
+            showNotification("Message and high priority setting are required", "error");
+            return;
+        }
+
+        try {
+            // Call the API to create the alert
+            const result = await createAlert({
+                message: alertMessage,
+                priority: highPriority === "Yes" ? "High" : "Low",
+                template_id: selectedTemplate || null
+            });
+            
+            console.log("Alert created:", result);
+            showNotification("Alert created successfully", "success");
+            resetAlertForm();
+            document.getElementById('alert_modal').close();
+        } catch (error) {
+            console.error("Error creating alert:", error);
+            showNotification("Failed to create alert", "error");
+        }
+    };
+
+    const handleTemplateSelect = (e) => {
+        const templateId = e.target.value;
+        setSelectedTemplate(templateId);
+        
+        if (templateId) {
+            // Compare as strings to handle different data types (string vs number)
+            const selectedTemplateData = templates.find(t => String(t.id) === String(templateId));
+            console.log("Selected template:", templateId, "Template data:", selectedTemplateData);
+            
+            if (selectedTemplateData) {
+                console.log("Setting message to:", selectedTemplateData.template);
+                setAlertMessage(selectedTemplateData.template);
+                
+                // Focus on the message field after updating for better UX
+                setTimeout(() => {
+                    if (alertMessageRef.current) {
+                        alertMessageRef.current.focus();
+                    }
+                }, 100);
+            }
+        } else {
+            // Clear message if no template is selected
+            setAlertMessage("");
+        }
+    };
+
+    const handleDeleteTemplate = async (templateId) => {
+        if (confirm("Are you sure you want to delete this template?")) {
+            try {
+                await deleteAlertTemplate(templateId);
+                showNotification("Template deleted successfully", "success");
+            } catch (error) {
+                console.error("Error deleting template:", error);
+                showNotification("Failed to delete template", "error");
+            }
+        }
+    };
+
+    const handleEditTemplate = (template) => {
+        setEditingTemplate(template);
+        setTemplateTitle(template.name);
+        setTemplateMessage(template.template);
+        openTemplateModal();
+    };
 
     const openAlertModal = () => {
+        resetAlertForm();
         document.getElementById('alert_modal').showModal();
     };
+    
     const openTemplateModal = () => {
         document.getElementById('template_modal').showModal();
+    };
+
+    const resetTemplateForm = () => {
+        setEditingTemplate(null);
+        setTemplateTitle("");
+        setTemplateMessage("");
+    };
+
+    const resetAlertForm = () => {
+        setAlertMessage("");
+        setSelectedTemplate("");
+        setHighPriority("");
+    };
+
+    const getAlertButtonText = () => {
+        if (isLoading) {
+            return <span className="loading loading-spinner loading-sm"></span>;
+        }
+        return 'Create Alert';
+    };
+
+    const getTemplateButtonText = () => {
+        if (isLoading) {
+            return <span className="loading loading-spinner loading-sm"></span>;
+        }
+        return editingTemplate ? 'Update Template' : 'Create Template';
+    };
+
+    const renderTemplates = () => {
+        if (isLoading) {
+            return (
+                <div className="flex justify-center mt-4">
+                    <span className="loading loading-spinner loading-lg"></span>
+                </div>
+            );
+        }
+        
+        if (error) {
+            return (
+                <div className="alert alert-error mt-4">
+                    <span>{error}</span>
+                </div>
+            );
+        }
+        
+        if (templates.length === 0) {
+            return (
+                <div className="alert alert-info mt-4">
+                    <span>No templates found. Create one to get started!</span>
+                </div>
+            );
+        }
+        
+        return (
+            <div className="grid grid-cols-3 gap-4 mt-4">
+                {templates.map((template) => (
+                    <div key={template.id} className="card bg-base-300 shadow-xl">
+                        <div className="card-body">
+                            <h2 className="card-title">{template.name}</h2>
+                            <p className="whitespace-pre-wrap">{template.template}</p>
+                            <div className="card-actions justify-end mt-4">
+                                <button 
+                                    className="btn btn-outline btn-sm"
+                                    onClick={() => handleEditTemplate(template)}
+                                >
+                                    <FaEdit className="mr-1" /> Edit
+                                </button>
+                                <button 
+                                    className="btn btn-primary btn-sm"
+                                    onClick={() => handleDeleteTemplate(template.id)}
+                                >
+                                    <FaTrash className="mr-1" /> Delete
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                ))}
+            </div>
+        );
     };
 
     return (
@@ -29,103 +245,99 @@ export default function Alerts() {
                     icon={HiTemplate}
                     title="Create a Template"
                     description="Create a template to send alerts more efficiently."
-                    onClick={openTemplateModal}
+                    onClick={() => {
+                        resetTemplateForm();
+                        openTemplateModal();
+                    }}
                 />
             </div>
+            
             <h1 className="text-3xl font-bold mt-8">Existing Templates</h1>
-
-            <h1 className="text-3xl font-bold mt-8">Scheduled Alerts</h1>
+            
+            {renderTemplates()}
 
             <dialog id="alert_modal" className="modal">
                 <div className="modal-box">
                     <form method="dialog">
-                        <button className="btn btn-sm btn-circle btn-ghost absolute right-2 top-2">✕</button>
+                        <button 
+                            className="btn btn-sm btn-circle btn-ghost absolute right-2 top-2"
+                            onClick={resetAlertForm}
+                        >✕</button>
                     </form>
                     <h3 className="text-lg font-bold">Create New Alert</h3>
                     <p className="py-4">Fill in the details to create a new alert.</p>
-                    <form>
-                        <div>
-                            <label htmlFor="title">Title</label>
-                            <input type="text" id="title" placeholder="Enter the session title" className="text-base-100 input w-full h-12 bg-secondary rounded-xl"></input>
-                        </div>
+                    <form onSubmit={handleCreateAlert}>
                         <div className="mt-4">
-                            <label htmlFor="template" className="block">Choose Template</label>
+                            <label htmlFor="alertTemplate" className="block">Choose Template</label>
                             <select
-                                id="template"
+                                id="alertTemplate"
                                 className="text-base-100 input w-full h-12 bg-secondary rounded-xl"
-                                onChange={(e) => setTemplate(e.target.value)}
+                                value={selectedTemplate}
+                                onChange={handleTemplateSelect}
                             >
                                 <option value="">Select a template</option>
-                                <option value="template1">Template 1</option>
-                                <option value="template2">Template 2</option>
+                                {templates.map((t) => (
+                                    <option key={t.id} value={String(t.id)}>
+                                        {t.name}
+                                    </option>
+                                ))}
                             </select>
-                        </div>
-                        {template ? (
-                            <div className="mt-4">
-                                <label htmlFor="templateMessage" className="block">Edit Template</label>
-                                <textarea
-                                    id="templateMessage"
-                                    className="text-base-100 input w-full h-24 bg-secondary rounded-xl"
-                                    placeholder="Edit the chosen template"
-                                ></textarea>
-                            </div>
-                        ) : (
-                            <div className="mt-4">
-                                <label htmlFor="message" className="block">Message</label>
-                                <textarea
-                                    id="message"
-                                    className="text-base-100 input w-full h-24 bg-secondary rounded-xl"
-                                ></textarea>
-                            </div>
-                        )}
-                        <div className="flex w-full gap-4 mt-4">
-                            <div className="w-1/2">
-                                <label htmlFor="schedulealert" className="block">Schedule Alert</label>
-                                <input type="datetime-local" id="schedulealert" className="text-base-100 input w-full h-12 bg-secondary rounded-xl"></input>
-                            </div>
-                            <div className="w-1/2">
-                                <label htmlFor="priority" className="block">Priority</label>
-                                <select
-                                    id="priority"
-                                    className="text-base-100 input w-full h-12 bg-secondary rounded-xl"
-                                >
-                                    <option value="">Choose Priority</option>
-                                    <option value="Low">Low</option>
-                                    <option value="Medium">Medium</option>
-                                    <option value="High">High</option>
-                                </select>
-                            </div>
-
                         </div>
                         <div className="mt-4">
-                            <label htmlFor="who" className="block">Addressee</label>
+                            <label htmlFor="alertMessage" className="block">Message</label>
+                            <textarea
+                                id="alertMessage"
+                                ref={alertMessageRef}
+                                className="text-base-100 input w-full h-24 bg-secondary rounded-xl"
+                                value={alertMessage}
+                                onChange={(e) => setAlertMessage(e.target.value)}
+                                required
+                            ></textarea>
+                        </div>
+                        <div className="mt-4">
+                            <label htmlFor="highPriority" className="block">High Priority</label>
                             <select
-                                id="who"
+                                id="highPriority"
                                 className="text-base-100 input w-full h-12 bg-secondary rounded-xl"
+                                value={highPriority}
+                                onChange={(e) => setHighPriority(e.target.value)}
+                                required
                             >
-                                <option value="">Select the Group</option>
-                                <option value="Low">Everyone</option>
-                                <option value="Medium">Speakers</option>
-                                <option value="High">Staff</option>
+                                <option value="">Select</option>
+                                <option value="Yes">Yes</option>
+                                <option value="No">No</option>
                             </select>
                         </div>
-                        <button className="btn btn-primary mt-4 mx-auto w-1/3 flex items-center justify-center">
-                            Submit
+                        <button 
+                            type="submit" 
+                            className="btn btn-primary mt-4 mx-auto w-1/3 flex items-center justify-center"
+                            disabled={isLoading}
+                        >
+                            {getAlertButtonText()}
                         </button>
                     </form>
                 </div>
                 <form method="dialog" className="modal-backdrop bg-none bg-opacity-10">
-                    <button>close</button>
+                    <button onClick={resetAlertForm}>close</button>
                 </form>
             </dialog>
             <dialog id="template_modal" className="modal">
                 <div className="modal-box">
                     <form method="dialog">
-                        <button className="btn btn-sm btn-circle btn-ghost absolute right-2 top-2">✕</button>
+                        <button 
+                            className="btn btn-sm btn-circle btn-ghost absolute right-2 top-2"
+                            onClick={resetTemplateForm}
+                        >✕</button>
                     </form>
-                    <h3 className="text-lg font-bold">Create New Template</h3>
-                    <p className="py-4">Fill in the details to create a new template.</p>
-                    <form>
+                    <h3 className="text-lg font-bold">
+                        {editingTemplate ? 'Edit Template' : 'Create New Template'}
+                    </h3>
+                    <p className="py-4">
+                        {editingTemplate 
+                            ? 'Update the template details below.' 
+                            : 'Fill in the details to create a new template.'}
+                    </p>
+                    <form onSubmit={handleCreateTemplate}>
                         <div>
                             <label htmlFor="templateTitle">Title</label>
                             <input
@@ -135,6 +347,7 @@ export default function Alerts() {
                                 className="text-base-100 input w-full h-12 bg-secondary rounded-xl"
                                 value={templateTitle}
                                 onChange={(e) => setTemplateTitle(e.target.value)}
+                                required
                             />
                         </div>
                         <div className="mt-4">
@@ -144,15 +357,23 @@ export default function Alerts() {
                                 className="text-base-100 input w-full h-24 bg-secondary rounded-xl"
                                 value={templateMessage}
                                 onChange={(e) => setTemplateMessage(e.target.value)}
+                                required
                             ></textarea>
+                            <p className="text-sm text-base-content/70 mt-2">
+                                You can use variables like {'{name}'}, {'{date}'}, etc. in your template.
+                            </p>
                         </div>
-                        <button type="submit" className="btn btn-primary mt-4 mx-auto w-1/3 flex items-center justify-center">
-                            Create Template
+                        <button 
+                            type="submit" 
+                            className="btn btn-primary mt-4 mx-auto w-1/3 flex items-center justify-center"
+                            disabled={isLoading}
+                        >
+                            {getTemplateButtonText()}
                         </button>
                     </form>
                 </div>
                 <form method="dialog" className="modal-backdrop bg-none bg-opacity-10">
-                    <button>close</button>
+                    <button onClick={resetTemplateForm}>close</button>
                 </form>
             </dialog>
         </div>

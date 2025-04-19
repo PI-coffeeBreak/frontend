@@ -1,8 +1,11 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
 import { FaHome, FaPalette, FaCogs, FaCalendarAlt, FaPuzzlePiece, FaUsers, FaBell } from 'react-icons/fa';
+import { useEvent } from '../contexts/EventContext';
 
 export default function Instantiate() {
+    const { eventInfo, isLoading } = useEvent();
+
     const quickLinks = [
         {
             id: 'home',
@@ -31,24 +34,14 @@ export default function Instantiate() {
     return (
         <div className="w-full p-8">
             <div className="max-w-7xl mx-auto">
-                <h1 className="text-4xl font-bold mb-4 text-primary">Welcome to students@DETI</h1>
-                <p className="text-lg text-base-content/70 mb-2">Access all your event management tools from one place</p>
+                <h1 className="text-4xl font-bold mb-4 text-primary">
+                    {isLoading ? 'Loading...' : `Welcome to ${eventInfo?.name || 'students@DETI'}`}
+                </h1>
+                <p className="text-lg text-base-content/70 mb-2">
+                    Access all your event management tools from one place
+                </p>
 
                 <div className="flex flex-col lg:flex-row gap-12 mt-0">
-                    {/* Left side - Mobile preview */}
-                    <div className="flex justify-center mt-4">
-                        <div className="mockup-phone border-primary scale-70 origin-top">
-                            <div className="mockup-phone-camera"></div> 
-                            <div className="mockup-phone-display">
-                                <iframe 
-                                    /*src="http://localhost:5175/app" */
-                                    src="instantiate/home"
-                                    className="w-full h-full"
-                                    title="Mobile Preview"
-                                />
-                            </div>
-                        </div>
-                    </div>
 
                     {/* Right side - Quick access links */}
                     <div className="lg:w-1/2">
