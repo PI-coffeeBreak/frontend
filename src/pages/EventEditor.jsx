@@ -24,6 +24,7 @@ export function EventEditor() {
     const [locationSuggestions, setLocationSuggestions] = useState([]);
     const [isLoadingLocations, setIsLoadingLocations] = useState(false);
     const [imagePreview, setImagePreview] = useState(null);
+    const [imageError, setImageError] = useState(false);
     
     const [formData, setFormData] = useState({
         eventName: "",
@@ -53,6 +54,9 @@ export function EventEditor() {
         // Set image preview if available
         if (eventInfo.image_id) {
             setImagePreview(getMediaUrl(eventInfo.image_id));
+            setImageError(false); // Reset error state when changing image
+        } else {
+            setImagePreview(null);
         }
         }
     }, [eventInfo, getMediaUrl]);
@@ -163,6 +167,7 @@ export function EventEditor() {
         const reader = new FileReader();
         reader.onloadend = () => {
             setImagePreview(reader.result);
+            setImageError(false); // Reset error state when changing image
         };
         reader.readAsDataURL(file);
         }
@@ -177,6 +182,7 @@ export function EventEditor() {
         
         // Clear image preview
         setImagePreview(null);
+        setImageError(false);
         
         if (fileInputRef.current) {
         fileInputRef.current.value = '';
@@ -205,7 +211,6 @@ export function EventEditor() {
             // Get current image ID and track if this is a first-time image upload
             let imageId = eventInfo?.image_id;
             let oldImageId = imageId;
-            const isFirstTimeImageUpload = formData.image && !eventInfo?.image_id;
             
             // Handle image changes
             if (formData.image) {
@@ -285,6 +290,28 @@ export function EventEditor() {
         </div>
         );
     };
+
+    const ImagePlaceholder = ({ message = "No image selected" }) => (
+        <div className="absolute inset-0 bg-base-100 rounded-lg border-2 border-dashed border-base-300 flex items-center justify-center">
+            <div className="flex flex-col items-center justify-center">
+                <svg xmlns="http://www.w3.org/2000/svg" className="h-12 w-12 mb-2 text-base-content/50" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z" />
+                </svg>
+                <p className="text-base-content/50 text-center">{message}</p>
+            </div>
+        </div>
+    );
+
+    const ImageError = () => (
+        <div className="absolute inset-0 bg-base-100 flex items-center justify-center">
+            <div className="flex flex-col items-center justify-center">
+                <svg xmlns="http://www.w3.org/2000/svg" className="h-12 w-12 text-base-content/50" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" />
+                </svg>
+                <p className="text-base-content/50 mt-2">Image could not be loaded</p>
+            </div>
+        </div>
+    );
   
     if (isEventLoading) {
         return (
@@ -449,36 +476,36 @@ export function EventEditor() {
                             {imagePreview ? "Change Image" : "Select Image"}
                             </button>
                             
-                            {/* Preview container */}
-                            {imagePreview && (
+                            {/* Image container - consolidated for all states */}
                             <div className="relative w-full h-48 bg-base-100 rounded-lg overflow-hidden border border-base-300">
-                                <img
-                                src={imagePreview}
-                                alt="Event preview"
-                                className="w-full h-full object-contain"
-                                />
-                                
-                                <button
-                                type="button"
-                                onClick={removeImage}
-                                className="absolute top-2 right-2 btn btn-circle btn-sm btn-error"
-                                aria-label="Remove image"
-                                >
-                                ×
-                                </button>
+                                {!imagePreview ? (
+                                <ImagePlaceholder />
+                                ) : imageError ? (
+                                <ImageError />
+                                ) : (
+                                <>
+                                    <div className="absolute inset-0 flex items-center justify-center">
+                                        <img
+                                            src={imagePreview}
+                                            alt="Event preview"
+                                            className="max-w-full max-h-full object-contain"
+                                            onError={() => {
+                                                console.error("Failed to load preview image");
+                                                setImageError(true);
+                                            }}
+                                        />
+                                    </div>
+                                    <button
+                                        type="button"
+                                        onClick={removeImage}
+                                        className="absolute top-2 right-2 btn btn-circle btn-sm btn-error z-10"
+                                        aria-label="Remove image"
+                                    >
+                                        ×
+                                    </button>
+                                </>
+                                )}
                             </div>
-                            )}
-                            
-                            {/* Empty state */}
-                            {!imagePreview && (
-                            <div className="w-full h-48 bg-base-100 rounded-lg border-2 border-dashed border-base-300 flex flex-col items-center justify-center">
-                                <svg xmlns="http://www.w3.org/2000/svg" className="h-12 w-12 mb-2 text-base-content/50" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z" />
-                                </svg>
-                                <p className="text-base-content/50 text-center">No image selected</p>
-                                <p className="text-base-content/30 text-xs mt-1">Maximum size: 5MB</p>
-                            </div>
-                            )}
                         </div>
                     </div>
                 </div>
