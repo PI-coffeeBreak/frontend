@@ -142,11 +142,11 @@ function SponsorLogo({
   if (display_sponsor_description) {
     return (
       <div className="sponsor-card bg-base-100 rounded-lg shadow-md overflow-hidden w-full max-w-xs">
-        <div className="p-4 flex items-center justify-center bg-base-200 h-32">
+        <div className="flex items-center justify-center bg-base-200">
           <img 
             src={logo}
             alt={`${name} logo`}
-            className="max-h-24 max-w-full object-contain"
+            className="max-w-full object-contain"
           />
         </div>
         <div className="p-4">
@@ -227,5 +227,4 @@ SponsorLogo.propTypes = {
   display_sponsor_website: PropTypes.bool
 };
 
-// For backward compatibility and to support both naming conventions
 export { SponsorsComponent as Sponsors };
