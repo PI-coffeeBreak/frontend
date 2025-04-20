@@ -20,6 +20,19 @@ export default function DropdownMenu({
     const toggleDropdown = () => {
         setOpen(prev => !prev);
     };
+    
+    const handleKeyDown = (e) => {
+        if (e.key === 'Enter' || e.key === ' ') {
+            e.preventDefault();
+            toggleDropdown();
+        } else if (e.key === 'ArrowDown' && !open) {
+            e.preventDefault();
+            setOpen(true);
+        } else if (e.key === 'ArrowUp' && open) {
+            e.preventDefault();
+            setOpen(false);
+        }
+    };
 
     useEffect(() => {
         const hasActiveChild = links.some(link => isActive(link.path));
@@ -46,18 +59,7 @@ export default function DropdownMenu({
                 ) : (
                     <button
                         onClick={toggleDropdown}
-                        onKeyDown={(e) => {
-                            if (e.key === 'Enter' || e.key === ' ') {
-                                e.preventDefault();
-                                toggleDropdown();
-                            } else if (e.key === 'ArrowDown' && !open) {
-                                e.preventDefault();
-                                setOpen(true);
-                            } else if (e.key === 'ArrowUp' && open) {
-                                e.preventDefault();
-                                setOpen(false);
-                            }
-                        }}
+                        onKeyDown={handleKeyDown}
                         aria-expanded={open}
                         tabIndex={0}
                         className={`join-item flex-1 btn btn-sm ${sectionActive ? 'btn-primary' : 'btn-ghost'} ${
@@ -85,18 +87,7 @@ export default function DropdownMenu({
                 {hasHomepage && isVisible && (
                     <button
                         onClick={toggleDropdown}
-                        onKeyDown={(e) => {
-                            if (e.key === 'Enter' || e.key === ' ') {
-                                e.preventDefault();
-                                toggleDropdown();
-                            } else if (e.key === 'ArrowDown' && !open) {
-                                e.preventDefault();
-                                setOpen(true);
-                            } else if (e.key === 'ArrowUp' && open) {
-                                e.preventDefault();
-                                setOpen(false);
-                            }
-                        }}
+                        onKeyDown={handleKeyDown}
                         aria-expanded={open}
                         tabIndex={0}
                         className={`join-item btn btn-sm ${sectionActive ? 'btn-primary' : 'btn-ghost'} px-2`}
@@ -107,7 +98,7 @@ export default function DropdownMenu({
                 )}
             </div>
             
-            {/* Dropdown content with icons */}
+            {/* Dropdown content */}
             {isVisible && (
                 <div className={`overflow-hidden transition-all duration-300 ${
                     open ? "max-h-96 opacity-100" : "max-h-0 opacity-0"
@@ -161,7 +152,7 @@ DropdownMenu.propTypes = {
         PropTypes.shape({
             path: PropTypes.string.isRequired,
             label: PropTypes.string.isRequired,
-            icon: PropTypes.elementType // Add this prop for the icon
+            icon: PropTypes.elementType
         })
     ).isRequired,
     isVisible: PropTypes.bool,
