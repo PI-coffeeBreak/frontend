@@ -1,7 +1,7 @@
 import { useState, useEffect } from "react";
 import { Link, useLocation } from "react-router-dom";
 import { VscLayoutSidebarLeft, VscLayoutSidebarLeftOff } from "react-icons/vsc";
-import { FaHome, FaPen, FaUser, FaSignOutAlt } from "react-icons/fa";
+import { FaHome, FaPen, FaUser, FaSignOutAlt, FaCogs } from "react-icons/fa";
 import { RiApps2AddLine } from "react-icons/ri";
 import DropdownMenu from "./DropdownMenu.jsx";
 import { useKeycloak } from "@react-keycloak/web";
@@ -187,19 +187,42 @@ export default function Sidebar() {
 
           <nav className={`mt-6 ${isVisible ? "px-4" : "px-0"}`}>
             <ul className="flex flex-col gap-4">
+              {/* Add dedicated Home button */}
+              <li>
+                <Link
+                  to="/instantiate"
+                  className={`btn btn-sm w-full ${
+                    location.pathname === "/instantiate" ? "btn-primary" : "btn-ghost"
+                  } ${
+                    isVisible
+                      ? "flex items-center gap-2 justify-start px-3"
+                      : "flex items-center justify-center px-1"
+                  }`}
+                >
+                  <FaHome className="text-xl" />
+                  {isVisible && <span className="overflow-hidden whitespace-nowrap">Dashboard</span>}
+                </Link>
+              </li>
+              
+              {/* Change Home to Management */}
               <DropdownMenu
-                icon={FaHome}
-                title="Home"
+                icon={FaCogs}
+                title="Management"
                 isVisible={isVisible}
+                basePath="home"
+                hasHomepage={false}
                 links={[
                   { label: "Users", path: "home/users" },
                   { label: "Sessions", path: "home/sessions" },
                 ]}
               />
+              
               <DropdownMenu
                 icon={FaPen}
                 title="Event Maker"
                 isVisible={isVisible}
+                basePath="eventmaker"
+                hasHomepage={true}
                 links={[
                   { label: "Event info", path: "eventmaker/edit" },
                   { label: "Colors", path: "eventmaker/colors" },
@@ -211,11 +234,14 @@ export default function Sidebar() {
                   },
                 ]}
               />
+              
               {hasEnabledPlugins && (
                 <DropdownMenu
                   icon={RiApps2AddLine}
                   title="Plugins"
                   isVisible={isVisible}
+                  basePath="plugins"
+                  hasHomepage={false}
                   links={enabledPlugins}
                 />
               )}

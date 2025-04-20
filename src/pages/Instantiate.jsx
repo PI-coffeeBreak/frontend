@@ -1,6 +1,6 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
-import { FaHome, FaPalette, FaCogs, FaCalendarAlt, FaPuzzlePiece, FaUsers, FaBell } from 'react-icons/fa';
+import { FaPalette, FaCogs, FaCalendarAlt, FaPuzzlePiece, FaUsers, FaBell } from 'react-icons/fa';
 import { useEvent } from '../contexts/EventContext';
 
 export default function Instantiate() {
@@ -8,10 +8,10 @@ export default function Instantiate() {
 
     const quickLinks = [
         {
-            id: 'home',
-            title: 'Home',
+            id: 'management',
+            title: 'Management',
             description: 'Manage users, sessions, and alerts',
-            icon: FaHome,
+            icon: FaCogs,
             links: [
                 { label: 'Users', path: 'home/users', icon: FaUsers },
                 { label: 'Sessions', path: 'home/sessions', icon: FaCalendarAlt },
@@ -75,4 +75,4 @@ export default function Instantiate() {
             </div>
         </div>
     );
-} 
+}
