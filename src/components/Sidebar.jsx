@@ -296,7 +296,7 @@ export default function Sidebar() {
           {isVisible && (
             <div className="text-center w-full mb-3">
               <p className="font-semibold">{displayName}</p>
-              <p className="text-sm text-gray-300">{email}</p>
+              <p className="text-sm text-gray-100">{email}</p>
             </div>
           )}
 
