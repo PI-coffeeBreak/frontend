@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import { Link, useLocation } from "react-router-dom";
 import { VscLayoutSidebarLeft, VscLayoutSidebarLeftOff } from "react-icons/vsc";
 import { 
@@ -56,6 +56,7 @@ export default function Sidebar() {
   const { eventInfo, isLoading: eventLoading } = useEvent();
   const { getMediaUrl } = useMedia();
   const [imageError, setImageError] = useState(false);
+  const navigationRef = useRef(null);
 
   // Fetch user profile from Keycloak when initialized
   useEffect(() => {
@@ -159,7 +160,6 @@ export default function Sidebar() {
     );
   };
 
-  // Render user avatar
   const renderUserAvatar = () => (
     <div
       className={`flex items-center justify-center bg-primary rounded-full border-2 border-white mx-auto mb-2 
@@ -174,11 +174,12 @@ export default function Sidebar() {
   return (
     <>
       <div
-        className={`bg-secondary text-white rounded-r-xl p-2 min-h-screen fixed top-0 left-0 transition-all duration-300 flex flex-col justify-between ${
+        className={`bg-secondary text-white rounded-r-xl p-2 fixed top-0 left-0 transition-all duration-300 flex flex-col h-screen ${
           isVisible ? "w-64" : "w-20"
         }`}
       >
-        <div>
+        {/* Event header */}
+        <div className="flex-shrink-0">
           <div
             className={`flex items-center p-4 ${
               isVisible ? "gap-4" : "gap-0"
@@ -198,8 +199,19 @@ export default function Sidebar() {
               </p>
             </span>
           </div>
+        </div>
 
-          <nav className={`mt-6 ${isVisible ? "px-4" : "px-0"}`}>
+        {/* Navigation sections */}
+        <div 
+          className="flex-grow overflow-y-auto scrollbar-thin scrollbar-thumb-white/20 scrollbar-track-transparent"
+          ref={navigationRef}
+        >
+          <div className={`mt-6 ${isVisible ? "px-4" : "px-0"}`}>
+            {isVisible && (
+              <div className="text-xs uppercase text-white/70 font-semibold tracking-wider mb-3 pl-2">
+                Main Navigation
+              </div>
+            )}
             <ul className="flex flex-col gap-4">
               {/* Home button */}
               <li>
@@ -251,9 +263,19 @@ export default function Sidebar() {
                   },
                 ]}
               />
-              
-              {/* Plugins sections */}
-              {hasEnabledPlugins && (
+            </ul>
+          </div>
+
+          {hasEnabledPlugins && (
+            <div className={`mt-6 ${isVisible ? "px-4" : "px-0"}`}>
+              {isVisible && (
+                <div className="text-xs uppercase text-white/70 font-semibold tracking-wider mb-3 pl-2 flex items-center">
+                  <div className="w-6 h-px bg-white/20 mr-2"></div>
+                  Extensions
+                  <div className="w-6 h-px bg-white/20 ml-2"></div>
+                </div>
+              )}
+              <ul className="flex flex-col gap-4">
                 <DropdownMenu
                   icon={RiApps2AddLine}
                   title="Plugins"
@@ -262,12 +284,13 @@ export default function Sidebar() {
                   hasHomepage={false}
                   links={enabledPlugins}
                 />
-              )}
-            </ul>
-          </nav>
+              </ul>
+            </div>
+          )}
         </div>
 
-        <div className="flex flex-col items-center mb-6 px-2">
+        {/* User profile */}
+        <div className="flex-shrink-0 flex flex-col items-center mb-6 px-2 mt-2">
           {renderUserAvatar()}
 
           {isVisible && (
@@ -288,6 +311,7 @@ export default function Sidebar() {
           </button>
         </div>
       </div>
+
       <div
         className="flex items-center fixed top-0 left-0 w-full text-white px-4 py-2 z-50 transition-all duration-300 bg-base-100"
         style={{ marginLeft: isVisible ? "16rem" : "5rem" }}
