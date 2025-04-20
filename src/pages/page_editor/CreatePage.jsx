@@ -12,6 +12,19 @@ import { PageContent } from "../../components/event_maker/pages/PageContent";
 import { PageActions } from "../../components/event_maker/pages/PageActions";
 import { useSections } from "../../hooks/useSections";
 import { restrictToVerticalAxis } from '@dnd-kit/modifiers';
+import { DynamicComponentConfiguration } from "../../components/event_maker/pages/DynamicComponentConfiguration";
+
+// Prevent unnecessary re-renders when dragging
+const MemoizedDynamicComponentConfiguration = React.memo(
+    DynamicComponentConfiguration, 
+    (prevProps, nextProps) => {
+        return (
+            prevProps.id === nextProps.id &&
+            prevProps.componentData.name === nextProps.componentData.name &&
+            JSON.stringify(prevProps.componentData.props) === JSON.stringify(nextProps.componentData.props)
+        );
+    }
+);
 
 export function CreatePage() {
     const navigate = useNavigate();
@@ -103,6 +116,7 @@ export function CreatePage() {
                 onAddSection={handleAddSection}
                 getDefaultPropsForComponent={getDefaultPropsForComponent}
                 modifiers={[restrictToVerticalAxis]}
+                DynamicComponentConfiguration={MemoizedDynamicComponentConfiguration}
             />
 
             <PageActions

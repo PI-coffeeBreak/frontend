@@ -17,21 +17,19 @@ export function SortableItemLayout({ id, children, onRemove }) {
     const style = {
         transform: CSS.Translate.toString(transform),
         transition,
-
-        // Visual feedback during drag
         opacity: isDragging ? 0.7 : 1,
         zIndex: isDragging ? 999 : 1,
-
-        // Maintain width during drag to prevent stretching
         width: '100%',
-        position: 'relative'
+        position: 'relative',
+        transformOrigin: '0 0',
+        pointerEvents: isDragging ? 'none' : 'all'
     };
 
     return (
         <div
             ref={setNodeRef}
             style={style}
-            className={`relative flex items-center gap-4 w-full ${isDragging ? 'dragging' : ''}`}
+            className={`relative flex items-center gap-4 w-full ${isDragging ? 'ring-2 ring-primary ring-offset-2' : ''}`}
         >
             {isDragging && (
                 <div className="absolute inset-0 bg-base-200 opacity-50 rounded-lg pointer-events-none" />
