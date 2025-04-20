@@ -50,10 +50,15 @@ export function SortableItemLayout({ id, children, onRemove }) {
             <div
                 {...listeners}
                 {...attributes}
-                className="flex-shrink-0 bg-gray-700 text-white p-2 rounded-full cursor-grab shadow-md"
+                className="flex-shrink-0 bg-gray-700 text-white p-2 rounded-full cursor-ns-resize shadow-md relative group"
                 title="Drag"
             >
                 <FaBars />
+                
+                {/* Drag tooltip overlay */}
+                <div className="hidden group-hover:block absolute -top-10 left-1/2 transform -translate-x-1/2 bg-gray-900 text-white text-xs py-1 px-2 rounded whitespace-nowrap">
+                    Drag to reposition
+                </div>
             </div>
         </div>
     );
