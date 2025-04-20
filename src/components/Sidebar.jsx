@@ -1,7 +1,21 @@
 import { useState, useEffect } from "react";
 import { Link, useLocation } from "react-router-dom";
 import { VscLayoutSidebarLeft, VscLayoutSidebarLeftOff } from "react-icons/vsc";
-import { FaHome, FaPen, FaUser, FaSignOutAlt, FaCogs } from "react-icons/fa";
+import { 
+  FaHome, 
+  FaPen, 
+  FaUser, 
+  FaSignOutAlt, 
+  FaCogs, 
+  FaUsers, 
+  FaCalendarAlt,
+  FaBell,
+  FaPalette,
+  FaPuzzlePiece,
+  FaEdit,
+  FaFileAlt,
+  FaBars
+} from "react-icons/fa";
 import { RiApps2AddLine } from "react-icons/ri";
 import DropdownMenu from "./DropdownMenu.jsx";
 import { useKeycloak } from "@react-keycloak/web";
@@ -69,6 +83,7 @@ export default function Sidebar() {
     .map((plugin) => ({
       label: plugin.formatted_name,
       path: `plugins/${plugin.name.toLowerCase()}`,
+      icon: FaPuzzlePiece
     }));
   const hasEnabledPlugins = enabledPlugins.length > 0;
 
@@ -154,7 +169,6 @@ export default function Sidebar() {
     </div>
   );
 
-  // Get user information from extracted function
   const { displayName, email } = getUserDisplayInfo();
 
   return (
@@ -187,7 +201,7 @@ export default function Sidebar() {
 
           <nav className={`mt-6 ${isVisible ? "px-4" : "px-0"}`}>
             <ul className="flex flex-col gap-4">
-              {/* Add dedicated Home button */}
+              {/* Home button */}
               <li>
                 <Link
                   to="/instantiate"
@@ -204,7 +218,7 @@ export default function Sidebar() {
                 </Link>
               </li>
               
-              {/* Change Home to Management */}
+              {/* Management section */}
               <DropdownMenu
                 icon={FaCogs}
                 title="Management"
@@ -212,11 +226,13 @@ export default function Sidebar() {
                 basePath="home"
                 hasHomepage={false}
                 links={[
-                  { label: "Users", path: "home/users" },
-                  { label: "Sessions", path: "home/sessions" },
+                  { label: "Users", path: "home/users", icon: FaUsers },
+                  { label: "Sessions", path: "home/sessions", icon: FaCalendarAlt },
+                  { label: "Alerts", path: "home/alerts", icon: FaBell },
                 ]}
               />
               
+              {/* Event Maker section */}
               <DropdownMenu
                 icon={FaPen}
                 title="Event Maker"
@@ -224,17 +240,19 @@ export default function Sidebar() {
                 basePath="eventmaker"
                 hasHomepage={true}
                 links={[
-                  { label: "Event info", path: "eventmaker/edit" },
-                  { label: "Colors", path: "eventmaker/colors" },
-                  { label: "Menus", path: "eventmaker/menus" },
-                  { label: "Pages", path: "eventmaker/pages" },
+                  { label: "Event info", path: "eventmaker/edit", icon: FaEdit },
+                  { label: "Colors", path: "eventmaker/colors", icon: FaPalette },
+                  { label: "Menus", path: "eventmaker/menus", icon: FaBars },
+                  { label: "Pages", path: "eventmaker/pages", icon: FaFileAlt },
                   {
                     label: "Choose Plugins",
                     path: "eventmaker/choose-plugins",
+                    icon: FaPuzzlePiece
                   },
                 ]}
               />
               
+              {/* Plugins sections */}
               {hasEnabledPlugins && (
                 <DropdownMenu
                   icon={RiApps2AddLine}
