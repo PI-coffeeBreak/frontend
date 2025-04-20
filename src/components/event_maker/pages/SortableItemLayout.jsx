@@ -29,7 +29,9 @@ export function SortableItemLayout({ id, children, onRemove }) {
         <div
             ref={setNodeRef}
             style={style}
-            className={`relative flex items-center gap-4 w-full ${isDragging ? 'ring-2 ring-primary ring-offset-2' : ''}`}
+            className={`relative flex items-center gap-4 w-full ${
+                isDragging ? 'ring-2 ring-primary ring-offset-2' : 'hover:bg-base-100/50'
+            }`}
         >
             {isDragging && (
                 <div className="absolute inset-0 bg-base-200 opacity-50 rounded-lg pointer-events-none">
