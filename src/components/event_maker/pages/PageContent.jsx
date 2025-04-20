@@ -14,7 +14,6 @@ export function PageContent({
     getDefaultPropsForComponent,
     modifiers = []
 }) {
-
     const sensors = useSensors(
         useSensor(PointerSensor, {
             activationConstraint: {
@@ -57,6 +56,11 @@ export function PageContent({
             collisionDetection={closestCenter} 
             onDragEnd={onDragEnd}
             modifiers={modifiers}
+            measuring={{
+                droppable: {
+                    strategy: 'always'
+                }
+            }}
         >
             <SortableContext items={sections.map((section) => section.id)} strategy={verticalListSortingStrategy}>
                 <div className="space-y-4">

@@ -5,19 +5,38 @@ import { CSS } from "@dnd-kit/utilities";
 import { FaBars, FaTrash } from "react-icons/fa";
 
 export function SortableItemLayout({ id, children, onRemove }) {
-    const { attributes, listeners, setNodeRef, transform, transition } = useSortable({ id });
+    const { 
+        attributes, 
+        listeners, 
+        setNodeRef, 
+        transform, 
+        transition,
+        isDragging 
+    } = useSortable({ id });
 
     const style = {
-        transform: CSS.Transform.toString(transform),
+        transform: CSS.Translate.toString(transform),
         transition,
+
+        // Visual feedback during drag
+        opacity: isDragging ? 0.7 : 1,
+        zIndex: isDragging ? 999 : 1,
+
+        // Maintain width during drag to prevent stretching
+        width: '100%',
+        position: 'relative'
     };
 
     return (
         <div
             ref={setNodeRef}
             style={style}
-            className="relative flex items-center gap-4 w-full"
+            className={`relative flex items-center gap-4 w-full ${isDragging ? 'dragging' : ''}`}
         >
+            {isDragging && (
+                <div className="absolute inset-0 bg-base-200 opacity-50 rounded-lg pointer-events-none" />
+            )}
+            
             <div className="flex-grow p-4 bg-white shadow rounded-lg">
                 {children}
             </div>
@@ -46,4 +65,4 @@ SortableItemLayout.propTypes = {
     id: PropTypes.string.isRequired,
     children: PropTypes.node.isRequired,
     onRemove: PropTypes.func.isRequired,
-}; 
+};
