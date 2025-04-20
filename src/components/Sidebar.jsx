@@ -235,12 +235,12 @@ export default function Sidebar() {
                 icon={FaCogs}
                 title="Management"
                 isVisible={isVisible}
-                basePath="home"
-                hasHomepage={false}
+                basePath="management"
+                hasHomepage={true}
                 links={[
-                  { label: "Users", path: "home/users", icon: FaUsers },
-                  { label: "Sessions", path: "home/sessions", icon: FaCalendarAlt },
-                  { label: "Alerts", path: "home/alerts", icon: FaBell },
+                  { label: "Users", path: "management/users", icon: FaUsers },
+                  { label: "Sessions", path: "management/sessions", icon: FaCalendarAlt },
+                  { label: "Alerts", path: "management/alerts", icon: FaBell },
                 ]}
               />
               

@@ -13,9 +13,9 @@ export default function Instantiate() {
             description: 'Manage users, sessions, and alerts',
             icon: FaCogs,
             links: [
-                { label: 'Users', path: 'home/users', icon: FaUsers },
-                { label: 'Sessions', path: 'home/sessions', icon: FaCalendarAlt },
-                { label: 'Alerts', path: 'home/alerts', icon: FaBell }
+                { label: 'Users', path: 'management/users', icon: FaUsers },
+                { label: 'Sessions', path: 'management/sessions', icon: FaCalendarAlt },
+                { label: 'Alerts', path: 'management/alerts', icon: FaBell }
             ]
         },
         {

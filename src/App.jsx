@@ -24,6 +24,7 @@ import { EditPage } from "./pages/page_editor/EditPage.jsx";
 import AuthRedirect from "./pages/AuthRedirect";
 import { Sponsors } from "./pages/Sponsors.jsx";
 import { EventEditor } from "./pages/EventEditor.jsx";
+import Management from "./pages/Management.jsx";
 
 import { ActivitiesProvider } from "./contexts/ActivitiesContext.jsx";
 import { PluginsProvider } from "./contexts/PluginsContext.jsx";
@@ -72,7 +73,8 @@ export default function App() {
 
                                   <Route path="instantiate" element={<PrivateRoute><LayoutInstantiate /></PrivateRoute>}>
                                     <Route index element={<Instantiate />} />
-                                    <Route path="home">
+                                    <Route path="management">
+                                      <Route index element={<Management />} />
                                       <Route path="users" element={<Users />} />
                                       <Route path="sessions" element={<Activities />} />
                                       <Route path="alerts" element={<Alerts />} />
