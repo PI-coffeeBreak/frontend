@@ -11,6 +11,7 @@ import { PageTitleInput } from "../../components/event_maker/pages/PageTitleInpu
 import { PageContent } from "../../components/event_maker/pages/PageContent";
 import { PageActions } from "../../components/event_maker/pages/PageActions";
 import { useSections } from "../../hooks/useSections";
+import { restrictToVerticalAxis } from '@dnd-kit/modifiers';
 
 export function CreatePage() {
     const navigate = useNavigate();
@@ -23,6 +24,7 @@ export function CreatePage() {
     const [hasUnsavedChanges, setHasUnsavedChanges] = useState(true);
     const {
         sections,
+        setSections,
         handleComponentTypeChange,
         handleComponentPropsChange,
         handleRemoveSection,
@@ -100,6 +102,7 @@ export function CreatePage() {
                 onRemoveSection={handleRemoveSection}
                 onAddSection={handleAddSection}
                 getDefaultPropsForComponent={getDefaultPropsForComponent}
+                modifiers={[restrictToVerticalAxis]}
             />
 
             <PageActions
@@ -111,4 +114,4 @@ export function CreatePage() {
             />
         </div>
     );
-} 
+}

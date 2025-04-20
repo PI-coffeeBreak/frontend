@@ -1,6 +1,6 @@
 import React from 'react';
 import PropTypes from 'prop-types';
-import { DndContext, closestCenter } from "@dnd-kit/core";
+import { DndContext, closestCenter, KeyboardSensor, PointerSensor, useSensor, useSensors } from "@dnd-kit/core";
 import { SortableContext, verticalListSortingStrategy } from "@dnd-kit/sortable";
 import { DynamicComponentConfiguration } from "./DynamicComponentConfiguration";
 
@@ -11,8 +11,19 @@ export function PageContent({
     onComponentPropsChange,
     onRemoveSection,
     onAddSection,
-    getDefaultPropsForComponent
+    getDefaultPropsForComponent,
+    modifiers = []
 }) {
+
+    const sensors = useSensors(
+        useSensor(PointerSensor, {
+            activationConstraint: {
+                distance: 8,
+            },
+        }),
+        useSensor(KeyboardSensor)
+    );
+
     const renderSections = () => {
         if (sections.length === 0) {
             return (
@@ -41,7 +52,12 @@ export function PageContent({
     };
 
     return (
-        <DndContext collisionDetection={closestCenter} onDragEnd={onDragEnd}>
+        <DndContext 
+            sensors={sensors} 
+            collisionDetection={closestCenter} 
+            onDragEnd={onDragEnd}
+            modifiers={modifiers}
+        >
             <SortableContext items={sections.map((section) => section.id)} strategy={verticalListSortingStrategy}>
                 <div className="space-y-4">
                     {renderSections()}
@@ -84,5 +100,6 @@ PageContent.propTypes = {
     onComponentPropsChange: PropTypes.func.isRequired,
     onRemoveSection: PropTypes.func.isRequired,
     onAddSection: PropTypes.func.isRequired,
-    getDefaultPropsForComponent: PropTypes.func.isRequired
-}; 
+    getDefaultPropsForComponent: PropTypes.func.isRequired,
+    modifiers: PropTypes.array
+};
