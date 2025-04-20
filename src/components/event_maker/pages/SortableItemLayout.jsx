@@ -32,7 +32,13 @@ export function SortableItemLayout({ id, children, onRemove }) {
             className={`relative flex items-center gap-4 w-full ${isDragging ? 'ring-2 ring-primary ring-offset-2' : ''}`}
         >
             {isDragging && (
-                <div className="absolute inset-0 bg-base-200 opacity-50 rounded-lg pointer-events-none" />
+                <div className="absolute inset-0 bg-base-200 opacity-50 rounded-lg pointer-events-none">
+                    <div className="absolute inset-0 flex items-center justify-center">
+                        <svg className="animate-pulse w-8 h-8 text-primary" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M7 16V4m0 0L3 8m4-4l4 4m6 0v12m0 0l4-4m-4 4l-4-4" />
+                        </svg>
+                    </div>
+                </div>
             )}
             
             <div className="flex-grow p-4 bg-white shadow rounded-lg">
@@ -41,24 +47,21 @@ export function SortableItemLayout({ id, children, onRemove }) {
 
             <button
                 onClick={onRemove}
-                className="text-gray-500 hover:text-red-500 p-2 rounded-full"
+                className="text-gray-500 hover:text-white hover:bg-red-500 p-2 rounded-full transition-colors duration-200"
                 title="Remove Section"
             >
-                <FaTrash />
+                <FaTrash className="w-4 h-4" />
             </button>
 
             <div
                 {...listeners}
                 {...attributes}
-                className="flex-shrink-0 bg-gray-700 text-white p-2 rounded-full cursor-ns-resize shadow-md relative group"
-                title="Drag"
+                className="flex-shrink-0 bg-gradient-to-b from-gray-600 to-gray-800 text-white p-2 rounded-full 
+                    cursor-ns-resize shadow-md relative group hover:from-gray-500 hover:to-gray-700
+                    active:scale-95 transition-all duration-150"
+                title="Drag to reposition"
             >
-                <FaBars />
-                
-                {/* Drag tooltip overlay */}
-                <div className="hidden group-hover:block absolute -top-10 left-1/2 transform -translate-x-1/2 bg-gray-900 text-white text-xs py-1 px-2 rounded whitespace-nowrap">
-                    Drag to reposition
-                </div>
+                <FaBars className="w-4 h-4" />
             </div>
         </div>
     );
