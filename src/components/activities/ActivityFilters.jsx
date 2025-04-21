@@ -19,7 +19,7 @@ export function ActivityFilters({
             <input
                 type="text"
                 className="grow"
-                placeholder="Search activities by name or description"
+                placeholder="Search activities"
                 value={searchQuery}
                 onChange={(e) => onSearchChange(e.target.value)}
             />
