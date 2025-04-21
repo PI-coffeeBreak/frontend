@@ -9,6 +9,7 @@ import { PageTitleInput } from "../../components/event_maker/pages/PageTitleInpu
 import { PageContent } from "../../components/event_maker/pages/PageContent";
 import { PageActions } from "../../components/event_maker/pages/PageActions";
 import { useSections } from "../../hooks/useSections";
+import { restrictToVerticalAxis } from '@dnd-kit/modifiers';
 
 export function EditPage() {
     const { pageTitle } = useParams();
@@ -220,6 +221,7 @@ export function EditPage() {
                 onRemoveSection={handleRemoveSection}
                 onAddSection={handleAddSection}
                 getDefaultPropsForComponent={getDefaultPropsForComponent}
+                modifiers={[restrictToVerticalAxis]}
             />
 
             <PageActions
@@ -231,4 +233,4 @@ export function EditPage() {
             />
         </div>
     );
-} 
+}
