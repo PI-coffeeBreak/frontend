@@ -52,8 +52,8 @@ export function PageContent({
                 key={section.id}
                 id={section.id}
                 componentData={section.componentData}
-                onComponentTypeChange={(name) => onComponentTypeChange(section.id, name)}
-                onComponentPropsChange={(props) => onComponentPropsChange(section.id, props)}
+                onComponentTypeChange={onComponentTypeChange}
+                onComponentPropsChange={onComponentPropsChange}
                 onRemove={() => onRemoveSection(section.id)}
             />
         ));
