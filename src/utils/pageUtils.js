@@ -14,7 +14,7 @@ export function prepareComponentsWithDefaults(sections, getComponentSchema) {
     const fullProps = {};
     
     // If schema exists, populate properties with defaults
-    if (schema && schema.properties) {
+    if (schema?.properties) {
       // Add all schema properties with their default values
       Object.entries(schema.properties).forEach(([propName, propSchema]) => {
         // Skip the name and component_id as they're handled separately
@@ -22,7 +22,7 @@ export function prepareComponentsWithDefaults(sections, getComponentSchema) {
           // Use the current value if it exists, otherwise use the default
           fullProps[propName] = currentProps[propName] !== undefined 
             ? currentProps[propName] 
-            : (propSchema.default !== undefined ? propSchema.default : null);
+            : propSchema?.default ?? null;
         }
       });
     }
