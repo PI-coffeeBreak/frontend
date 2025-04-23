@@ -30,7 +30,7 @@ export function CreatePage() {
     const navigate = useNavigate();
     const { keycloak } = useKeycloak();
     const { savePage, isLoading: isPagesLoading } = usePages();
-    const { getDefaultPropsForComponent, isLoading: isComponentsLoading } = useComponents();
+    const { getDefaultPropsForComponent, getComponentSchema, isLoading: isComponentsLoading } = useComponents();
     const { showNotification } = useNotification();
 
     const [page, setPage] = useState({ title: "" });
@@ -57,13 +57,43 @@ export function CreatePage() {
 
     const handleSavePage = async () => {
         try {
+            // Get fully populated component data with all schema properties
+            const componentsWithFullProps = sections.map((section) => {
+                const componentName = section.componentData.name;
+                const schema = getComponentSchema(componentName);
+                const currentProps = section.componentData.props;
+                
+                // Create a new object with all schema properties and their defaults
+                const fullProps = {};
+                
+                // If schema exists, populate properties with defaults
+                if (schema && schema.properties) {
+                    // Add all schema properties with their default values
+                    Object.entries(schema.properties).forEach(([propName, propSchema]) => {
+                        // Skip the name and component_id as they're handled separately
+                        if (propName !== 'name' && propName !== 'component_id') {
+                            // Use the current value if it exists, otherwise use the default
+                            fullProps[propName] = currentProps[propName] !== undefined 
+                                ? currentProps[propName] 
+                                : (propSchema.default !== undefined ? propSchema.default : null);
+                        }
+                    });
+                }
+                
+                // Return the component with all properties (existing + default values)
+                return {
+                    ...fullProps,
+                    name: componentName,
+                    component_id: section.id
+                };
+            });
+
             const pageData = {
                 title: page.title || "New Page",
-                components: sections.map((section) => ({
-                    ...section.componentData.props,
-                    name: section.componentData.name,
-                })),
+                components: componentsWithFullProps,
             };
+
+            console.log("Saving page with components:", pageData.components);
 
             // Save the page first
             await savePage(pageData);
