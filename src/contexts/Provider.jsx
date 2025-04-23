@@ -15,6 +15,7 @@ import { ColorThemeProvider } from './ColorThemeContext';
 import { AlertsProvider } from "./AlertsContext.jsx";
 import { EventProvider } from "./EventContext.jsx";
 import { MediaProvider } from "./MediaContext.jsx";
+import { SponsorsProvider } from "./SponsorsContext.jsx";
 
 export const Provider = ({ children }) => {
   return (
@@ -30,25 +31,27 @@ export const Provider = ({ children }) => {
         <NotificationProvider>
           <ThemeProvider>
             <PluginsProvider>
-              <ComponentsProvider>
-                <ActivitiesProvider>
-                  <UsersProvider>
-                    <MenuProvider>
-                      <PagesProvider>
-                        <AlertsProvider>
-                          <EventProvider>
-                            <MediaProvider>
-                              <Router>
-                                {children}
-                              </Router>
-                            </MediaProvider>
-                          </EventProvider>
-                        </AlertsProvider>
-                      </PagesProvider>
-                    </MenuProvider>
-                  </UsersProvider>
-                </ActivitiesProvider>
-              </ComponentsProvider>
+              <SponsorsProvider>
+                <ComponentsProvider>
+                  <ActivitiesProvider>
+                    <UsersProvider>
+                      <MenuProvider>
+                        <PagesProvider>
+                          <AlertsProvider>
+                            <EventProvider>
+                              <MediaProvider>
+                                <Router>
+                                  {children}
+                                </Router>
+                              </MediaProvider>
+                            </EventProvider>
+                          </AlertsProvider>
+                        </PagesProvider>
+                      </MenuProvider>
+                    </UsersProvider>
+                  </ActivitiesProvider>
+                </ComponentsProvider>
+              </SponsorsProvider>
             </PluginsProvider>
           </ThemeProvider>
         </NotificationProvider>
