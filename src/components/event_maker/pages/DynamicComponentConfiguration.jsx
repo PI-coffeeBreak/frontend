@@ -47,7 +47,7 @@ function AnyOfInput({ propertyName, schemas, currentValue, onPropertyChange }) {
         console.log('AnyOfInput - Determining type for value:', {
             currentValue,
             'typeof': typeof currentValue,
-            'has uuid': currentValue && typeof currentValue === 'object' && 'uuid' in currentValue
+            'has uuid': typeof currentValue === 'object' && 'uuid' in currentValue
         });
 
         if (typeof currentValue === 'object' && currentValue.uuid) {

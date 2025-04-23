@@ -11,18 +11,34 @@ import { PageTitleInput } from "../../components/event_maker/pages/PageTitleInpu
 import { PageContent } from "../../components/event_maker/pages/PageContent";
 import { PageActions } from "../../components/event_maker/pages/PageActions";
 import { useSections } from "../../hooks/useSections";
+import { restrictToVerticalAxis } from '@dnd-kit/modifiers';
+import { DynamicComponentConfiguration } from "../../components/event_maker/pages/DynamicComponentConfiguration";
+import { prepareComponentsWithDefaults } from "../../utils/pageUtils";
+
+// Prevent unnecessary re-renders when dragging
+const MemoizedDynamicComponentConfiguration = React.memo(
+    DynamicComponentConfiguration, 
+    (prevProps, nextProps) => {
+        return (
+            prevProps.id === nextProps.id &&
+            prevProps.componentData.name === nextProps.componentData.name &&
+            JSON.stringify(prevProps.componentData.props) === JSON.stringify(nextProps.componentData.props)
+        );
+    }
+);
 
 export function CreatePage() {
     const navigate = useNavigate();
     const { keycloak } = useKeycloak();
     const { savePage, isLoading: isPagesLoading } = usePages();
-    const { getDefaultPropsForComponent, isLoading: isComponentsLoading } = useComponents();
+    const { getDefaultPropsForComponent, getComponentSchema, isLoading: isComponentsLoading } = useComponents();
     const { showNotification } = useNotification();
 
     const [page, setPage] = useState({ title: "" });
     const [hasUnsavedChanges, setHasUnsavedChanges] = useState(true);
     const {
         sections,
+        setSections,
         handleComponentTypeChange,
         handleComponentPropsChange,
         handleRemoveSection,
@@ -42,13 +58,15 @@ export function CreatePage() {
 
     const handleSavePage = async () => {
         try {
+            // Use the shared utility function to prepare components
+            const componentsWithFullProps = prepareComponentsWithDefaults(sections, getComponentSchema);
+
             const pageData = {
                 title: page.title || "New Page",
-                components: sections.map((section) => ({
-                    ...section.componentData.props,
-                    name: section.componentData.name,
-                })),
+                components: componentsWithFullProps,
             };
+
+            console.log("Saving page with components:", pageData.components);
 
             // Save the page first
             await savePage(pageData);
@@ -100,6 +118,8 @@ export function CreatePage() {
                 onRemoveSection={handleRemoveSection}
                 onAddSection={handleAddSection}
                 getDefaultPropsForComponent={getDefaultPropsForComponent}
+                modifiers={[restrictToVerticalAxis]}
+                DynamicComponentConfiguration={MemoizedDynamicComponentConfiguration}
             />
 
             <PageActions
@@ -111,4 +131,4 @@ export function CreatePage() {
             />
         </div>
     );
-} 
+}

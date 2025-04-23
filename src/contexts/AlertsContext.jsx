@@ -79,11 +79,7 @@ export const AlertsProvider = ({ children }) => {
             };
 
             console.log("Sending alert data:", formattedData);
-            const response = await axiosWithAuth(keycloak).post(`${alertsBaseUrl}/alert`, formattedData, {
-                params: {
-                    force_auth: true
-                }
-            });
+            const response = await axiosWithAuth(keycloak).post(`${alertsBaseUrl}/alert`, formattedData);
             
             console.log("Alert created successfully:", response.data);
             return response.data;

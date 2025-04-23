@@ -3,6 +3,7 @@ import { Image } from "./Image";
 import { Button } from "./Button";
 import { Text } from "./Text";
 import { Alert } from "./Alert";
+import { Location } from "./Location";
 import { SponsorsComponent } from "./Sponsors";
 
 // Map component names to their implementations
@@ -22,8 +23,8 @@ export const componentList = [
   { name: "Button", title: "Button Component", component: Button },
   { name: "Text", title: "Text Component", component: Text },
   { name: "Alert", title: "Alert Component", component: Alert },
+  { name: "Location", title: "Location Component", component: Location },
   { name: "SponsorsComponent", title: "Sponsors Component", component: SponsorsComponent }
 ];
 
-// Individual exports for direct usage
-export { Title, Text, Button, Alert, Image, SponsorsComponent };
+export { Title, Text, Button, Alert, Image, Location, SponsorsComponent };
