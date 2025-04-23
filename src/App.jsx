@@ -23,6 +23,7 @@ import AuthRedirect from "./pages/AuthRedirect";
 import { Sponsors } from "./pages/Sponsors.jsx";
 import { EventEditor } from "./pages/EventEditor.jsx";
 import Provider from "./contexts/Provider.jsx";
+import Management from "./pages/Management.jsx";
 
 export default function App() {
   return (
@@ -37,7 +38,8 @@ export default function App() {
 
         <Route path="instantiate" element={<PrivateRoute><LayoutInstantiate /></PrivateRoute>}>
           <Route index element={<Instantiate />} />
-          <Route path="home">
+          <Route path="management">
+            <Route index element={<Management />} />
             <Route path="users" element={<Users />} />
             <Route path="sessions" element={<Activities />} />
             <Route path="alerts" element={<Alerts />} />
