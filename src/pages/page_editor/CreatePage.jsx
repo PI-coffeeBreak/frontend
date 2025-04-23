@@ -13,6 +13,7 @@ import { PageActions } from "../../components/event_maker/pages/PageActions";
 import { useSections } from "../../hooks/useSections";
 import { restrictToVerticalAxis } from '@dnd-kit/modifiers';
 import { DynamicComponentConfiguration } from "../../components/event_maker/pages/DynamicComponentConfiguration";
+import { prepareComponentsWithDefaults } from "../../utils/pageUtils";
 
 // Prevent unnecessary re-renders when dragging
 const MemoizedDynamicComponentConfiguration = React.memo(
@@ -57,36 +58,8 @@ export function CreatePage() {
 
     const handleSavePage = async () => {
         try {
-            // Get fully populated component data with all schema properties
-            const componentsWithFullProps = sections.map((section) => {
-                const componentName = section.componentData.name;
-                const schema = getComponentSchema(componentName);
-                const currentProps = section.componentData.props;
-                
-                // Create a new object with all schema properties and their defaults
-                const fullProps = {};
-                
-                // If schema exists, populate properties with defaults
-                if (schema && schema.properties) {
-                    // Add all schema properties with their default values
-                    Object.entries(schema.properties).forEach(([propName, propSchema]) => {
-                        // Skip the name and component_id as they're handled separately
-                        if (propName !== 'name' && propName !== 'component_id') {
-                            // Use the current value if it exists, otherwise use the default
-                            fullProps[propName] = currentProps[propName] !== undefined 
-                                ? currentProps[propName] 
-                                : (propSchema.default !== undefined ? propSchema.default : null);
-                        }
-                    });
-                }
-                
-                // Return the component with all properties (existing + default values)
-                return {
-                    ...fullProps,
-                    name: componentName,
-                    component_id: section.id
-                };
-            });
+            // Use the shared utility function to prepare components
+            const componentsWithFullProps = prepareComponentsWithDefaults(sections, getComponentSchema);
 
             const pageData = {
                 title: page.title || "New Page",
