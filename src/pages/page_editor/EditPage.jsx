@@ -10,12 +10,13 @@ import { PageContent } from "../../components/event_maker/pages/PageContent";
 import { PageActions } from "../../components/event_maker/pages/PageActions";
 import { useSections } from "../../hooks/useSections";
 import { restrictToVerticalAxis } from '@dnd-kit/modifiers';
+import { prepareComponentsWithDefaults } from "../../utils/pageUtils";
 
 export function EditPage() {
     const { pageTitle } = useParams();
     const navigate = useNavigate();
     const { pages, getPages, updatePage, isLoading: isPagesLoading } = usePages();
-    const { getDefaultPropsForComponent, isLoading: isComponentsLoading } = useComponents();
+    const { getDefaultPropsForComponent, getComponentSchema, isLoading: isComponentsLoading } = useComponents();
     const { showNotification } = useNotification();
 
     const [page, setPage] = useState(null);
@@ -121,12 +122,12 @@ export function EditPage() {
     };
 
     const handleUpdatePage = () => {
+        // Use the shared utility function to prepare components
+        const componentsWithFullProps = prepareComponentsWithDefaults(sections, getComponentSchema);
+
         const pageData = {
             title: page.title,
-            components: sections.map((section) => ({
-                ...section.componentData.props,
-                name: section.componentData.name,
-            })),
+            components: componentsWithFullProps
         };
 
         // Compare current data with original page data
@@ -142,6 +143,8 @@ export function EditPage() {
         }
 
         const dataToSave = { ...pageData, page_id: page.page_id };
+
+        console.log("Saving page data:", dataToSave);
 
         updatePage(page.page_id, dataToSave)
             .then(() => {

@@ -13,6 +13,7 @@ import { PageActions } from "../../components/event_maker/pages/PageActions";
 import { useSections } from "../../hooks/useSections";
 import { restrictToVerticalAxis } from '@dnd-kit/modifiers';
 import { DynamicComponentConfiguration } from "../../components/event_maker/pages/DynamicComponentConfiguration";
+import { prepareComponentsWithDefaults } from "../../utils/pageUtils";
 
 // Prevent unnecessary re-renders when dragging
 const MemoizedDynamicComponentConfiguration = React.memo(
@@ -30,7 +31,7 @@ export function CreatePage() {
     const navigate = useNavigate();
     const { keycloak } = useKeycloak();
     const { savePage, isLoading: isPagesLoading } = usePages();
-    const { getDefaultPropsForComponent, isLoading: isComponentsLoading } = useComponents();
+    const { getDefaultPropsForComponent, getComponentSchema, isLoading: isComponentsLoading } = useComponents();
     const { showNotification } = useNotification();
 
     const [page, setPage] = useState({ title: "" });
@@ -57,13 +58,15 @@ export function CreatePage() {
 
     const handleSavePage = async () => {
         try {
+            // Use the shared utility function to prepare components
+            const componentsWithFullProps = prepareComponentsWithDefaults(sections, getComponentSchema);
+
             const pageData = {
                 title: page.title || "New Page",
-                components: sections.map((section) => ({
-                    ...section.componentData.props,
-                    name: section.componentData.name,
-                })),
+                components: componentsWithFullProps,
             };
+
+            console.log("Saving page with components:", pageData.components);
 
             // Save the page first
             await savePage(pageData);
