@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { FiUser, FiRefreshCw, FiEdit2, FiTrash2, FiPlus } from 'react-icons/fi';
+import { FiUser, FiRefreshCw, FiTrash2 } from 'react-icons/fi';
 import { useSpeakers } from '../contexts/SpeakerContext';
 
 const SpeakerManagement = () => {
@@ -100,10 +100,11 @@ const SpeakerManagement = () => {
       
       <form onSubmit={handleSubmit} className="card bg-base-200 p-6 mb-8">
         <div className="form-control w-full max-w-md mb-4">
-          <label className="label">
+          <label htmlFor="speaker-name" className="label">
             <span className="label-text">Name</span>
           </label>
           <input
+            id="speaker-name"
             type="text"
             name="name"
             value={formData.name}
@@ -115,10 +116,11 @@ const SpeakerManagement = () => {
         </div>
 
         <div className="form-control w-full max-w-md mb-4">
-          <label className="label">
+          <label htmlFor="speaker-description" className="label">
             <span className="label-text">Description</span>
           </label>
           <textarea
+            id="speaker-description"
             name="title"
             value={formData.title}
             onChange={handleInputChange}
@@ -129,10 +131,11 @@ const SpeakerManagement = () => {
         </div>
 
         <div className="form-control w-full max-w-md mb-6">
-          <label className="label">
+          <label htmlFor="speaker-image" className="label">
             <span className="label-text">Image</span>
           </label>
           <input
+            id="speaker-image"
             type="file"
             name="image"
             onChange={handleInputChange}
@@ -202,6 +205,7 @@ const SpeakerManagement = () => {
                           <button
                             onClick={() => handleDelete(speaker.id)}
                             className="btn btn-error btn-sm"
+                            aria-label={`Delete ${speaker.name}`}
                           >
                             <FiTrash2 className="w-4 h-4" />
                             Delete
