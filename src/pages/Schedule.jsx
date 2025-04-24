@@ -154,10 +154,10 @@ export default function DragDropCalendar() {
 
     return (
         <div className="flex flex-col pt-8 h-[calc(100vh-64px)]">
-            {/* Page header */}
-            <div className="bg-base-100 p-4 shadow-sm border-b">
+            {/* Page header - more compact */}
+            <div className="bg-base-100 py-2 px-4 shadow-sm border-b">
                 <div className="flex justify-between items-center">
-                    <h1 className="text-2xl font-bold flex items-center gap-2">
+                    <h1 className="text-xl font-bold flex items-center gap-2">
                         <FaCalendarAlt className="text-primary" />
                         Event Schedule
                     </h1>
@@ -177,19 +177,19 @@ export default function DragDropCalendar() {
 
             {/* Main content */}
             <div className="flex flex-col flex-grow overflow-hidden">
-                {/* Activities panel - collapsible */}
+                {/* Activities panel - collapsible but with proper class setup */}
                 <div
                     className={`transition-all duration-300 bg-base-100 border-b ${
                         activitiesCollapsed
                             ? "max-h-0 py-0 overflow-hidden"
-                            : "max-h-[40vh] overflow-y-auto py-4"
+                            : "max-h-[30vh] overflow-y-auto py-2"
                     }`}
                     ref={draggableRef}
                 >
                     <div className="container mx-auto px-4">
-                        <h3 className="font-bold mb-4 text-lg">Available Activities</h3>
-                        <div className="flex flex-grow gap-4 flex-wrap">
-                            {/* Activities outside calendar */}
+                        <h3 className="font-bold mb-2 text-base">Available Activities</h3>
+                        <div className="flex flex-grow gap-2 flex-wrap">
+                            {/* Activities outside calendar - maintaining fc-event class */}
                             {outsideActivities.map((activity) => (
                                 <Activity
                                     key={activity.id}
@@ -202,10 +202,13 @@ export default function DragDropCalendar() {
                                         (type) => type.id === activity.type_id
                                     )?.type}
                                     onDelete={handleDelete}
+                                    className="fc-event" // Important: Add fc-event class
+                                    data-id={activity.id} // Important: data-id attribute
+                                    data-title={activity.name} // Important: data-title attribute
                                 />
                             ))}
                             {outsideActivities.length === 0 && (
-                                <div className="p-4 bg-base-200 rounded-lg text-center col-span-full">
+                                <div className="p-2 bg-base-200 rounded-lg text-center w-full">
                                     <p className="text-base-content/70">
                                         No unscheduled activities available.
                                     </p>
@@ -215,8 +218,8 @@ export default function DragDropCalendar() {
                     </div>
                 </div>
 
-                {/* Calendar - takes remaining height */}
-                <div className="flex-grow overflow-auto p-4">
+                {/* Calendar - optimized height with less padding */}
+                <div className="flex-grow overflow-auto p-2">
                     <div className="h-full">
                         <FullCalendar
                             ref={calendarRef}
@@ -225,7 +228,7 @@ export default function DragDropCalendar() {
                             headerToolbar={{
                                 left: "prev,next today",
                                 center: "title",
-                                right: "dayGridMonth,timeGridWeek,timeGridDay",
+                                right: "timeGridWeek,timeGridDay",
                             }}
                             height="100%"
                             editable={true}
@@ -236,9 +239,10 @@ export default function DragDropCalendar() {
                             eventClick={handleEventClick}
                             slotDuration={"00:15:00"}
                             slotLabelInterval={"01:00:00"}
-                            slotMinTime="00:00:00"
-                            slotMaxTime="24:00:00"
+                            slotMinTime="07:00:00"
+                            slotMaxTime="22:00:00"
                             allDaySlot={false}
+                            dayMaxEvents={true}
                             eventTimeFormat={{
                                 hour: "2-digit",
                                 minute: "2-digit",
