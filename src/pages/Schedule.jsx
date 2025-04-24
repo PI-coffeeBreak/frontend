@@ -50,28 +50,39 @@ export default function DragDropCalendar() {
     useEffect(() => {
         fetchActivityTypes();
         fetchActivities();
-    }, [fetchActivityTypes, fetchActivities]);
+    }, []);
 
     useEffect(() => {
         if (activities.length > 0 && calendarRef.current) {
-            const timer = setTimeout(() => {
-                const draggable = new Draggable(draggableRef.current, {
-                    itemSelector: ".fc-event",
-                    eventData: function (eventEl) {
-                        const activityId = eventEl.getAttribute("data-id");
-                        const activity = findActivityById(activities, activityId);
+            // Use ref to track if draggable is initialized
+            const draggableRef = { current: null };
 
-                        return {
-                            title: eventEl.getAttribute("data-title"),
-                            duration: formatDuration(activity?.duration || 0),
-                            "data-id": activityId,
-                        };
-                    },
-                });
-                return () => draggable.destroy();
+            const timer = setTimeout(() => {
+                // Only initialize if not already initialized
+                if (!draggableRef.current) {
+                    draggableRef.current = new Draggable(document.getElementById('draggable-activities'), {
+                        itemSelector: ".fc-event",
+                        eventData: function (eventEl) {
+                            const activityId = eventEl.getAttribute("data-id");
+                            const activity = findActivityById(activities, activityId);
+
+                            return {
+                                title: eventEl.getAttribute("data-title"),
+                                duration: formatDuration(activity?.duration || 0),
+                                "data-id": activityId,
+                            };
+                        },
+                    });
+                }
             }, 1000);
 
-            return () => clearTimeout(timer);
+            return () => {
+                clearTimeout(timer);
+                if (draggableRef.current) {
+                    draggableRef.current.destroy();
+                    draggableRef.current = null;
+                }
+            };
         }
     }, [activities]);
 
@@ -179,17 +190,17 @@ export default function DragDropCalendar() {
             <div className="flex flex-col flex-grow overflow-hidden">
                 {/* Activities panel */}
                 <div
+                    id="draggable-activities"
                     className={`transition-all duration-300 bg-base-100 border-b ${
                         activitiesCollapsed
                             ? "max-h-0 py-0 overflow-hidden"
-                            : "max-h-[30vh] overflow-y-auto py-1"
+                            : "max-h-[25vh] overflow-y-auto py-1"
                     }`}
-                    ref={draggableRef}
                 >
                     <div className="container mx-auto px-3">
                         <h3 className="font-bold mb-1 text-sm">Available Activities</h3>
                         <div className="flex flex-grow gap-1 flex-wrap overflow-y-auto">
-                            {/* Activities outside calendar - maintaining fc-event class */}
+                            {/* Activities outside calendar */}
                             {outsideActivities.map((activity) => (
                                 <Activity
                                     key={activity.id}
@@ -202,7 +213,7 @@ export default function DragDropCalendar() {
                                         (type) => type.id === activity.type_id
                                     )?.type}
                                     onDelete={handleDelete}
-                                    className="fc-event" // Important: fc-event class for draggability
+                                    className="fc-event activity-card"
                                     data-id={activity.id}
                                     data-title={activity.name}
                                 />
@@ -237,18 +248,29 @@ export default function DragDropCalendar() {
                             eventDrop={handleEventDrop}
                             eventResize={handleEventResize}
                             eventClick={handleEventClick}
-                            slotDuration={"00:15:00"}
-                            slotLabelInterval={"01:00:00"}
-                            slotMinTime="06:00:00"
-                            slotMaxTime="23:00:00"
+                            slotDuration={"00:05:00"}         // Changed from 15min to 5min slots
+                            slotLabelInterval={"01:00:00"}    // Show hour labels every hour
+                            slotMinTime="00:00:00"
+                            slotMaxTime="24:00:00"
+                            snapDuration={"00:01:00"}         // Snap to 5min intervals when dragging
                             allDaySlot={false}
                             dayMaxEvents={true}
+                            nowIndicator={true}               // Show current time indicator
+                            scrollTime={new Date().getHours() + ":00:00"} // Scroll to current hour
+                            slotLabelFormat={{
+                                hour: "2-digit",
+                                minute: "2-digit",
+                                meridiem: false,
+                                hour12: false,
+                            }}
                             eventTimeFormat={{
                                 hour: "2-digit",
                                 minute: "2-digit",
                                 meridiem: false,
                                 hour12: false,
                             }}
+                            forceEventDuration={true}         // Always use specified duration
+                            defaultTimedEventDuration={"00:30:00"} // Default duration for new events
                             events={calendarActivities.map((activity) => {
                                 const durationInMs = activity.duration * 60000;
                                 const endTime = new Date(
