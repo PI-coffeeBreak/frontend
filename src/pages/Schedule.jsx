@@ -1,4 +1,4 @@
-import { useEffect, useRef } from "react";
+import { useEffect, useRef, useState } from "react";
 import FullCalendar from "@fullcalendar/react";
 import interactionPlugin, { Draggable } from "@fullcalendar/interaction";
 import dayGridPlugin from "@fullcalendar/daygrid";
@@ -6,8 +6,9 @@ import timeGridPlugin from "@fullcalendar/timegrid";
 import Activity from "../components/Activity.jsx";
 import { useActivities } from "../contexts/ActivitiesContext";
 import { useNotification } from "../contexts/NotificationContext";
+import { FaCalendarAlt, FaChevronDown, FaChevronUp } from "react-icons/fa";
 
-// Helper function to find an activity by ID
+// Helper functions remain unchanged
 const findActivityById = (activities, activityId) => {
     const activity = activities.find((activity) => activity.id === parseInt(activityId));
     if (!activity) {
@@ -16,7 +17,6 @@ const findActivityById = (activities, activityId) => {
     return activity;
 };
 
-// Helper function to format the duration
 const formatDuration = (duration) => {
     if (duration > 0) {
         const hours = Math.floor(duration / 60).toString().padStart(2, "0");
@@ -29,6 +29,7 @@ const formatDuration = (duration) => {
 export default function DragDropCalendar() {
     const calendarRef = useRef(null);
     const draggableRef = useRef(null);
+    const [activitiesCollapsed, setActivitiesCollapsed] = useState(false);
 
     const {
         activities,
@@ -38,16 +39,18 @@ export default function DragDropCalendar() {
         fetchActivities,
         fetchActivityTypes,
         updateActivity,
+        deleteActivity, // Added this since it's used in handleDelete
         setCalendarActivities,
         setOutsideActivities,
     } = useActivities();
 
     const { showNotification } = useNotification();
 
+    // Existing useEffects remain unchanged
     useEffect(() => {
         fetchActivityTypes();
         fetchActivities();
-    }, []);
+    }, [fetchActivityTypes, fetchActivities]);
 
     useEffect(() => {
         if (activities.length > 0 && calendarRef.current) {
@@ -72,6 +75,7 @@ export default function DragDropCalendar() {
         }
     }, [activities]);
 
+    // Existing event handlers remain unchanged
     const handleEventReceive = async (info) => {
         const activityId = parseInt(info.event.extendedProps["data-id"]);
         const activity = findActivityById(activities, activityId);
@@ -132,7 +136,9 @@ export default function DragDropCalendar() {
         if (window.confirm("Are you sure you want to delete this activity?")) {
             try {
                 await deleteActivity(id);
-                setOutsideActivities(prev => prev.filter(activity => activity.id !== parseInt(id)));
+                setOutsideActivities((prev) =>
+                    prev.filter((activity) => activity.id !== parseInt(id))
+                );
                 showNotification("Activity deleted successfully", "success");
             } catch (error) {
                 showNotification("Failed to delete activity", "error");
@@ -141,56 +147,124 @@ export default function DragDropCalendar() {
         }
     };
 
-    return (
-        <div className="container mx-auto">
-            <h3 className="font-bold mb-2">Atividades</h3>
-            <div className="w-full grid grid-cols-3 gap-4 overflow-hidden" ref={draggableRef}>
-                {/* Atividades (Outside Calendar) */}
-                {outsideActivities.map((activity) => (
-                    <Activity
-                        key={activity.id} // Use the unique `id` property as the key
-                        id={activity.id}
-                        title={activity.name}
-                        description={activity.description}
-                        image={activity.image}
-                        category={activity.topic}
-                        type={activityTypes.find((type) => type.id === activity.type_id)?.type}
-                        onDelete={handleDelete}
-                    />
-                ))}
-            </div>
-            <div className="w-full lg:w-3/4 overflow-auto">
-                <FullCalendar
-                    ref={calendarRef}
-                    plugins={[dayGridPlugin, timeGridPlugin, interactionPlugin]}
-                    initialView="timeGridWeek"
-                    editable={true}
-                    droppable={true}
-                    eventReceive={handleEventReceive}
-                    eventDrop={handleEventDrop}
-                    eventResize={handleEventResize}
-                    eventClick={handleEventClick}
-                    slotMinTime="08:00:00"
-                    slotMaxTime="18:00:00"
-                    allDaySlot={false}
-                    events={calendarActivities.map((activity) => {
-                        const durationInMs = activity.duration * 60000; // Convert duration from minutes to milliseconds
-                        const endTime = new Date(
-                            new Date(activity.date).getTime() + durationInMs
-                        ); // Calculate the end time
+    // Toggle activities panel collapse state
+    const toggleActivitiesPanel = () => {
+        setActivitiesCollapsed(!activitiesCollapsed);
+    };
 
-                        return {
-                            id: activity.id,
-                            title: activity.name,
-                            start: activity.date,
-                            end: endTime.toISOString(), // Set the end time based on duration
-                            extendedProps: {
-                                "data-id": activity.id,
-                                "data-title": activity.name,
-                            },
-                        };
-                    })}
-                />
+    return (
+        <div className="flex flex-col pt-8 h-[calc(100vh-64px)]">
+            {/* Page header */}
+            <div className="bg-base-100 p-4 shadow-sm border-b">
+                <div className="flex justify-between items-center">
+                    <h1 className="text-2xl font-bold flex items-center gap-2">
+                        <FaCalendarAlt className="text-primary" />
+                        Event Schedule
+                    </h1>
+                    <button
+                        onClick={toggleActivitiesPanel}
+                        className="btn btn-sm btn-outline"
+                    >
+                        {activitiesCollapsed ? "Show Activities" : "Hide Activities"}
+                        {activitiesCollapsed ? (
+                            <FaChevronDown className="ml-2" />
+                        ) : (
+                            <FaChevronUp className="ml-2" />
+                        )}
+                    </button>
+                </div>
+            </div>
+
+            {/* Main content */}
+            <div className="flex flex-col flex-grow overflow-hidden">
+                {/* Activities panel - collapsible */}
+                <div
+                    className={`transition-all duration-300 bg-base-100 border-b ${
+                        activitiesCollapsed
+                            ? "max-h-0 py-0 overflow-hidden"
+                            : "max-h-[40vh] overflow-y-auto py-4"
+                    }`}
+                    ref={draggableRef}
+                >
+                    <div className="container mx-auto px-4">
+                        <h3 className="font-bold mb-4 text-lg">Available Activities</h3>
+                        <div className="flex flex-grow gap-4 flex-wrap">
+                            {/* Activities outside calendar */}
+                            {outsideActivities.map((activity) => (
+                                <Activity
+                                    key={activity.id}
+                                    id={activity.id}
+                                    title={activity.name}
+                                    description={activity.description}
+                                    image={activity.image}
+                                    category={activity.topic}
+                                    type={activityTypes.find(
+                                        (type) => type.id === activity.type_id
+                                    )?.type}
+                                    onDelete={handleDelete}
+                                />
+                            ))}
+                            {outsideActivities.length === 0 && (
+                                <div className="p-4 bg-base-200 rounded-lg text-center col-span-full">
+                                    <p className="text-base-content/70">
+                                        No unscheduled activities available.
+                                    </p>
+                                </div>
+                            )}
+                        </div>
+                    </div>
+                </div>
+
+                {/* Calendar - takes remaining height */}
+                <div className="flex-grow overflow-auto p-4">
+                    <div className="h-full">
+                        <FullCalendar
+                            ref={calendarRef}
+                            plugins={[dayGridPlugin, timeGridPlugin, interactionPlugin]}
+                            initialView="timeGridWeek"
+                            headerToolbar={{
+                                left: "prev,next today",
+                                center: "title",
+                                right: "dayGridMonth,timeGridWeek,timeGridDay",
+                            }}
+                            height="100%"
+                            editable={true}
+                            droppable={true}
+                            eventReceive={handleEventReceive}
+                            eventDrop={handleEventDrop}
+                            eventResize={handleEventResize}
+                            eventClick={handleEventClick}
+                            slotDuration={"00:15:00"}
+                            slotLabelInterval={"01:00:00"}
+                            slotMinTime="00:00:00"
+                            slotMaxTime="24:00:00"
+                            allDaySlot={false}
+                            eventTimeFormat={{
+                                hour: "2-digit",
+                                minute: "2-digit",
+                                meridiem: false,
+                                hour12: false,
+                            }}
+                            events={calendarActivities.map((activity) => {
+                                const durationInMs = activity.duration * 60000;
+                                const endTime = new Date(
+                                    new Date(activity.date).getTime() + durationInMs
+                                );
+
+                                return {
+                                    id: activity.id,
+                                    title: activity.name,
+                                    start: activity.date,
+                                    end: endTime.toISOString(),
+                                    extendedProps: {
+                                        "data-id": activity.id,
+                                        "data-title": activity.name,
+                                    },
+                                };
+                            })}
+                        />
+                    </div>
+                </div>
             </div>
         </div>
     );
