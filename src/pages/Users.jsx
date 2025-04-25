@@ -511,549 +511,556 @@ export default function Users() {
     };
 
     return (
-        <div className="w-full min-h-svh p-8">
-            <h1 className="text-3xl font-bold">{t('users.title')}</h1>
-            <div className="grid grid-cols-3 gap-4 mt-8">
-                <CreateCard
-                    icon={FaUsers}
-                    title={t('users.import.title')}
-                    description={t('users.import.description')}
-                    onClick={openExcelImportModal}
-                />
-                <CreateCard
-                    icon={FaUser}
-                    title={t('users.create.title')}
-                    description={t('users.create.description')}
-                    onClick={openUserCreationModal}
-                />
-                <CreateCard
-                    icon={FaUsersCog}
-                    title={t('users.manageRoles.title')}
-                    description={t('users.manageRoles.description')}
-                    onClick={openRoleManagementModal}
-                />
-            </div>
+        <div className="w-full min-h-screen p-4 sm:p-6 lg:p-8">
+            <div className="max-w-7xl mx-auto">
+                <h1 className="text-3xl sm:text-4xl font-bold mb-4 text-primary">{t('users.title')}</h1>
+                <p className="text-lg text-base-content/70 mb-8">{t('users.subtitle')}</p>
+                
+                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+                    <CreateCard
+                        icon={FaUsers}
+                        title={t('users.import.title')}
+                        description={t('users.import.description')}
+                        onClick={openExcelImportModal}
+                    />
+                    <CreateCard
+                        icon={FaUser}
+                        title={t('users.create.title')}
+                        description={t('users.create.description')}
+                        onClick={openUserCreationModal}
+                    />
+                    <CreateCard
+                        icon={FaUsersCog}
+                        title={t('users.manageRoles.title')}
+                        description={t('users.manageRoles.description')}
+                        onClick={openRoleManagementModal}
+                    />
+                </div>
 
-            {/* Import stats display */}
-            {importStats && (
-                <div className={`alert ${importStats.failed > 0 ? 'alert-warning' : 'alert-success'} mt-6`}>
-                    <div>
-                        <h3 className="font-bold">{t('users.import.results')}</h3>
-                        <div className="text-sm">
-                            {t('users.import.success', { success: importStats.success, total: importStats.total })}
-                            {importStats.failed > 0 && (
-                                <p>{t('users.import.failed', { failed: importStats.failed })}</p>
-                            )}
+                {/* Import stats display */}
+                {importStats && (
+                    <div className={`alert ${importStats.failed > 0 ? 'alert-warning' : 'alert-success'} mt-4 sm:mt-6`}>
+                        <div>
+                            <h3 className="font-bold">{t('users.import.results')}</h3>
+                            <div className="text-sm">
+                                {t('users.import.success', { success: importStats.success, total: importStats.total })}
+                                {importStats.failed > 0 && (
+                                    <p>{t('users.import.failed', { failed: importStats.failed })}</p>
+                                )}
+                            </div>
+                        </div>
+                        <button
+                            className="btn btn-sm"
+                            onClick={() => setImportStats(null)}
+                        >
+                            {t('common.dismiss')}
+                        </button>
+                    </div>
+                )}
+
+                <h1 className="text-2xl sm:text-3xl font-bold mt-6 lg:mt-8">{t('users.list.title')}</h1>
+
+                {!hasAdminPermissions && <AdminPermissionsWarning />}
+
+                <div className="flex flex-col sm:flex-row gap-4 mt-4">
+                    <div className="w-full sm:w-auto">
+                        <label htmlFor="searchUsers" className="sr-only">{t('users.searchLabel')}</label>
+                        <div className="input w-full">
+                            <svg className="h-[1em] opacity-50" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
+                                <g strokeLinejoin="round" strokeLinecap="round" strokeWidth="2.5" fill="none" stroke="currentColor">
+                                    <circle cx="11" cy="11" r="8"></circle>
+                                    <path d="m21 21-4.3-4.3"></path>
+                                </g>
+                            </svg>
+                            <input
+                                id="searchUsers"
+                                type="text"
+                                className="grow"
+                                placeholder={t('users.searchPlaceholder')}
+                                value={searchTerm}
+                                onChange={(e) => setSearchTerm(e.target.value)}
+                            />
                         </div>
                     </div>
-                    <button
-                        className="btn btn-sm"
-                        onClick={() => setImportStats(null)}
-                    >
-                        {t('common.dismiss')}
-                    </button>
                 </div>
-            )}
 
-            <h1 className="text-3xl font-bold mt-8">{t('users.list.title')}</h1>
+                {error && (
+                    <div className="alert alert-error mb-4">
+                        <span>{error}</span>
+                    </div>
+                )}
 
-            {!hasAdminPermissions && <AdminPermissionsWarning />}
-
-            <div className="flex gap-8 mt-4">
-                <div className="flex gap-4">
-                    <label className="input">
-                        <svg className="h-[1em] opacity-50" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
-                            <g strokeLinejoin="round" strokeLinecap="round" strokeWidth="2.5" fill="none"
-                                stroke="currentColor">
-                                <circle cx="11" cy="11" r="8"></circle>
-                                <path d="m21 21-4.3-4.3"></path>
-                            </g>
-                        </svg>
-                        <input
-                            type="text"
-                            className="grow"
-                            placeholder={t('users.searchPlaceholder')}
-                            value={searchTerm}
-                            onChange={(e) => setSearchTerm(e.target.value)}
-                        />
-                    </label>
-                </div>
-            </div>
-
-            {error && (
-                <div className="alert alert-error mb-4">
-                    <span>{error}</span>
-                </div>
-            )}
-
-            {isLoading ? (
-                <div className="flex justify-center items-center p-8">
-                    <span className="loading loading-spinner loading-lg"></span>
-                </div>
-            ) : (
-                <>
-                    <div className="overflow-x-auto mt-8">
-                        <table className="table">
-                            <thead>
-                                <tr>
-                                    <th>{t('users.table.name')}</th>
-                                    <th>{t('users.table.email')}</th>
-                                    <th>{t('users.table.role')}</th>
-                                    <th>{t('users.table.actions')}</th>
-                                </tr>
-                            </thead>
-                            <tbody>
-                                {currentUsers.map(user => (
-                                    <tr key={user.id} className={user.banned ? "bg-error bg-opacity-10" : ""}>
-                                        <td>
-                                            <div className="flex items-center gap-3">
-                                                <div className="avatar">
-                                                    <div className="mask mask-squircle h-12 w-12">
-                                                        <img
-                                                            src={user.avatar ? user.avatar : "/placeholder.jpg"}
-                                                            alt={`Foto de ${user.firstName}`}
-                                                        />
+                {isLoading ? (
+                    <div className="flex justify-center items-center p-8">
+                        <span className="loading loading-spinner loading-lg"></span>
+                    </div>
+                ) : (
+                    <>
+                        <div className="overflow-x-auto mt-4">
+                            <table className="table table-sm sm:table-md">
+                                <thead>
+                                    <tr>
+                                        <th>{t('users.table.name')}</th>
+                                        <th>{t('users.table.email')}</th>
+                                        <th>{t('users.table.role')}</th>
+                                        <th>{t('users.table.actions')}</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    {currentUsers.map(user => (
+                                        <tr key={user.id} className={user.banned ? "bg-error bg-opacity-10" : ""}>
+                                            <td>
+                                                <div className="flex items-center gap-2 sm:gap-3">
+                                                    <div className="avatar">
+                                                        <div className="mask mask-squircle w-8 h-8 sm:w-12 sm:h-12">
+                                                            <img
+                                                                src={user.avatar ? user.avatar : "/placeholder.jpg"}
+                                                                alt={`${t('users.avatar')} ${user.firstName}`}
+                                                            />
+                                                        </div>
+                                                    </div>
+                                                    <div>
+                                                        <div className="font-bold text-sm sm:text-base">{user.firstName} {user.lastName}</div>
                                                     </div>
                                                 </div>
-                                                <div>
-                                                    <div className="font-bold">{user.firstName} {user.lastName}</div>
-                                                </div>
-                                            </div>
-                                        </td>
-                                        <td>{user.email}</td>
-                                        <td>
-                                            {user.roles ? (
-                                                <div className="flex flex-wrap gap-1">
-                                                    {user.roles.map((role, index) => (
-                                                        <div key={index} className="badge badge-primary">
-                                                            {role}
-                                                        </div>
-                                                    ))}
-                                                </div>
-                                            ) : (
-                                                <div className="badge badge-primary w-24">{user.role || "No role"}</div>
-                                            )}
-                                        </td>
-                                        <th>
-                                            <button
-                                                className="btn mr-2 btn-secondary btn-xs"
-                                                onClick={() => openRoleModal(user.id, user.role)}
-                                                disabled={!hasAdminPermissions}
-                                            >
-                                                <FaShieldAlt className="mr-1" /> {t('users.actions.assignRoles')}
-                                            </button>
-                                            <button
-                                                className={`btn ${user.banned ? "btn-success" : "btn-error"} btn-xs`}
-                                                onClick={() => handleToggleBan(user.id, user.banned)}
-                                                disabled={!hasAdminPermissions}
-                                            >
-                                                {user.banned ? t('users.actions.unbanUser') : t('users.actions.banUser')}
-                                            </button>
-                                        </th>
-                                    </tr>
-                                ))}
-                            </tbody>
-                        </table>
-                    </div>
-
-                    {totalPages > 1 && (
-                        <div className="flex justify-center mt-2">
-                            <div className="join">
-                                {Array.from({ length: totalPages }, (_, i) => (
-                                    <button
-                                        key={i + 1}
-                                        className={`join-item btn ${currentPage === i + 1 ? "btn-active" : ""}`}
-                                        onClick={() => handlePageChange(i + 1)}
-                                    >
-                                        {i + 1}
-                                    </button>
-                                ))}
-                            </div>
-                        </div>
-                    )}
-                </>
-            )}
-
-            {/* Role Management Modal */}
-            <dialog id="role_management_modal" className="modal">
-                <div className="modal-box max-w-4xl">
-                    <form method="dialog">
-                        <button className="btn btn-sm btn-circle btn-ghost absolute right-2 top-2">✕</button>
-                    </form>
-                    <h3 className="font-bold text-lg mb-4">{t('users.manageRoles.title')}</h3>
-
-                    {/* Tabs */}
-                    <div className="tabs tabs-boxed mb-4">
-                        <button
-                            className={`tab ${roleManagementTab === "create" ? "tab-active" : ""}`}
-                            onClick={() => setRoleManagementTab("create")}
-                        >
-                            <FaPlus className="mr-2" /> {t('users.manageRoles.create')}
-                        </button>
-                        <button
-                            className={`tab ${roleManagementTab === "permissions" ? "tab-active" : ""}`}
-                            onClick={() => setRoleManagementTab("permissions")}
-                            disabled={allRoles.length === 0}
-                        >
-                            <FaKey className="mr-2" /> {t('users.manageRoles.permissions')}
-                        </button>
-                    </div>
-
-                    {/* Create Role Tab */}
-                    {roleManagementTab === "create" && (
-                        <div className="space-y-4">
-                            {!hasRoleManagementPermissions && (
-                                <div className="alert alert-warning">
-                                    <FaExclamationTriangle />
-                                    <span>{t('users.manageRoles.permissionsWarning')}</span>
-                                </div>
-                            )}
-
-                            <div className="form-control">
-                                <label className="label">
-                                    <span className="label-text">{t('users.manageRoles.roleName')}</span>
-                                </label>
-                                <input
-                                    type="text"
-                                    className="input input-bordered w-full"
-                                    placeholder={t('users.manageRoles.roleNamePlaceholder')}
-                                    value={newRoleName}
-                                    onChange={(e) => setNewRoleName(e.target.value)}
-                                />
-                            </div>
-
-                            {roleCreationError && (
-                                <div className="alert alert-error">
-                                    <span>{roleCreationError}</span>
-                                </div>
-                            )}
-
-                            <button
-                                className="btn btn-primary w-full"
-                                onClick={handleCreateRole}
-                                disabled={!newRoleName}
-                            >
-                                {t('users.manageRoles.createRole')}
-                            </button>
-                        </div>
-                    )}
-
-                    {/* Manage Permissions Tab */}
-                    {roleManagementTab === "permissions" && (
-                        <div>
-                            {selectedRole ? (
-                                <>
-                                    <div className="mb-4">
-                                        <label className="label">
-                                            <span className="label-text font-bold">{t('users.manageRoles.selectRole')}</span>
-                                        </label>
-                                        <select
-                                            className="select select-bordered w-full"
-                                            value={selectedRole.name}
-                                            onChange={handleRoleChange}
-                                        >
-                                            {allRoles.map(role => (
-                                                <option key={role.id} value={role.name}>
-                                                    {role.displayName || role.name}
-                                                </option>
-                                            ))}
-                                        </select>
-                                    </div>
-
-                                    <div className="overflow-x-auto">
-                                        <table className="table table-zebra w-full">
-                                            <thead>
-                                                <tr>
-                                                    <th>{t('users.manageRoles.permissionName')}</th>
-                                                    <th>{t('users.manageRoles.description')}</th>
-                                                    <th>{t('users.manageRoles.actions')}</th>
-                                                </tr>
-                                            </thead>
-                                            <tbody>
-                                                {allPermissions.map(permission => (
-                                                    <tr key={permission.id}>
-                                                        <td>{permission.displayName || permission.name}</td>
-                                                        <td>{permission.description || t('users.manageRoles.noDescription')}</td>
-                                                        <td>
-                                                            {roleHasPermission(permission.name) ? (
-                                                                <div className="flex items-center gap-2">
-                                                                    <span className="badge badge-success gap-1">
-                                                                        <FaCheck size={12} /> {t('users.manageRoles.assigned')}
-                                                                    </span>
-                                                                    <button
-                                                                        className="btn btn-error btn-xs"
-                                                                        onClick={() => handleRemovePermissionFromRole(permission)}
-                                                                    >
-                                                                        <FaTrash size={12} />
-                                                                    </button>
-                                                                </div>
-                                                            ) : (
-                                                                <button
-                                                                    className="btn btn-primary btn-xs"
-                                                                    onClick={() => handleAddPermissionToRole(permission)}
-                                                                >
-                                                                    <FaPlus size={12} /> {t('users.manageRoles.assign')}
-                                                                </button>
-                                                            )}
-                                                        </td>
-                                                    </tr>
-                                                ))}
-                                            </tbody>
-                                        </table>
-                                    </div>
-                                </>
-                            ) : (
-                                <div className="alert alert-warning">
-                                    <span>{t('users.manageRoles.noRoles')}</span>
-                                </div>
-                            )}
-                        </div>
-                    )}
-
-                    <div className="modal-action">
-                        <form method="dialog">
-                            <button className="btn">{t('common.close')}</button>
-                        </form>
-                    </div>
-                </div>
-            </dialog>
-
-            {/* Keycloak Role and Permission Management Modal */}
-            <dialog id="keycloak_role_modal" className="modal">
-                <div className="modal-box max-w-2xl">
-                    <form method="dialog">
-                        <button className="btn btn-sm btn-circle btn-ghost absolute right-2 top-2">✕</button>
-                    </form>
-                    <h3 className="font-bold text-lg mb-4">Assign Roles to User</h3>
-
-                    <div className="overflow-x-auto">
-                        <table className="table table-zebra w-full">
-                            <thead>
-                                <tr>
-                                    <th>Role Name</th>
-                                    <th>Description</th>
-                                    <th>Actions</th>
-                                </tr>
-                            </thead>
-                            <tbody>
-                                {allRoles.map(role => (
-                                    <tr key={role.id}>
-                                        <td>{role.displayName || role.name}</td>
-                                        <td>{role.description || "No description"}</td>
-                                        <td>
-                                            {userHasRole(selectedUserId, role.name) ? (
-                                                <div className="flex items-center gap-2">
-                                                    <span className="badge badge-success gap-1">
-                                                        <FaCheck size={12} /> Assigned
-                                                    </span>
+                                            </td>
+                                            <td className="text-sm sm:text-base">{user.email}</td>
+                                            <td>
+                                                {user.roles ? (
+                                                    <div className="flex flex-wrap gap-1">
+                                                        {user.roles.map((role) => (
+                                                            <div key={`${user.id}-${role}`} className="badge badge-primary badge-sm sm:badge-md">
+                                                                {role}
+                                                            </div>
+                                                        ))}
+                                                    </div>
+                                                ) : (
+                                                    <div className="badge badge-primary badge-sm sm:badge-md">{user.role || t('users.noRole')}</div>
+                                                )}
+                                            </td>
+                                            <th>
+                                                <div className="flex flex-col sm:flex-row gap-2">
                                                     <button
-                                                        className="btn btn-error btn-xs"
-                                                        onClick={() => handleRemoveRole(selectedUserId, role)}
+                                                        className="btn btn-secondary btn-xs sm:btn-sm whitespace-nowrap"
+                                                        onClick={() => openRoleModal(user.id, user.role)}
+                                                        disabled={!hasAdminPermissions}
                                                     >
-                                                        <FaTrash size={12} />
+                                                        <FaShieldAlt className="hidden sm:inline mr-1" /> {t('users.actions.assignRoles')}
+                                                    </button>
+                                                    <button
+                                                        className={`btn ${user.banned ? "btn-success" : "btn-error"} btn-xs sm:btn-sm whitespace-nowrap`}
+                                                        onClick={() => handleToggleBan(user.id, user.banned)}
+                                                        disabled={!hasAdminPermissions}
+                                                    >
+                                                        {user.banned ? t('users.actions.unbanUser') : t('users.actions.banUser')}
                                                     </button>
                                                 </div>
-                                            ) : (
-                                                <button
-                                                    className="btn btn-primary btn-xs"
-                                                    onClick={() => handleAssignRole(selectedUserId, role)}
-                                                >
-                                                    <FaPlus size={12} /> Assign
-                                                </button>
-                                            )}
-                                        </td>
-                                    </tr>
-                                ))}
-                            </tbody>
-                        </table>
-                    </div>
-
-                    <div className="modal-action">
-                        <form method="dialog">
-                            <button className="btn">Close</button>
-                        </form>
-                    </div>
-                </div>
-            </dialog>
-
-            {/* User Creation Modal */}
-            <dialog id="create_user_modal" className="modal">
-                <div className="modal-box max-w-xl">
-                    <form method="dialog">
-                        <button className="btn btn-sm btn-circle btn-ghost absolute right-2 top-2">✕</button>
-                    </form>
-                    <h3 className="font-bold text-lg mb-4">{t('users.create.title')}</h3>
-
-                    {createSuccess && (
-                        <div className="alert alert-success mb-4">
-                            <FaCheck className="h-6 w-6" />
-                            <span>{t('users.create.success')}</span>
-                        </div>
-                    )}
-
-                    {formErrors.submit && (
-                        <div className="alert alert-error mb-4">
-                            <FaExclamationTriangle className="h-6 w-6" />
-                            <span>{formErrors.submit}</span>
-                        </div>
-                    )}
-
-                    <form onSubmit={handleCreateUser}>
-                        <div className="form-control mb-4">
-                            <label className="label">
-                                <span className="label-text">{t('users.create.firstName')}</span>
-                            </label>
-                            <input
-                                type="text"
-                                name="firstName"
-                                className={`input input-bordered w-full ${formErrors.firstName ? 'input-error' : ''}`}
-                                value={newUserData.firstName}
-                                onChange={handleInputChange}
-                            />
-                            {formErrors.firstName && (
-                                <label className="label">
-                                    <span className="label-text-alt text-error">{formErrors.firstName}</span>
-                                </label>
-                            )}
+                                            </th>
+                                        </tr>
+                                    ))}
+                                </tbody>
+                            </table>
                         </div>
 
-                        <div className="form-control mb-4">
-                            <label className="label">
-                                <span className="label-text">{t('users.create.lastName')}</span>
-                            </label>
-                            <input
-                                type="text"
-                                name="lastName"
-                                className={`input input-bordered w-full ${formErrors.lastName ? 'input-error' : ''}`}
-                                value={newUserData.lastName}
-                                onChange={handleInputChange}
-                            />
-                            {formErrors.lastName && (
-                                <label className="label">
-                                    <span className="label-text-alt text-error">{formErrors.lastName}</span>
-                                </label>
-                            )}
-                        </div>
-
-                        <div className="form-control mb-4">
-                            <label className="label">
-                                <span className="label-text">{t('users.create.email')}</span>
-                            </label>
-                            <input
-                                type="email"
-                                name="email"
-                                className={`input input-bordered w-full ${formErrors.email ? 'input-error' : ''}`}
-                                value={newUserData.email}
-                                onChange={handleInputChange}
-                            />
-                            {formErrors.email && (
-                                <label className="label">
-                                    <span className="label-text-alt text-error">{formErrors.email}</span>
-                                </label>
-                            )}
-                        </div>
-
-                        <div className="form-control mb-4">
-                            <label className="label">
-                                <span className="label-text">{t('users.create.role')}</span>
-                            </label>
-                            <select
-                                name="role"
-                                className="select select-bordered w-full"
-                                value={newUserData.role}
-                                onChange={handleInputChange}
-                            >
-                                {allRoles.length > 0 ? (
-                                    allRoles.map(role => (
-                                        <option key={role.id} value={role.name}>
-                                            {role.displayName || role.name}
-                                        </option>
-                                    ))
-                                ) : (
-                                    <>
-                                        <option value="Participant">{t('users.roles.participant')}</option>
-                                        <option value="Speaker">{t('users.roles.speaker')}</option>
-                                        <option value="Staff">{t('users.roles.staff')}</option>
-                                        <option value="Organizer">{t('users.roles.organizer')}</option>
-                                    </>
-                                )}
-                            </select>
-                        </div>
-
-                        <div className="form-control mb-4">
-                            <label className="label">
-                                <span className="label-text">{t('users.create.temporaryPassword')}</span>
-                            </label>
-                            <div className="input-group">
-                                <input
-                                    type={showPassword ? "text" : "password"}
-                                    name="temporaryPassword"
-                                    className={`input input-bordered w-full ${formErrors.temporaryPassword ? 'input-error' : ''}`}
-                                    value={newUserData.temporaryPassword}
-                                    onChange={handleInputChange}
-                                />
-                                <button
-                                    type="button"
-                                    className="btn btn-square"
-                                    onClick={togglePasswordVisibility}
-                                >
-                                    {showPassword ? t('users.create.hidePassword') : t('users.create.showPassword')}
-                                </button>
-                            </div>
-
-                            {/* Password strength indicator */}
-                            {newUserData.temporaryPassword && (
-                                <div className="mt-2">
-                                    <div className="flex justify-between mb-1">
-                                        <span className="text-sm">{t('users.create.passwordStrength')}: {strengthText}</span>
-                                    </div>
-                                    <div className="w-full bg-gray-200 rounded-full h-2.5">
-                                        <div
-                                            className={`h-2.5 rounded-full ${strengthColor}`}
-                                            style={{ width: `${(passwordStrength / 5) * 100}%` }}
-                                        ></div>
-                                    </div>
+                        {totalPages > 1 && (
+                            <div className="flex justify-center mt-4">
+                                <div className="join">
+                                    {Array.from({ length: totalPages }).map((_, i) => (
+                                        <button
+                                            key={`page-${i + 1}`}
+                                            className={`join-item btn btn-xs sm:btn-sm ${currentPage === i + 1 ? "btn-active" : ""}`}
+                                            onClick={() => handlePageChange(i + 1)}
+                                        >
+                                            {i + 1}
+                                        </button>
+                                    ))}
                                 </div>
-                            )}
+                            </div>
+                        )}
+                    </>
+                )}
 
-                            {formErrors.temporaryPassword && (
-                                <label className="label">
-                                    <span className="label-text-alt text-error">{formErrors.temporaryPassword}</span>
-                                </label>
-                            )}
-                            <div className="flex justify-between items-center mt-2">
-                                <label className="label">
-                                    <span className="label-text-alt">{t('users.create.passwordChangeNote')}</span>
-                                </label>
+                {/* Role Management Modal */}
+                <dialog id="role_management_modal" className="modal">
+                    <div className="modal-box max-w-4xl">
+                        <form method="dialog">
+                            <button className="btn btn-sm btn-circle btn-ghost absolute right-2 top-2">✕</button>
+                        </form>
+                        <h3 className="font-bold text-lg mb-4">{t('users.manageRoles.title')}</h3>
+
+                        {/* Tabs */}
+                        <div className="tabs tabs-boxed mb-4">
+                            <button
+                                className={`tab ${roleManagementTab === "create" ? "tab-active" : ""}`}
+                                onClick={() => setRoleManagementTab("create")}
+                            >
+                                <FaPlus className="mr-2" /> {t('users.manageRoles.create')}
+                            </button>
+                            <button
+                                className={`tab ${roleManagementTab === "permissions" ? "tab-active" : ""}`}
+                                onClick={() => setRoleManagementTab("permissions")}
+                                disabled={allRoles.length === 0}
+                            >
+                                <FaKey className="mr-2" /> {t('users.manageRoles.permissions')}
+                            </button>
+                        </div>
+
+                        {/* Create Role Tab */}
+                        {roleManagementTab === "create" && (
+                            <div className="space-y-4">
+                                {!hasRoleManagementPermissions && (
+                                    <div className="alert alert-warning">
+                                        <FaExclamationTriangle />
+                                        <span>{t('users.manageRoles.permissionsWarning')}</span>
+                                    </div>
+                                )}
+
+                                <div className="form-control">
+                                    <label className="label">
+                                        <span className="label-text">{t('users.manageRoles.roleName')}</span>
+                                    </label>
+                                    <input
+                                        type="text"
+                                        className="input input-bordered w-full"
+                                        placeholder={t('users.manageRoles.roleNamePlaceholder')}
+                                        value={newRoleName}
+                                        onChange={(e) => setNewRoleName(e.target.value)}
+                                    />
+                                </div>
+
+                                {roleCreationError && (
+                                    <div className="alert alert-error">
+                                        <span>{roleCreationError}</span>
+                                    </div>
+                                )}
+
                                 <button
-                                    type="button"
-                                    className="btn btn-sm btn-secondary"
-                                    onClick={handleGeneratePassword}
+                                    className="btn btn-primary w-full"
+                                    onClick={handleCreateRole}
+                                    disabled={!newRoleName}
                                 >
-                                    {t('users.create.generatePassword')}
+                                    {t('users.manageRoles.createRole')}
                                 </button>
                             </div>
+                        )}
+
+                        {/* Manage Permissions Tab */}
+                        {roleManagementTab === "permissions" && (
+                            <div>
+                                {selectedRole ? (
+                                    <>
+                                        <div className="mb-4">
+                                            <label className="label">
+                                                <span className="label-text font-bold">{t('users.manageRoles.selectRole')}</span>
+                                            </label>
+                                            <select
+                                                className="select select-bordered w-full"
+                                                value={selectedRole.name}
+                                                onChange={handleRoleChange}
+                                            >
+                                                {allRoles.map(role => (
+                                                    <option key={role.id} value={role.name}>
+                                                        {role.displayName || role.name}
+                                                    </option>
+                                                ))}
+                                            </select>
+                                        </div>
+
+                                        <div className="overflow-x-auto">
+                                            <table className="table table-zebra w-full">
+                                                <thead>
+                                                    <tr>
+                                                        <th>{t('users.manageRoles.permissionName')}</th>
+                                                        <th>{t('users.manageRoles.description')}</th>
+                                                        <th>{t('users.manageRoles.actions')}</th>
+                                                    </tr>
+                                                </thead>
+                                                <tbody>
+                                                    {allPermissions.map(permission => (
+                                                        <tr key={permission.id}>
+                                                            <td>{permission.displayName || permission.name}</td>
+                                                            <td>{permission.description || t('users.manageRoles.noDescription')}</td>
+                                                            <td>
+                                                                {roleHasPermission(permission.name) ? (
+                                                                    <div className="flex items-center gap-2">
+                                                                        <span className="badge badge-success gap-1">
+                                                                            <FaCheck size={12} /> {t('users.manageRoles.assigned')}
+                                                                        </span>
+                                                                        <button
+                                                                            className="btn btn-error btn-xs"
+                                                                            onClick={() => handleRemovePermissionFromRole(permission)}
+                                                                        >
+                                                                            <FaTrash size={12} />
+                                                                        </button>
+                                                                    </div>
+                                                                ) : (
+                                                                    <button
+                                                                        className="btn btn-primary btn-xs"
+                                                                        onClick={() => handleAddPermissionToRole(permission)}
+                                                                    >
+                                                                        <FaPlus size={12} /> {t('users.manageRoles.assign')}
+                                                                    </button>
+                                                                )}
+                                                            </td>
+                                                        </tr>
+                                                    ))}
+                                                </tbody>
+                                            </table>
+                                        </div>
+                                    </>
+                                ) : (
+                                    <div className="alert alert-warning">
+                                        <span>{t('users.manageRoles.noRoles')}</span>
+                                    </div>
+                                )}
+                            </div>
+                        )}
+
+                        <div className="modal-action">
+                            <form method="dialog">
+                                <button className="btn">{t('common.close')}</button>
+                            </form>
+                        </div>
+                    </div>
+                </dialog>
+
+                {/* Keycloak Role and Permission Management Modal */}
+                <dialog id="keycloak_role_modal" className="modal">
+                    <div className="modal-box max-w-2xl">
+                        <form method="dialog">
+                            <button className="btn btn-sm btn-circle btn-ghost absolute right-2 top-2">✕</button>
+                        </form>
+                        <h3 className="font-bold text-lg mb-4">Assign Roles to User</h3>
+
+                        <div className="overflow-x-auto">
+                            <table className="table table-zebra w-full">
+                                <thead>
+                                    <tr>
+                                        <th>Role Name</th>
+                                        <th>Description</th>
+                                        <th>Actions</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    {allRoles.map(role => (
+                                        <tr key={role.id}>
+                                            <td>{role.displayName || role.name}</td>
+                                            <td>{role.description || "No description"}</td>
+                                            <td>
+                                                {userHasRole(selectedUserId, role.name) ? (
+                                                    <div className="flex items-center gap-2">
+                                                        <span className="badge badge-success gap-1">
+                                                            <FaCheck size={12} /> Assigned
+                                                        </span>
+                                                        <button
+                                                            className="btn btn-error btn-xs"
+                                                            onClick={() => handleRemoveRole(selectedUserId, role)}
+                                                        >
+                                                            <FaTrash size={12} />
+                                                        </button>
+                                                    </div>
+                                                ) : (
+                                                    <button
+                                                        className="btn btn-primary btn-xs"
+                                                        onClick={() => handleAssignRole(selectedUserId, role)}
+                                                    >
+                                                        <FaPlus size={12} /> Assign
+                                                    </button>
+                                                )}
+                                            </td>
+                                        </tr>
+                                    ))}
+                                </tbody>
+                            </table>
                         </div>
 
                         <div className="modal-action">
-                            <button type="submit" className="btn btn-primary" disabled={isLoading}>
-                                {isLoading ? <span className="loading loading-spinner"></span> : <FaUser className="mr-2" />}
-                                {t('users.create.createUser')}
-                            </button>
-                            <button type="button" className="btn" onClick={() => document.getElementById('create_user_modal').close()}>
-                                {t('common.cancel')}
-                            </button>
+                            <form method="dialog">
+                                <button className="btn">Close</button>
+                            </form>
                         </div>
-                    </form>
-                </div>
-            </dialog>
+                    </div>
+                </dialog>
 
-            {/* Excel Import Modal */}
-            <UserExcelImport
-                isOpen={isExcelImportOpen}
-                onClose={closeExcelImportModal}
-                onImport={handleImportUsers}
-            />
+                {/* User Creation Modal */}
+                <dialog id="create_user_modal" className="modal">
+                    <div className="modal-box max-w-xl">
+                        <form method="dialog">
+                            <button className="btn btn-sm btn-circle btn-ghost absolute right-2 top-2">✕</button>
+                        </form>
+                        <h3 className="font-bold text-lg mb-4">{t('users.create.title')}</h3>
+
+                        {createSuccess && (
+                            <div className="alert alert-success mb-4">
+                                <FaCheck className="h-6 w-6" />
+                                <span>{t('users.create.success')}</span>
+                            </div>
+                        )}
+
+                        {formErrors.submit && (
+                            <div className="alert alert-error mb-4">
+                                <FaExclamationTriangle className="h-6 w-6" />
+                                <span>{formErrors.submit}</span>
+                            </div>
+                        )}
+
+                        <form onSubmit={handleCreateUser}>
+                            <div className="form-control mb-4">
+                                <label className="label">
+                                    <span className="label-text">{t('users.create.firstName')}</span>
+                                </label>
+                                <input
+                                    type="text"
+                                    name="firstName"
+                                    className={`input input-bordered w-full ${formErrors.firstName ? 'input-error' : ''}`}
+                                    value={newUserData.firstName}
+                                    onChange={handleInputChange}
+                                />
+                                {formErrors.firstName && (
+                                    <label className="label">
+                                        <span className="label-text-alt text-error">{formErrors.firstName}</span>
+                                    </label>
+                                )}
+                            </div>
+
+                            <div className="form-control mb-4">
+                                <label className="label">
+                                    <span className="label-text">{t('users.create.lastName')}</span>
+                                </label>
+                                <input
+                                    type="text"
+                                    name="lastName"
+                                    className={`input input-bordered w-full ${formErrors.lastName ? 'input-error' : ''}`}
+                                    value={newUserData.lastName}
+                                    onChange={handleInputChange}
+                                />
+                                {formErrors.lastName && (
+                                    <label className="label">
+                                        <span className="label-text-alt text-error">{formErrors.lastName}</span>
+                                    </label>
+                                )}
+                            </div>
+
+                            <div className="form-control mb-4">
+                                <label className="label">
+                                    <span className="label-text">{t('users.create.email')}</span>
+                                </label>
+                                <input
+                                    type="email"
+                                    name="email"
+                                    className={`input input-bordered w-full ${formErrors.email ? 'input-error' : ''}`}
+                                    value={newUserData.email}
+                                    onChange={handleInputChange}
+                                />
+                                {formErrors.email && (
+                                    <label className="label">
+                                        <span className="label-text-alt text-error">{formErrors.email}</span>
+                                    </label>
+                                )}
+                            </div>
+
+                            <div className="form-control mb-4">
+                                <label className="label">
+                                    <span className="label-text">{t('users.create.role')}</span>
+                                </label>
+                                <select
+                                    name="role"
+                                    className="select select-bordered w-full"
+                                    value={newUserData.role}
+                                    onChange={handleInputChange}
+                                >
+                                    {allRoles.length > 0 ? (
+                                        allRoles.map(role => (
+                                            <option key={role.id} value={role.name}>
+                                                {role.displayName || role.name}
+                                            </option>
+                                        ))
+                                    ) : (
+                                        <>
+                                            <option value="Participant">{t('users.roles.participant')}</option>
+                                            <option value="Speaker">{t('users.roles.speaker')}</option>
+                                            <option value="Staff">{t('users.roles.staff')}</option>
+                                            <option value="Organizer">{t('users.roles.organizer')}</option>
+                                        </>
+                                    )}
+                                </select>
+                            </div>
+
+                            <div className="form-control mb-4">
+                                <label className="label">
+                                    <span className="label-text">{t('users.create.temporaryPassword')}</span>
+                                </label>
+                                <div className="input-group">
+                                    <input
+                                        type={showPassword ? "text" : "password"}
+                                        name="temporaryPassword"
+                                        className={`input input-bordered w-full ${formErrors.temporaryPassword ? 'input-error' : ''}`}
+                                        value={newUserData.temporaryPassword}
+                                        onChange={handleInputChange}
+                                    />
+                                    <button
+                                        type="button"
+                                        className="btn btn-square"
+                                        onClick={togglePasswordVisibility}
+                                    >
+                                        {showPassword ? t('users.create.hidePassword') : t('users.create.showPassword')}
+                                    </button>
+                                </div>
+
+                                {/* Password strength indicator */}
+                                {newUserData.temporaryPassword && (
+                                    <div className="mt-2">
+                                        <div className="flex justify-between mb-1">
+                                            <span className="text-sm">{t('users.create.passwordStrength')}: {strengthText}</span>
+                                        </div>
+                                        <div className="w-full bg-gray-200 rounded-full h-2.5">
+                                            <div
+                                                className={`h-2.5 rounded-full ${strengthColor}`}
+                                                style={{ width: `${(passwordStrength / 5) * 100}%` }}
+                                            ></div>
+                                        </div>
+                                    </div>
+                                )}
+
+                                {formErrors.temporaryPassword && (
+                                    <label className="label">
+                                        <span className="label-text-alt text-error">{formErrors.temporaryPassword}</span>
+                                    </label>
+                                )}
+                                <div className="flex justify-between items-center mt-2">
+                                    <label className="label">
+                                        <span className="label-text-alt">{t('users.create.passwordChangeNote')}</span>
+                                    </label>
+                                    <button
+                                        type="button"
+                                        className="btn btn-sm btn-secondary"
+                                        onClick={handleGeneratePassword}
+                                    >
+                                        {t('users.create.generatePassword')}
+                                    </button>
+                                </div>
+                            </div>
+
+                            <div className="modal-action">
+                                <button type="submit" className="btn btn-primary" disabled={isLoading}>
+                                    {isLoading ? <span className="loading loading-spinner"></span> : <FaUser className="mr-2" />}
+                                    {t('users.create.createUser')}
+                                </button>
+                                <button type="button" className="btn" onClick={() => document.getElementById('create_user_modal').close()}>
+                                    {t('common.cancel')}
+                                </button>
+                            </div>
+                        </form>
+                    </div>
+                </dialog>
+
+                {/* Excel Import Modal */}
+                <UserExcelImport
+                    isOpen={isExcelImportOpen}
+                    onClose={closeExcelImportModal}
+                    onImport={handleImportUsers}
+                />
+            </div>
         </div>
     );
 }

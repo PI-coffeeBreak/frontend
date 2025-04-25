@@ -37,27 +37,22 @@ export default function DashboardCard({ title, description, icon: Icon, path, co
     const colorClass = getColorClasses(color);
     
     return (
-        <Link to={path} className="group">
-            <div className="card bg-base-100 shadow-xl hover:shadow-2xl transition-all duration-300 hover:-translate-y-2 h-[400px] relative overflow-hidden w-full">
+        <Link to={path} className="group h-full">
+            <div className="card bg-base-100 shadow-xl hover:shadow-2xl transition-all duration-300 hover:-translate-y-2 h-full relative overflow-hidden w-full">
                 {/* Top border animation */}
                 <div className={`absolute top-0 left-0 w-full h-2 ${colorClass.bg} transform origin-left transition-transform duration-300 scale-x-0 group-hover:scale-x-100`}></div>
                 
-                <div className="card-body p-8 flex flex-col h-full">
-                    <div className="flex flex-col items-center text-center flex-grow">
-                        <div className={`w-20 h-20 rounded-full flex items-center justify-center mb-6 group-hover:scale-110 group-hover:bg-opacity-10 transition-all duration-300`}>
-                            <Icon className={`text-4xl ${colorClass.text}`} />
-                        </div>
-                        
-                        <h2 className="card-title text-2xl mb-4">{title}</h2>
-                        <p className="text-base-content/70 text-lg">{description}</p>
+                <div className="card-body p-8 flex flex-col items-center text-center h-full">
+                    <div className={`w-16 h-16 rounded-full flex items-center justify-center mb-6 group-hover:scale-110 transition-all duration-300`}>
+                        <Icon className={`text-4xl ${colorClass.text}`} />
                     </div>
                     
-                    {/* Button */}
-                    <div className="absolute inset-x-4 bottom-4">
-                        <button className={`w-full py-3 px-4 rounded-lg border ${colorClass.text} ${colorClass.border} hover:text-white ${colorClass.hover} transition-all duration-300`}>
-                            {buttonText}
-                        </button>
-                    </div>
+                    <h2 className="card-title text-2xl mb-4">{title}</h2>
+                    <p className="text-base-content/70 text-lg mb-8 max-w-2xl flex-grow">{description}</p>
+                    
+                    <button className={`w-full max-w-xs py-3 px-6 rounded-lg border-2 font-medium ${colorClass.text} ${colorClass.border} hover:text-white ${colorClass.hover} transition-all duration-300`}>
+                        {buttonText}
+                    </button>
                 </div>
             </div>
         </Link>
