@@ -174,7 +174,7 @@ export default function Sidebar() {
   return (
     <>
       <div
-        className={`bg-secondary text-white rounded-r-xl p-2 fixed top-0 left-0 transition-all duration-300 flex flex-col h-screen ${
+        className={`bg-secondary text-white rounded-r-xl p-2 fixed top-0 left-0 transition-all duration-300 flex flex-col h-screen z-50 ${
           isVisible ? "w-64" : "w-20"
         }`}
       >
