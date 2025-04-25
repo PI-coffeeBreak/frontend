@@ -248,11 +248,11 @@ export default function DragDropCalendar() {
                             eventDrop={handleEventDrop}
                             eventResize={handleEventResize}
                             eventClick={handleEventClick}
-                            slotDuration={"00:05:00"}         // Changed from 15min to 5min slots
-                            slotLabelInterval={"01:00:00"}    // Show hour labels every hour
+                            slotDuration={"00:15:00"}
+                            slotLabelInterval={"00:30:00"}
                             slotMinTime="00:00:00"
                             slotMaxTime="24:00:00"
-                            snapDuration={"00:01:00"}         // Snap to 5min intervals when dragging
+                            snapDuration={"00:01:00"}
                             allDaySlot={false}
                             dayMaxEvents={true}
                             nowIndicator={true}               // Show current time indicator

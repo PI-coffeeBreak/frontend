@@ -17,14 +17,8 @@ export default function Activity({id, title, description, image, category, type,
                         e.stopPropagation();
                         onDelete(id);
                     }}
-<<<<<<< HEAD
                     className="absolute top-2 right-2 p-2 text-gray-400 hover:text-error rounded-full hover:bg-gray-100 transition-colors"
                     aria-label={t('activities.delete')}
-=======
-                    className="absolute top-2 right-2 p-2 text-gray-400 hover:text-primary rounded-full hover:bg-gray-100 transition-colors"
-                    aria-label="Delete activity"
->>>>>>> 7df1e25 (fixing the sonar errors)
-                    type="button"
                 >
                     <FaTrash className="w-4 h-4" aria-hidden="true" />
                 </button>

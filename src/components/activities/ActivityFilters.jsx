@@ -22,11 +22,7 @@ export function ActivityFilters({
             <input
                 type="text"
                 className="grow"
-<<<<<<< HEAD
                 placeholder={t('activities.filters.searchPlaceholder')}
-=======
-                placeholder="Search activities"
->>>>>>> b61c5eb (refactored, and sessions page to)
                 value={searchQuery}
                 onChange={(e) => onSearchChange(e.target.value)}
             />

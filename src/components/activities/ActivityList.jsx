@@ -1,9 +1,6 @@
 import PropTypes from 'prop-types';
-<<<<<<< HEAD
 import { useTranslation } from "react-i18next";
-=======
 import { useState } from 'react';
->>>>>>> b61c5eb (refactored, and sessions page to)
 import Activity from "../Activity.jsx";
 import { FaSearch } from "react-icons/fa";
 import { useActivities } from "../../contexts/ActivitiesContext";
@@ -18,17 +15,6 @@ export function ActivityList({ activities }) {
   const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
   const [isDeleting, setIsDeleting] = useState(false);
   
-<<<<<<< HEAD
-  const handleDelete = async (id) => {
-    if (window.confirm(t('activities.deleteConfirm'))) {
-      try {
-        await deleteActivity(id);
-        showNotification(t('activities.deleteSuccess'), "success");
-      } catch (error) {
-        showNotification(t('activities.deleteError'), "error");
-        console.error("Error deleting activity:", error);
-      }
-=======
   const handleDeleteClick = (id) => {
     setDeletingActivityId(id);
     setIsDeleteModalOpen(true);
@@ -45,14 +31,13 @@ export function ActivityList({ activities }) {
     setIsDeleting(true);
     try {
       await deleteActivity(deletingActivityId);
-      showNotification("Activity deleted successfully", "success");
+      showNotification(t('activities.deleteSuccess'), "success");
       closeDeleteModal();
     } catch (error) {
-      showNotification("Failed to delete activity", "error");
+      showNotification(t('activities.deleteError'), "error");
       console.error("Error deleting activity:", error);
     } finally {
       setIsDeleting(false);
->>>>>>> b61c5eb (refactored, and sessions page to)
     }
   };
 
