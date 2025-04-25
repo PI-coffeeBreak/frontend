@@ -22,8 +22,7 @@ export default function Navbar() {
             </div>
             <div className="flex-none">
                 <ul className="menu menu-horizontal px-1">
-                    <li ><NavLink className="btn btn-ghost rounded-xl text-white hover:btn-secondary" to="/develop">Develop</NavLink></li>
-                    <li ><NavLink className="btn btn-ghost rounded-xl text-white mr-6 hover:btn-secondary" to="/about">About Us</NavLink></li>
+                    <li ><NavLink className="btn btn-ghost rounded-xl mr-4 text-white hover:btn-secondary" to="/develop">Develop</NavLink></li>
                     {keycloak.authenticated ? (
                       <li>
                         <button onClick={handleLogout} className="btn btn-primary rounded-xl">Logout</button>

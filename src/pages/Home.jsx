@@ -59,7 +59,7 @@ export default function Home() {
 
     return (
         <>
-            <div className="mx-auto w-2/3 py-16 sm:py-28 lg:py-36">
+            <div className="mx-auto w-2/3 py-6 sm:py-12 lg:py-20">
                 <div className="text-center">
                     <h1 className="text-5xl font-semibold text-balance text-primary sm:text-7xl">
                         {t('home.title')}
@@ -75,21 +75,21 @@ export default function Home() {
                             </button>
                         ) : (
                             <NavLink 
-                                to={getStartedPath()} 
+                                to={getStartedPath()}
                                 className="btn btn-primary rounded-xl"
                                 onClick={handleGetStartedClick}
                             >
                                 {t('home.getStarted')}
                             </NavLink>
                         )}
-                        <NavLink to="/about" className="text-sm/6 font-semibold text-gray-900">
+                        <NavLink to="https://pi-coffeebreak.github.io/" className="text-sm/6 font-semibold text-gray-900">
                             {t('home.learnMore')} <span aria-hidden="true">→</span>
                         </NavLink>
                     </div>
                 </div>
             </div>
 
-            <div className="mx-auto w-2/3 py-16 sm:py-28 lg:py-36">
+            <div className="mx-auto w-2/3 py-6 sm:py-12 lg:py-20">
                 <div className="text-center">
                     <p className="text-secondary text-lg font-bold">{t('home.features.title')}</p>
                     <h2 className="text-black text-4xl font-bold text-balance">{t('home.features.subtitle')}</h2>
