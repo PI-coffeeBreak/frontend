@@ -9,12 +9,15 @@ import { MediaInput } from "../../../components/forms/MediaInput";
 import { ColorSelector } from "../../../components/ColorSelector";
 import { ColorThemeLayout } from "../../../components/ColorThemeLayout";
 import * as Components from "./components";
+import { useTranslation } from "react-i18next";
 
 function AnyOfInput({ propertyName, schemas, currentValue, onPropertyChange }) {
+    const { t } = useTranslation();
+    
     // Create options for the type selector with consistent labels
     const TYPE_LABELS = {
-        MEDIA: 'Upload Media',
-        URL: 'External URL'
+        MEDIA: t('components.dynamicComponentConfiguration.uploadMedia'),
+        URL: t('components.dynamicComponentConfiguration.externalUrl')
     };
 
     const typeOptions = schemas.map((schema, index) => {
@@ -300,6 +303,8 @@ function PropertyInput({ propertyName, propertySchema, value, onChange, isRequir
 }
 
 export function DynamicComponentConfiguration({ id, componentData = { name: "", props: {} }, onComponentTypeChange, onComponentPropsChange, onRemove }) {
+    const { t } = useTranslation();
+    
     console.log('DynamicComponentConfiguration rendered with:', {
         id,
         componentData
@@ -360,7 +365,7 @@ export function DynamicComponentConfiguration({ id, componentData = { name: "", 
         return (
             <div className="my-2 py-2 bg-base rounded-lg">
                 <div className="mb-2 text-sm font-medium">
-                    Component Preview
+                    {t('components.dynamicComponentConfiguration.componentPreview')}
                 </div>
                 <div className="p-4 bg-base-100 rounded border border-base-300">
                     <ComponentToRender {...componentData.props} />
@@ -412,7 +417,7 @@ export function DynamicComponentConfiguration({ id, componentData = { name: "", 
     };
 
     if (!componentData?.name) {
-        return <p className="text-red-500">Error: Component data is missing</p>;
+        return <p className="text-red-500">{t('components.dynamicComponentConfiguration.error.missingData')}</p>;
     }
 
     // Get editable properties (excluding name, component_id and const fields)
@@ -424,7 +429,7 @@ export function DynamicComponentConfiguration({ id, componentData = { name: "", 
         <SortableItemLayout id={id} onRemove={onRemove}>
             <div className="mb-4">
                 <label htmlFor={`component-type-${id}`} className="block text-sm font-medium text-gray-700">
-                    Component Type
+                    {t('components.dynamicComponentConfiguration.componentType')}
                 </label>
                 <select
                     id={`component-type-${id}`}
@@ -450,7 +455,7 @@ export function DynamicComponentConfiguration({ id, componentData = { name: "", 
                         onClick={() => setIsCollapsed(!isCollapsed)}
                         className="flex items-center justify-between w-full bg-gray-200 p-2 rounded-md"
                     >
-                        <span className="text-sm font-bold">Edit Properties</span>
+                        <span className="text-sm font-bold">{t('components.dynamicComponentConfiguration.editProperties')}</span>
                         {isCollapsed ? <FaChevronDown /> : <FaChevronUp />}
                     </button>
 

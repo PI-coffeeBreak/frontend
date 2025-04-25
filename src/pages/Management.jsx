@@ -1,43 +1,46 @@
 import React, { useMemo } from 'react';
 import { FaUsers, FaCalendarAlt, FaBell } from 'react-icons/fa';
 import DashboardCard from '../components/DashboardCard';
+import { useTranslation } from 'react-i18next';
 
 export default function Management() {
+    const { t } = useTranslation();
+    
     const cards = useMemo(() => [
         {
             id: 'users',
-            title: "Users",
-            description: "Manage user accounts, roles, and permissions. Add new users, edit existing ones, or control access to different features of your event.",
+            title: t('management.cards.users.title'),
+            description: t('management.cards.users.description'),
             icon: FaUsers,
             path: "users",
             color: "blue",
-            buttonText: "Manage Users"
+            buttonText: t('management.cards.users.buttonText')
         },
         {
             id: 'sessions',
-            title: "Sessions",
-            description: "Schedule and organize event sessions, workshops, and activities. Control timing, locations, and participant registration for all event activities.",
+            title: t('management.cards.sessions.title'),
+            description: t('management.cards.sessions.description'),
             icon: FaCalendarAlt,
             path: "sessions",
             color: "purple",
-            buttonText: "View Sessions"
+            buttonText: t('management.cards.sessions.buttonText')
         },
         {
             id: 'alerts',
-            title: "Alerts",
-            description: "Create and send notifications to event participants. Keep everyone informed about important updates, schedule changes, and announcements.",
+            title: t('management.cards.alerts.title'),
+            description: t('management.cards.alerts.description'),
             icon: FaBell,
             path: "alerts",
             color: "red",
-            buttonText: "Manage Alerts"
+            buttonText: t('management.cards.alerts.buttonText')
         },
-    ], []);
+    ], [t]);
 
     return (
         <div className="w-full min-h-screen p-8">
             <div className="max-w-7xl mx-auto">
-                <h1 className="text-4xl font-bold mb-4 text-primary">Management</h1>
-                <p className="text-lg text-base-content/70 mb-8">Manage all aspects of your event through these administrative tools</p>
+                <h1 className="text-4xl font-bold mb-4 text-primary">{t('management.title')}</h1>
+                <p className="text-lg text-base-content/70 mb-8">{t('management.subtitle')}</p>
                 
                 <div className="grid grid-cols-1 lg:grid-cols-2 xl:grid-cols-3 gap-8">
                     {cards.map((card) => (

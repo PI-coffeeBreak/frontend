@@ -1,0 +1,573 @@
+{
+  "common": {
+    "home": "Início",
+    "users": "Utilizadores",
+    "sessions": "Sessões",
+    "alerts": "Alertas",
+    "schedule": "Agenda",
+    "plugins": "Extensões",
+    "colors": "Cores",
+    "menus": "Menus",
+    "pages": "Páginas",
+    "create": "Criar",
+    "edit": "Editar",
+    "save": "Guardar",
+    "cancel": "Cancelar",
+    "delete": "Eliminar",
+    "loading": "A carregar...",
+    "error": "Erro",
+    "success": "Sucesso",
+    "media": {
+      "selectImage": "Selecionar Imagem",
+      "changeImage": "Alterar Imagem",
+      "noImage": "Nenhuma imagem selecionada",
+      "imageError": "Não foi possível exibir a imagem",
+      "imageErrorDetails": "A imagem pode estar em falta ou indisponível",
+      "sizeError": "O tamanho da imagem deve ser inferior a 50MB",
+      "typeError": "Por favor, envie um ficheiro de imagem",
+      "removeImage": "Remover Imagem",
+      "imageAlt": "Imagem"
+    }
+  },
+  "auth": {
+    "login": "Entrar",
+    "logout": "Sair",
+    "setup": "Configuração"
+  },
+  "event": {
+    "defaultTitle": "Evento",
+    "maker": "Criador de Eventos",
+    "editor": "Editor de Eventos",
+    "setup": "Configuração do Evento"
+  },
+  "menu": {
+    "sections": {
+      "eventMaker": {
+        "title": "Meu evento",
+        "description": "Personalize e configure o seu evento",
+        "links": {
+          "eventInfo": "Informação do Evento",
+          "colors": "Cores",
+          "menus": "Menus",
+          "pages": "Páginas",
+          "plugins": "Gerir Extensões"
+        }
+      },
+      "plugins": {
+        "title": "Extensões",
+        "description": "Gerir e configurar extensões"
+      },
+      "management": {
+        "title": "Gestão",
+        "description": "Gerir utilizadores, sessões e alertas",
+        "links": {
+          "users": "Utilizadores",
+          "sessions": "Sessões",
+          "alerts": "Alertas"
+        }
+      },
+      "home": {
+        "title": "Início",
+        "description": "Gerir utilizadores, sessões e alertas",
+        "links": {
+          "users": "Utilizadores",
+          "sessions": "Sessões",
+          "alerts": "Alertas"
+        },
+        "descriptions": {
+          "users": "Gerir contas de utilizadores, funções e permissões",
+          "sessions": "Agendar e organizar sessões e atividades",
+          "alerts": "Criar e enviar notificações para participantes"
+        },
+        "buttons": {
+          "users": "Gerir Utilizadores",
+          "sessions": "Ver Sessões",
+          "alerts": "Gerir Alertas"
+        }
+      }
+    },
+    "actions": {
+      "logout": "Terminar Sessão"
+    }
+  },
+  "instantiate": {
+    "welcome": "Bem-vindo ao",
+    "accessTools": "Aceda a todas as ferramentas de gestão do evento num só lugar",
+    "eventDate": "Data do evento",
+    "openDashboard": "Abrir Painel",
+    "quickAccess": "Acesso Rápido",
+    "cards": {
+      "management": {
+        "title": "Gestão",
+        "description": "Aceda a ferramentas para gerir utilizadores, sessões e alertas do seu evento."
+      },
+      "eventMaker": {
+        "title": "Event Maker",
+        "description": "Personalize a aparência, conteúdo e funcionalidade do seu evento."
+      }
+    }
+  },
+  "users": {
+    "title": "Utilizadores",
+    "searchPlaceholder": "Procurar utilizadores",
+    "table": {
+      "name": "Nome",
+      "email": "Email",
+      "role": "Função",
+      "actions": "Ações"
+    },
+    "actions": {
+      "assignRoles": "Atribuir Funções",
+      "banUser": "Banir Utilizador",
+      "unbanUser": "Desbanir Utilizador"
+    },
+    "create": {
+      "title": "Adicionar Utilizador",
+      "description": "Adicionar um novo utilizador ao sistema",
+      "firstName": "Nome Próprio",
+      "lastName": "Apelido",
+      "email": "Email",
+      "role": "Função",
+      "temporaryPassword": "Palavra-passe Temporária",
+      "passwordStrength": "Força da Palavra-passe",
+      "passwordChangeNote": "O utilizador irá alterar a palavra-passe futuramente",
+      "generatePassword": "Gerar Palavra-passe",
+      "createUser": "Criar Utilizador",
+      "cancel": "Cancelar"
+    },
+    "manageRoles": {
+      "title": "Gerir Funções",
+      "description": "Configurar funções e permissões do sistema"
+    },
+    "list": {
+      "title": "Lista de Utilizadores"
+    },
+    "import": {
+      "title": "Importar Utilizadores",
+      "description": "Importar utilizadores através de um ficheiro Excel",
+      "results": "Resultados da Importação",
+      "success": "{{success}} de {{total}} utilizadores importados com sucesso",
+      "failed": "Falha ao importar {{failed}} utilizadores"
+    },
+    "adminPermissionsWarning": "Não tem permissão para gerir funções e permissões"
+  },
+  "activities": {
+    "title": "Atividades",
+    "sessions": "Sessões",
+    "create": {
+      "title": "Criar Atividade",
+      "description": "Adicionar uma nova atividade ao evento",
+      "name": "Nome",
+      "date": "Data",
+      "duration": "Duração",
+      "type": "Tipo",
+      "topic": "Tópico",
+      "speaker": "Orador",
+      "facilitator": "Facilitador",
+      "image": "Imagem"
+    },
+    "types": {
+      "title": "Tipos de Atividade",
+      "description": "Configurar tipos de atividade disponíveis",
+      "name": "Nome"
+    },
+    "import": {
+      "title": "Importar Atividades",
+      "description": "Importar atividades através de um ficheiro Excel"
+    },
+    "filters": {
+      "searchPlaceholder": "Procurar atividades",
+      "all": "Todas"
+    },
+    "delete": "Eliminar atividade",
+    "deleteConfirm": "Deseja eliminar esta atividade?",
+    "deleteSuccess": "Atividade eliminada com sucesso",
+    "deleteError": "Erro ao eliminar atividade",
+    "noActivities": "Nenhuma atividade encontrada",
+    "trySearch": "Tente alterar os filtros de pesquisa",
+    "imageAlt": "Imagem da atividade",
+    "noImage": "Sem imagem",
+    "permissions": {
+      "disabled": "Não tem permissão para gerir atividades"
+    }
+  },
+  "eventEditor": {
+    "title": "Configurações do Evento",
+    "basicInfo": {
+      "title": "Informação Básica",
+      "eventName": {
+        "label": "Nome do Evento",
+        "placeholder": "Introduza o nome do seu evento",
+        "required": "O nome do evento é obrigatório"
+      },
+      "description": {
+        "label": "Descrição",
+        "placeholder": "Descreva o seu evento",
+        "required": "A descrição é obrigatória"
+      }
+    },
+    "dateTime": {
+      "title": "Data e Hora",
+      "startDate": {
+        "label": "Data e Hora de Início",
+        "required": "A data de início é obrigatória"
+      },
+      "endDate": {
+        "label": "Data e Hora de Fim",
+        "required": "A data de fim é obrigatória",
+        "invalid": "A data de fim deve ser posterior à data de início"
+      }
+    },
+    "location": {
+      "title": "Localização",
+      "label": "Local do Evento",
+      "placeholder": "Introduza o local ou endereço do evento",
+      "required": "O local é obrigatório"
+    },
+    "image": {
+      "title": "Imagem do Evento",
+      "label": "Logótipo do Evento",
+      "selectImage": "Selecionar Imagem",
+      "changeImage": "Alterar Imagem",
+      "noImage": "Nenhuma imagem selecionada",
+      "imageError": "Não foi possível exibir a imagem",
+      "imageErrorDetails": "A imagem pode estar em falta ou indisponível",
+      "sizeError": "O tamanho da imagem deve ser menor que 50MB",
+      "typeError": "Por favor, envie um ficheiro de imagem"
+    },
+    "actions": {
+      "cancel": "Cancelar",
+      "save": "Guardar Alterações",
+      "saving": "A guardar..."
+    },
+    "validation": {
+      "requiredFields": "Por favor, corrija os erros no formulário"
+    },
+    "success": {
+      "update": "Evento atualizado com sucesso"
+    },
+    "error": {
+      "update": "Falha ao atualizar o evento",
+      "imageUpload": "Falha ao carregar a imagem. O evento será atualizado sem alterações na imagem."
+    }
+  },
+  "themeCustomizer": {
+    "title": "Personalizador de Tema do Evento",
+    "subtitle": "Personalize as cores do seu evento e veja como ficam em tempo real",
+    "tabs": {
+      "colors": "Escolher Cores",
+      "preview": "Pré-visualizar Evento"
+    },
+    "instructions": "Clique em qualquer cor abaixo para alterá-la. Verá as alterações no separador 'Pré-visualizar Evento'.",
+    "colorGroups": {
+      "brandColors": "Cores da Marca",
+      "backgroundText": "Fundo e Texto",
+      "statusColors": "Cores de Estado"
+    },
+    "colorNames": {
+      "primary": "Cor Principal da Marca",
+      "primary-content": "Texto sobre Cor Principal",
+      "secondary": "Cor Secundária da Marca",
+      "secondary-content": "Texto sobre Cor Secundária",
+      "accent": "Cor de Destaque",
+      "accent-content": "Texto sobre Cor de Destaque",
+      "base-100": "Cor de Fundo",
+      "base-200": "Fundo dos Cards",
+      "base-300": "Cor das Bordas",
+      "base-content": "Cor do Texto Principal",
+      "info": "Cor de Informação",
+      "info-content": "Texto sobre Cor de Informação",
+      "success": "Cor de Sucesso",
+      "success-content": "Texto sobre Cor de Sucesso",
+      "warning": "Cor de Aviso",
+      "warning-content": "Texto sobre Cor de Aviso",
+      "error": "Cor de Erro",
+      "error-content": "Texto sobre Cor de Erro",
+      "neutral": "Cor Neutra",
+      "neutral-content": "Texto sobre Cor Neutra"
+    },
+    "preview": {
+      "title": "TEDx Aveiro",
+      "talks": "Palestras",
+      "eventLocation": "Local do Evento",
+      "attendees": "Participantes",
+      "tickets": "bilhetes",
+      "sponsors": "Patrocinadores",
+      "eventUpdates": "Atualizações do Evento",
+      "eventStart": "O evento está prestes a começar",
+      "coffeeBreak": "Coffee Break em 10 minutos",
+      "talkDelay": "A palestra x foi adiada das 15:00 para as 17:00",
+      "eventSchedule": "Programa do Evento",
+      "contactOrganizer": "Contactar Organizador"
+    },
+    "actions": {
+      "reset": "Repor",
+      "resetTitle": "Repor para o tema original",
+      "save": "Guardar",
+      "text": "Texto"
+    }
+  },
+  "menuEditor": {
+    "title": "Editor de Menu",
+    "description": "Gerir os itens do menu de navegação. Arrastar e soltar para reordenar os itens. As alterações serão refletidas na navegação do seu evento.",
+    "searchPlaceholder": "Procurar itens do menu...",
+    "addButton": "Adicionar Item do Menu",
+    "modal": {
+      "add": {
+        "title": "Adicionar Novo Item do Menu",
+        "label": "Rótulo",
+        "labelPlaceholder": "Rótulo do item do menu",
+        "url": "URL / Caminho",
+        "urlPlaceholder": "/caminho/para/pagina",
+        "cancel": "Cancelar",
+        "add": "Adicionar Item"
+      },
+      "edit": {
+        "title": "Editar Item do Menu",
+        "cancel": "Cancelar",
+        "update": "Atualizar"
+      }
+    },
+    "actions": {
+      "edit": "Editar",
+      "delete": "Eliminar",
+      "addSuccess": "Item do menu adicionado com sucesso!",
+      "addError": "Falha ao adicionar item do menu. Por favor, tente novamente.",
+      "updateSuccess": "Item do menu atualizado com sucesso!",
+      "updateError": "Falha ao atualizar item do menu. Por favor, tente novamente.",
+      "deleteConfirm": "Tem a certeza que deseja eliminar este item do menu?",
+      "deleteSuccess": "Item do menu eliminado com sucesso!",
+      "deleteError": "Falha ao eliminar item do menu. Por favor, tente novamente.",
+      "orderSuccess": "Ordem do menu atualizada com sucesso!",
+      "orderError": "Falha ao atualizar ordem do menu. Por favor, tente novamente."
+    },
+    "validation": {
+      "requiredFields": "Rótulo e URL são obrigatórios.",
+      "invalidData": "Formato de dados do menu inválido. Por favor, tente novamente.",
+      "reload": "Tentar Novamente"
+    },
+    "emptyState": {
+      "title": "Nenhum item do menu encontrado",
+      "description": {
+        "default": "Comece por adicionar o seu primeiro item do menu.",
+        "search": "Nenhum resultado para \"{{searchTerm}}\""
+      },
+      "clearSearch": "Limpar pesquisa",
+      "addFirstItem": "Adicionar Item do Menu"
+    }
+  },
+  "pagesList": {
+    "title": "Páginas",
+    "createButton": "Criar Página",
+    "searchPlaceholder": "Procurar páginas...",
+    "filters": {
+      "all": "Todas as Páginas",
+      "enabled": "Ativadas",
+      "disabled": "Desativadas"
+    },
+    "table": {
+      "title": "Título",
+      "description": "Descrição",
+      "status": "Estado",
+      "actions": "Ações"
+    },
+    "status": {
+      "enabled": "Ativada",
+      "disabled": "Desativada"
+    },
+    "actions": {
+      "edit": "Editar",
+      "delete": "Eliminar",
+      "clone": "Clonar",
+      "toggleEnabled": "Ativar/Desativar",
+      "deleteConfirm": "Tem a certeza que deseja eliminar esta página?",
+      "deleteSuccess": "Página eliminada com sucesso!",
+      "deleteError": "Falha ao eliminar página. Por favor, tente novamente.",
+      "toggleSuccess": "Página {{status}} com sucesso!",
+      "toggleError": "Falha ao {{action}} página. Por favor, tente novamente.",
+      "cloneSuccess": "Página clonada com sucesso!",
+      "cloneError": "Falha ao clonar página. Por favor, tente novamente."
+    },
+    "emptyState": {
+      "title": "Nenhuma página encontrada",
+      "description": {
+        "default": "Comece por criar a sua primeira página.",
+        "search": "Nenhum resultado para \"{{searchTerm}}\""
+      },
+      "clearSearch": "Limpar pesquisa",
+      "createFirstPage": "Criar Primeira Página"
+    },
+    "loading": "A carregar páginas...",
+    "error": "Erro ao carregar páginas"
+  },
+  "pageEditor": {
+    "edit": {
+      "title": "Editar Página",
+      "subtitle": "Edite os componentes e conteúdo da sua página",
+      "loading": "A carregar página...",
+      "noChanges": "Nenhuma alteração detetada",
+      "updateSuccess": "Página atualizada com sucesso!",
+      "updateError": "Falha ao atualizar a página",
+      "unsavedChanges": "Tem alterações não guardadas. Deseja realmente sair desta página? Todas as alterações serão perdidas.",
+      "saveButton": "Atualizar Página"
+    },
+    "create": {
+      "title": "Criar Nova Página",
+      "subtitle": "Projete a sua nova página adicionando e organizando componentes",
+      "unsavedChanges": "Tem alterações não guardadas. Tem a certeza que pretende sair?",
+      "titleRequired": "O título da página é obrigatório",
+      "createSuccess": "Página criada com sucesso!",
+      "createError": "Falha ao criar a página. Por favor, tente novamente.",
+      "loading": "A carregar...",
+      "saveButton": "Guardar Página"
+    },
+    "common": {
+      "backButton": "Voltar",
+      "titlePlaceholder": "Introduza o título da página",
+      "addComponent": "Adicionar Componente",
+      "removeComponent": "Remover Componente",
+      "dragToReorder": "Arraste para reordenar",
+      "componentSettings": "Definições do Componente",
+      "noComponents": "Nenhum componente adicionado",
+      "addFirstComponent": "Adicione o seu primeiro componente"
+    }
+  },
+  "components": {
+    "pageTitleInput": {
+      "label": "Título da Página"
+    },
+    "dynamicComponentConfiguration": {
+      "componentType": "Tipo de Componente",
+      "editProperties": "Editar Propriedades",
+      "componentPreview": "Pré-visualização do Componente",
+      "sourceType": "Tipo de Fonte",
+      "uploadMedia": "Enviar Multimédia",
+      "externalUrl": "URL Externa",
+      "error": {
+        "missingData": "Erro: Dados do componente em falta"
+      }
+    },
+    "pageContent": {
+      "noSections": "Nenhuma secção adicionada ainda",
+      "startBuilding": "Comece a construir a sua página clicando em \"Adicionar Nova Secção\" abaixo para adicionar componentes de conteúdo.",
+      "addNewSection": "Adicionar Nova Secção"
+    }
+  },
+  "management": {
+    "title": "Gestão",
+    "subtitle": "Gerir todos os aspetos do seu evento através destas ferramentas administrativas",
+    "cards": {
+      "users": {
+        "title": "Utilizadores",
+        "description": "Gerir contas de utilizadores, funções e permissões. Adicione novos utilizadores, edite os existentes ou controle o acesso a diferentes recursos do seu evento.",
+        "buttonText": "Gerir Utilizadores"
+      },
+      "sessions": {
+        "title": "Sessões",
+        "description": "Agendar e organizar sessões, workshops e atividades do evento. Controle horários, locais e registo de participantes para todas as atividades do evento.",
+        "buttonText": "Ver Sessões"
+      },
+      "alerts": {
+        "title": "Alertas",
+        "description": "Criar e enviar notificações para os participantes do evento. Mantenha todos informados sobre atualizações importantes, mudanças na programação e anúncios.",
+        "buttonText": "Gerir Alertas"
+      }
+    }
+  },
+  "eventMaker": {
+    "title": "Event Maker",
+    "subtitle": "Personalize e configure o seu evento com estas ferramentas poderosas",
+    "cards": {
+      "eventInfo": {
+        "title": "Informação do Evento",
+        "description": "Gerir a informação básica do seu evento.",
+        "buttonText": "Editar Evento"
+      },
+      "colors": {
+        "title": "Cores",
+        "description": "Criar uma identidade visual única para o seu evento personalizando o esquema de cores. Escolha cores que reflitam a sua marca e criem a atmosfera perfeita.",
+        "buttonText": "Personalizar Cores"
+      },
+      "menus": {
+        "title": "Menus",
+        "description": "Projete a estrutura de navegação do seu evento. Crie, organize e personalize itens do menu para uma experiência ideal do utilizador.",
+        "buttonText": "Editar Menus"
+      },
+      "pages": {
+        "title": "Páginas",
+        "description": "Criar e gerir páginas de conteúdo para o seu evento. Crie layouts personalizados para apresentar informação de forma eficaz.",
+        "buttonText": "Gerir Páginas"
+      },
+      "choosePlugins": {
+        "title": "Escolher Extensões",
+        "description": "Aprimore o seu evento com extensões poderosas. Adicione os recursos que precisa para criar a experiência perfeita.",
+        "buttonText": "Gerir Extensões"
+      }
+    }
+  },
+  "home": {
+    "title": "Planeie, Gerencie e Eleve os Seus Eventos com Facilidade.",
+    "subtitle": "O coffeeBreak. torna a gestão de eventos fácil. Planeje, organize e execute eventos sem complicação, tudo em um só lugar. Ferramentas simples, recursos inteligentes e uma experiência perfeita para eventos incríveis.",
+    "getStarted": "Começar",
+    "learnMore": "Saiba Mais",
+    "loading": "A carregar...",
+    "features": {
+      "title": "Gerencie Eventos sem Esforço",
+      "subtitle": "Tudo o que precisa para planear e executar o seu evento sem complicações.",
+      "dashboard": {
+        "title": "Painel do Site",
+        "description": "Uma plataforma completa para configurar, monitorar e recolher dados dos seus eventos."
+      },
+      "customizable": {
+        "title": "Recursos Personalizáveis",
+        "description": "Uma variedade de módulos adicionais para personalizar a experiência do seu evento como desejar."
+      },
+      "mobile": {
+        "title": "Aplicação Móvel",
+        "description": "Uma extensão perfeita do seu evento, refletindo tudo o que foi configurado no site."
+      }
+    },
+    "newsletter": {
+      "title": "Quer receber as nossas atualizações? Inscreva-se na nossa newsletter.",
+      "placeholder": "Digite o seu email",
+      "button": "Notificar-me",
+      "privacy": {
+        "text": "Respeitamos os seus dados. Leia a nossa",
+        "link": "política de privacidade"
+      }
+    },
+    "footer": {
+      "tagline": "Não há evento sem um coffeeBreak",
+      "services": {
+        "title": "Serviços",
+        "branding": "Branding",
+        "design": "Design",
+        "marketing": "Marketing",
+        "advertisement": "Publicidade"
+      },
+      "company": {
+        "title": "Empresa",
+        "about": "Sobre nós",
+        "contact": "Contacto",
+        "jobs": "Trabalhos",
+        "press": "Kit de imprensa"
+      },
+      "legal": {
+        "title": "Legal",
+        "terms": "Termos de utilização",
+        "privacy": "Política de privacidade",
+        "cookies": "Política de cookies"
+      }
+    }
+  },
+  "navbar": {
+    "logoAlt": "Logo coffeeBreak",
+    "develop": "Desenvolver",
+    "login": "Iniciar Sessão",
+    "logout": "Terminar Sessão"
+  },
+  "instantiateHome": {
+    "title": "Painel do Evento",
+    "subtitle": "Monitorize e gerencie todos os aspetos do seu evento num só lugar"
+  }
+} 

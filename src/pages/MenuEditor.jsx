@@ -8,8 +8,10 @@ import { restrictToVerticalAxis } from '@dnd-kit/modifiers';
 import { CSS } from "@dnd-kit/utilities";
 import { FaPlus, FaEdit, FaTrash, FaBars, FaSearch } from "react-icons/fa";
 import { IconSelector } from "../components/IconSelector";
+import { useTranslation } from "react-i18next";
 
 function SortableMenuItem({ option, onEdit, onDelete }) {
+  const { t } = useTranslation();
   const {
     attributes,
     listeners,
@@ -51,14 +53,14 @@ function SortableMenuItem({ option, onEdit, onDelete }) {
         <button 
           onClick={() => onEdit(option)}
           className="p-2 text-blue-500 hover:bg-blue-50 rounded-full"
-          title="Edit"
+          title={t('menuEditor.actions.edit')}
         >
           <FaEdit />
         </button>
         <button 
           onClick={() => onDelete(option.id)}
           className="p-2 text-red-500 hover:bg-red-50 rounded-full"
-          title="Delete"
+          title={t('menuEditor.actions.delete')}
         >
           <FaTrash />
         </button>
@@ -79,13 +81,12 @@ SortableMenuItem.propTypes = {
 };
 
 function AddOptionModal({ isOpen, onClose, newOption, setNewOption, onAdd }) {
-  // Generate unique IDs for form controls
+  const { t } = useTranslation();
   const labelInputId = React.useId();
   const urlInputId = React.useId();
   const modalRef = React.useRef(null);
   const [isIconSelectorOpen, setIsIconSelectorOpen] = useState(false);
 
-  // Control dialog open/close state
   React.useEffect(() => {
     const dialog = modalRef.current;
     if (dialog) {
@@ -97,7 +98,6 @@ function AddOptionModal({ isOpen, onClose, newOption, setNewOption, onAdd }) {
     }
   }, [isOpen]);
 
-  // Handle dialog close event
   const handleDialogClose = () => {
     onClose();
   };
@@ -110,7 +110,7 @@ function AddOptionModal({ isOpen, onClose, newOption, setNewOption, onAdd }) {
       onClose={handleDialogClose}
     >
       <div className="modal-box w-11/12 max-w-lg max-h-[90vh] overflow-y-auto">
-        <h3 className="font-bold text-xl mb-4">Add New Menu Option</h3>
+        <h3 className="font-bold text-xl mb-4">{t('menuEditor.modal.add.title')}</h3>
         
         <div className={`icon-selector-container ${isIconSelectorOpen ? 'h-[450px]' : 'h-auto'} transition-all duration-300`}>
           <IconSelector 
@@ -121,14 +121,13 @@ function AddOptionModal({ isOpen, onClose, newOption, setNewOption, onAdd }) {
           />
         </div>
         
-        {/* form fields */}
         <div className="space-y-3 mt-3">
           <div>
             <label 
               htmlFor={labelInputId} 
               className="block text-sm font-medium text-gray-700 mb-1"
             >
-              Label
+              {t('menuEditor.modal.add.label')}
             </label>
             <input
               id={labelInputId}
@@ -136,7 +135,7 @@ function AddOptionModal({ isOpen, onClose, newOption, setNewOption, onAdd }) {
               value={newOption.label}
               onChange={(e) => setNewOption({...newOption, label: e.target.value})}
               className="w-full p-2 border border-gray-300 rounded-md"
-              placeholder="Menu item label"
+              placeholder={t('menuEditor.modal.add.labelPlaceholder')}
             />
           </div>
           
@@ -145,7 +144,7 @@ function AddOptionModal({ isOpen, onClose, newOption, setNewOption, onAdd }) {
               htmlFor={urlInputId}
               className="block text-sm font-medium text-gray-700 mb-1"
             >
-              URL / Path
+              {t('menuEditor.modal.add.url')}
             </label>
             <input
               id={urlInputId}
@@ -153,7 +152,7 @@ function AddOptionModal({ isOpen, onClose, newOption, setNewOption, onAdd }) {
               value={newOption.href}
               onChange={(e) => setNewOption({...newOption, href: e.target.value})}
               className="w-full p-2 border border-gray-300 rounded-md"
-              placeholder="/path/to/page"
+              placeholder={t('menuEditor.modal.add.urlPlaceholder')}
             />
           </div>
         </div>
@@ -164,19 +163,19 @@ function AddOptionModal({ isOpen, onClose, newOption, setNewOption, onAdd }) {
             className="btn btn-outline"
             onClick={onClose}
           >
-            Cancel
+            {t('menuEditor.modal.add.cancel')}
           </button>
           <button
             type="button"
             className="btn btn-primary"
             onClick={onAdd}
           >
-            Add Item
+            {t('menuEditor.modal.add.add')}
           </button>
         </div>
       </div>
       <form method="dialog" className="modal-backdrop">
-        <button onClick={onClose}>Close</button>
+        <button onClick={onClose}>{t('menuEditor.modal.add.cancel')}</button>
       </form>
     </dialog>
   );
@@ -194,16 +193,13 @@ AddOptionModal.propTypes = {
   onAdd: PropTypes.func.isRequired
 };
 
-// Update the EditOptionModal component for better spacing
 function EditOptionModal({ isOpen, onClose, editingOption, setEditingOption, onUpdate }) {
-  // Generate unique IDs for form controls
+  const { t } = useTranslation();
   const editLabelInputId = React.useId();
   const editUrlInputId = React.useId();
   const modalRef = React.useRef(null);
-  // Track if icon selector is open to adjust layout
   const [isIconSelectorOpen, setIsIconSelectorOpen] = useState(false);
 
-  // Control dialog open/close state
   React.useEffect(() => {
     const dialog = modalRef.current;
     if (dialog) {
@@ -215,7 +211,6 @@ function EditOptionModal({ isOpen, onClose, editingOption, setEditingOption, onU
     }
   }, [isOpen]);
 
-  // Handle dialog close event
   const handleDialogClose = () => {
     onClose();
   };
@@ -228,11 +223,10 @@ function EditOptionModal({ isOpen, onClose, editingOption, setEditingOption, onU
       onClose={handleDialogClose}
     >
       <div className="modal-box w-11/12 max-w-lg max-h-[90vh] overflow-y-auto">
-        <h3 className="font-bold text-xl mb-4">Edit Menu Option</h3>
+        <h3 className="font-bold text-xl mb-4">{t('menuEditor.modal.edit.title')}</h3>
         
         {editingOption && (
           <>
-            {/* Icon selector */}
             <div className={`icon-selector-container ${isIconSelectorOpen ? 'h-[450px]' : 'h-auto'} transition-all duration-300`}>
               <IconSelector 
                 value={editingOption.icon} 
@@ -242,14 +236,13 @@ function EditOptionModal({ isOpen, onClose, editingOption, setEditingOption, onU
               />
             </div>
             
-            {/* form fields */}
             <div className="space-y-3 mt-3">
               <div>
                 <label 
                   htmlFor={editLabelInputId}
                   className="block text-sm font-medium text-gray-700 mb-1"
                 >
-                  Label
+                  {t('menuEditor.modal.add.label')}
                 </label>
                 <input
                   id={editLabelInputId}
@@ -265,7 +258,7 @@ function EditOptionModal({ isOpen, onClose, editingOption, setEditingOption, onU
                   htmlFor={editUrlInputId}
                   className="block text-sm font-medium text-gray-700 mb-1"
                 >
-                  URL / Path
+                  {t('menuEditor.modal.add.url')}
                 </label>
                 <input
                   id={editUrlInputId}
@@ -285,19 +278,19 @@ function EditOptionModal({ isOpen, onClose, editingOption, setEditingOption, onU
             className="btn btn-outline"
             onClick={onClose}
           >
-            Cancel
+            {t('menuEditor.modal.edit.cancel')}
           </button>
           <button
             type="button"
             className="btn btn-primary"
             onClick={onUpdate}
           >
-            Update
+            {t('menuEditor.modal.edit.update')}
           </button>
         </div>
       </div>
       <form method="dialog" className="modal-backdrop">
-        <button onClick={onClose}>Close</button>
+        <button onClick={onClose}>{t('menuEditor.modal.edit.cancel')}</button>
       </form>
     </dialog>
   );
@@ -316,8 +309,8 @@ EditOptionModal.propTypes = {
   onUpdate: PropTypes.func.isRequired
 };
 
-// Main component
 export function MenuEditor() {
+  const { t } = useTranslation();
   const { 
     menuOptions, 
     isLoading, 
@@ -341,24 +334,17 @@ export function MenuEditor() {
   const [searchTerm, setSearchTerm] = useState("");
   const [filteredOptions, setFilteredOptions] = useState([]);
 
-  // Initialize sensors for drag and drop
   const sensors = useSensors(
     useSensor(PointerSensor),
     useSensor(KeyboardSensor)
   );
 
-  // Fetch menu options when component loads
   useEffect(() => {
     getMenuOptions();
   }, []);
 
-  // Filter options based on search term
   useEffect(() => {
-    console.log("Filter useEffect running with menuOptions:", menuOptions);
-    
-    // Add a safety check to ensure menuOptions is an array
     if (!menuOptions || !Array.isArray(menuOptions)) {
-      console.log("menuOptions is not an array, setting filteredOptions to empty array");
       setFilteredOptions([]);
       return;
     }
@@ -369,57 +355,56 @@ export function MenuEditor() {
         false
     );
     
-    console.log("Setting filteredOptions to:", filtered);
     setFilteredOptions(filtered);
   }, [menuOptions, searchTerm]);
 
   const handleAddOption = async () => {
     try {
       if (!newOption.label.trim() || !newOption.href.trim()) {
-        showNotification("Label and URL are required.", "error");
+        showNotification(t('menuEditor.validation.requiredFields'), "error");
         return;
       }
 
       await addMenuOption(newOption);
-      showNotification("Menu option added successfully!", "success");
+      showNotification(t('menuEditor.actions.addSuccess'), "success");
       setNewOption({ icon: "FaHome", label: "", href: "" });
       setIsAddModalOpen(false);
       
       await getMenuOptions();
     } catch (error) {
       console.error("Error adding menu option:", error);
-      showNotification("Failed to add menu option. Please try again.", "error");
+      showNotification(t('menuEditor.actions.addError'), "error");
     }
   };
 
   const handleUpdateOption = async () => {
     try {
       if (!editingOption.label.trim() || !editingOption.href.trim()) {
-        showNotification("Label and URL are required.", "error");
+        showNotification(t('menuEditor.validation.requiredFields'), "error");
         return;
       }
 
       await updateMenuOption(editingOption.id, editingOption);
-      showNotification("Menu option updated successfully!", "success");
+      showNotification(t('menuEditor.actions.updateSuccess'), "success");
       setIsEditModalOpen(false);
       
       await getMenuOptions();
     } catch (error) {
       console.error("Error updating menu option:", error);
-      showNotification("Failed to update menu option. Please try again.", "error");
+      showNotification(t('menuEditor.actions.updateError'), "error");
     }
   };
 
   const handleDeleteOption = async (id) => {
-    if (window.confirm("Are you sure you want to delete this menu option?")) {
+    if (window.confirm(t('menuEditor.actions.deleteConfirm'))) {
       try {
         await deleteMenuOption(id);
-        showNotification("Menu option deleted successfully!", "success");
+        showNotification(t('menuEditor.actions.deleteSuccess'), "success");
         
         await getMenuOptions();
       } catch (error) {
         console.error("Error deleting menu option:", error);
-        showNotification("Failed to delete menu option. Please try again.", "error");
+        showNotification(t('menuEditor.actions.deleteError'), "error");
       }
     }
   };
@@ -440,41 +425,41 @@ export function MenuEditor() {
       if (oldIndex !== -1 && newIndex !== -1) {
         const reorderedOptions = arrayMove(menuOptions, oldIndex, newIndex);
         await updateMenuOptionsOrder(reorderedOptions);
-        showNotification("Menu order updated successfully!", "success");
+        showNotification(t('menuEditor.actions.orderSuccess'), "success");
         
         await getMenuOptions();
       }
     } catch (error) {
       console.error("Error reordering menu options:", error);
-      showNotification("Failed to update menu order. Please try again.", "error");
+      showNotification(t('menuEditor.actions.orderError'), "error");
     }
   };
 
   return (
     <div className="container mx-auto p-6 max-w-4xl">
       <div className="flex justify-between items-center mb-6">
-        <h1 className="text-3xl font-bold">Menu Editor</h1>
+        <h1 className="text-3xl font-bold">{t('menuEditor.title')}</h1>
         <button
           onClick={() => setIsAddModalOpen(true)}
           className="btn btn-primary gap-2"
         >
-          <FaPlus /> Add Menu Item
+          <FaPlus /> {t('menuEditor.addButton')}
         </button>
       </div>
 
       <div className="bg-base-200 p-4 rounded-lg mb-6">
         <p className="text-base-content/70">
-          Manage your navigation menu items here. Drag and drop to reorder items. Changes will be reflected in your event's navigation.
+          {t('menuEditor.description')}
         </p>
       </div>
 
       <div className="mb-6">
         <div className="relative">
-          <label htmlFor="menuSearchInput" className="sr-only">Search menu items</label>
+          <label htmlFor="menuSearchInput" className="sr-only">{t('menuEditor.searchPlaceholder')}</label>
           <input
             id="menuSearchInput"
             type="text"
-            placeholder="Search menu items..."
+            placeholder={t('menuEditor.searchPlaceholder')}
             value={searchTerm}
             onChange={(e) => setSearchTerm(e.target.value)}
             className="w-full p-2 pl-10 border border-gray-300 rounded-md"
@@ -503,9 +488,7 @@ export function MenuEditor() {
     </div>
   );
 
-
   function renderContent() {
-    // Loading state
     if (isLoading) {
       return (
         <div className="flex justify-center items-center p-8">
@@ -514,7 +497,6 @@ export function MenuEditor() {
       );
     }
     
-    // Error state
     if (error) {
       return (
         <div className="bg-red-50 border-l-4 border-red-500 p-4 mb-4">
@@ -532,7 +514,7 @@ export function MenuEditor() {
                 onClick={getMenuOptions} 
                 className="mt-2 text-sm font-medium text-red-700 hover:text-red-600"
               >
-                Try again
+                {t('menuEditor.validation.reload')}
               </button>
             </div>
           </div>
@@ -540,7 +522,6 @@ export function MenuEditor() {
       );
     }
     
-    // Invalid data format state
     if (!menuOptions || !Array.isArray(menuOptions)) {
       return (
         <div className="bg-yellow-50 border-l-4 border-yellow-500 p-4 mb-4">
@@ -552,13 +533,13 @@ export function MenuEditor() {
             </div>
             <div className="ml-3">
               <p className="text-sm text-yellow-700">
-                Invalid menu data format received. Please try again.
+                {t('menuEditor.validation.invalidData')}
               </p>
               <button 
                 onClick={getMenuOptions} 
                 className="mt-2 text-sm font-medium text-yellow-700 hover:text-yellow-600"
               >
-                Reload Menu Data
+                {t('menuEditor.validation.reload')}
               </button>
             </div>
           </div>
@@ -566,23 +547,21 @@ export function MenuEditor() {
       );
     }
     
-    // Empty results state
     if (filteredOptions.length === 0) {
       return (
         <div className="text-center py-12 border-2 border-dashed border-gray-300 rounded-lg">
           <svg xmlns="http://www.w3.org/2000/svg" className="h-12 w-12 mx-auto text-gray-400 mb-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M4 6h16M4 12h16m-7 6h7" />
           </svg>
-          <h3 className="text-lg font-medium text-gray-700 mb-2">No menu items found</h3>
+          <h3 className="text-lg font-medium text-gray-700 mb-2">{t('menuEditor.emptyState.title')}</h3>
           <p className="text-gray-500 mb-4">
-            {searchTerm ? `No results for "${searchTerm}"` : "Get started by adding your first menu item."}
+            {searchTerm ? t('menuEditor.emptyState.description.search', { searchTerm }) : t('menuEditor.emptyState.description.default')}
           </p>
           {renderEmptyStateAction()}
         </div>
       );
     }
     
-    // Menu items list state
     return (
       <DndContext
         sensors={sensors}
@@ -595,7 +574,7 @@ export function MenuEditor() {
           strategy={verticalListSortingStrategy}
         >
           <fieldset className="space-y-2">
-            <legend className="sr-only">Menu Items</legend>
+            <legend className="sr-only">{t('menuEditor.title')}</legend>
             {filteredOptions.map(option => (
               <SortableMenuItem 
                 key={option.id} 
@@ -617,7 +596,7 @@ export function MenuEditor() {
           onClick={() => setSearchTerm("")}
           className="text-primary hover:underline"
         >
-          Clear search
+          {t('menuEditor.emptyState.clearSearch')}
         </button>
       );
     }
@@ -627,7 +606,7 @@ export function MenuEditor() {
         onClick={() => setIsAddModalOpen(true)}
         className="btn btn-primary btn-sm gap-1"
       >
-        <FaPlus size={12} /> Add Menu Item
+        <FaPlus size={12} /> {t('menuEditor.emptyState.addFirstItem')}
       </button>
     );
   }

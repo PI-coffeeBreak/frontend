@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from "react";
 import { useUsers } from "../contexts/UsersContext";
 import { useKeycloak } from "@react-keycloak/web";
+import { useTranslation } from "react-i18next";
 import Pagination from "../components/Pagination.jsx";
 import CreateCard from "../components/CreateCard.jsx";
 import { FaUsers, FaUser, FaUsersCog, FaPlus, FaTrash, FaCheck, FaLock, FaShieldAlt, FaKey, FaExclamationTriangle } from "react-icons/fa";
@@ -9,6 +10,7 @@ import { UserExcelImport } from "../components/users/UserExcelImport";
 import { generateRandomPassword } from "../utils/passwordUtils";
 
 export default function Users() {
+    const { t } = useTranslation();
     const { keycloak } = useKeycloak();
     const hasAdminPermissions = KeycloakAdminService.hasAdminPermissions(keycloak);
     const hasRoleManagementPermissions = KeycloakAdminService.hasRoleManagementPermissions(keycloak);
@@ -318,7 +320,7 @@ export default function Users() {
     const AdminPermissionsWarning = () => (
         <div className="alert alert-warning mb-4">
             <FaLock className="h-6 w-6" />
-            <span>You don't have administrative permissions to manage user roles and permissions.</span>
+            <span>{t('users.adminPermissionsWarning')}</span>
         </div>
     );
 
@@ -511,26 +513,26 @@ export default function Users() {
     return (
         <div className="w-full min-h-screen p-4 sm:p-6 lg:p-8">
             <div className="max-w-7xl mx-auto">
-                <h1 className="text-3xl sm:text-4xl font-bold mb-4 text-primary">Create Users</h1>
-                <p className="text-lg text-base-content/70 mb-8">Add and manage users through these powerful tools</p>
+                <h1 className="text-3xl sm:text-4xl font-bold mb-4 text-primary">{t('users.title')}</h1>
+                <p className="text-lg text-base-content/70 mb-8">{t('users.subtitle')}</p>
                 
                 <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
                     <CreateCard
                         icon={FaUsers}
-                        title="Add with Excel"
-                        description="Upload an Excel file to quickly add multiple users at once. Perfect for bulk user creation."
+                        title={t('users.import.title')}
+                        description={t('users.import.description')}
                         onClick={openExcelImportModal}
                     />
                     <CreateCard
                         icon={FaUser}
-                        title="Create User"
-                        description="Create a new user manually with custom details and role assignments."
+                        title={t('users.create.title')}
+                        description={t('users.create.description')}
                         onClick={openUserCreationModal}
                     />
                     <CreateCard
                         icon={FaUsersCog}
-                        title="Manage Roles"
-                        description="Create and configure roles, assign permissions, and manage access control."
+                        title={t('users.manageRoles.title')}
+                        description={t('users.manageRoles.description')}
                         onClick={openRoleManagementModal}
                     />
                 </div>
@@ -539,11 +541,11 @@ export default function Users() {
                 {importStats && (
                     <div className={`alert ${importStats.failed > 0 ? 'alert-warning' : 'alert-success'} mt-4 sm:mt-6`}>
                         <div>
-                            <h3 className="font-bold">Import Results</h3>
+                            <h3 className="font-bold">{t('users.import.results')}</h3>
                             <div className="text-sm">
-                                Successfully imported {importStats.success} of {importStats.total} users
+                                {t('users.import.success', { success: importStats.success, total: importStats.total })}
                                 {importStats.failed > 0 && (
-                                    <p>Failed to import {importStats.failed} users. Check console for details.</p>
+                                    <p>{t('users.import.failed', { failed: importStats.failed })}</p>
                                 )}
                             </div>
                         </div>
@@ -551,18 +553,18 @@ export default function Users() {
                             className="btn btn-sm"
                             onClick={() => setImportStats(null)}
                         >
-                            Dismiss
+                            {t('common.dismiss')}
                         </button>
                     </div>
                 )}
 
-                <h1 className="text-2xl sm:text-3xl font-bold mt-6 lg:mt-8">Users</h1>
+                <h1 className="text-2xl sm:text-3xl font-bold mt-6 lg:mt-8">{t('users.list.title')}</h1>
 
                 {!hasAdminPermissions && <AdminPermissionsWarning />}
 
                 <div className="flex flex-col sm:flex-row gap-4 mt-4">
                     <div className="w-full sm:w-auto">
-                        <label htmlFor="searchUsers" className="sr-only">Search users</label>
+                        <label htmlFor="searchUsers" className="sr-only">{t('users.searchLabel')}</label>
                         <div className="input w-full">
                             <svg className="h-[1em] opacity-50" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
                                 <g strokeLinejoin="round" strokeLinecap="round" strokeWidth="2.5" fill="none" stroke="currentColor">
@@ -574,7 +576,7 @@ export default function Users() {
                                 id="searchUsers"
                                 type="text"
                                 className="grow"
-                                placeholder="Search users"
+                                placeholder={t('users.searchPlaceholder')}
                                 value={searchTerm}
                                 onChange={(e) => setSearchTerm(e.target.value)}
                             />
@@ -594,14 +596,14 @@ export default function Users() {
                     </div>
                 ) : (
                     <>
-                        <div className="overflow-x-auto mt-4 sm:mt-6">
+                        <div className="overflow-x-auto mt-4">
                             <table className="table table-sm sm:table-md">
                                 <thead>
                                     <tr>
-                                        <th>Name</th>
-                                        <th>Email</th>
-                                        <th>Role</th>
-                                        <th>Actions</th>
+                                        <th>{t('users.table.name')}</th>
+                                        <th>{t('users.table.email')}</th>
+                                        <th>{t('users.table.role')}</th>
+                                        <th>{t('users.table.actions')}</th>
                                     </tr>
                                 </thead>
                                 <tbody>
@@ -613,7 +615,7 @@ export default function Users() {
                                                         <div className="mask mask-squircle w-8 h-8 sm:w-12 sm:h-12">
                                                             <img
                                                                 src={user.avatar ? user.avatar : "/placeholder.jpg"}
-                                                                alt={`Foto de ${user.firstName}`}
+                                                                alt={`${t('users.avatar')} ${user.firstName}`}
                                                             />
                                                         </div>
                                                     </div>
@@ -633,7 +635,7 @@ export default function Users() {
                                                         ))}
                                                     </div>
                                                 ) : (
-                                                    <div className="badge badge-primary badge-sm sm:badge-md">{user.role || "No role"}</div>
+                                                    <div className="badge badge-primary badge-sm sm:badge-md">{user.role || t('users.noRole')}</div>
                                                 )}
                                             </td>
                                             <th>
@@ -643,14 +645,14 @@ export default function Users() {
                                                         onClick={() => openRoleModal(user.id, user.role)}
                                                         disabled={!hasAdminPermissions}
                                                     >
-                                                        <FaShieldAlt className="hidden sm:inline mr-1" /> Assign Roles
+                                                        <FaShieldAlt className="hidden sm:inline mr-1" /> {t('users.actions.assignRoles')}
                                                     </button>
                                                     <button
                                                         className={`btn ${user.banned ? "btn-success" : "btn-error"} btn-xs sm:btn-sm whitespace-nowrap`}
                                                         onClick={() => handleToggleBan(user.id, user.banned)}
                                                         disabled={!hasAdminPermissions}
                                                     >
-                                                        {user.banned ? "Unban" : "Ban"}
+                                                        {user.banned ? t('users.actions.unbanUser') : t('users.actions.banUser')}
                                                     </button>
                                                 </div>
                                             </th>
@@ -684,7 +686,7 @@ export default function Users() {
                         <form method="dialog">
                             <button className="btn btn-sm btn-circle btn-ghost absolute right-2 top-2">✕</button>
                         </form>
-                        <h3 className="font-bold text-lg mb-4">Role Management</h3>
+                        <h3 className="font-bold text-lg mb-4">{t('users.manageRoles.title')}</h3>
 
                         {/* Tabs */}
                         <div className="tabs tabs-boxed mb-4">
@@ -692,14 +694,14 @@ export default function Users() {
                                 className={`tab ${roleManagementTab === "create" ? "tab-active" : ""}`}
                                 onClick={() => setRoleManagementTab("create")}
                             >
-                                <FaPlus className="mr-2" /> Create Role
+                                <FaPlus className="mr-2" /> {t('users.manageRoles.create')}
                             </button>
                             <button
                                 className={`tab ${roleManagementTab === "permissions" ? "tab-active" : ""}`}
                                 onClick={() => setRoleManagementTab("permissions")}
                                 disabled={allRoles.length === 0}
                             >
-                                <FaKey className="mr-2" /> Manage Permissions
+                                <FaKey className="mr-2" /> {t('users.manageRoles.permissions')}
                             </button>
                         </div>
 
@@ -709,22 +711,18 @@ export default function Users() {
                                 {!hasRoleManagementPermissions && (
                                     <div className="alert alert-warning">
                                         <FaExclamationTriangle />
-                                        <span>
-                                            You don't have role management permissions. You need one of these roles:
-                                            realm-admin, create-realm, manage-realm, cb-admin, or admin.
-                                            The role creation might fail with a permission error.
-                                        </span>
+                                        <span>{t('users.manageRoles.permissionsWarning')}</span>
                                     </div>
                                 )}
 
                                 <div className="form-control">
                                     <label className="label">
-                                        <span className="label-text">Role Name</span>
+                                        <span className="label-text">{t('users.manageRoles.roleName')}</span>
                                     </label>
                                     <input
                                         type="text"
                                         className="input input-bordered w-full"
-                                        placeholder="organizer"
+                                        placeholder={t('users.manageRoles.roleNamePlaceholder')}
                                         value={newRoleName}
                                         onChange={(e) => setNewRoleName(e.target.value)}
                                     />
@@ -741,7 +739,7 @@ export default function Users() {
                                     onClick={handleCreateRole}
                                     disabled={!newRoleName}
                                 >
-                                    Create Role
+                                    {t('users.manageRoles.createRole')}
                                 </button>
                             </div>
                         )}
@@ -753,7 +751,7 @@ export default function Users() {
                                     <>
                                         <div className="mb-4">
                                             <label className="label">
-                                                <span className="label-text font-bold">Select Role:</span>
+                                                <span className="label-text font-bold">{t('users.manageRoles.selectRole')}</span>
                                             </label>
                                             <select
                                                 className="select select-bordered w-full"
@@ -772,21 +770,21 @@ export default function Users() {
                                             <table className="table table-zebra w-full">
                                                 <thead>
                                                     <tr>
-                                                        <th>Permission Name</th>
-                                                        <th>Description</th>
-                                                        <th>Actions</th>
+                                                        <th>{t('users.manageRoles.permissionName')}</th>
+                                                        <th>{t('users.manageRoles.description')}</th>
+                                                        <th>{t('users.manageRoles.actions')}</th>
                                                     </tr>
                                                 </thead>
                                                 <tbody>
                                                     {allPermissions.map(permission => (
                                                         <tr key={permission.id}>
                                                             <td>{permission.displayName || permission.name}</td>
-                                                            <td>{permission.description || "No description"}</td>
+                                                            <td>{permission.description || t('users.manageRoles.noDescription')}</td>
                                                             <td>
                                                                 {roleHasPermission(permission.name) ? (
                                                                     <div className="flex items-center gap-2">
                                                                         <span className="badge badge-success gap-1">
-                                                                            <FaCheck size={12} /> Assigned
+                                                                            <FaCheck size={12} /> {t('users.manageRoles.assigned')}
                                                                         </span>
                                                                         <button
                                                                             className="btn btn-error btn-xs"
@@ -800,7 +798,7 @@ export default function Users() {
                                                                         className="btn btn-primary btn-xs"
                                                                         onClick={() => handleAddPermissionToRole(permission)}
                                                                     >
-                                                                        <FaPlus size={12} /> Assign
+                                                                        <FaPlus size={12} /> {t('users.manageRoles.assign')}
                                                                     </button>
                                                                 )}
                                                             </td>
@@ -812,7 +810,7 @@ export default function Users() {
                                     </>
                                 ) : (
                                     <div className="alert alert-warning">
-                                        <span>No roles available. Create a role first.</span>
+                                        <span>{t('users.manageRoles.noRoles')}</span>
                                     </div>
                                 )}
                             </div>
@@ -820,7 +818,7 @@ export default function Users() {
 
                         <div className="modal-action">
                             <form method="dialog">
-                                <button className="btn">Close</button>
+                                <button className="btn">{t('common.close')}</button>
                             </form>
                         </div>
                     </div>
@@ -890,12 +888,12 @@ export default function Users() {
                         <form method="dialog">
                             <button className="btn btn-sm btn-circle btn-ghost absolute right-2 top-2">✕</button>
                         </form>
-                        <h3 className="font-bold text-lg mb-4">Create New User</h3>
+                        <h3 className="font-bold text-lg mb-4">{t('users.create.title')}</h3>
 
                         {createSuccess && (
                             <div className="alert alert-success mb-4">
                                 <FaCheck className="h-6 w-6" />
-                                <span>User created successfully!</span>
+                                <span>{t('users.create.success')}</span>
                             </div>
                         )}
 
@@ -909,7 +907,7 @@ export default function Users() {
                         <form onSubmit={handleCreateUser}>
                             <div className="form-control mb-4">
                                 <label className="label">
-                                    <span className="label-text">First Name</span>
+                                    <span className="label-text">{t('users.create.firstName')}</span>
                                 </label>
                                 <input
                                     type="text"
@@ -927,7 +925,7 @@ export default function Users() {
 
                             <div className="form-control mb-4">
                                 <label className="label">
-                                    <span className="label-text">Last Name</span>
+                                    <span className="label-text">{t('users.create.lastName')}</span>
                                 </label>
                                 <input
                                     type="text"
@@ -945,7 +943,7 @@ export default function Users() {
 
                             <div className="form-control mb-4">
                                 <label className="label">
-                                    <span className="label-text">Email Address</span>
+                                    <span className="label-text">{t('users.create.email')}</span>
                                 </label>
                                 <input
                                     type="email"
@@ -963,7 +961,7 @@ export default function Users() {
 
                             <div className="form-control mb-4">
                                 <label className="label">
-                                    <span className="label-text">Role</span>
+                                    <span className="label-text">{t('users.create.role')}</span>
                                 </label>
                                 <select
                                     name="role"
@@ -979,10 +977,10 @@ export default function Users() {
                                         ))
                                     ) : (
                                         <>
-                                            <option value="Participant">Participant</option>
-                                            <option value="Speaker">Speaker</option>
-                                            <option value="Staff">Staff</option>
-                                            <option value="Organizer">Organizer</option>
+                                            <option value="Participant">{t('users.roles.participant')}</option>
+                                            <option value="Speaker">{t('users.roles.speaker')}</option>
+                                            <option value="Staff">{t('users.roles.staff')}</option>
+                                            <option value="Organizer">{t('users.roles.organizer')}</option>
                                         </>
                                     )}
                                 </select>
@@ -990,7 +988,7 @@ export default function Users() {
 
                             <div className="form-control mb-4">
                                 <label className="label">
-                                    <span className="label-text">Temporary Password</span>
+                                    <span className="label-text">{t('users.create.temporaryPassword')}</span>
                                 </label>
                                 <div className="input-group">
                                     <input
@@ -1005,7 +1003,7 @@ export default function Users() {
                                         className="btn btn-square"
                                         onClick={togglePasswordVisibility}
                                     >
-                                        {showPassword ? "Hide" : "Show"}
+                                        {showPassword ? t('users.create.hidePassword') : t('users.create.showPassword')}
                                     </button>
                                 </div>
 
@@ -1013,7 +1011,7 @@ export default function Users() {
                                 {newUserData.temporaryPassword && (
                                     <div className="mt-2">
                                         <div className="flex justify-between mb-1">
-                                            <span className="text-sm">Password Strength: {strengthText}</span>
+                                            <span className="text-sm">{t('users.create.passwordStrength')}: {strengthText}</span>
                                         </div>
                                         <div className="w-full bg-gray-200 rounded-full h-2.5">
                                             <div
@@ -1031,14 +1029,14 @@ export default function Users() {
                                 )}
                                 <div className="flex justify-between items-center mt-2">
                                     <label className="label">
-                                        <span className="label-text-alt">User will be prompted to change this password on first login.</span>
+                                        <span className="label-text-alt">{t('users.create.passwordChangeNote')}</span>
                                     </label>
                                     <button
                                         type="button"
                                         className="btn btn-sm btn-secondary"
                                         onClick={handleGeneratePassword}
                                     >
-                                        Generate Password
+                                        {t('users.create.generatePassword')}
                                     </button>
                                 </div>
                             </div>
@@ -1046,10 +1044,10 @@ export default function Users() {
                             <div className="modal-action">
                                 <button type="submit" className="btn btn-primary" disabled={isLoading}>
                                     {isLoading ? <span className="loading loading-spinner"></span> : <FaUser className="mr-2" />}
-                                    Create User
+                                    {t('users.create.createUser')}
                                 </button>
                                 <button type="button" className="btn" onClick={() => document.getElementById('create_user_modal').close()}>
-                                    Cancel
+                                    {t('common.cancel')}
                                 </button>
                             </div>
                         </form>
