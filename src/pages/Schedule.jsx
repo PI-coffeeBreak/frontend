@@ -6,7 +6,7 @@ import timeGridPlugin from "@fullcalendar/timegrid";
 import Activity from "../components/Activity.jsx";
 import { useActivities } from "../contexts/ActivitiesContext";
 import { useNotification } from "../contexts/NotificationContext";
-import { FaCalendarAlt, FaChevronDown, FaChevronUp } from "react-icons/fa";
+import { FaCalendarAlt, FaChevronDown, FaChevronUp, FaSearch, FaTimes } from "react-icons/fa";
 
 // Helper functions remain unchanged
 const findActivityById = (activities, activityId) => {
@@ -30,6 +30,8 @@ export default function DragDropCalendar() {
     const calendarRef = useRef(null);
     const draggableRef = useRef(null);
     const [activitiesCollapsed, setActivitiesCollapsed] = useState(false);
+    const [activeFilter, setActiveFilter] = useState(null); // Add a new state for the active filter
+    const [searchQuery, setSearchQuery] = useState(''); // Add a new state for search query
 
     const {
         activities,
@@ -163,6 +165,34 @@ export default function DragDropCalendar() {
         setActivitiesCollapsed(!activitiesCollapsed);
     };
 
+    const handleFilterClick = (typeId) => {
+        // If clicking the active filter or "All", clear the filter
+        if (typeId === activeFilter || typeId === "all") {
+            setActiveFilter(null);
+        } else {
+            setActiveFilter(typeId);
+        }
+    };
+
+    // Filter the activities based on the active filter and search query
+    const filteredActivities = outsideActivities
+        .filter(activity => {
+            // Apply type filter if active
+            if (activeFilter && activity.type_id !== activeFilter) return false;
+
+            // Apply search filter if query exists
+            if (searchQuery && !activity.name.toLowerCase().includes(searchQuery.toLowerCase())) return false;
+
+            return true;
+        });
+
+    // Calculate statistics
+    const totalScheduledActivities = calendarActivities.length;
+    const totalUnscheduledActivities = outsideActivities.length;
+    const totalActivitiesDuration = calendarActivities.reduce((total, act) => total + (act.duration || 0), 0);
+    const hours = Math.floor(totalActivitiesDuration / 60);
+    const minutes = totalActivitiesDuration % 60;
+
     return (
         <div className="flex flex-col pt-8 h-[calc(100vh-64px)]">
             {/* Page header - more compact */}
@@ -188,48 +218,112 @@ export default function DragDropCalendar() {
 
             {/* Main content */}
             <div className="flex flex-col flex-grow overflow-hidden">
-                {/* Activities panel */}
-                <div
-                    id="draggable-activities"
-                    className={`transition-all duration-300 bg-base-100 border-b ${
-                        activitiesCollapsed
-                            ? "max-h-0 py-0 overflow-hidden"
-                            : "max-h-[25vh] overflow-y-auto py-1"
-                    }`}
-                >
-                    <div className="container mx-auto px-3">
-                        <h3 className="font-bold mb-1 text-sm">Available Activities</h3>
-                        <div className="flex flex-grow gap-1 flex-wrap overflow-y-auto">
-                            {/* Activities outside calendar */}
-                            {outsideActivities.map((activity) => (
-                                <Activity
-                                    key={activity.id}
-                                    id={activity.id}
-                                    title={activity.name}
-                                    description={activity.description}
-                                    image={activity.image}
-                                    category={activity.topic}
-                                    type={activityTypes.find(
-                                        (type) => type.id === activity.type_id
-                                    )?.type}
-                                    onDelete={handleDelete}
-                                    className="fc-event activity-card"
-                                    data-id={activity.id}
-                                    data-title={activity.name}
-                                />
-                            ))}
-                            {outsideActivities.length === 0 && (
-                                <div className="p-1 bg-base-200 rounded-lg text-center w-full">
-                                    <p className="text-base-content/70 text-sm">
-                                        No unscheduled activities available.
-                                    </p>
+                {/* Activities panel row */}
+                <div className={`transition-all duration-300 bg-base-100 border-b ${
+                    activitiesCollapsed
+                        ? "max-h-0 py-0 overflow-hidden"
+                        : "flex flex-row w-full max-h-[25vh] overflow-hidden py-1"
+                }`}>
+                    {/* Activities panel */}
+                    <div 
+                        id="draggable-activities"
+                        className="flex-grow overflow-y-auto"
+                    >
+                        <div className="container mx-auto px-3">
+                            <div className="flex justify-between items-center mb-1">
+                                <h3 className="font-bold text-sm">Available Activities</h3>
+                                <div className="flex gap-1 flex-wrap justify-end">
+                                    <button 
+                                        className={`btn btn-xs ${activeFilter === null ? 'btn-primary' : 'btn-ghost'}`}
+                                        onClick={() => handleFilterClick("all")}
+                                    >
+                                        All
+                                    </button>
+                                    {activityTypes.map((type) => (
+                                        <button
+                                            key={type.id}
+                                            className={`btn btn-xs ${activeFilter === type.id ? 'ring-2 ring-offset-1' : ''}`}
+                                            style={{ 
+                                                backgroundColor: type.color || "inherit",
+                                                opacity: activeFilter === null || activeFilter === type.id ? 1 : 0.6 
+                                            }}
+                                            onClick={() => handleFilterClick(type.id)}
+                                        >
+                                            {type.type}
+                                        </button>
+                                    ))}
                                 </div>
-                            )}
+                            </div>
+                            <div className="mb-2 flex items-center gap-2">
+                                <div className="flex-1 relative">
+                                    <input 
+                                        type="text" 
+                                        placeholder="Search activities..." 
+                                        className="input input-sm input-bordered w-full pl-8" 
+                                        value={searchQuery}
+                                        onChange={(e) => setSearchQuery(e.target.value)}
+                                    />
+                                    <FaSearch className="absolute left-3 top-2.5 text-base-content/40" />
+                                </div>
+                                {searchQuery && (
+                                    <button className="btn btn-sm btn-ghost" onClick={() => setSearchQuery('')}>
+                                        <FaTimes />
+                                    </button>
+                                )}
+                            </div>
+                            <div className="flex flex-grow gap-1 flex-wrap overflow-y-auto">
+                                {/* Activities outside calendar */}
+                                {filteredActivities.map((activity) => (
+                                    <Activity
+                                        key={activity.id}
+                                        id={activity.id}
+                                        title={activity.name}
+                                        description={activity.description}
+                                        image={activity.image}
+                                        category={activity.topic}
+                                        type={activityTypes.find(
+                                            (type) => type.id === activity.type_id
+                                        )?.type}
+                                        onDelete={handleDelete}
+                                        className="fc-event activity-card"
+                                        data-id={activity.id}
+                                        data-title={activity.name}
+                                    />
+                                ))}
+                                {filteredActivities.length === 0 && (
+                                    <div className="p-1 bg-base-200 rounded-lg text-center w-full">
+                                        <p className="text-base-content/70 text-sm">
+                                            {activeFilter 
+                                                ? "No activities match the selected filter." 
+                                                : "No unscheduled activities available."}
+                                        </p>
+                                    </div>
+                                )}
+                            </div>
+                        </div>
+                    </div>
+                    
+                    {/* Stats panel */}
+                    <div className="w-48 md:w-64 px-2 py-1 border-l flex flex-col justify-center bg-base-200">
+                        <h3 className="font-bold text-xs mb-1">Statistics</h3>
+                        <div className="flex flex-col gap-2">
+                            <div className="stat p-0">
+                                <div className="stat-title text-xs">Scheduled</div>
+                                <div className="stat-value text-sm">{totalScheduledActivities}</div>
+                            </div>
+                            <div className="stat p-0">
+                                <div className="stat-title text-xs">Unscheduled</div>
+                                <div className="stat-value text-sm">{totalUnscheduledActivities}</div>
+                            </div>
+                            <div className="stat p-0">
+                                <div className="stat-title text-xs">Total Duration</div>
+                                <div className="stat-value text-sm">{hours}h {minutes}m</div>
+                            </div>
                         </div>
                     </div>
                 </div>
 
-                {/* Calendar container - give it more space */}
+                {/* Calendar container */}
                 <div className="flex-grow overflow-auto p-1">
                     <div className="h-full">
                         <FullCalendar
@@ -276,15 +370,23 @@ export default function DragDropCalendar() {
                                 const endTime = new Date(
                                     new Date(activity.date).getTime() + durationInMs
                                 );
-
+                                
+                                const activityType = activityTypes.find(type => type.id === activity.type_id);
+                                const backgroundColor = activityType?.color || '#3788d8';
+                                
                                 return {
                                     id: activity.id,
                                     title: activity.name,
                                     start: activity.date,
                                     end: endTime.toISOString(),
+                                    backgroundColor,
+                                    borderColor: backgroundColor,
+                                    textColor: '#ffffff',
                                     extendedProps: {
                                         "data-id": activity.id,
                                         "data-title": activity.name,
+                                        "description": activity.description,
+                                        "category": activity.topic
                                     },
                                 };
                             })}

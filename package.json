@@ -18,6 +18,7 @@
     "@fullcalendar/interaction": "^6.1.15",
     "@fullcalendar/react": "^6.1.15",
     "@fullcalendar/timegrid": "^6.1.15",
+    "@fullcalendar/timeline": "^6.1.17",
     "@react-keycloak/web": "^3.4.0",
     "@tailwindcss/vite": "^4.0.12",
     "axios": "^1.8.4",
