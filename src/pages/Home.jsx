@@ -1,6 +1,6 @@
 import { NavLink } from "react-router-dom";
 import { useKeycloak } from "@react-keycloak/web";
-import { useEffect, useState } from "react";
+import { useEffect, useState, useCallback } from "react";
 import { useEvent } from "../contexts/EventContext";
 
 export default function Home() {
@@ -9,27 +9,35 @@ export default function Home() {
     const [hasEvent, setHasEvent] = useState(false);
     const [isLoading, setIsLoading] = useState(true);
 
+    // Use a ref to track if we've already checked for an event
+    const [hasCheckedEvent, setHasCheckedEvent] = useState(false);
+    
     // Check if user is authenticated and has an event
     useEffect(() => {
-        const checkEvent = async () => {
-            if (initialized && keycloak.authenticated) {
-                try {
-                    // Try to get event info
-                    const eventData = await getEventInfo();
-                    setHasEvent(!!eventData?.id);
-                } catch (error) {
-                    console.log("No event exists or error fetching event:", error);
-                    setHasEvent(false);
-                } finally {
+        // Only run this once when auth is initialized and not already checked
+        if (initialized && !hasCheckedEvent) {
+            const checkEvent = async () => {
+                if (keycloak.authenticated) {
+                    try {
+                        // Try to get event info
+                        const eventData = await getEventInfo();
+                        setHasEvent(!!eventData?.id);
+                    } catch (error) {
+                        console.log("No event exists or error fetching event:", error);
+                        setHasEvent(false);
+                    } finally {
+                        setIsLoading(false);
+                        setHasCheckedEvent(true);
+                    }
+                } else {
                     setIsLoading(false);
+                    setHasCheckedEvent(true);
                 }
-            } else {
-                setIsLoading(false);
-            }
-        };
+            };
 
-        checkEvent();
-    }, [initialized, keycloak.authenticated, getEventInfo]);
+            checkEvent();
+        }
+    }, [initialized, keycloak.authenticated, hasCheckedEvent]);
 
     // Determine where to redirect based on auth status and event existence
     const getStartedPath = () => {
