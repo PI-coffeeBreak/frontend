@@ -1,24 +1,7 @@
 import PropTypes from 'prop-types';
 import { useAlerts } from '../../contexts/AlertsContext';
 import { Modal } from '../common/Modal';
-
-const FormField = ({ label, id, required = false, error, children }) => (
-  <div>
-    <label htmlFor={id} className="block text-sm font-medium mb-1">
-      {label} {required && <span className="text-error">*</span>}
-    </label>
-    {children}
-    {error && <p className="text-error text-sm mt-1">{error}</p>}
-  </div>
-);
-
-FormField.propTypes = {
-  label: PropTypes.string.isRequired,
-  id: PropTypes.string.isRequired,
-  required: PropTypes.bool,
-  error: PropTypes.string,
-  children: PropTypes.node.isRequired
-};
+import FormField from '../common/FormField';
 
 export function AlertTemplateModal({ 
   isOpen, 
