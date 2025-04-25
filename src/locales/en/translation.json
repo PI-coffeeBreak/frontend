@@ -438,5 +438,11 @@
       "startBuilding": "Start building your page by clicking \"Add New Section\" below to add content components.",
       "addNewSection": "Add New Section"
     }
+  },
+  "navbar": {
+    "logoAlt": "coffeeBreak Logo",
+    "develop": "Develop",
+    "login": "Login",
+    "logout": "Logout"
   }
 } 
