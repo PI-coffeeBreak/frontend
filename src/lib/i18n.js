@@ -16,7 +16,7 @@ i18n
   .use(initReactI18next)
   .init({
     resources: {
-      en: {
+      'en': {
         translation: translationEN
       },
       'pt-BR': {
@@ -27,15 +27,19 @@ i18n
       }
     },
     fallbackLng: 'en',
+    supportedLngs: ['en', 'pt-BR', 'pt-PT'],
     debug: process.env.NODE_ENV === 'development',
     interpolation: {
       escapeValue: false
     },
     detection: {
-      order: ['navigator', 'htmlTag'],
+      order: ['navigator', 'htmlTag', 'path', 'subdomain'],
       caches: ['cookie'],
       lookupFromPathIndex: 0,
       checkWhitelist: true
+    },
+    react: {
+      useSuspense: false
     }
   });
 

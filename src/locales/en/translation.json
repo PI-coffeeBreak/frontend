@@ -49,6 +49,16 @@
           "users": "Users",
           "sessions": "Sessions",
           "alerts": "Alerts"
+        },
+        "descriptions": {
+          "users": "Manage user accounts, roles and permissions",
+          "sessions": "Schedule and organize sessions and activities",
+          "alerts": "Create and send notifications to participants"
+        },
+        "buttons": {
+          "users": "Manage Users",
+          "sessions": "View Sessions",
+          "alerts": "Manage Alerts"
         }
       },
       "eventMaker": {
@@ -85,7 +95,17 @@
     "accessTools": "Access all event management tools in one place",
     "eventDate": "Event Date",
     "openDashboard": "Open Dashboard",
-    "quickAccess": "Quick Access"
+    "quickAccess": "Quick Access",
+    "cards": {
+      "management": {
+        "title": "Management",
+        "description": "Access tools to manage users, sessions and alerts for your event."
+      },
+      "eventMaker": {
+        "title": "Event Maker",
+        "description": "Customize the appearance, content and functionality of your event."
+      }
+    }
   },
   "users": {
     "title": "Create Users",
@@ -433,6 +453,20 @@
     }
   },
   "components": {
+    "pageTitleInput": {
+      "label": "Page Title"
+    },
+    "dynamicComponentConfiguration": {
+      "componentType": "Component Type",
+      "editProperties": "Edit Properties",
+      "componentPreview": "Component Preview",
+      "sourceType": "Source Type",
+      "uploadMedia": "Upload Media",
+      "externalUrl": "External URL",
+      "error": {
+        "missingData": "Error: Component data missing"
+      }
+    },
     "pageContent": {
       "noSections": "No sections added yet",
       "startBuilding": "Start building your page by clicking \"Add New Section\" below to add content components.",
@@ -444,5 +478,74 @@
     "develop": "Develop",
     "login": "Login",
     "logout": "Logout"
+  },
+  "home": {
+    "title": "Plan, Manage and Elevate Your Events with Ease.",
+    "subtitle": "coffeeBreak. makes event management easy. Plan, organize and execute events without complication, all in one place. Simple tools, smart resources and a seamless experience for amazing events.",
+    "getStarted": "Get Started",
+    "learnMore": "Learn More",
+    "loading": "Loading...",
+    "features": {
+      "title": "Manage Events Effortlessly",
+      "subtitle": "Everything you need to plan and execute your event without complications.",
+      "dashboard": {
+        "title": "Site Dashboard",
+        "description": "A complete platform to configure, monitor and collect data from your events."
+      },
+      "customizable": {
+        "title": "Customizable Resources",
+        "description": "A variety of additional modules to customize your event experience as you wish."
+      },
+      "mobile": {
+        "title": "Mobile App",
+        "description": "A perfect extension of your event, reflecting everything configured on the site."
+      }
+    },
+    "newsletter": {
+      "title": "Want to receive our updates? Subscribe to our newsletter.",
+      "placeholder": "Enter your email",
+      "button": "Notify me",
+      "privacy": {
+        "text": "We respect your data. Read our",
+        "link": "privacy policy"
+      }
+    }
+  },
+  "management": {
+    "title": "Management",
+    "subtitle": "Manage all aspects of your event through these administrative tools",
+    "cards": {
+      "users": {
+        "title": "Users",
+        "description": "Manage user accounts, roles and permissions. Add new users, edit existing ones or control access to different resources of your event.",
+        "buttonText": "Manage Users"
+      },
+      "sessions": {
+        "title": "Sessions",
+        "description": "Schedule and organize sessions, workshops and event activities. Control schedules, locations and participant registration for all event activities.",
+        "buttonText": "View Sessions"
+      },
+      "alerts": {
+        "title": "Alerts",
+        "description": "Create and send notifications to event participants. Keep everyone informed about important updates, schedule changes and announcements.",
+        "buttonText": "Manage Alerts"
+      }
+    }
+  },
+  "eventMaker": {
+    "title": "Event Maker",
+    "subtitle": "Customize and configure your event with these powerful tools",
+    "cards": {
+      "eventInfo": {
+        "title": "Event Info",
+        "description": "Manage your event's basic information.",
+        "buttonText": "Edit Event"
+      },
+      "colors": {
+        "title": "Colors",
+        "description": "Create a unique visual identity for your event by customizing the color scheme. Choose colors that reflect your brand and create the perfect atmosphere.",
+        "buttonText": "Customize Colors"
+      }
+    }
   }
 } 
