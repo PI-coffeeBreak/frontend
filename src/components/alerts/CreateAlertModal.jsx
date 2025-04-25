@@ -52,10 +52,8 @@ export function CreateAlertModal({
           }
         }, 100);
       }
-    } else {
-      if (alertMessageRef.current) {
-        alertMessageRef.current.value = '';
-      }
+    } else if (alertMessageRef.current) {
+      alertMessageRef.current.value = '';
     }
   };
 

@@ -3,7 +3,7 @@ import { useState } from 'react';
 import { FaSearch, FaEdit, FaTrash } from "react-icons/fa";
 import { useAlerts } from "../../contexts/AlertsContext";
 import { useNotification } from "../../contexts/NotificationContext";
-import DeleteConfirmationModal from './DeleteConfirmationModal';
+import DeleteConfirmationModal from '../common/DeleteConfirmationModal';
 
 export function AlertList({ templates, onEditTemplate }) {
   const { deleteAlertTemplate } = useAlerts();

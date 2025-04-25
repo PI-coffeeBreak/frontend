@@ -1,5 +1,5 @@
 import PropTypes from 'prop-types';
-import { Modal } from '../common/Modal';
+import { Modal } from './Modal.jsx';
 import { FaExclamationTriangle } from 'react-icons/fa';
 
 export function DeleteConfirmationModal({ 
@@ -18,7 +18,7 @@ export function DeleteConfirmationModal({
     >
       <div className="py-4">
         <div className="flex items-center gap-3 mb-4">
-          <div className="text-error">
+          <div className="text-primary">
             <FaExclamationTriangle size={24} />
           </div>
           <p>{message}</p>
@@ -35,7 +35,7 @@ export function DeleteConfirmationModal({
           </button>
           <button
             type="button"
-            className="btn btn-error"
+            className="btn btn-primary"
             onClick={onConfirm}
             disabled={isLoading}
           >
