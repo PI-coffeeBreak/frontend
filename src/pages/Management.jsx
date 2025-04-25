@@ -34,12 +34,12 @@ export default function Management() {
     ], []);
 
     return (
-        <div className="w-full min-h-svh p-8">
+        <div className="w-full min-h-screen p-8">
             <div className="max-w-7xl mx-auto">
                 <h1 className="text-4xl font-bold mb-4 text-primary">Management</h1>
                 <p className="text-lg text-base-content/70 mb-8">Manage all aspects of your event through these administrative tools</p>
                 
-                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+                <div className="grid grid-cols-1 lg:grid-cols-2 xl:grid-cols-3 gap-8">
                     {cards.map((card) => (
                         <DashboardCard
                             key={card.id}
