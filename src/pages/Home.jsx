@@ -57,7 +57,7 @@ export default function Home() {
 
     return (
         <>
-            <div className="mx-auto w-2/3 py-16 sm:py-28 lg:py-36">
+            <div className="mx-auto w-2/3 py-6 sm:py-12 lg:py-20">
                 <div className="text-center">
                     <h1 className="text-5xl font-semibold text-balance text-primary sm:text-7xl">
                         Plan, Manage, and Elevate Your
@@ -75,21 +75,21 @@ export default function Home() {
                             </button>
                         ) : (
                             <NavLink 
-                                to={getStartedPath()} 
+                                to={getStartedPath()}
                                 className="btn btn-primary rounded-xl"
                                 onClick={handleGetStartedClick}
                             >
                                 Get Started
                             </NavLink>
                         )}
-                        <NavLink to="/about" className="text-sm/6 font-semibold text-gray-900">
+                        <NavLink to="https://pi-coffeebreak.github.io/" className="text-sm/6 font-semibold text-gray-900">
                             Learn more <span aria-hidden="true">→</span>
                         </NavLink>
                     </div>
                 </div>
             </div>
 
-            <div className="mx-auto w-2/3 py-16 sm:py-28 lg:py-36">
+            <div className="mx-auto w-2/3 py-6 sm:py-12 lg:py-20">
                 <div className="text-center">
                     <p className="text-secondary text-lg font-bold ">Manage Events Effortlessly</p>
                     <h2 className="text-black text-4xl font-bold text-balance">Everything you need to plan and run your
@@ -113,54 +113,6 @@ export default function Home() {
                     </div>
                 </div>
             </div>
-
-            <div className="mx-auto w-2/3 py-16 sm:py-28 lg:py-36 flex">
-                <h1 className="text-black text-4xl font-bold text-balance w-1/2">Want our product updates? Sign up for
-                    our newsletter.</h1>
-                <div className="flex-col w-1/2">
-                    <div className="flex gap-2 w-full">
-                        <input className="text-white w-full bg-secondary pl-4 rounded-xl" placeholder="Enter your email"/>
-                        <button className="btn btn-primary rounded-xl p-4">Notify me</button>
-                    </div>
-                    <p>We care about your data. Read our
-                        <span className="text-primary font-bold hover:underline">
-                            <a href=""> privacy policy</a>
-                        </span>
-                    </p>
-                </div>
-            </div>
-
-            <footer className="footer sm:footer-horizontal bg-secondary rounded-xl text-base-content p-10">
-                <aside>
-                    <img src="/white_bean.svg" alt="giant white bean" width="90" height="90"/>
-                    <p>
-                        coffeeBreak.
-                        <br/>
-                        There's no event without a coffeeBreak
-                    </p>
-                </aside>
-                <nav>
-                    <h6 className="footer-title">Services</h6>
-                    <a className="link link-hover">Branding</a>
-                    <a className="link link-hover">Design</a>
-                    <a className="link link-hover">Marketing</a>
-                    <a className="link link-hover">Advertisement</a>
-                </nav>
-                <nav>
-                    <h6 className="footer-title">Company</h6>
-                    <a className="link link-hover">About us</a>
-                    <a className="link link-hover">Contact</a>
-                    <a className="link link-hover">Jobs</a>
-                    <a className="link link-hover">Press kit</a>
-                </nav>
-                <nav>
-                    <h6 className="footer-title">Legal</h6>
-                    <a className="link link-hover">Terms of use</a>
-                    <a className="link link-hover">Privacy policy</a>
-                    <a className="link link-hover">Cookie policy</a>
-                </nav>
-            </footer>
-
         </>
     );
 }
