@@ -222,12 +222,12 @@ export default function DragDropCalendar() {
                 <div className={`transition-all duration-300 bg-base-100 border-b ${
                     activitiesCollapsed
                         ? "max-h-0 py-0 overflow-hidden"
-                        : "flex flex-row w-full max-h-[25vh] overflow-hidden py-1"
+                        : "flex flex-row w-full overflow-hidden py-1"
                 }`}>
                     {/* Activities panel */}
                     <div 
                         id="draggable-activities"
-                        className="flex-grow overflow-y-auto"
+                        className="flex-grow w-0 overflow-y-auto"
                     >
                         <div className="container mx-auto px-3">
                             <div className="flex justify-between items-center mb-1">
@@ -272,39 +272,43 @@ export default function DragDropCalendar() {
                                 )}
                             </div>
                             <div className="flex-grow overflow-hidden">
-                                <div className="flex flex-wrap gap-1 overflow-y-auto max-h-[150px] pr-1">
-                                    {filteredActivities.map((activity) => (
-                                        <Activity
-                                            key={activity.id}
-                                            id={activity.id}
-                                            title={activity.name}
-                                            description={activity.description}
-                                            image={activity.image}
-                                            category={activity.topic}
-                                            type={activityTypes.find(
-                                                (type) => type.id === activity.type_id
-                                            )?.type}
-                                            onDelete={handleDelete}
-                                            className="fc-event activity-card"
-                                            data-id={activity.id}
-                                            data-title={activity.name}
-                                        />
-                                    ))}
-                                    {filteredActivities.length === 0 && (
-                                        <div className="p-1 bg-base-200 rounded-lg text-center w-full">
-                                            <p className="text-base-content/70 text-sm">
-                                                {activeFilter 
-                                                    ? "No activities match the selected filter." 
-                                                    : "No unscheduled activities available."}
-                                            </p>
-                                        </div>
-                                    )}
+                                {/* Horizontal scrolling container */}
+                                <div className="overflow-x-auto pb-2 hide-scrollbar max-w-full">
+                                    <div className="flex flex-row flex-nowrap gap-2 w-max">
+                                        {filteredActivities.map((activity) => (
+                                            <Activity
+                                                key={activity.id}
+                                                id={activity.id}
+                                                title={activity.name}
+                                                description={activity.description}
+                                                image={activity.image}
+                                                category={activity.topic}
+                                                type={activityTypes.find(
+                                                    (type) => type.id === activity.type_id
+                                                )?.type}
+                                                onDelete={handleDelete}
+                                                className="fc-event activity-card shrink-0"
+                                                data-id={activity.id}
+                                                data-title={activity.name}
+                                                style={{ width: '180px' }}
+                                            />
+                                        ))}
+                                        {filteredActivities.length === 0 && (
+                                            <div className="p-1 bg-base-200 rounded-lg text-center w-full">
+                                                <p className="text-base-content/70 text-sm">
+                                                    {activeFilter 
+                                                        ? "No activities match the selected filter." 
+                                                        : "No unscheduled activities available."}
+                                                </p>
+                                            </div>
+                                        )}
+                                    </div>
                                 </div>
                             </div>
                         </div>
                     </div>
                     
-                    {/* Stats panel */}
+                    {/* Stats panel - unchanged */}
                     <div className="w-48 md:w-64 px-2 py-1 border-l flex flex-col justify-center bg-base-200">
                         <h3 className="font-bold text-xs mb-1">Statistics</h3>
                         <div className="flex flex-col gap-2">
@@ -395,6 +399,24 @@ export default function DragDropCalendar() {
                     </div>
                 </div>
             </div>
+            <style jsx global>{`
+                .hide-scrollbar::-webkit-scrollbar {
+                    height: 6px;
+                }
+                .hide-scrollbar::-webkit-scrollbar-thumb {
+                    background-color: rgba(0,0,0,0.2);
+                    border-radius: 4px;
+                }
+                .hide-scrollbar::-webkit-scrollbar-track {
+                    background: transparent;
+                }
+                
+                /* For Firefox */
+                .hide-scrollbar {
+                    scrollbar-width: thin;
+                    scrollbar-color: rgba(0,0,0,0.2) transparent;
+                }
+            `}</style>
         </div>
     );
 }
