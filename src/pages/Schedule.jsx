@@ -195,7 +195,7 @@ export default function DragDropCalendar() {
 
     return (
         <div className="flex flex-col pt-8 h-[calc(100vh-64px)]">
-            {/* Page header - more compact */}
+            {/* Page header */}
             <div className="bg-base-100 py-2 px-4 shadow-sm border-b">
                 <div className="flex justify-between items-center">
                     <h1 className="text-xl font-bold flex items-center gap-2">
@@ -271,34 +271,35 @@ export default function DragDropCalendar() {
                                     </button>
                                 )}
                             </div>
-                            <div className="flex flex-grow gap-1 flex-wrap overflow-y-auto">
-                                {/* Activities outside calendar */}
-                                {filteredActivities.map((activity) => (
-                                    <Activity
-                                        key={activity.id}
-                                        id={activity.id}
-                                        title={activity.name}
-                                        description={activity.description}
-                                        image={activity.image}
-                                        category={activity.topic}
-                                        type={activityTypes.find(
-                                            (type) => type.id === activity.type_id
-                                        )?.type}
-                                        onDelete={handleDelete}
-                                        className="fc-event activity-card"
-                                        data-id={activity.id}
-                                        data-title={activity.name}
-                                    />
-                                ))}
-                                {filteredActivities.length === 0 && (
-                                    <div className="p-1 bg-base-200 rounded-lg text-center w-full">
-                                        <p className="text-base-content/70 text-sm">
-                                            {activeFilter 
-                                                ? "No activities match the selected filter." 
-                                                : "No unscheduled activities available."}
-                                        </p>
-                                    </div>
-                                )}
+                            <div className="flex-grow overflow-hidden">
+                                <div className="flex flex-wrap gap-1 overflow-y-auto max-h-[150px] pr-1">
+                                    {filteredActivities.map((activity) => (
+                                        <Activity
+                                            key={activity.id}
+                                            id={activity.id}
+                                            title={activity.name}
+                                            description={activity.description}
+                                            image={activity.image}
+                                            category={activity.topic}
+                                            type={activityTypes.find(
+                                                (type) => type.id === activity.type_id
+                                            )?.type}
+                                            onDelete={handleDelete}
+                                            className="fc-event activity-card"
+                                            data-id={activity.id}
+                                            data-title={activity.name}
+                                        />
+                                    ))}
+                                    {filteredActivities.length === 0 && (
+                                        <div className="p-1 bg-base-200 rounded-lg text-center w-full">
+                                            <p className="text-base-content/70 text-sm">
+                                                {activeFilter 
+                                                    ? "No activities match the selected filter." 
+                                                    : "No unscheduled activities available."}
+                                            </p>
+                                        </div>
+                                    )}
+                                </div>
                             </div>
                         </div>
                     </div>
