@@ -540,5 +540,11 @@
         "cookies": "Política de cookies"
       }
     }
+  },
+  "navbar": {
+    "logoAlt": "Logo coffeeBreak",
+    "develop": "Desenvolver",
+    "login": "Iniciar Sessão",
+    "logout": "Terminar Sessão"
   }
 } 
