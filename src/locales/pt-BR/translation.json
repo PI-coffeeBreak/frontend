@@ -49,6 +49,16 @@
           "users": "Usuários",
           "sessions": "Sessões",
           "alerts": "Alertas"
+        },
+        "descriptions": {
+          "users": "Gerencie contas de usuários, funções e permissões",
+          "sessions": "Agende e organize sessões e atividades",
+          "alerts": "Crie e envie notificações para participantes"
+        },
+        "buttons": {
+          "users": "Gerenciar Usuários",
+          "sessions": "Ver Sessões",
+          "alerts": "Gerenciar Alertas"
         }
       },
       "eventMaker": {
@@ -130,18 +140,17 @@
     },
     "create": {
       "title": "Criar Novo Usuário",
-      "success": "Usuário criado com sucesso!",
+      "description": "Adicionar um novo usuário ao sistema",
       "firstName": "Nome",
       "lastName": "Sobrenome",
       "email": "Endereço de Email",
       "role": "Função",
       "temporaryPassword": "Senha Temporária",
-      "hidePassword": "Ocultar",
-      "showPassword": "Mostrar",
       "passwordStrength": "Força da Senha",
       "passwordChangeNote": "O usuário terá de alterar esta senha no primeiro login.",
       "generatePassword": "Gerar Senha",
-      "createUser": "Criar Usuário"
+      "createUser": "Criar Usuário",
+      "cancel": "Cancelar"
     },
     "list": {
       "title": "Lista de Usuários"
@@ -166,7 +175,15 @@
     "sessions": "Sessões",
     "create": {
       "title": "Criar Nova Sessão",
-      "description": "Crie uma nova sessão manualmente"
+      "description": "Adicionar uma nova sessão ao evento",
+      "name": "Nome",
+      "date": "Data",
+      "duration": "Duração",
+      "type": "Tipo",
+      "topic": "Tópico",
+      "speaker": "Palestrante",
+      "facilitator": "Facilitador",
+      "image": "Imagem"
     },
     "types": {
       "title": "Criar Novo Tipo de Sessão",
@@ -312,16 +329,16 @@
     "title": "Editor de Menu",
     "description": "Gerencie os itens do menu de navegação. Arraste e solte para reordenar os itens. As alterações serão refletidas na navegação do seu evento.",
     "searchPlaceholder": "Pesquisar itens do menu...",
-    "addButton": "Adicionar Item",
+    "addButton": "Adicionar Item do Menu",
     "modal": {
       "add": {
-        "title": "Adicionar Novo Item",
+        "title": "Adicionar Novo Item do Menu",
         "label": "Rótulo",
-        "labelPlaceholder": "Rótulo do item",
+        "labelPlaceholder": "Rótulo do item do menu",
         "url": "URL / Caminho",
         "urlPlaceholder": "/caminho/para/pagina",
         "cancel": "Cancelar",
-        "add": "Adicionar"
+        "add": "Adicionar Item"
       },
       "edit": {
         "title": "Editar Item",
@@ -510,11 +527,11 @@
     "title": "Planeje, Gerencie e Eleve Seus Eventos com Facilidade.",
     "subtitle": "O coffeeBreak. torna a gestão de eventos fácil. Planeje, organize e execute eventos sem complicação, tudo em um só lugar. Ferramentas simples, recursos inteligentes e uma experiência perfeita para eventos incríveis.",
     "getStarted": "Começar",
-    "learnMore": "Saiba mais",
+    "learnMore": "Saiba Mais",
     "loading": "Carregando...",
     "features": {
       "title": "Gerencie Eventos sem Esforço",
-      "subtitle": "Tudo o que você precisa para planejar e executar seu evento sem complicações.",
+      "subtitle": "Tudo que você precisa para planejar e executar seu evento sem complicações.",
       "dashboard": {
         "title": "Painel do Site",
         "description": "Uma plataforma completa para configurar, monitorar e coletar dados dos seus eventos."
@@ -525,11 +542,11 @@
       },
       "mobile": {
         "title": "Aplicativo Móvel",
-        "description": "Uma extensão perfeita do seu evento, refletindo tudo o que foi configurado no site."
+        "description": "Uma extensão perfeita do seu evento, refletindo tudo configurado no site."
       }
     },
     "newsletter": {
-      "title": "Quer receber nossas atualizações? Inscreva-se na nossa newsletter.",
+      "title": "Quer receber nossas atualizações? Inscreva-se em nossa newsletter.",
       "placeholder": "Digite seu email",
       "button": "Me notificar",
       "privacy": {
@@ -566,5 +583,9 @@
     "develop": "Desenvolver",
     "login": "Entrar",
     "logout": "Sair"
+  },
+  "instantiateHome": {
+    "title": "Painel do Evento",
+    "subtitle": "Monitore e gerencie todos os aspectos do seu evento em um só lugar"
   }
 } 

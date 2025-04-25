@@ -65,6 +65,25 @@
           "sessions": "Sessões",
           "alerts": "Alertas"
         }
+      },
+      "home": {
+        "title": "Início",
+        "description": "Gerir utilizadores, sessões e alertas",
+        "links": {
+          "users": "Utilizadores",
+          "sessions": "Sessões",
+          "alerts": "Alertas"
+        },
+        "descriptions": {
+          "users": "Gerir contas de utilizadores, funções e permissões",
+          "sessions": "Agendar e organizar sessões e atividades",
+          "alerts": "Criar e enviar notificações para participantes"
+        },
+        "buttons": {
+          "users": "Gerir Utilizadores",
+          "sessions": "Ver Sessões",
+          "alerts": "Gerir Alertas"
+        }
       }
     },
     "actions": {
@@ -488,16 +507,16 @@
   },
   "home": {
     "title": "Planeie, Gerencie e Eleve os Seus Eventos com Facilidade.",
-    "subtitle": "O coffeeBreak. torna a gestão de eventos fácil. Planeie, organize e execute eventos sem complicação, tudo num só lugar. Ferramentas simples, recursos inteligentes e uma experiência perfeita para eventos incríveis.",
+    "subtitle": "O coffeeBreak. torna a gestão de eventos fácil. Planeje, organize e execute eventos sem complicação, tudo em um só lugar. Ferramentas simples, recursos inteligentes e uma experiência perfeita para eventos incríveis.",
     "getStarted": "Começar",
-    "learnMore": "Saber mais",
+    "learnMore": "Saiba Mais",
     "loading": "A carregar...",
     "features": {
-      "title": "Gerir Eventos sem Esforço",
+      "title": "Gerencie Eventos sem Esforço",
       "subtitle": "Tudo o que precisa para planear e executar o seu evento sem complicações.",
       "dashboard": {
         "title": "Painel do Site",
-        "description": "Uma plataforma completa para configurar, monitorizar e recolher dados dos seus eventos."
+        "description": "Uma plataforma completa para configurar, monitorar e recolher dados dos seus eventos."
       },
       "customizable": {
         "title": "Recursos Personalizáveis",
@@ -510,7 +529,7 @@
     },
     "newsletter": {
       "title": "Quer receber as nossas atualizações? Inscreva-se na nossa newsletter.",
-      "placeholder": "Introduza o seu email",
+      "placeholder": "Digite o seu email",
       "button": "Notificar-me",
       "privacy": {
         "text": "Respeitamos os seus dados. Leia a nossa",
@@ -546,5 +565,9 @@
     "develop": "Desenvolver",
     "login": "Iniciar Sessão",
     "logout": "Terminar Sessão"
+  },
+  "instantiateHome": {
+    "title": "Painel do Evento",
+    "subtitle": "Monitorize e gerencie todos os aspetos do seu evento num só lugar"
   }
 } 
