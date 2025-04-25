@@ -5,7 +5,7 @@ import { useForm } from "../../hooks/useForm";
 import { useActivities } from "../../contexts/ActivitiesContext";
 import { useNotification } from "../../contexts/NotificationContext";
 import { FiUpload } from "react-icons/fi";
-import { FaTrash, FaExclamationTriangle } from "react-icons/fa";
+import { FaTrash } from "react-icons/fa";
 
 const FormField = ({ label, id, type = "text", required = false, error, children }) => (
   <div>
@@ -69,6 +69,7 @@ export function NewSessionModal({ isOpen, onClose, onSubmit }) {
   const [isAddingTypeInline, setIsAddingTypeInline] = useState(false);
   const [newTypeName, setNewTypeName] = useState("");
   const [isAddingType, setIsAddingType] = useState(false);
+  const fileInputRef = useRef(null);
 
   useEffect(() => {
     if (activityTypes?.length > 0 && !values.type_id) {
@@ -271,8 +272,6 @@ export function NewSessionModal({ isOpen, onClose, onSubmit }) {
   };
 
   const renderImageUploader = () => {
-    const fileInputRef = useRef(null);
-    
     const handleBrowseClick = () => {
       fileInputRef.current?.click();
     };

@@ -8,7 +8,7 @@ import Activity from "../Activity.jsx";
 import { FaSearch } from "react-icons/fa";
 import { useActivities } from "../../contexts/ActivitiesContext";
 import { useNotification } from "../../contexts/NotificationContext";
-import DeleteConfirmationModal from './DeleteConfirmationModal';
+import DeleteConfirmationModal from '../common/DeleteConfirmationModal.jsx';
 
 export function ActivityList({ activities }) {
   const { t } = useTranslation();
