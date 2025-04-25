@@ -19,6 +19,7 @@ export default function Activity({id, title, description, image, category, type,
                     }}
                     className="absolute top-2 right-2 p-2 text-gray-400 hover:text-error rounded-full hover:bg-gray-100 transition-colors"
                     aria-label={t('activities.delete')}
+                    type="button"
                 >
                     <FaTrash className="w-4 h-4" aria-hidden="true" />
                 </button>
