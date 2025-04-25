@@ -3,18 +3,11 @@ import PropTypes from 'prop-types';
 
 const CreateCard = ({ icon: Icon, title, description, onClick, disabled = false, disabledMessage = '' }) => {
     return (
-        <div 
-            className={`card bg-secondary text-secondary-content shadow-xl hover:shadow-2xl transition-all duration-300 hover:-translate-y-2 ${disabled ? 'opacity-50 cursor-not-allowed' : 'cursor-pointer'}`} 
-            onClick={disabled ? undefined : onClick}
+        <button 
+            className={`card w-full bg-secondary text-secondary-content shadow-xl hover:shadow-2xl transition-all duration-300 hover:-translate-y-2 ${disabled ? 'opacity-50 cursor-not-allowed' : 'cursor-pointer'}`} 
+            onClick={onClick}
+            disabled={disabled}
             title={disabled ? disabledMessage : undefined}
-            role="button"
-            tabIndex={disabled ? -1 : 0}
-            onKeyDown={(e) => {
-                if (!disabled && (e.key === 'Enter' || e.key === ' ')) {
-                    e.preventDefault();
-                    onClick();
-                }
-            }}
         >
             <div className="card-body p-6 flex flex-col items-center text-center h-full">
                 <div className="w-16 h-16 rounded-full flex items-center justify-center mb-4">
@@ -24,7 +17,7 @@ const CreateCard = ({ icon: Icon, title, description, onClick, disabled = false,
                 <h2 className="card-title text-xl mb-2">{title}</h2>
                 <p className="text-sm mb-4">{description}</p>
             </div>
-        </div>
+        </button>
     );
 };
 
