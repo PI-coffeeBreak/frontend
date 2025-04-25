@@ -1,4 +1,5 @@
 import PropTypes from 'prop-types';
+import { useTranslation } from "react-i18next";
 import { FaSearch } from 'react-icons/fa';
 
 export function ActivityFilters({ 
@@ -7,6 +8,8 @@ export function ActivityFilters({
   onSearchChange,
   onTypeChange 
 }) {
+  const { t } = useTranslation();
+
   const handleResetFilters = () => {
     onTypeChange("");
   };
@@ -19,16 +22,28 @@ export function ActivityFilters({
             <input
                 type="text"
                 className="grow"
-                placeholder="Search activities by name or description"
+                placeholder={t('activities.filters.searchPlaceholder')}
                 value={searchQuery}
                 onChange={(e) => onSearchChange(e.target.value)}
             />
           </label>
         </div>
         <div className="filter">
-          <input className="btn filter-reset" type="radio" onClick={handleResetFilters} name="metaframeworks" aria-label="All"/>
+          <input 
+            className="btn filter-reset" 
+            type="radio" 
+            onClick={handleResetFilters} 
+            name="metaframeworks" 
+            aria-label={t('activities.filters.all')}
+          />
           {activityTypes.map((type) => (
-            <input className="btn btn-primary" type="radio" name="metaframeworks" onClick={() => onTypeChange(type.id.toString())} aria-label={type.type}/>
+            <input 
+              className="btn btn-primary" 
+              type="radio" 
+              name="metaframeworks" 
+              onClick={() => onTypeChange(type.id.toString())} 
+              aria-label={type.type}
+            />
           ))}
         </div>
       </div>

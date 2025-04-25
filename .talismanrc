@@ -1,6 +1,6 @@
 fileignoreconfig:
 - filename: package-lock.json
-  checksum: cac15d1713db76aef1673b92926fbf91da5c90869dbbcb5fc1a9c06544a79845
+  checksum: 879fb7a56db8d399fb1acde691f271a62a41bda9b2e1422d17f1fdd26aec87fe
 - filename: src/components/users/UserExcelImport.jsx
   checksum: e0314cb109ee4ad3b087a3b285aedf1b02c0c8cf9bb6bb8a4230e3f96a84d4cc
 - filename: src/utils/passwordUtils.js

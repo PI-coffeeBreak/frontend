@@ -8,6 +8,7 @@ import { NewSessionTypeModal } from "../components/activities/NewSessionTypeModa
 import { useActivities } from "../contexts/ActivitiesContext";
 import { useNotification } from "../contexts/NotificationContext";
 import { useKeycloak } from "@react-keycloak/web";
+import { useTranslation } from "react-i18next";
 
 
 
@@ -24,6 +25,7 @@ export default function Activities() {
 
   const { showNotification } = useNotification();
   const { keycloak } = useKeycloak();
+  const { t } = useTranslation();
 
 
   // Authorization
@@ -129,7 +131,7 @@ export default function Activities() {
 
   return (
     <div className="w-full min-h-svh p-2 lg:p-8">
-      <h1 className="text-3xl font-bold">Create Sessions</h1>
+      <h1 className="text-3xl font-bold">{t('activities.title')}</h1>
 
       <CreateActivityCards 
         onOpenExcelModal={openExcelModal}
@@ -138,7 +140,7 @@ export default function Activities() {
         canCreateActivities={canCreateActivities()}
       />
 
-      <h1 className="text-3xl font-bold mt-8">Sessions</h1>
+      <h1 className="text-3xl font-bold mt-8">{t('activities.sessions')}</h1>
 
       <ActivityFilters
         activityTypes={activityTypes}

@@ -2,9 +2,11 @@ import { useState, useEffect } from "react"
 import { Save, Undo, Calendar, Users, MapPin, Bell, Clock, Gift, Music, Camera } from "lucide-react"
 import { useTheme } from "../contexts/ThemeContext";
 import { useNotification } from "../contexts/NotificationContext";
+import { useTranslation } from "react-i18next";
 
 
 export function ThemeCustomizer() {
+  const { t } = useTranslation();
   const { theme, fetchThemeColors, updateThemeColors, initialTheme } = useTheme();
   const { showNotification } = useNotification();
 
@@ -53,66 +55,65 @@ export function ThemeCustomizer() {
 
   const resetTheme = async () => {
     try {
-      // Fetch latest theme from the server
       await fetchThemeColors();
-      showNotification("Theme reset to original", "info");
+      showNotification(t('themeCustomizer.actions.reset'), "info");
     } catch (error) {
       console.error("Error resetting theme:", error);
-      showNotification("Failed to reset theme", "error");
+      showNotification(t('themeCustomizer.error.reset'), "error");
     }
   };
 
   const saveTheme = async () => {
     try {
       await updateThemeColors(hexValues);
-      showNotification("Theme saved successfully!", "success");
+      showNotification(t('themeCustomizer.success.save'), "success");
     } catch (error) {
       console.error("Error saving theme:", error);
-      showNotification("Failed to save theme. Please try again.", "error");
+      showNotification(t('themeCustomizer.error.save'), "error");
     }
   };
 
   // User-friendly color names
   const colorMapping = {
-    primary: "Main Brand Color",
-    "primary-content": "Text on Main Color",
-    secondary: "Secondary Brand Color",
-    "secondary-content": "Text on Secondary Color",
-    accent: "Accent Color (Highlights)",
-    "accent-content": "Text on Accent Color",
-    "base-100": "Background Color",
-    "base-200": "Card Background",
-    "base-300": "Border Color",
-    "base-content": "Main Text Color",
-    info: "Information Color",
-    "info-content": "Text on Information Color",
-    success: "Success Color",
-    "success-content": "Text on Success Color",
-    warning: "Warning Color",
-    "warning-content": "Text on Warning Color",
-    error: "Error Color",
-    "error-content": "Text on Error Color",
-    neutral: "Neutral Color",
-    "neutral-content": "Text on Neutral Color",
+    primary: t('themeCustomizer.colorNames.primary'),
+    "primary-content": t('themeCustomizer.colorNames.primary-content'),
+    secondary: t('themeCustomizer.colorNames.secondary'),
+    "secondary-content": t('themeCustomizer.colorNames.secondary-content'),
+    accent: t('themeCustomizer.colorNames.accent'),
+    "accent-content": t('themeCustomizer.colorNames.accent-content'),
+    "base-100": t('themeCustomizer.colorNames.base-100'),
+    "base-200": t('themeCustomizer.colorNames.base-200'),
+    "base-300": t('themeCustomizer.colorNames.base-300'),
+    "base-content": t('themeCustomizer.colorNames.base-content'),
+    info: t('themeCustomizer.colorNames.info'),
+    "info-content": t('themeCustomizer.colorNames.info-content'),
+    success: t('themeCustomizer.colorNames.success'),
+    "success-content": t('themeCustomizer.colorNames.success-content'),
+    warning: t('themeCustomizer.colorNames.warning'),
+    "warning-content": t('themeCustomizer.colorNames.warning-content'),
+    error: t('themeCustomizer.colorNames.error'),
+    "error-content": t('themeCustomizer.colorNames.error-content'),
+    neutral: t('themeCustomizer.colorNames.neutral'),
+    "neutral-content": t('themeCustomizer.colorNames.neutral-content'),
   }
 
   // Group colors by type for better organization
   const colorGroups = {
-    "Brand Colors": ["primary", "primary-content", "secondary", "secondary-content", "accent", "accent-content"],
-    "Background & Text": ["base-100", "base-200", "base-300", "base-content"],
-    "Status Colors": ["info", "success", "warning", "error"],
+    [t('themeCustomizer.colorGroups.brandColors')]: ["primary", "primary-content", "secondary", "secondary-content", "accent", "accent-content"],
+    [t('themeCustomizer.colorGroups.backgroundText')]: ["base-100", "base-200", "base-300", "base-content"],
+    [t('themeCustomizer.colorGroups.statusColors')]: ["info", "success", "warning", "error"],
   }
 
   const renderPreview = () => (
     <div className="bg-base-100 p-6 rounded-xl shadow-md">
-      <h3 className="text-xl font-bold text-center mb-6" style={{ color: hexValues["base-content"] }}>TEDx Aveiro</h3>
+      <h3 className="text-xl font-bold text-center mb-6" style={{ color: hexValues["base-content"] }}>{t('themeCustomizer.preview.title')}</h3>
 
       {/* Event Header */}
       <div className="p-4 rounded-lg mb-6" style={{ backgroundColor: hexValues["primary"], color: hexValues["primary-content"] }}>
         <div className="flex items-center justify-between">
           <div className="flex items-center gap-2">
             <Music className="w-5 h-5" />
-            <span className="font-bold">Talks</span>
+            <span className="font-bold">{t('themeCustomizer.preview.talks')}</span>
           </div>
           <div className="flex items-center gap-2">
             <Calendar className="w-4 h-4" />
@@ -127,7 +128,7 @@ export function ThemeCustomizer() {
           <div className="card-body p-4">
             <div className="flex items-center gap-2 mb-2">
               <MapPin className="w-4 h-4" style={{ color: hexValues["primary"] }} />
-              <h3 className="card-title" style={{ color: hexValues["base-content"] }}>Event Location</h3>
+              <h3 className="card-title" style={{ color: hexValues["base-content"] }}>{t('themeCustomizer.preview.eventLocation')}</h3>
             </div>
             <p className="text-sm">Centro de Congressos de Aveiro</p>
             <p className="text-xs" style={{ color: hexValues["base-content"] }}>Cais da Fonte Nova, 3810-164 Aveiro</p>
@@ -138,17 +139,17 @@ export function ThemeCustomizer() {
           <div className="card-body p-4">
             <div className="flex items-center gap-2 mb-2">
               <Users className="w-4 h-4" style={{ color: hexValues["primary"] }} />
-              <h3 className="card-title" style={{ color: hexValues["base-content"] }}>Attendees</h3>
+              <h3 className="card-title" style={{ color: hexValues["base-content"] }}>{t('themeCustomizer.preview.attendees')}</h3>
             </div>
             <div className="flex justify-between items-center">
-              <p className="text-sm">400 tickets</p>
+              <p className="text-sm">400 {t('themeCustomizer.preview.tickets')}</p>
             </div>
           </div>
         </div>
       </div>
 
       {/* Featured Artists */}
-      <h4 className="font-semibold mb-3">Sponsors</h4>
+      <h4 className="font-semibold mb-3">{t('themeCustomizer.preview.sponsors')}</h4>
       <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 mb-6">
         <div className="p-3 rounded-lg text-center" style={{ backgroundColor: hexValues["accent"], color: hexValues["accent-content"] }}>
           <Camera className="w-4 h-4 mx-auto mb-1" />
@@ -165,26 +166,26 @@ export function ThemeCustomizer() {
       </div>
 
       {/* Status Updates */}
-      <h4 className="font-semibold mb-3">Event Updates</h4>
+      <h4 className="font-semibold mb-3">{t('themeCustomizer.preview.eventUpdates')}</h4>
       <div className="space-y-2 mb-6">
         <div className="flex items-center gap-2 p-2 rounded" style={{ backgroundColor: hexValues["info"], color: hexValues["info-content"] }}>
           <Bell className="w-4 h-4" style={{ color: hexValues["info"]}}/>
-          <p className="text-sm">Event is about to start</p>
+          <p className="text-sm">{t('themeCustomizer.preview.eventStart')}</p>
         </div>
         <div className="flex items-center gap-2 p-2 rounded" style={{ backgroundColor: hexValues["success"], color: hexValues["success-content"] }}>
           <Clock className="w-4 h-4" style={{ color: hexValues["success"] }}/>
-          <p className="text-sm">Coffee Break in 10 minutes</p>
+          <p className="text-sm">{t('themeCustomizer.preview.coffeeBreak')}</p>
         </div>
         <div className="flex items-center gap-2 p-2 rounded" style={{ backgroundColor: hexValues["warning"], color: hexValues["warning-content"] }}>
           <Gift className="w-4 h-4" style={{ color: hexValues["warning"] }}/>
-          <p className="text-sm">Talk x staring hour was delayed from 15:00 to 17:00</p>
+          <p className="text-sm">{t('themeCustomizer.preview.talkDelay')}</p>
         </div>
       </div>
 
       {/* Action Buttons */}
       <div className="flex flex-wrap gap-2 justify-center">
-        <button className="btn btn-outline" style={{ backgroundColor: hexValues["secondary"], color: hexValues["secondary-content"]}}>Event Schedule</button>
-        <button className="btn btn-outline">Contact Organizer</button>
+        <button className="btn btn-outline" style={{ backgroundColor: hexValues["secondary"], color: hexValues["secondary-content"]}}>{t('themeCustomizer.preview.eventSchedule')}</button>
+        <button className="btn btn-outline">{t('themeCustomizer.preview.contactOrganizer')}</button>
       </div>
     </div>
   );
@@ -195,22 +196,22 @@ export function ThemeCustomizer() {
       <div className="bg-gradient-to-r from-primary to-secondary p-6 text-primary-content">
         <div className="flex justify-between items-center">
           <div>
-            <h2 className="text-2xl font-bold">Event Theme Designer</h2>
-            <p className="mt-2 text-sm opacity-90">Customize your event's colors and see how they look in real-time</p>
+            <h2 className="text-2xl font-bold">{t('themeCustomizer.title')}</h2>
+            <p className="mt-2 text-sm opacity-90">{t('themeCustomizer.subtitle')}</p>
           </div>
           <div className="flex gap-2">
             <button
               className="btn btn-sm btn-outline text-primary-content"
               onClick={resetTheme}
-              title="Reset to original theme"
+              title={t('themeCustomizer.actions.resetTitle')}
             >
-              <Undo className="w-4 h-4 mr-1" /> Reset
+              <Undo className="w-4 h-4 mr-1" /> {t('themeCustomizer.actions.reset')}
             </button>
             <button 
               className="btn btn-sm btn-primary text-primary-content" 
               onClick={saveTheme}
             >
-              <Save className="w-4 h-4 mr-1" /> Save
+              <Save className="w-4 h-4 mr-1" /> {t('themeCustomizer.actions.save')}
             </button>
           </div>
         </div>
@@ -227,7 +228,7 @@ export function ThemeCustomizer() {
             aria-controls="colors-panel"
             id="colors-tab"
           >
-            Choose Colors
+            {t('themeCustomizer.tabs.colors')}
           </button>
           <button 
             className={`tab ${activeTab === "preview" ? "tab-active" : ""}`}
@@ -237,7 +238,7 @@ export function ThemeCustomizer() {
             aria-controls="preview-panel"
             id="preview-tab"
           >
-            Preview Your Event
+            {t('themeCustomizer.tabs.preview')}
           </button>
         </div>
       </div>
@@ -253,7 +254,7 @@ export function ThemeCustomizer() {
           <div className="space-y-8">
             <div className="bg-base-100 p-4 rounded-lg shadow-sm">
               <p className="text-sm mb-4">
-                Click on any color below to change it. You'll see your changes in the "Preview Your Event" tab.
+                {t('themeCustomizer.instructions')}
               </p>
             </div>
             
@@ -269,7 +270,7 @@ export function ThemeCustomizer() {
                           style={{ backgroundColor: hexValues[key] }}
                         >
                           {/* Show contrast text for accessibility */}
-                          {key.includes('content') && <span className="text-xs opacity-75">Text</span>}
+                          {key.includes('content') && <span className="text-xs opacity-75">{t('themeCustomizer.actions.text')}</span>}
                         </div>
                         <div className="flex-1">
                           <label className="font-medium block mb-1">{colorMapping[key] || key}</label>

@@ -1,11 +1,14 @@
 import React from 'react';
 import PropTypes from 'prop-types';
+import { useTranslation } from 'react-i18next';
 
 export function PageTitleInput({ title, onChange }) {
+    const { t } = useTranslation();
+    
     return (
         <div className="mb-4">
             <label htmlFor="page-title" className="block text-sm font-medium text-gray-700">
-                Page Title
+                {t('components.pageTitleInput.label')}
             </label>
             <input
                 id="page-title"
@@ -13,7 +16,7 @@ export function PageTitleInput({ title, onChange }) {
                 value={title}
                 onChange={(e) => onChange(e.target.value)}
                 className="input mt-1 block w-full p-2 border border-gray-300 rounded-md shadow-sm"
-                placeholder="Enter page title"
+                placeholder={t('pageEditor.common.titlePlaceholder')}
             />
         </div>
     );
