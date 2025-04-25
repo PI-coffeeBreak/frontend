@@ -59,7 +59,7 @@ export default function Home() {
 
     return (
         <>
-            <div className="mx-auto w-2/3 py-16 sm:py-28 lg:py-36">
+            <div className="mx-auto w-2/3 py-6 sm:py-12 lg:py-20">
                 <div className="text-center">
                     <h1 className="text-5xl font-semibold text-balance text-primary sm:text-7xl">
                         {t('home.title')}
@@ -75,21 +75,21 @@ export default function Home() {
                             </button>
                         ) : (
                             <NavLink 
-                                to={getStartedPath()} 
+                                to={getStartedPath()}
                                 className="btn btn-primary rounded-xl"
                                 onClick={handleGetStartedClick}
                             >
                                 {t('home.getStarted')}
                             </NavLink>
                         )}
-                        <NavLink to="/about" className="text-sm/6 font-semibold text-gray-900">
+                        <NavLink to="https://pi-coffeebreak.github.io/" className="text-sm/6 font-semibold text-gray-900">
                             {t('home.learnMore')} <span aria-hidden="true">→</span>
                         </NavLink>
                     </div>
                 </div>
             </div>
 
-            <div className="mx-auto w-2/3 py-16 sm:py-28 lg:py-36">
+            <div className="mx-auto w-2/3 py-6 sm:py-12 lg:py-20">
                 <div className="text-center">
                     <p className="text-secondary text-lg font-bold">{t('home.features.title')}</p>
                     <h2 className="text-black text-4xl font-bold text-balance">{t('home.features.subtitle')}</h2>
@@ -109,53 +109,6 @@ export default function Home() {
                     </div>
                 </div>
             </div>
-
-            <div className="mx-auto w-2/3 py-16 sm:py-28 lg:py-36 flex">
-                <h1 className="text-black text-4xl font-bold text-balance w-1/2">{t('home.newsletter.title')}</h1>
-                <div className="flex-col w-1/2">
-                    <div className="flex gap-2 w-full">
-                        <input className="text-white w-full bg-secondary pl-4 rounded-xl" placeholder={t('home.newsletter.placeholder')}/>
-                        <button className="btn btn-primary rounded-xl p-4">{t('home.newsletter.button')}</button>
-                    </div>
-                    <p>
-                        {t('home.newsletter.privacy.text')}
-                        <span className="text-primary font-bold hover:underline">
-                            <a href=""> {t('home.newsletter.privacy.link')}</a>
-                        </span>
-                    </p>
-                </div>
-            </div>
-
-            <footer className="footer sm:footer-horizontal bg-secondary rounded-xl text-base-content p-10">
-                <aside>
-                    <img src="/white_bean.svg" alt="giant white bean" width="90" height="90"/>
-                    <p>
-                        coffeeBreak.
-                        <br/>
-                        {t('home.footer.tagline')}
-                    </p>
-                </aside>
-                <nav>
-                    <h6 className="footer-title">{t('home.footer.services.title')}</h6>
-                    <a className="link link-hover">{t('home.footer.services.branding')}</a>
-                    <a className="link link-hover">{t('home.footer.services.design')}</a>
-                    <a className="link link-hover">{t('home.footer.services.marketing')}</a>
-                    <a className="link link-hover">{t('home.footer.services.advertisement')}</a>
-                </nav>
-                <nav>
-                    <h6 className="footer-title">{t('home.footer.company.title')}</h6>
-                    <a className="link link-hover">{t('home.footer.company.about')}</a>
-                    <a className="link link-hover">{t('home.footer.company.contact')}</a>
-                    <a className="link link-hover">{t('home.footer.company.jobs')}</a>
-                    <a className="link link-hover">{t('home.footer.company.press')}</a>
-                </nav>
-                <nav>
-                    <h6 className="footer-title">{t('home.footer.legal.title')}</h6>
-                    <a className="link link-hover">{t('home.footer.legal.terms')}</a>
-                    <a className="link link-hover">{t('home.footer.legal.privacy')}</a>
-                    <a className="link link-hover">{t('home.footer.legal.cookies')}</a>
-                </nav>
-            </footer>
         </>
     );
 }
