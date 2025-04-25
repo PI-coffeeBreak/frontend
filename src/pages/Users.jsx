@@ -626,8 +626,8 @@ export default function Users() {
                                             <td>
                                                 {user.roles ? (
                                                     <div className="flex flex-wrap gap-1">
-                                                        {user.roles.map((role, index) => (
-                                                            <div key={index} className="badge badge-primary badge-sm sm:badge-md">
+                                                        {user.roles.map((role) => (
+                                                            <div key={`${user.id}-${role}`} className="badge badge-primary badge-sm sm:badge-md">
                                                                 {role}
                                                             </div>
                                                         ))}
@@ -663,9 +663,9 @@ export default function Users() {
                         {totalPages > 1 && (
                             <div className="flex justify-center mt-4">
                                 <div className="join">
-                                    {Array.from({ length: totalPages }, (_, i) => (
+                                    {Array.from({ length: totalPages }).map((_, i) => (
                                         <button
-                                            key={i + 1}
+                                            key={`page-${i + 1}`}
                                             className={`join-item btn btn-xs sm:btn-sm ${currentPage === i + 1 ? "btn-active" : ""}`}
                                             onClick={() => handlePageChange(i + 1)}
                                         >
