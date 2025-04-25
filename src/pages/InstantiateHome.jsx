@@ -1,37 +1,40 @@
 import React, { useMemo } from 'react';
+import { useTranslation } from "react-i18next";
 import { FaUsers, FaCalendarCheck, FaBell } from 'react-icons/fa';
 import DashboardCard from '../components/DashboardCard';
 
 export default function InstantiateHome() {
+    const { t } = useTranslation();
+
     const cards = useMemo(() => [
         {
             id: 'users',
-            title: "Users",
-            description: "Manage your event's participants, speakers, and staff. View profiles, assign roles, and handle user permissions all in one place.",
+            title: t('menu.sections.home.links.users'),
+            description: t('menu.sections.home.descriptions.users'),
             icon: FaUsers,
             path: "users",
             color: "primary",
-            buttonText: "Manage Users"
+            buttonText: t('menu.sections.home.buttons.users')
         },
         {
             id: 'sessions',
-            title: "Sessions",
-            description: "Create and organize event sessions, workshops, and activities. Schedule timings and assign speakers to create the perfect agenda.",
+            title: t('menu.sections.home.links.sessions'),
+            description: t('menu.sections.home.descriptions.sessions'),
             icon: FaCalendarCheck,
             path: "sessions",
             color: "secondary",
-            buttonText: "Manage Sessions"
+            buttonText: t('menu.sections.home.buttons.sessions')
         },
         {
             id: 'alerts',
-            title: "Alerts",
-            description: "Keep your attendees informed with real-time notifications. Send important updates, reminders, and announcements throughout your event.",
+            title: t('menu.sections.home.links.alerts'),
+            description: t('menu.sections.home.descriptions.alerts'),
             icon: FaBell,
             path: "alerts",
             color: "accent",
-            buttonText: "Manage Alerts"
+            buttonText: t('menu.sections.home.buttons.alerts')
         }
-    ], []);
+    ], [t]);
 
     return (
         <div className="w-full min-h-svh p-8">

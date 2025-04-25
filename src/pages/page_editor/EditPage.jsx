@@ -11,8 +11,10 @@ import { PageActions } from "../../components/event_maker/pages/PageActions";
 import { useSections } from "../../hooks/useSections";
 import { restrictToVerticalAxis } from '@dnd-kit/modifiers';
 import { prepareComponentsWithDefaults } from "../../utils/pageUtils";
+import { useTranslation } from "react-i18next";
 
 export function EditPage() {
+    const { t } = useTranslation();
     const { pageTitle } = useParams();
     const navigate = useNavigate();
     const { pages, getPages, updatePage, isLoading: isPagesLoading } = usePages();
@@ -100,9 +102,7 @@ export function EditPage() {
 
     const handleNavigateAway = (destination) => {
         if (hasUnsavedChanges) {
-            const userConfirmed = window.confirm(
-                "You have unsaved changes. Do you really want to leave this page? All changes will be lost."
-            );
+            const userConfirmed = window.confirm(t('pageEditor.edit.unsavedChanges'));
             if (!userConfirmed) {
                 return;
             }
@@ -138,7 +138,7 @@ export function EditPage() {
 
         // If nothing has changed, show a notification and return early
         if (titleEqual && componentsEqual) {
-            showNotification("No changes detected", "info");
+            showNotification(t('pageEditor.edit.noChanges'), "info");
             return;
         }
 
@@ -148,12 +148,12 @@ export function EditPage() {
 
         updatePage(page.page_id, dataToSave)
             .then(() => {
-                showNotification("Page updated successfully!", "success");
+                showNotification(t('pageEditor.edit.updateSuccess'), "success");
                 navigate("/instantiate/eventmaker/pages");
             })
             .catch((error) => {
                 console.error("Failed to update the page.", error);
-                showNotification("Failed to update the page.", "error");
+                showNotification(t('pageEditor.edit.updateError'), "error");
             });
     };
 
@@ -195,18 +195,18 @@ export function EditPage() {
     };
 
     if (isPagesLoading || isComponentsLoading) {
-        return <p>Loading...</p>;
+        return <p>{t('pageEditor.edit.loading')}</p>;
     }
 
     if (!page) {
-        return <p>Loading page data...</p>;
+        return <p>{t('pageEditor.edit.loading')}</p>;
     }
 
     return (
         <div className="container mx-auto p-4 py-8">
             <PageHeader
                 title={page.title}
-                subtitle="Edit your page components and content"
+                subtitle={t('pageEditor.edit.subtitle')}
                 mode="Edit"
                 hasUnsavedChanges={hasUnsavedChanges}
             />
@@ -214,6 +214,7 @@ export function EditPage() {
             <PageTitleInput
                 title={page.title}
                 onChange={(newTitle) => setPage({ ...page, title: newTitle })}
+                placeholder={t('pageEditor.common.titlePlaceholder')}
             />
 
             <PageContent
@@ -225,6 +226,12 @@ export function EditPage() {
                 onAddSection={handleAddSection}
                 getDefaultPropsForComponent={getDefaultPropsForComponent}
                 modifiers={[restrictToVerticalAxis]}
+                addComponentText={t('pageEditor.common.addComponent')}
+                removeComponentText={t('pageEditor.common.removeComponent')}
+                dragToReorderText={t('pageEditor.common.dragToReorder')}
+                componentSettingsText={t('pageEditor.common.componentSettings')}
+                noComponentsText={t('pageEditor.common.noComponents')}
+                addFirstComponentText={t('pageEditor.common.addFirstComponent')}
             />
 
             <PageActions
@@ -232,7 +239,8 @@ export function EditPage() {
                 onSave={handleUpdatePage}
                 isLoading={isPagesLoading}
                 hasUnsavedChanges={hasUnsavedChanges}
-                saveButtonText="Update Page"
+                saveButtonText={t('pageEditor.edit.saveButton')}
+                backButtonText={t('pageEditor.common.backButton')}
             />
         </div>
     );

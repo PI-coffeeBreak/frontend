@@ -2,24 +2,26 @@ import React from 'react';
 import { Link } from 'react-router-dom';
 import { FaPalette, FaCogs, FaCalendarAlt, FaPuzzlePiece, FaUsers, FaBell, FaArrowRight, FaFile } from 'react-icons/fa';
 import { useEvent } from '../contexts/EventContext';
+import { useTranslation } from 'react-i18next';
 
 export default function Instantiate() {
+    const { t } = useTranslation();
     const { eventInfo, isLoading } = useEvent();
 
     // Add section cards with direct homepage links
     const sectionCards = [
         {
             id: 'management-card',
-            title: 'Management',
-            description: 'Access tools to manage users, sessions, and alerts for your event.',
+            title: t('instantiate.cards.management.title'),
+            description: t('instantiate.cards.management.description'),
             icon: FaCogs,
             path: 'management',
             color: 'bg-blue-500'
         },
         {
             id: 'event-maker-card',
-            title: 'Event Maker',
-            description: 'Customize appearance, content, and functionality of your event.',
+            title: t('instantiate.cards.eventMaker.title'),
+            description: t('instantiate.cards.eventMaker.description'),
             icon: FaPalette,
             path: 'eventmaker',
             color: 'bg-purple-500'
@@ -29,27 +31,27 @@ export default function Instantiate() {
     const quickLinks = [
         {
             id: 'management',
-            title: 'Management',
-            description: 'Manage users, sessions, and alerts',
+            title: t('menu.sections.management.title'),
+            description: t('menu.sections.management.description'),
             icon: FaCogs,
-            path: 'management', // Add the section homepage
+            path: 'management',
             links: [
-                { label: 'Users', path: 'management/users', icon: FaUsers },
-                { label: 'Sessions', path: 'management/sessions', icon: FaCalendarAlt },
-                { label: 'Alerts', path: 'management/alerts', icon: FaBell }
+                { label: t('menu.sections.management.links.users'), path: 'management/users', icon: FaUsers },
+                { label: t('menu.sections.management.links.sessions'), path: 'management/sessions', icon: FaCalendarAlt },
+                { label: t('menu.sections.management.links.alerts'), path: 'management/alerts', icon: FaBell }
             ]
         },
         {
             id: 'event-maker',
-            title: 'Event Maker',
-            description: 'Customize and configure your event',
+            title: t('menu.sections.eventMaker.title'),
+            description: t('menu.sections.eventMaker.description'),
             icon: FaPalette,
-            path: 'eventmaker', // Add the section homepage
+            path: 'eventmaker',
             links: [
-                { label: 'Colors', path: 'eventmaker/colors', icon: FaPalette },
-                { label: 'Event Info', path: 'eventmaker/edit', icon: FaCogs },
-                { label: 'Pages', path: 'eventmaker/pages', icon: FaFile },
-                { label: 'Plugins', path: 'eventmaker/choose-plugins', icon: FaPuzzlePiece }
+                { label: t('menu.sections.eventMaker.links.colors'), path: 'eventmaker/colors', icon: FaPalette },
+                { label: t('menu.sections.eventMaker.links.eventInfo'), path: 'eventmaker/edit', icon: FaCogs },
+                { label: t('menu.sections.eventMaker.links.pages'), path: 'eventmaker/pages', icon: FaFile },
+                { label: t('menu.sections.eventMaker.links.plugins'), path: 'eventmaker/choose-plugins', icon: FaPuzzlePiece }
             ]
         }
     ];
@@ -61,10 +63,10 @@ export default function Instantiate() {
                 <div className="flex flex-col lg:flex-row justify-between items-start mb-8">
                     <div>
                         <h1 className="text-4xl font-bold mb-2 text-primary">
-                            {isLoading ? 'Loading...' : `Welcome to ${eventInfo?.name || 'Event'}`}
+                            {isLoading ? t('common.loading') : `${t('instantiate.welcome')} ${eventInfo?.name || t('event.defaultTitle')}`}
                         </h1>
                         <p className="text-lg text-base-content/70">
-                            Access all your event management tools from one place
+                            {t('instantiate.accessTools')}
                         </p>
                     </div>
                     
@@ -72,7 +74,7 @@ export default function Instantiate() {
                     {eventInfo && (
                         <div className="mt-4 lg:mt-0 bg-base-200 p-3 rounded-lg">
                             <p className="text-sm">
-                                <span className="font-medium">Event date: </span>
+                                <span className="font-medium">{t('instantiate.eventDate')}: </span>
                                 {new Date(eventInfo.start_time).toLocaleDateString()} - {new Date(eventInfo.end_time).toLocaleDateString()}
                             </p>
                         </div>
@@ -98,7 +100,7 @@ export default function Instantiate() {
                                 <p className="text-base-content/70">{card.description}</p>
                                 <div className="mt-4">
                                     <span className="text-primary text-sm font-medium group-hover:underline">
-                                        Open Dashboard
+                                        {t('instantiate.openDashboard')}
                                     </span>
                                 </div>
                             </div>
@@ -110,7 +112,7 @@ export default function Instantiate() {
                     {/* Quick access links */}
                     <div className="w-full">
                         <h2 className="text-2xl font-semibold mb-6 flex items-center gap-2">
-                            <FaCogs className="text-primary" /> Quick Access
+                            <FaCogs className="text-primary" /> {t('instantiate.quickAccess')}
                         </h2>
                         <div className="grid gap-6">
                             {quickLinks.map((section) => (
