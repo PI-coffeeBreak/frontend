@@ -1,4 +1,4 @@
-import { useRef, useState } from 'react';
+ import { useRef, useState } from 'react';
 import PropTypes from 'prop-types';
 import { FiUpload } from "react-icons/fi";
 import { FaFile, FaTrash, FaDownload, FaSpinner } from "react-icons/fa";
