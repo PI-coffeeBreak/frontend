@@ -545,6 +545,21 @@
         "title": "Colors",
         "description": "Create a unique visual identity for your event by customizing the color scheme. Choose colors that reflect your brand and create the perfect atmosphere.",
         "buttonText": "Customize Colors"
+      },
+      "menus": {
+        "title": "Menus",
+        "description": "Design your event's navigation structure. Create, organize and customize menu items for an optimal user experience.",
+        "buttonText": "Edit Menus"
+      },
+      "pages": {
+        "title": "Pages",
+        "description": "Create and manage content pages for your event. Create custom layouts to present information effectively.",
+        "buttonText": "Manage Pages"
+      },
+      "choosePlugins": {
+        "title": "Choose Plugins",
+        "description": "Enhance your event with powerful plugins. Add the features you need to create the perfect experience.",
+        "buttonText": "Manage Plugins"
       }
     }
   }
