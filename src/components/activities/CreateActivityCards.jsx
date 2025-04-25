@@ -1,4 +1,5 @@
 import PropTypes from 'prop-types';
+import { useTranslation } from "react-i18next";
 import { FaFileExcel, FaPlus, FaTags } from 'react-icons/fa';
 import CreateCard from "../CreateCard.jsx";
 
@@ -8,31 +9,33 @@ export function CreateActivityCards({
   onOpenNewSessionModal, 
   canCreateActivities = true 
 }) {
+  const { t } = useTranslation();
+
   return (
     <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 mt-8">
       <CreateCard
         icon={FaFileExcel}
-        title="Add with an Excel file"
-        description="Upload an Excel file to quickly add multiple sessions at once."
+        title={t('activities.import.title')}
+        description={t('activities.import.description')}
         onClick={onOpenExcelModal}
         disabled={!canCreateActivities}
-        disabledMessage="You don't have permission to create activities"
+        disabledMessage={t('activities.permissions.disabled')}
       />
       <CreateCard
         icon={FaPlus}
-        title="Create a new session"
-        description="Create a new session manually."
+        title={t('activities.create.title')}
+        description={t('activities.create.description')}
         onClick={onOpenNewSessionModal}
         disabled={!canCreateActivities}
-        disabledMessage="You don't have permission to create activities"
+        disabledMessage={t('activities.permissions.disabled')}
       />
       <CreateCard
         icon={FaTags}
-        title="Create a new session type"
-        description="Create a new session type manually."
+        title={t('activities.types.title')}
+        description={t('activities.types.description')}
         onClick={onOpenNewSessionTypeModal}
         disabled={!canCreateActivities}
-        disabledMessage="You don't have permission to create activities"
+        disabledMessage={t('activities.permissions.disabled')}
       />
     </div>
   );

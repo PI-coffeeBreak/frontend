@@ -23,6 +23,7 @@ import { usePlugins } from "../contexts/PluginsContext";
 import { useEvent } from "../contexts/EventContext";
 import { useMedia } from "../contexts/MediaContext";
 import PropTypes from "prop-types";
+import { useTranslation } from "react-i18next";
 
 const Breadcrumbs = ({ pathnames }) => (
   <ul className="flex gap-2">
@@ -47,6 +48,7 @@ Breadcrumbs.propTypes = {
 };
 
 export default function Sidebar() {
+  const { t } = useTranslation();
   const { keycloak, initialized } = useKeycloak();
   const [isVisible, setIsVisible] = useState(true);
   const [userProfile, setUserProfile] = useState(null);
@@ -192,10 +194,10 @@ export default function Sidebar() {
               }`}
             >
               <h1 className="font-bold text-lg">
-                {eventLoading ? "Loading..." : eventInfo?.name || "Event"}
+                {eventLoading ? t('common.loading') : eventInfo?.name || t('event.defaultTitle')}
               </h1>
               <p className="text-md text-base-content">
-                {eventInfo?.subtitle || "Event"}
+                {eventInfo?.subtitle || t('event.defaultTitle')}
               </p>
             </span>
           </div>
@@ -233,31 +235,31 @@ export default function Sidebar() {
               {/* Management section */}
               <DropdownMenu
                 icon={FaCogs}
-                title="Management"
+                title={t('menu.sections.management.title')}
                 isVisible={isVisible}
                 basePath="management"
                 hasHomepage={true}
                 links={[
-                  { label: "Users", path: "management/users", icon: FaUsers },
-                  { label: "Sessions", path: "management/sessions", icon: FaCalendarAlt },
-                  { label: "Alerts", path: "management/alerts", icon: FaBell },
+                  { label: t('menu.sections.management.links.users'), path: "management/users", icon: FaUsers },
+                  { label: t('menu.sections.management.links.sessions'), path: "management/sessions", icon: FaCalendarAlt },
+                  { label: t('menu.sections.management.links.alerts'), path: "management/alerts", icon: FaBell },
                 ]}
               />
               
               {/* Event Maker section */}
               <DropdownMenu
                 icon={FaPen}
-                title="Event Maker"
+                title={t('menu.sections.eventMaker.title')}
                 isVisible={isVisible}
                 basePath="eventmaker"
                 hasHomepage={true}
                 links={[
-                  { label: "Event info", path: "eventmaker/edit", icon: FaEdit },
-                  { label: "Colors", path: "eventmaker/colors", icon: FaPalette },
-                  { label: "Menus", path: "eventmaker/menus", icon: FaBars },
-                  { label: "Pages", path: "eventmaker/pages", icon: FaFileAlt },
+                  { label: t('menu.sections.eventMaker.links.eventInfo'), path: "eventmaker/edit", icon: FaEdit },
+                  { label: t('menu.sections.eventMaker.links.colors'), path: "eventmaker/colors", icon: FaPalette },
+                  { label: t('menu.sections.eventMaker.links.menus'), path: "eventmaker/menus", icon: FaBars },
+                  { label: t('menu.sections.eventMaker.links.pages'), path: "eventmaker/pages", icon: FaFileAlt },
                   {
-                    label: "Choose Plugins",
+                    label: t('menu.sections.eventMaker.links.plugins'),
                     path: "eventmaker/choose-plugins",
                     icon: FaPuzzlePiece
                   },
@@ -278,7 +280,7 @@ export default function Sidebar() {
               <ul className="flex flex-col gap-4">
                 <DropdownMenu
                   icon={RiApps2AddLine}
-                  title="Plugins"
+                  title={t('menu.sections.plugins.title')}
                   isVisible={isVisible}
                   basePath="plugins"
                   hasHomepage={false}
@@ -307,7 +309,7 @@ export default function Sidebar() {
             }`}
           >
             <FaSignOutAlt className="text-white" />
-            {isVisible && <span>Logout</span>}
+            {isVisible && <span>{t('menu.actions.logout')}</span>}
           </button>
         </div>
       </div>
