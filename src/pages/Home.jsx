@@ -1,6 +1,6 @@
 import { NavLink } from "react-router-dom";
 import { useKeycloak } from "@react-keycloak/web";
-import { useEffect, useState, useCallback } from "react";
+import { useEffect, useState } from "react";
 import { useEvent } from "../contexts/EventContext";
 import { useTranslation } from "react-i18next";
 

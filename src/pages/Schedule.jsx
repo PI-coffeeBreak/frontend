@@ -176,15 +176,10 @@ export default function DragDropCalendar() {
 
     // Filter the activities based on the active filter and search query
     const filteredActivities = outsideActivities
-        .filter(activity => {
-            // Apply type filter if active
-            if (activeFilter && activity.type_id !== activeFilter) return false;
-
-            // Apply search filter if query exists
-            if (searchQuery && !activity.name.toLowerCase().includes(searchQuery.toLowerCase())) return false;
-
-            return true;
-        });
+    .filter(activity => 
+        (!activeFilter || activity.type_id === activeFilter) && 
+        (!searchQuery || activity.name.toLowerCase().includes(searchQuery.toLowerCase()))
+    );
 
     // Calculate statistics
     const totalScheduledActivities = calendarActivities.length;
@@ -399,7 +394,7 @@ export default function DragDropCalendar() {
                     </div>
                 </div>
             </div>
-            <style jsx global>{`
+            <style>{`
                 .hide-scrollbar::-webkit-scrollbar {
                     height: 6px;
                 }
@@ -415,6 +410,14 @@ export default function DragDropCalendar() {
                 .hide-scrollbar {
                     scrollbar-width: thin;
                     scrollbar-color: rgba(0,0,0,0.2) transparent;
+                }
+                
+                /* Prevent text selection in draggable activity cards */
+                .fc-event, .activity-card {
+                    user-select: none;
+                    -webkit-user-select: none;
+                    -moz-user-select: none;
+                    -ms-user-select: none;
                 }
             `}</style>
         </div>
