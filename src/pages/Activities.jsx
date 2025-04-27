@@ -9,7 +9,7 @@ import { useActivities } from "../contexts/ActivitiesContext";
 import { useNotification } from "../contexts/NotificationContext";
 import { useKeycloak } from "@react-keycloak/web";
 import { useTranslation } from "react-i18next";
-
+import { useMedia } from "../contexts/MediaContext";
 
 
 export default function Activities() {
@@ -24,6 +24,7 @@ export default function Activities() {
   } = useActivities();
 
   const { showNotification } = useNotification();
+  const { uploadMedia } = useMedia();
   const { keycloak } = useKeycloak();
   const { t } = useTranslation();
 
@@ -99,22 +100,21 @@ export default function Activities() {
 
       console.log("Sending activity data:", payload);
       
+
+      const formData = new FormData();
+      Object.entries(payload).forEach(([key, value]) => {
+        if (value !== null && value !== undefined) {
+          formData.append(key, value);
+        }
+      });
       if (sessionData.image) {
-        const formData = new FormData();
-        formData.append('image', sessionData.image);
+        formData.append('image', "");
+      }
 
-        Object.entries(payload).forEach(([key, value]) => {
-          if (value !== null && value !== undefined) {
-            formData.append(key, value);
-          }
-        });
+      const activity = await createActivity(formData);
 
-        await createActivity(formData);
-
-      } else {
-
-        await createActivity(payload);
-
+      if (sessionData.image) {
+        await uploadMedia(activity.image, sessionData.image);
       }
 
       showNotification("Session created successfully", "success");

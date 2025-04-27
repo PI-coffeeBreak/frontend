@@ -1,23 +1,22 @@
 import axios from "axios";
 
 export const axiosWithAuth = (keycloak) => {
-  const token = keycloak?.token;
-  console.log("Token present:", !!token);
+  const instance = axios.create();
 
-  if (!token) {
-    console.warn("No token available in axiosWithAuth");
-  }
-
-  const instance = axios.create({
-    headers: {
-      Authorization: token ? `Bearer ${token}` : "",
-    },
-  });
-
-  // Add request interceptor to log headers
+  // Add request interceptor to always inject latest token
   instance.interceptors.request.use(
-    (config) => {
-      console.log("Request headers:", config.headers);
+    async (config) => {
+      if (keycloak?.token) {
+        try {
+          // Try to refresh the token if it will expire in less than 60 seconds
+          await keycloak.updateToken(60);
+          config.headers.Authorization = `Bearer ${keycloak.token}`;
+        } catch (err) {
+          console.error("Token refresh failed", err);
+        }
+      } else {
+        console.warn("No token available");
+      }
       return config;
     },
     (error) => {

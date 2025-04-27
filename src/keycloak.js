@@ -25,18 +25,19 @@ console.log("Keycloak configuration:", {
 
 // Configure better token refresh handling
 keycloak.onTokenExpired = () => {
-  console.log("Token expired, refreshing...");
-  keycloak
-    .updateToken(70)
+  console.log("Token expired, trying to refresh...");
+
+  keycloak.updateToken(30) // try refreshing if token will expire in next 30s
     .then((refreshed) => {
       if (refreshed) {
-        console.log("Token refreshed successfully");
+        console.log("Token successfully refreshed.");
       } else {
-        console.log("Token not refreshed, valid for longer than 70 seconds");
+        console.log("Token still valid, no refresh needed.");
       }
     })
-    .catch(() => {
-      console.error("Failed to refresh token");
+    .catch((error) => {
+      console.error("Token refresh failed, forcing re-login.", error);
+      keycloak.login(); // << force user to re-login
     });
 };
 
