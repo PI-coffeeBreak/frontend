@@ -1,9 +1,25 @@
 import PropTypes from 'prop-types';
 import { useTranslation } from "react-i18next";
 import { FaTrash } from 'react-icons/fa';
+import { useState, useEffect } from 'react';
+import { useMedia } from '../contexts/MediaContext';
 
 export default function Activity({id, title, description, image, category, type, onDelete }) {
     const { t } = useTranslation();
+    const { getMediaUrl } = useMedia();
+    const [imageUrl, setImageUrl] = useState(image);
+
+    // if image is not a link
+    useEffect(() => {
+        if (image) {
+            const isImageLink = image.startsWith('http');
+            if (!isImageLink) {
+                setImageUrl(getMediaUrl(image));
+            } else {
+                setImageUrl(image);
+            }
+        }
+    }, [image]);
 
     return (
         <div
@@ -27,13 +43,25 @@ export default function Activity({id, title, description, image, category, type,
             
             <div className="w-1/3 h-full items-center justify-center hidden sm:block">
             {image ? (
-                <img src={image} alt={t('activities.imageAlt')} className="w-full h-full object-cover rounded-md"/>
-                ) : (
+                <img 
+                    src={imageUrl} 
+                    alt={t('activities.imageAlt')} 
+                    className="w-full h-full object-cover rounded-md"
+                    onError={(e) => {
+                        e.target.onerror = null;
+                        e.target.style.display = 'none';
+                        e.target.parentElement.innerHTML = `
+                            <div class="w-full h-full bg-gray-200 rounded-md flex items-center justify-center">
+                                <span class="text-gray-400">${t('activities.noImage')}</span>
+                            </div>
+                        `;
+                    }}
+                />
+            ) : (
                 <div className="w-full h-full bg-gray-200 rounded-md flex items-center justify-center">
                     <span className="text-gray-400">{t('activities.noImage')}</span>
                 </div>
-                )
-            }
+            )}
             </div>
             <div className="w-2/3">
                 <h1 className="font-bold text-secondary text-sm">{title}</h1>
