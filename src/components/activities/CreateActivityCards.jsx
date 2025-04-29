@@ -1,37 +1,41 @@
 import PropTypes from 'prop-types';
-import { FaFileExcel, FaPlus } from 'react-icons/fa';
+import { useTranslation } from "react-i18next";
+import { FaFileExcel, FaPlus, FaTags } from 'react-icons/fa';
 import CreateCard from "../CreateCard.jsx";
 
-/**
- * Component displaying cards for creating different types of activities
- * 
- * @param {Object} props - Component props
- * @param {Function} props.onOpenExcelModal - Function to open the Excel import modal
- * @param {Function} props.onOpenNewSessionModal - Function to open the new session modal
- * @param {boolean} props.canCreateActivities - Whether the user has permission to create activities
- */
-export function CreateActivityCards({ 
+export function CreateActivityCards({
+  onOpenNewSessionTypeModal,
   onOpenExcelModal, 
   onOpenNewSessionModal, 
   canCreateActivities = true 
 }) {
+  const { t } = useTranslation();
+
   return (
     <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 mt-8">
       <CreateCard
         icon={FaFileExcel}
-        title="Add with an Excel file"
-        description="Upload an Excel file to quickly add multiple sessions at once."
+        title={t('activities.import.title')}
+        description={t('activities.import.description')}
         onClick={onOpenExcelModal}
         disabled={!canCreateActivities}
-        disabledMessage="You don't have permission to create activities"
+        disabledMessage={t('activities.permissions.disabled')}
       />
       <CreateCard
         icon={FaPlus}
-        title="Create a new session"
-        description="Create a new session manually."
+        title={t('activities.create.title')}
+        description={t('activities.create.description')}
         onClick={onOpenNewSessionModal}
         disabled={!canCreateActivities}
-        disabledMessage="You don't have permission to create activities"
+        disabledMessage={t('activities.permissions.disabled')}
+      />
+      <CreateCard
+        icon={FaTags}
+        title={t('activities.types.title')}
+        description={t('activities.types.description')}
+        onClick={onOpenNewSessionTypeModal}
+        disabled={!canCreateActivities}
+        disabledMessage={t('activities.permissions.disabled')}
       />
     </div>
   );
@@ -40,7 +44,6 @@ export function CreateActivityCards({
 CreateActivityCards.propTypes = {
   onOpenExcelModal: PropTypes.func.isRequired,
   onOpenNewSessionModal: PropTypes.func.isRequired,
+  onOpenNewSessionTypeModal: PropTypes.func.isRequired,
   canCreateActivities: PropTypes.bool
 };
-
-export default CreateActivityCards;

@@ -1,6 +1,9 @@
-threshold: medium
-
 fileignoreconfig:
 - filename: package-lock.json
-  checksum: 5e48034a94997336317d9ebb999783f0022e59e7a7050254abc1ece1df6663c3
+  checksum: 879fb7a56db8d399fb1acde691f271a62a41bda9b2e1422d17f1fdd26aec87fe
+- filename: src/components/users/UserExcelImport.jsx
+  checksum: e0314cb109ee4ad3b087a3b285aedf1b02c0c8cf9bb6bb8a4230e3f96a84d4cc
+- filename: src/utils/passwordUtils.js
+  checksum: 6c6bd9ce435781c9ea96771c74f53eef36b3830b2b5b45783f4406bcf48eccf9
+threshold: medium
 version: "1.0"

@@ -20,7 +20,6 @@ export const MediaProvider = ({ children }) => {
         setIsLoading(true);
         setError(null);
         try {
-            // Check if we already have this media in state to prevent redundant fetches
             if (media[uuid]) {
                 setIsLoading(false);
                 return media[uuid];
@@ -28,8 +27,7 @@ export const MediaProvider = ({ children }) => {
 
             const response = await axiosWithAuth(keycloak).get(`${baseUrl}/media/${uuid}`);
             console.log(`Media with UUID ${uuid} fetched successfully:`, response.data);
-            
-            // Add media to state cache
+
             setMedia(prevMedia => ({
                 ...prevMedia,
                 [uuid]: response.data
@@ -71,13 +69,96 @@ export const MediaProvider = ({ children }) => {
         return `${baseUrl}/media/${uuid}`;
     };
 
+    // Register new media
+    const registerMedia = async () => {
+        setIsLoading(true);
+        setError(null);
+        try {
+            const response = await axiosWithAuth(keycloak).post(`${baseUrl}/media/register`);
+            console.log('Media registered with UUID:', response.data.uuid);
+            return response.data;
+        } catch (err) {
+            console.error('Error registering media:', err);
+            setError('Failed to register media');
+            throw err;
+        } finally {
+            setIsLoading(false);
+        }
+    };
+
+    // Upload media file
+    const uploadMedia = async (uuid, file, isUpdate = false) => {
+        setIsLoading(true);
+        setError(null);
+        try {
+            const formData = new FormData();
+            formData.append('file', file);
+            
+            const method = isUpdate ? 'put' : 'post';
+            
+            await axiosWithAuth(keycloak)[method](
+                `${baseUrl}/media/${uuid}`,
+                formData,
+                {
+                    headers: {
+                        'Content-Type': 'multipart/form-data',
+                    },
+                }
+            );
+            
+            setMedia(prevMedia => {
+                const updatedMedia = {...prevMedia};
+                delete updatedMedia[uuid];
+                return updatedMedia;
+            });
+            
+            console.log(`Media ${isUpdate ? 'updated' : 'uploaded'} successfully`);
+            return true;
+        } catch (err) {
+            console.error(`Error ${isUpdate ? 'updating' : 'uploading'} media:`, err);
+            setError(`Failed to ${isUpdate ? 'update' : 'upload'} media`);
+            throw err;
+        } finally {
+            setIsLoading(false);
+        }
+    };
+
+    // Delete media by UUID
+    const deleteMedia = async (uuid) => {
+        if (!uuid) return false;
+        
+        setIsLoading(true);
+        setError(null);
+        try {
+            await axiosWithAuth(keycloak).delete(`${baseUrl}/media/${uuid}`);
+            
+            setMedia(prevMedia => {
+                const updatedMedia = {...prevMedia};
+                delete updatedMedia[uuid];
+                return updatedMedia;
+            });
+            
+            console.log(`Media ${uuid} deleted successfully`);
+            return true;
+        } catch (err) {
+            console.error('Error deleting media:', err);
+            setError('Failed to delete media');
+            throw err;
+        } finally {
+            setIsLoading(false);
+        }
+    };
+
     const contextValue = useMemo(() => ({
         media,
         isLoading,
         error,
         getMedia,
         getEventImage,
-        getMediaUrl
+        getMediaUrl,
+        registerMedia,
+        uploadMedia,
+        deleteMedia,
     }), [media, isLoading, error, eventInfo]);
 
     return (
@@ -91,4 +172,4 @@ MediaProvider.propTypes = {
     children: PropTypes.node.isRequired,
 };
 
-export const useMedia = () => useContext(MediaContext); 
+export const useMedia = () => useContext(MediaContext);

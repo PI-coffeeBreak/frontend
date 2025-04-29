@@ -4,16 +4,15 @@ import { ReactKeycloakProvider } from '@react-keycloak/web';
 import { SpeakerProvider } from './contexts/SpeakerContext';
 
 import Home from "./pages/Home";
-import Layout from "./components/Layout";
-import LayoutAuth from "./components/LayoutAuth";
-import LayoutInstantiate from "./components/LayoutInstantiate.jsx";
+import Layout from "./components/layout/Layout.jsx";
+import LayoutAuth from "./components/layout/LayoutAuth.jsx";
+import LayoutInstantiate from "./components/layout/LayoutInstantiate.jsx";
 import Users from "./pages/Users.jsx";
 import Alerts from "./pages/Alerts.jsx";
 import Activities from "./pages/Activities.jsx";
 import Schedule from "./pages/Schedule.jsx";
 import Plugins from "./pages/Plugins.jsx";
 import Colors from "./pages/Colors.jsx";
-import keycloak from "./keycloak.js";
 import PrivateRoute from "./PrivateRoute.js";
 import { PagesList } from "./pages/PagesList.jsx";
 import { MenuEditor } from "./pages/MenuEditor.jsx";
@@ -22,22 +21,11 @@ import EventMaker from "./pages/EventMaker.jsx";
 import Instantiate from "./pages/Instantiate.jsx";
 import { CreatePage } from "./pages/page_editor/CreatePage.jsx";
 import { EditPage } from "./pages/page_editor/EditPage.jsx";
-import SpeakerManagement from './pages/SpeakerManagement';
 import AuthRedirect from "./pages/AuthRedirect";
-
-import { ActivitiesProvider } from "./contexts/ActivitiesContext.jsx";
-import { PluginsProvider } from "./contexts/PluginsContext.jsx";
-import { ThemeProvider } from "./contexts/ThemeContext";
-import { UsersProvider } from "./contexts/UsersContext.jsx";
-import { PagesProvider } from "./contexts/PagesContext.jsx";
-import { NotificationProvider } from "./contexts/NotificationContext.jsx";
-import { ComponentsProvider } from "./contexts/ComponentsContext.jsx";
-import { MenuProvider } from "./contexts/MenuContext.jsx";
-import { ColorThemeProvider } from './contexts/ColorThemeContext';
-import { AlertsProvider } from "./contexts/AlertsContext.jsx";
-import { EventProvider } from "./contexts/EventContext.jsx";
-import { MediaProvider } from "./contexts/MediaContext.jsx";
-
+import { Sponsors } from "./pages/Sponsors.jsx";
+import { EventEditor } from "./pages/EventEditor.jsx";
+import Provider from "./contexts/Provider.jsx";
+import Management from "./pages/Management.jsx";
 
 export default function App() {
   return (
@@ -73,13 +61,15 @@ export default function App() {
 
                                     <Route path="instantiate" element={<PrivateRoute><LayoutInstantiate /></PrivateRoute>}>
                                       <Route index element={<Instantiate />} />
-                                      <Route path="home">
+                                      <Route path="management">
+                                        <Route index element={<Management />} />
                                         <Route path="users" element={<Users />} />
                                         <Route path="sessions" element={<Activities />} />
                                         <Route path="alerts" element={<Alerts />} />
                                       </Route>
                                       <Route path="eventmaker">
                                         <Route index element={<EventMaker />} />
+                                        <Route path="edit" element={<EventEditor />} />
                                         <Route path="colors" element={<Colors />} />
                                         <Route path="menus" element={<MenuEditor />} />
                                         <Route path="pages" element={<PagesList />} />
@@ -89,8 +79,9 @@ export default function App() {
                                       </Route>
                                       <Route path="plugins">
                                         <Route path="alert-system-plugin" element={<Alerts />} />
+                                        <Route path="event-schedule-plugin" element={<Schedule />} />
+                                        <Route path="sponsors-promotion-plugin" element={<Sponsors />} />
                                         <Route path="schedule" element={<Schedule />} />
-                                        <Route path="speaker-presentation-plugin" element={<SpeakerManagement />} />
                                       </Route>
                                     </Route>
                                     <Route path="/auth-redirect" element={<AuthRedirect />} />

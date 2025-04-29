@@ -17,7 +17,7 @@ export const PagesProvider = ({ children }) => {
         setIsLoading(true);
         setError(null);
         try {
-            const response = await axiosWithAuth(keycloak).get(`${baseUrl}/pages`);
+            const response = await axiosWithAuth(keycloak).get(`${baseUrl}/pages/all`);
             console.log("Pages fetched successfully:", response.data);
             setPages(response.data);
             return response.data;

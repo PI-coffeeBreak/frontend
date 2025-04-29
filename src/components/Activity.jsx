@@ -1,22 +1,40 @@
 import PropTypes from 'prop-types';
-import { FaTrash } from 'react-icons/fa'; // Import trash icon
+import { useTranslation } from "react-i18next";
+import { FaTrash } from 'react-icons/fa';
+import { useState, useEffect } from 'react';
+import { useMedia } from '../contexts/MediaContext';
 
 export default function Activity({id, title, description, image, category, type, onDelete }) {
+    const { t } = useTranslation();
+    const { getMediaUrl } = useMedia();
+    const [imageUrl, setImageUrl] = useState(image);
+
+    // if image is not a link
+    useEffect(() => {
+        if (image) {
+            const isImageLink = image.startsWith('http');
+            if (!isImageLink) {
+                setImageUrl(getMediaUrl(image));
+            } else {
+                setImageUrl(image);
+            }
+        }
+    }, [image]);
+
     return (
         <div
             className="fc-event cursor-pointer flex items-center w-full gap-4 h-36 p-4 bg-white shadow-md rounded-md relative"
             data-id={id}
             data-title={title}
         >
-            {/* Delete button in top-right corner */}
             {onDelete && (
                 <button
                     onClick={(e) => {
-                        e.stopPropagation(); // Prevent event bubbling to parent
+                        e.stopPropagation();
                         onDelete(id);
                     }}
                     className="absolute top-2 right-2 p-2 text-gray-400 hover:text-error rounded-full hover:bg-gray-100 transition-colors"
-                    aria-label="Delete activity"
+                    aria-label={t('activities.delete')}
                     type="button"
                 >
                     <FaTrash className="w-4 h-4" aria-hidden="true" />
@@ -25,13 +43,25 @@ export default function Activity({id, title, description, image, category, type,
             
             <div className="w-1/3 h-full items-center justify-center hidden sm:block">
             {image ? (
-                <img src={image} alt="Activity" className="w-full h-full object-cover rounded-md"/>
-                ) : (
+                <img 
+                    src={imageUrl} 
+                    alt={t('activities.imageAlt')} 
+                    className="w-full h-full object-cover rounded-md"
+                    onError={(e) => {
+                        e.target.onerror = null;
+                        e.target.style.display = 'none';
+                        e.target.parentElement.innerHTML = `
+                            <div class="w-full h-full bg-gray-200 rounded-md flex items-center justify-center">
+                                <span class="text-gray-400">${t('activities.noImage')}</span>
+                            </div>
+                        `;
+                    }}
+                />
+            ) : (
                 <div className="w-full h-full bg-gray-200 rounded-md flex items-center justify-center">
-                    <span className="text-gray-400">No image</span>
+                    <span className="text-gray-400">{t('activities.noImage')}</span>
                 </div>
-                )
-            }
+            )}
             </div>
             <div className="w-2/3">
                 <h1 className="font-bold text-secondary text-sm">{title}</h1>
