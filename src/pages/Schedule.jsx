@@ -26,9 +26,23 @@ const formatDuration = (duration) => {
     return "02:00"; // Default duration
 };
 
+// Helper function to format a Date to ISO string without timezone conversion
+const formatToLocalISOString = (date) => {
+    return `${date.getFullYear()}-${
+        String(date.getMonth() + 1).padStart(2, '0')
+    }-${
+        String(date.getDate()).padStart(2, '0')
+    }T${
+        String(date.getHours()).padStart(2, '0')
+    }:${
+        String(date.getMinutes()).padStart(2, '0')
+    }:${
+        String(date.getSeconds()).padStart(2, '0')
+    }`;
+};
+
 export default function DragDropCalendar() {
     const calendarRef = useRef(null);
-    const draggableRef = useRef(null);
     const [activitiesCollapsed, setActivitiesCollapsed] = useState(false);
     const [activeFilter, setActiveFilter] = useState(null); // Add a new state for the active filter
     const [searchQuery, setSearchQuery] = useState(''); // Add a new state for search query
@@ -97,9 +111,11 @@ export default function DragDropCalendar() {
             setCalendarActivities((prev) => [...prev, activity]);
             setOutsideActivities((prev) => prev.filter((act) => act.id !== activityId));
 
-            const newStartTime = info.event.start.toISOString();
-
-            await updateActivity(activityId, { date: newStartTime });
+            // Create a localized ISO string that preserves the time exactly as displayed
+            const startTime = info.event.start;
+            const localISOString = formatToLocalISOString(startTime);
+            
+            await updateActivity(activityId, { date: localISOString });
         }
     };
 
@@ -118,13 +134,16 @@ export default function DragDropCalendar() {
 
     const handleEventDrop = async (info) => {
         const activityId = parseInt(info.event.extendedProps["data-id"]);
-        const newStartTime = info.event.start.toISOString();
-
-        await updateActivity(activityId, { date: newStartTime });
-
+        
+        // Create a localized ISO string that preserves the time exactly as displayed
+        const startTime = info.event.start;
+        const localISOString = formatToLocalISOString(startTime);
+        
+        await updateActivity(activityId, { date: localISOString });
+        
         setCalendarActivities((prev) =>
             prev.map((act) =>
-                act.id === activityId ? { ...act, date: newStartTime } : act
+                act.id === activityId ? { ...act, date: localISOString } : act
             )
         );
     };
@@ -349,8 +368,9 @@ export default function DragDropCalendar() {
                             snapDuration={"00:01:00"}
                             allDaySlot={false}
                             dayMaxEvents={true}
-                            nowIndicator={true}               // Show current time indicator
+                            nowIndicator={true}
                             scrollTime={new Date().getHours() + ":00:00"} // Scroll to current hour
+                            timeZone="local"
                             slotLabelFormat={{
                                 hour: "2-digit",
                                 minute: "2-digit",
@@ -362,14 +382,14 @@ export default function DragDropCalendar() {
                                 minute: "2-digit",
                                 meridiem: false,
                                 hour12: false,
+                                timeZone: "local",
                             }}
-                            forceEventDuration={true}         // Always use specified duration
-                            defaultTimedEventDuration={"00:30:00"} // Default duration for new events
+                            forceEventDuration={true} 
+                            defaultTimedEventDuration={"00:30:00"}
                             events={calendarActivities.map((activity) => {
+                                const startDate = new Date(activity.date);
                                 const durationInMs = activity.duration * 60000;
-                                const endTime = new Date(
-                                    new Date(activity.date).getTime() + durationInMs
-                                );
+                                const endDate = new Date(startDate.getTime() + durationInMs);
                                 
                                 const activityType = activityTypes.find(type => type.id === activity.type_id);
                                 const backgroundColor = activityType?.color || '#3788d8';
@@ -377,8 +397,8 @@ export default function DragDropCalendar() {
                                 return {
                                     id: activity.id,
                                     title: activity.name,
-                                    start: activity.date,
-                                    end: endTime.toISOString(),
+                                    start: startDate,
+                                    end: endDate,
                                     backgroundColor,
                                     borderColor: backgroundColor,
                                     textColor: '#ffffff',
