@@ -8,6 +8,7 @@ import {
 } from "@dnd-kit/sortable";
 import { DynamicComponentConfiguration } from "./DynamicComponentConfiguration";
 import { restrictToVerticalAxis, restrictToParentElement } from '@dnd-kit/modifiers';
+import { useTranslation } from 'react-i18next';
 
 export function PageContent({
     sections,
@@ -19,6 +20,7 @@ export function PageContent({
     getDefaultPropsForComponent,
     modifiers = []
 }) {
+    const { t } = useTranslation();
     const containerRef = useRef(null);
 
     const sensors = useSensors(
@@ -39,9 +41,9 @@ export function PageContent({
                     <svg xmlns="http://www.w3.org/2000/svg" className="h-12 w-12 mx-auto text-base-300 mb-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                         <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 5a1 1 0 011-1h14a1 1 0 011 1v2a1 1 0 01-1 1H5a1 1 0 01-1-1V5zM4 13a1 1 0 011-1h6a1 1 0 011 1v6a1 1 0 01-1 1H5a1 1 0 01-1-1v-6zM16 13a1 1 0 011-1h2a1 1 0 011 1v6a1 1 0 01-1 1h-2a1 1 0 01-1-1v-6z" />
                     </svg>
-                    <p className="text-base-content/70 text-lg font-medium">No sections added yet</p>
+                    <p className="text-base-content/70 text-lg font-medium">{t('components.pageContent.noSections')}</p>
                     <p className="text-base-content/50 mt-2 max-w-md mx-auto">
-                        Start building your page by clicking "Add New Section" below to add content components.
+                        {t('components.pageContent.startBuilding')}
                     </p>
                 </div>
             );
@@ -107,7 +109,7 @@ export function PageContent({
                             <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4v16m8-8H4" />
                             </svg>
-                            Add New Section
+                            {t('components.pageContent.addNewSection')}
                         </button>
                     </div>
                 </SortableContext>

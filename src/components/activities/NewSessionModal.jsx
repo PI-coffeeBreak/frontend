@@ -1,12 +1,12 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import PropTypes from "prop-types";
 import { Modal } from "../common/Modal";
 import { useForm } from "../../hooks/useForm";
 import { useActivities } from "../../contexts/ActivitiesContext";
 import { useNotification } from "../../contexts/NotificationContext";
-import { FaCloudUploadAlt, FaExclamationTriangle } from "react-icons/fa";
+import { FiUpload } from "react-icons/fi";
+import { FaTrash } from "react-icons/fa";
 
-// Extract form fields into a separate component
 const FormField = ({ label, id, type = "text", required = false, error, children }) => (
   <div>
     <label htmlFor={id} className="block text-sm font-medium mb-1">
@@ -50,6 +50,8 @@ export function NewSessionModal({ isOpen, onClose, onSubmit }) {
     speaker: "",
     facilitator: "",
     image: null,
+    requires_registration: false,
+    max_participants: ""
   };
 
   const { 
@@ -67,6 +69,7 @@ export function NewSessionModal({ isOpen, onClose, onSubmit }) {
   const [isAddingTypeInline, setIsAddingTypeInline] = useState(false);
   const [newTypeName, setNewTypeName] = useState("");
   const [isAddingType, setIsAddingType] = useState(false);
+  const fileInputRef = useRef(null);
 
   useEffect(() => {
     if (activityTypes?.length > 0 && !values.type_id) {
@@ -132,6 +135,12 @@ export function NewSessionModal({ isOpen, onClose, onSubmit }) {
   };
 
   const formatDataForSubmission = () => {
+    let maxParticipants = 0;
+    if (values.requires_registration && values.max_participants) {
+      const parsedValue = parseInt(values.max_participants, 10);
+      maxParticipants = !isNaN(parsedValue) ? parsedValue : 0;
+    }
+
     return {
       name: values.name,
       description: values.description,
@@ -141,6 +150,8 @@ export function NewSessionModal({ isOpen, onClose, onSubmit }) {
       topic: values.topic || "",
       speaker: values.speaker || "",
       facilitator: values.facilitator || "",
+      requires_registration: values.requires_registration || false,
+      max_participants: maxParticipants,
       ...(imagePreview && { image: values.image })
     };
   };
@@ -261,51 +272,91 @@ export function NewSessionModal({ isOpen, onClose, onSubmit }) {
   };
 
   const renderImageUploader = () => {
+    const handleBrowseClick = () => {
+      fileInputRef.current?.click();
+    };
+    
+    const handleDrop = (event) => {
+      event.preventDefault();
+      event.stopPropagation();
+  
+      const file = event.dataTransfer.files[0];
+      if (file) {
+        handleFileSelect({ target: { files: [file] } });
+      }
+    };
+    
+    const handleClearFile = () => {
+      setImagePreview(null);
+      setFieldValue('image', null);
+      if (fileInputRef.current) {
+        fileInputRef.current.value = "";
+      }
+    };
+    
     return (
-      <div className="border-2 border-dashed border-gray-300 rounded-lg p-4 text-center">
+      <div>
+        {!imagePreview ? (
+          <button
+            type="button"
+            className="w-full border-dashed border-2 rounded-xl p-4 text-center bg-transparent border-gray-400"
+            onClick={handleBrowseClick}
+            onDrop={handleDrop}
+            onDragOver={(e) => e.preventDefault()}
+          >
+            <div className="rounded-full bg-base-content w-16 h-16 mx-auto my-4 flex items-center justify-center">
+              <FiUpload className="text-base-100 text-2xl" aria-hidden="true" />
+            </div>
+            
+            <p>
+              Drag and drop your image here or
+              {' '}
+              <span className="text-primary font-bold">Browse</span>
+            </p>
+            
+            <p className="text-sm text-gray-400">
+              Maximum file size: 5MB (JPG, PNG or WebP)
+            </p>
+          </button>
+        ) : (
+          <div className="bg-base-200 w-full p-4 rounded-lg relative">
+            <button
+              onClick={handleClearFile}
+              className="text-primary hover:text-error absolute right-3 top-3"
+              type="button"
+              aria-label="Remove image"
+            >
+              <FaTrash aria-hidden="true" />
+              <span className="sr-only">Remove image</span>
+            </button>
+            
+            <div className="flex items-center gap-3">
+              <div className="w-12 h-12 overflow-hidden rounded-md">
+                <img 
+                  src={imagePreview} 
+                  alt="Preview" 
+                  className="w-full h-full object-cover" 
+                />
+              </div>
+              <div>
+                <p className="font-medium">Image selected</p>
+                <p className="text-sm text-gray-500">
+                  Click to remove and upload a different image
+                </p>
+              </div>
+            </div>
+          </div>
+        )}
+        
         <input
           type="file"
+          ref={fileInputRef}
           id="image"
           name="image"
           accept="image/jpeg,image/png,image/webp"
           onChange={handleFileSelect}
           className="hidden"
         />
-        
-        {!imagePreview ? (
-          <button
-            type="button"
-            onClick={() => document.getElementById('image').click()}
-            className="w-full h-full py-4 flex flex-col items-center cursor-pointer bg-transparent"
-            aria-label="Upload image"
-          >
-            <FaCloudUploadAlt className="mx-auto text-3xl text-gray-400" />
-            <p className="mt-2">Click to upload an image</p>
-            <p className="text-xs text-gray-500">JPG, PNG or WebP (max 5MB)</p>
-          </button>
-        ) : (
-          <div className="relative">
-            <img 
-              src={imagePreview} 
-              alt="Preview" 
-              className="w-full h-48 object-cover rounded-lg" 
-            />
-            <button
-              type="button"
-              className="absolute top-2 right-2 bg-error text-white rounded-full p-1"
-              onClick={() => {
-                setImagePreview(null);
-                setFieldValue('image', null);
-              }}
-              aria-label="Remove image"
-            >
-              <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
-                <line x1="18" y1="6" x2="6" y2="18"></line>
-                <line x1="6" y1="6" x2="18" y2="18"></line>
-              </svg>
-            </button>
-          </div>
-        )}
       </div>
     );
   };
@@ -374,41 +425,39 @@ export function NewSessionModal({ isOpen, onClose, onSubmit }) {
                 />
               </FormField>
             </div>
-            <div className="bg-base-200 p-3 rounded-lg">
-              <div className="flex items-center mb-3">
-                <input
-                  type="checkbox"
-                  id="requires_registration"
-                  name="requires_registration"
-                  checked={values.requires_registration}
-                  onChange={handleChangeWithStop}
-                  className="checkbox checkbox-primary"
-                />
-                <label htmlFor="requires_registration" className="ml-2 block font-medium">
-                  Require registration
-                </label>
-              </div>
-
-              {values.requires_registration && (
-                <div>
-                  <label htmlFor="max_participants" className="block text-sm font-medium mb-1">
-                    Maximum participants (0 = unlimited)
-                  </label>
+            
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+              <FormField label="Registration" id="requires_registration">
+                <div className="flex items-center">
                   <input
-                    type="number"
-                    id="max_participants"
-                    name="max_participants"
-                    value={values.max_participants}
+                    type="checkbox"
+                    id="requires_registration"
+                    name="requires_registration"
+                    checked={values.requires_registration}
                     onChange={handleChangeWithStop}
-                    min="0"
-                    className="input input-bordered w-full"
+                    className="checkbox checkbox-primary mr-2"
                   />
-                  <p className="text-xs text-gray-500 mt-1">
-                    Set to 0 for unlimited participants
-                  </p>
+                  <label htmlFor="requires_registration" className="block font-medium">
+                    Require registration
+                  </label>
                 </div>
-              )}
+              </FormField>
+              
+              <FormField label="Maximum participants" id="max_participants">
+                <input
+                  type="number"
+                  id="max_participants"
+                  name="max_participants"
+                  value={values.max_participants === 0 ? "" : values.max_participants}
+                  onChange={handleChangeWithStop}
+                  min="0"
+                  disabled={!values.requires_registration}
+                  className="input input-bordered w-full"
+                  placeholder="Enter the maximum number of participants"
+                />
+              </FormField>
             </div>
+            
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
               <FormField label="Activity Owner" id="activity_owner">
                 <input
