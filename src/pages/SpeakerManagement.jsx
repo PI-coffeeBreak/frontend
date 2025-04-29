@@ -1,46 +1,94 @@
 import React, { useEffect, useState } from 'react';
-import { FiUser, FiRefreshCw, FiTrash2 } from 'react-icons/fi';
+import { FiUser, FiRefreshCw, FiTrash2, FiSearch } from 'react-icons/fi';
 import { useSpeakers } from '../contexts/SpeakerContext';
+import { useNotification } from '../contexts/NotificationContext';
+import { useActivities } from '../contexts/ActivitiesContext';
 
 const SpeakerManagement = () => {
   const { speakers, loading, error, fetchSpeakers, addSpeaker, deleteSpeaker } = useSpeakers();
+  const { activities, fetchActivities } = useActivities();
+  const { showNotification } = useNotification();
   const [formData, setFormData] = useState({
     name: '',
     title: '',
-    image: null
+    image: null,
+    activity_id: null
   });
+  const [imagePreview, setImagePreview] = useState(null);
+  const [activitySearchQuery, setActivitySearchQuery] = useState('');
+  const [showActivityDropdown, setShowActivityDropdown] = useState(false);
 
   useEffect(() => {
     fetchSpeakers();
-  }, []); // Only fetch on mount
+    fetchActivities();
+  }, []);
+
+  useEffect(() => {
+    console.log("Current speakers:", speakers);
+  }, [speakers]);
 
   const handleInputChange = (e) => {
     const { name, value, files } = e.target;
     if (name === 'image') {
-      setFormData(prev => ({ ...prev, [name]: files[0] }));
+      if (files && files[0]) {
+        setFormData(prev => ({ ...prev, [name]: files[0] }));
+        
+        const reader = new FileReader();
+        reader.onloadend = () => {
+          setImagePreview(reader.result);
+        };
+        reader.readAsDataURL(files[0]);
+      }
     } else {
       setFormData(prev => ({ ...prev, [name]: value }));
     }
   };
 
+  const handleActivitySearch = (e) => {
+    setActivitySearchQuery(e.target.value);
+    setShowActivityDropdown(true);
+  };
+
+  const selectActivity = (activity) => {
+    setFormData(prev => ({ 
+      ...prev, 
+      activity_id: activity.id 
+    }));
+    setActivitySearchQuery(activity.name);
+    setShowActivityDropdown(false);
+  };
+
+  const clearSelectedActivity = () => {
+    setFormData(prev => ({ ...prev, activity_id: null }));
+    setActivitySearchQuery('');
+  };
+
+  const resetForm = () => {
+    setFormData({ name: '', title: '', image: null, activity_id: null });
+    setImagePreview(null);
+    setActivitySearchQuery('');
+    const fileInput = document.querySelector('input[type="file"]');
+    if (fileInput) fileInput.value = '';
+  };
+
   const handleSubmit = async (e) => {
     e.preventDefault();
+    
+    if (!formData.name.trim()) {
+      showNotification('Speaker name is required', 'error');
+      return;
+    }
+    
+    showNotification('Adding speaker...', 'info');
     
     const result = await addSpeaker(formData);
     
     if (result.success) {
-      // Show success toast
-      const toast = document.getElementById('success-toast');
-      if (toast) toast.click();
-      
-      // Reset form
-      setFormData({ name: '', title: '', image: null });
-      const fileInput = document.querySelector('input[type="file"]');
-      if (fileInput) fileInput.value = '';
+      showNotification('Speaker added successfully!', 'success');
+      resetForm();
     } else {
-      // Show error toast
-      const toast = document.getElementById('error-toast');
-      if (toast) toast.click();
+      showNotification(result.error || 'Failed to add speaker', 'error');
+      console.error('Speaker addition failed:', result);
     }
   };
 
@@ -48,16 +96,13 @@ const SpeakerManagement = () => {
     if (window.confirm('Are you sure you want to delete this speaker?')) {
       const result = await deleteSpeaker(id);
       if (result.success) {
-        const toast = document.getElementById('success-toast');
-        if (toast) toast.click();
+        showNotification('Speaker deleted successfully!', 'success');
       } else {
-        const toast = document.getElementById('error-toast');
-        if (toast) toast.click();
+        showNotification(result.error || 'Failed to delete speaker', 'error');
       }
     }
   };
 
-  // Function to generate initials from name
   const getInitials = (name) => {
     return name
       .split(' ')
@@ -94,6 +139,10 @@ const SpeakerManagement = () => {
     );
   }
 
+  const filteredActivities = activities.filter(activity =>
+    activity.name.toLowerCase().includes(activitySearchQuery.toLowerCase())
+  );
+
   return (
     <div className="p-6">
       <h1 className="text-3xl font-bold mb-8">Speaker Management</h1>
@@ -129,6 +178,62 @@ const SpeakerManagement = () => {
             required
           />
         </div>
+        
+        <div className="form-control w-full max-w-md mb-4">
+          <label htmlFor="activity-search" className="label">
+            <span className="label-text">Associated Activity (optional)</span>
+          </label>
+          <div className="relative">
+            <div className="input-group w-full">
+              <input
+                id="activity-search"
+                type="text"
+                value={activitySearchQuery}
+                onChange={handleActivitySearch}
+                onClick={() => setShowActivityDropdown(true)}
+                placeholder="Search for an activity"
+                className="input input-bordered w-full pl-10"
+              />
+              <FiSearch className="absolute left-3 top-3 text-gray-400" />
+              {formData.activity_id && (
+                <button
+                  type="button"
+                  className="btn btn-square btn-sm"
+                  onClick={clearSelectedActivity}
+                >
+                  ×
+                </button>
+              )}
+            </div>
+            
+            {showActivityDropdown && activitySearchQuery && (
+              <ul className="menu dropdown-content z-[1] p-2 shadow bg-base-100 rounded-box w-full mt-1 max-h-60 overflow-auto">
+                {filteredActivities.length > 0 ? (
+                  filteredActivities.map(activity => (
+                    <li key={activity.id}>
+                      <button
+                        type="button"
+                        onClick={() => selectActivity(activity)}
+                        className="w-full text-left py-2"
+                      >
+                        {activity.name}
+                      </button>
+                    </li>
+                  ))
+                ) : (
+                  <li className="text-sm text-gray-500 py-2 px-4">No activities found</li>
+                )}
+              </ul>
+            )}
+          </div>
+          {formData.activity_id && (
+            <div className="mt-2">
+              <span className="badge badge-primary">
+                Selected activity ID: {formData.activity_id}
+              </span>
+            </div>
+          )}
+        </div>
 
         <div className="form-control w-full max-w-md mb-6">
           <label htmlFor="speaker-image" className="label">
@@ -142,6 +247,15 @@ const SpeakerManagement = () => {
             accept="image/*"
             className="file-input file-input-bordered w-full"
           />
+          {imagePreview && (
+            <div className="mt-2">
+              <div className="avatar">
+                <div className="w-24 h-24 rounded-full">
+                  <img src={imagePreview} alt="Preview" />
+                </div>
+              </div>
+            </div>
+          )}
         </div>
 
         <button 
@@ -187,6 +301,7 @@ const SpeakerManagement = () => {
                                 alt={speaker.name}
                                 className="w-full h-full object-cover rounded-full"
                                 onError={(e) => {
+                                  console.log('Image load error for:', speaker.name, speaker.image_uuid);
                                   e.target.onerror = null;
                                   e.target.style.display = 'none';
                                   e.target.parentElement.textContent = getInitials(speaker.name);
@@ -220,22 +335,8 @@ const SpeakerManagement = () => {
           )}
         </div>
       </div>
-
-      {/* Success Toast */}
-      <div className="toast toast-end">
-        <div id="success-toast" className="alert alert-success hidden">
-          <span>Operation completed successfully!</span>
-        </div>
-      </div>
-
-      {/* Error Toast */}
-      <div className="toast toast-end">
-        <div id="error-toast" className="alert alert-error hidden">
-          <span>{error || 'Operation failed. Please try again.'}</span>
-        </div>
-      </div>
     </div>
   );
 };
 
-export default SpeakerManagement; 
+export default SpeakerManagement;
