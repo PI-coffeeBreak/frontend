@@ -1,4 +1,4 @@
-import React, { useState, useCallback, useEffect } from "react";
+import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { arrayMove } from "@dnd-kit/sortable";
 import { useComponents } from "../../contexts/ComponentsContext";
@@ -32,11 +32,12 @@ export function CreatePage() {
     const { t } = useTranslation();
     const navigate = useNavigate();
     const { keycloak } = useKeycloak();
-    const { createPage, isLoading: isPagesLoading } = usePages();
+    const { savePage, isLoading: isPagesLoading } = usePages();
     const { getDefaultPropsForComponent, getComponentSchema, isLoading: isComponentsLoading } = useComponents();
     const { showNotification } = useNotification();
 
-    const [title, setTitle] = useState("");
+    const [page, setPage] = useState({ title: "" });
+    const [hasUnsavedChanges, setHasUnsavedChanges] = useState(true);
     const {
         sections,
         setSections,
@@ -45,38 +46,6 @@ export function CreatePage() {
         handleRemoveSection,
         handleAddSection,
     } = useSections([]);
-    const [hasUnsavedChanges, setHasUnsavedChanges] = useState(false);
-
-    const checkForUnsavedChanges = useCallback(() => {
-        return title !== "" || sections.length > 0;
-    }, [title, sections]);
-
-    useEffect(() => {
-        const hasChanges = checkForUnsavedChanges();
-        setHasUnsavedChanges(hasChanges);
-    }, [title, sections, checkForUnsavedChanges]);
-
-    useEffect(() => {
-        const handleBeforeUnload = (e) => {
-            if (hasUnsavedChanges) {
-                e.preventDefault();
-                e.returnValue = '';
-            }
-        };
-
-        window.addEventListener('beforeunload', handleBeforeUnload);
-        return () => window.removeEventListener('beforeunload', handleBeforeUnload);
-    }, [hasUnsavedChanges]);
-
-    const handleNavigateAway = (destination) => {
-        if (hasUnsavedChanges) {
-            const userConfirmed = window.confirm(t('pageEditor.create.unsavedChanges'));
-            if (!userConfirmed) {
-                return;
-            }
-        }
-        navigate(destination);
-    };
 
     const handleDragEnd = (event) => {
         const { active, over } = event;
@@ -89,28 +58,40 @@ export function CreatePage() {
         }
     };
 
-    const handleCreatePage = () => {
-        if (!title.trim()) {
-            showNotification(t('pageEditor.create.titleRequired'), "error");
-            return;
+    const handleSavePage = async () => {
+        try {
+            // Use the shared utility function to prepare components
+            const componentsWithFullProps = prepareComponentsWithDefaults(sections, getComponentSchema);
+
+            const pageData = {
+                title: page.title || "New Page",
+                components: componentsWithFullProps,
+            };
+
+            console.log("Saving page with components:", pageData.components);
+
+            // Save the page first
+            await savePage(pageData);
+
+            // Create menu option for the new page
+            const menuOption = {
+                icon: "FaFile", // Default icon for pages
+                label: pageData.title,
+                href: pageData.title.toLowerCase().replace(/\s+/g, '-') // Convert title to URL-friendly format
+            };
+
+            const axiosInstance = axiosWithAuth(keycloak);
+            await axiosInstance.post(
+                `${import.meta.env.VITE_API_BASE_URL}/ui/menu/option`,
+                menuOption
+            );
+
+            showNotification(t('pageEditor.create.createSuccess'), "success");
+            navigate("/instantiate/eventmaker/pages");
+        } catch (error) {
+            console.error("Failed to create the page or menu option.", error);
+            showNotification(t('pageEditor.create.createError'), "error");
         }
-
-        const componentsWithFullProps = prepareComponentsWithDefaults(sections, getComponentSchema);
-
-        const pageData = {
-            title: title.trim(),
-            components: componentsWithFullProps
-        };
-
-        createPage(pageData)
-            .then(() => {
-                showNotification(t('pageEditor.create.createSuccess'), "success");
-                navigate("/instantiate/eventmaker/pages");
-            })
-            .catch((error) => {
-                console.error("Failed to create the page.", error);
-                showNotification(t('pageEditor.create.createError'), "error");
-            });
     };
 
     if (isComponentsLoading) {
@@ -127,8 +108,8 @@ export function CreatePage() {
             />
 
             <PageTitleInput
-                title={title}
-                onChange={setTitle}
+                title={page.title}
+                onChange={(newTitle) => setPage({ ...page, title: newTitle })}
                 placeholder={t('pageEditor.common.titlePlaceholder')}
             />
 
@@ -141,6 +122,7 @@ export function CreatePage() {
                 onAddSection={handleAddSection}
                 getDefaultPropsForComponent={getDefaultPropsForComponent}
                 modifiers={[restrictToVerticalAxis]}
+                DynamicComponentConfiguration={MemoizedDynamicComponentConfiguration}
                 addComponentText={t('pageEditor.common.addComponent')}
                 removeComponentText={t('pageEditor.common.removeComponent')}
                 dragToReorderText={t('pageEditor.common.dragToReorder')}
@@ -150,8 +132,8 @@ export function CreatePage() {
             />
 
             <PageActions
-                onBack={() => handleNavigateAway("/instantiate/eventmaker/pages")}
-                onSave={handleCreatePage}
+                onBack={() => navigate("/instantiate/eventmaker/pages")}
+                onSave={handleSavePage}
                 isLoading={isPagesLoading}
                 hasUnsavedChanges={hasUnsavedChanges}
                 saveButtonText={t('pageEditor.create.saveButton')}
