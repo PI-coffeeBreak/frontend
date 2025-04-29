@@ -13,6 +13,7 @@ import Activities from "./pages/Activities.jsx";
 import Schedule from "./pages/Schedule.jsx";
 import Plugins from "./pages/Plugins.jsx";
 import Colors from "./pages/Colors.jsx";
+import keycloak from "./keycloak.js";
 import PrivateRoute from "./PrivateRoute.js";
 import { PagesList } from "./pages/PagesList.jsx";
 import { MenuEditor } from "./pages/MenuEditor.jsx";
@@ -24,7 +25,20 @@ import { EditPage } from "./pages/page_editor/EditPage.jsx";
 import AuthRedirect from "./pages/AuthRedirect";
 import { Sponsors } from "./pages/Sponsors.jsx";
 import { EventEditor } from "./pages/EventEditor.jsx";
-import Provider from "./contexts/Provider.jsx";
+
+import { ActivitiesProvider } from "./contexts/ActivitiesContext.jsx";
+import { PluginsProvider } from "./contexts/PluginsContext.jsx";
+import { ThemeProvider } from "./contexts/ThemeContext";
+import { UsersProvider } from "./contexts/UsersContext.jsx";
+import { PagesProvider } from "./contexts/PagesContext.jsx";
+import { NotificationProvider } from "./contexts/NotificationContext.jsx";
+import { ComponentsProvider } from "./contexts/ComponentsContext.jsx";
+import { MenuProvider } from "./contexts/MenuContext.jsx";
+import { ColorThemeProvider } from './contexts/ColorThemeContext';
+import { AlertsProvider } from "./contexts/AlertsContext.jsx";
+import { EventProvider } from "./contexts/EventContext.jsx";
+import { MediaProvider } from "./contexts/MediaContext.jsx";
+
 import Management from "./pages/Management.jsx";
 
 export default function App() {
