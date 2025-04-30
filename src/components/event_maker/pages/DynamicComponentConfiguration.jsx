@@ -12,35 +12,15 @@ import * as Components from "./components";
 import { useTranslation } from "react-i18next";
 
 function AnyOfInput({ propertyName, schemas, currentValue, onPropertyChange }) {
-    const { t } = useTranslation();
-    
-    // Create options for the type selector with consistent labels
-    const TYPE_LABELS = {
-        MEDIA: t('components.dynamicComponentConfiguration.uploadMedia'),
-        URL: t('components.dynamicComponentConfiguration.externalUrl')
-    };
-
     const typeOptions = schemas.map((schema, index) => {
-        // Handle Media type
-        if (schema.$ref === '#/$defs/Media') {
-            return {
-                value: index.toString(),
-                label: TYPE_LABELS.MEDIA,
-                isMedia: true
-            };
-        }
-        // Handle URL/string type
-        if (schema.type === 'string') {
-            return {
-                value: index.toString(),
-                label: TYPE_LABELS.URL,
-                isString: true
-            };
-        }
-        // Default case
+        const isMedia  = schema.$ref === '#/$defs/Media';
+        const isString = schema.type  === 'string';
+        const defaultLabel = schema.title || schema.type || (schema.$ref ? (schema.$ref).split('/').pop() : '');
         return {
-            value: index.toString(),
-            label: schema.title || schema.type
+          value: index.toString(),
+          label: defaultLabel,
+          isMedia,
+          isString
         };
     });
 
@@ -187,6 +167,67 @@ function formatEnumOptions(enumValues) {
     }));
 }
 
+// Create array input that delegates each item to PropertyInput
+function createArrayInput(propertyName, label, value, onChange, propertySchema, isRequired, schema) {
+    console.log('Rendering ArrayInput for:', propertyName);
+    const itemsSchema = propertySchema.items;
+    const items = Array.isArray(value) ? value : [];
+    const handleItemChange = (newValue, index, type = 'text') => {
+        const newArr = [...items];
+        newArr[index] = newValue;
+        onChange({ target: { name: propertyName, value: newArr, type } });
+    };
+    return (
+        <div key={propertyName} className="mb-2">
+            <label className="block text-xs font-medium text-gray-700">{`${label}${isRequired ? " *" : ""}`}</label>
+            {items.map((item, index) => (
+                <div key={index} className="flex items-center space-x-2 mt-1">
+                    <PropertyInput
+                        propertyName=""
+                        propertySchema={itemsSchema}
+                        value={item}
+                        onChange={e => handleItemChange(e.target.value, index, e.target.type)}
+                        isRequired={false}
+                        schema={schema}
+                    />
+                    <button type="button" onClick={() => {
+                        const newArr = [...items];
+                        newArr.splice(index, 1);
+                        onChange({ target: { name: propertyName, value: newArr, type: 'array' } });
+                    }} className="btn btn-sm btn-error">
+                        Remove
+                    </button>
+                </div>
+            ))}
+            <button type="button" onClick={() => {
+                const newArr = [...items];
+                let defaultItem;
+                switch (itemsSchema.type) {
+                    case 'number':
+                    case 'integer':
+                        defaultItem = 0;
+                        break;
+                    case 'boolean':
+                        defaultItem = false;
+                        break;
+                    case 'object':
+                        defaultItem = {};
+                        break;
+                    case 'array':
+                        defaultItem = [];
+                        break;
+                    default:
+                        defaultItem = '';
+                }
+                newArr.push(defaultItem);
+                onChange({ target: { name: propertyName, value: newArr, type: 'array' } });
+            }} className="mt-1 btn btn-sm btn-primary">
+                Add item
+            </button>
+        </div>
+    );
+}
+
 function handleEnumReference(propertyName, schema, propertySchema, value, onChange, label, isRequired) {
     const enumName = propertySchema.$ref.split('/').pop();
     const enumDef = schema?.$defs?.[enumName];
@@ -205,6 +246,67 @@ function handleEnumReference(propertyName, schema, propertySchema, value, onChan
         onChange,
         propertySchema,
         isRequired
+    );
+}
+
+// Add centralized input renderer
+function renderInput(propertyName, propertySchema, value, onChange, isRequired, schema) {
+    const label = propertySchema.title || propertyName;
+    const description = propertySchema.description;
+
+    // Handle anyOf schemas
+    if (propertySchema.anyOf) {
+        return (
+            <AnyOfInput
+                key={propertyName}
+                propertyName={propertyName}
+                schemas={propertySchema.anyOf}
+                currentValue={value}
+                onPropertyChange={onChange}
+                schema={schema}
+                isRequired={isRequired}
+            />
+        );
+    }
+
+    // Handle Media type reference
+    if (propertySchema.$ref === '#/$defs/Media') {
+        return createMediaInput(propertyName, label, value, onChange, isRequired);
+    }
+
+    // Handle enum references
+    if (propertySchema.$ref) {
+        return handleEnumReference(propertyName, schema, propertySchema, value, onChange, label, isRequired);
+    }
+
+    // Handle direct enums
+    if (propertySchema.enum) {
+        return createSelectInput(
+            propertyName,
+            label,
+            value,
+            formatEnumOptions(propertySchema.enum),
+            onChange,
+            propertySchema,
+            isRequired
+        );
+    }
+
+    // Handle array types
+    if (propertySchema.type === 'array') {
+        return createArrayInput(propertyName, label, value, onChange, propertySchema, isRequired, schema);
+    }
+
+    // Fallback to basic inputs (string, boolean, number, integer)
+    return createBasicInput(
+        propertySchema.type,
+        propertyName,
+        label,
+        value,
+        onChange,
+        propertySchema,
+        isRequired,
+        description
     );
 }
 
@@ -256,50 +358,15 @@ function createBasicInput(type, propertyName, label, value, onChange, propertySc
 }
 
 function PropertyInput({ propertyName, propertySchema, value, onChange, isRequired, schema }) {
-    console.log('PropertyInput called with:', {
-        propertyName,
-        propertySchema,
-        value,
-        isRequired
-    });
+    console.log('PropertyInput called with:', { propertyName, propertySchema, value, isRequired });
 
-    const label = propertySchema.title || propertyName;
-    const description = propertySchema.description;
-
-    // Handle Media type
-    if (propertySchema.$ref === '#/$defs/Media') {
-        return createMediaInput(propertyName, label, value, onChange, isRequired);
+    // Skip reserved properties, const, and const types
+    if (["name", "component_id"].includes(propertyName) || propertySchema.const !== undefined || propertySchema.type === "const") {
+        return null;
     }
 
-    // Handle enum references
-    if (propertySchema.$ref) {
-        return handleEnumReference(propertyName, schema, propertySchema, value, onChange, label, isRequired);
-    }
-
-    // Handle direct enums
-    if (propertySchema.enum) {
-        return createSelectInput(
-            propertyName,
-            label,
-            value,
-            formatEnumOptions(propertySchema.enum),
-            onChange,
-            propertySchema,
-            isRequired
-        );
-    }
-
-    // Handle basic input types
-    return createBasicInput(
-        propertySchema.type,
-        propertyName,
-        label,
-        value,
-        onChange,
-        propertySchema,
-        isRequired,
-        description
-    );
+    // Delegate to unified renderer
+    return renderInput(propertyName, propertySchema, value, onChange, isRequired, schema);
 }
 
 export function DynamicComponentConfiguration({ id, componentData = { name: "", props: {} }, onComponentTypeChange, onComponentPropsChange, onRemove }) {
@@ -374,48 +441,6 @@ export function DynamicComponentConfiguration({ id, componentData = { name: "", 
         );
     };
 
-    const renderPropertyInput = (propertyName, propertySchema, value) => {
-        console.log('Rendering property input for:', {
-            propertyName,
-            propertySchema,
-            value
-        });
-
-        // Skip reserved, const properties, and properties with const values
-        if (["name", "component_id"].includes(propertyName) ||
-            propertySchema.const !== undefined ||
-            propertySchema.type === "const") {
-            return null;
-        }
-
-        const isRequired = schema.required?.includes(propertyName);
-
-        // Handle anyOf
-        if (propertySchema.anyOf) {
-            return (
-                <AnyOfInput
-                    key={propertyName}
-                    propertyName={propertyName}
-                    schemas={propertySchema.anyOf}
-                    currentValue={value}
-                    onPropertyChange={handlePropertyChange}
-                />
-            );
-        }
-
-        return (
-            <PropertyInput
-                key={propertyName}
-                propertyName={propertyName}
-                propertySchema={propertySchema}
-                value={value}
-                onChange={handlePropertyChange}
-                isRequired={isRequired}
-                schema={schema}
-            />
-        );
-    };
-
     if (!componentData?.name) {
         return <p className="text-red-500">{t('components.dynamicComponentConfiguration.error.missingData')}</p>;
     }
@@ -462,7 +487,17 @@ export function DynamicComponentConfiguration({ id, componentData = { name: "", 
                     {!isCollapsed && schema && (
                         <div className="p-4 bg-gray-100 rounded-lg mt-2 space-y-4">
                             {editableProperties.map(([propertyName, propertySchema]) =>
-                                renderPropertyInput(propertyName, propertySchema, componentData.props[propertyName])
+                                (
+                                    <PropertyInput
+                                        key={propertyName}
+                                        propertyName={propertyName}
+                                        propertySchema={propertySchema}
+                                        value={componentData.props[propertyName]}
+                                        onChange={handlePropertyChange}
+                                        isRequired={schema.required?.includes(propertyName)}
+                                        schema={schema}
+                                    />
+                                )
                             )}
                         </div>
                     )}
