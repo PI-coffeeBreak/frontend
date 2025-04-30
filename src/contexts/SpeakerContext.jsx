@@ -8,8 +8,6 @@ const SpeakerContext = createContext();
 
 const API_ENDPOINTS = {
   SPEAKERS: `${baseUrl}/speaker-presentation-plugin/speakers/`,
-  MEDIA_REGISTER: `${baseUrl}/media/register/`,
-  MEDIA_UPLOAD: (uuid) => `${baseUrl}/media/${uuid}/`,
 };
 
 export const SpeakerProvider = ({ children }) => {
@@ -34,13 +32,12 @@ export const SpeakerProvider = ({ children }) => {
           id: speaker.id,
           name: speaker.name || 'Unnamed Speaker',
           description: speaker.description || '',
-          image_uuid: speaker.image, // Map API's "image" field to "image_uuid"
+          image_uuid: speaker.image,
           activity_id: speaker.activity_id
         }));
         setSpeakers(normalizedSpeakers);
         console.log(`Successfully loaded ${normalizedSpeakers.length} speakers`);
       } else if (response.data && typeof response.data === 'object') {
-        // If it's an object with results property (common API pattern)
         const dataArray = response.data.results || response.data.items || [];
         const normalizedSpeakers = dataArray.map(speaker => ({
           id: speaker.id,
@@ -52,7 +49,6 @@ export const SpeakerProvider = ({ children }) => {
         setSpeakers(normalizedSpeakers);
         console.log(`Successfully loaded ${normalizedSpeakers.length} speakers from nested data`);
       } else {
-        // If we can't determine the structure, set an empty array
         console.error('Unexpected API response structure:', response.data);
         setSpeakers([]);
       }
@@ -72,89 +68,40 @@ export const SpeakerProvider = ({ children }) => {
     }
   };
 
-  const uploadImage = async (file) => {
-    if (!file) return null;
-
-    try {
-      // Step 1: Register media to get UUID
-      console.log('Registering media...');
-      const registerResponse = await axiosWithAuth(keycloak).post(API_ENDPOINTS.MEDIA_REGISTER);
-      const { uuid } = registerResponse.data;
-      console.log('Media registered with UUID:', uuid);
-
-      // Step 2: Upload the file using the UUID
-      const formData = new FormData();
-      formData.append('file', file);
-
-      console.log(`Uploading file to ${API_ENDPOINTS.MEDIA_UPLOAD(uuid)}`);
-      await axiosWithAuth(keycloak).post(API_ENDPOINTS.MEDIA_UPLOAD(uuid), formData, {
-        headers: {
-          'Content-Type': 'multipart/form-data',
-        },
-      });
-      console.log('File upload complete');
-
-      return uuid;
-    } catch (error) {
-      // Detailed error logging
-      if (error.response) {
-        console.error(`Image upload error ${error.response.status}:`, error.response.data);
-      } else if (error.request) {
-        console.error('No response received for image upload:', error.request);
-      } else {
-        console.error('Error setting up image upload request:', error.message);
-      }
-      throw new Error('Failed to upload image');
-    }
-  };
-
   const addSpeaker = async (speakerData) => {
     setLoading(true);
-    setError(null); // Clear previous errors
+    setError(null);
     
     try {
-      let imageUuid = null;
-
-      if (speakerData.image) {
-        try {
-          imageUuid = await uploadImage(speakerData.image);
-        } catch (imageError) {
-          console.error('Image upload error:', imageError);
-          return { 
-            success: false, 
-            error: 'Failed to upload image. Please try again with a smaller image or different format.' 
-          };
-        }
-      }
-
-      console.log('Adding speaker with data:', {
+      // Log the exact payload being sent to the API
+      const payload = {
         name: speakerData.name,
         description: speakerData.title || '',
-        image: imageUuid
-      });
+        activity_id: speakerData.activity_id || null
+      };
       
-      // Use consistent endpoint
-      await axiosWithAuth(keycloak).post(API_ENDPOINTS.SPEAKERS, {
-        name: speakerData.name,
-        description: speakerData.title || '', // Title is used as description in the form
-        image: imageUuid || null, // Use null instead of empty string if no image
-      });
-
+      console.log('API Payload for creating speaker:', payload);
+      console.log('API URL:', API_ENDPOINTS.SPEAKERS);
+      
+      // Send the request
+      const response = await axiosWithAuth(keycloak).post(API_ENDPOINTS.SPEAKERS, payload);
+      console.log('API Response from creating speaker:', response.data);
+      
+      // Refresh the speaker list
       await fetchSpeakers();
-      return { success: true };
-    } catch (err) {
-      const errorMessage = err.response?.data?.detail || 'Failed to add speaker';
-      setError(errorMessage);
       
-      // Detailed error logging
+      // Return success with the created speaker data
+      return { success: true, data: response.data };
+    } catch (err) {
+      console.error('Error in addSpeaker:', err);
+      
+      // More detailed error logging
       if (err.response) {
-        console.error(`Add speaker error ${err.response.status}:`, err.response.data);
-      } else if (err.request) {
-        console.error('No response received when adding speaker:', err.request);
-      } else {
-        console.error('Error setting up add speaker request:', err.message);
+        console.error(`API Error (${err.response.status}):`, err.response.data);
       }
       
+      const errorMessage = err.response?.data?.detail || 'Failed to add speaker';
+      setError(errorMessage);
       return { success: false, error: errorMessage };
     } finally {
       setLoading(false);
@@ -173,12 +120,11 @@ export const SpeakerProvider = ({ children }) => {
       const updatedSpeakerData = {
         name: speakerData.name,
         description: speakerData.title || '',
-        image: imageUuid || null, // Use null instead of empty string
+        image: imageUuid || null,
       };
 
       console.log(`Updating speaker ${id} with data:`, updatedSpeakerData);
       
-      // Use consistent endpoint format
       await axiosWithAuth(keycloak).put(`${API_ENDPOINTS.SPEAKERS}${id}/`, updatedSpeakerData);
       
       await fetchSpeakers();
@@ -207,7 +153,6 @@ export const SpeakerProvider = ({ children }) => {
     try {
       console.log(`Deleting speaker ${id}...`);
       
-      // Use consistent endpoint format
       await axiosWithAuth(keycloak).delete(`${API_ENDPOINTS.SPEAKERS}${id}/`);
       
       console.log('Speaker deleted, refreshing list');

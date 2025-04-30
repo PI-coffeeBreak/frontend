@@ -3,11 +3,14 @@ import { FiUser, FiRefreshCw, FiTrash2, FiSearch } from 'react-icons/fi';
 import { useSpeakers } from '../contexts/SpeakerContext';
 import { useNotification } from '../contexts/NotificationContext';
 import { useActivities } from '../contexts/ActivitiesContext';
+import { useMedia } from '../contexts/MediaContext';
 
 const SpeakerManagement = () => {
   const { speakers, loading, error, fetchSpeakers, addSpeaker, deleteSpeaker } = useSpeakers();
   const { activities, fetchActivities } = useActivities();
   const { showNotification } = useNotification();
+  const { uploadMedia, getMediaUrl } = useMedia();
+  
   const [formData, setFormData] = useState({
     name: '',
     title: '',
@@ -22,10 +25,6 @@ const SpeakerManagement = () => {
     fetchSpeakers();
     fetchActivities();
   }, []);
-
-  useEffect(() => {
-    console.log("Current speakers:", speakers);
-  }, [speakers]);
 
   const handleInputChange = (e) => {
     const { name, value, files } = e.target;
@@ -64,11 +63,25 @@ const SpeakerManagement = () => {
   };
 
   const resetForm = () => {
-    setFormData({ name: '', title: '', image: null, activity_id: null });
+    // Reset all form fields
+    setFormData({
+      name: '',
+      title: '',
+      image: null,
+      activity_id: null
+    });
+    
+    // Clear image preview
     setImagePreview(null);
+    
+    // Reset activity search
     setActivitySearchQuery('');
-    const fileInput = document.querySelector('input[type="file"]');
-    if (fileInput) fileInput.value = '';
+    
+    // Reset file input (important!)
+    const fileInput = document.getElementById('speaker-image');
+    if (fileInput) {
+      fileInput.value = '';
+    }
   };
 
   const handleSubmit = async (e) => {
@@ -81,14 +94,41 @@ const SpeakerManagement = () => {
     
     showNotification('Adding speaker...', 'info');
     
-    const result = await addSpeaker(formData);
-    
-    if (result.success) {
-      showNotification('Speaker added successfully!', 'success');
-      resetForm();
-    } else {
-      showNotification(result.error || 'Failed to add speaker', 'error');
-      console.error('Speaker addition failed:', result);
+    try {
+      let imageToUpload = null;
+      
+      const speakerSubmitData = {
+        name: formData.name,
+        title: formData.title,
+        activity_id: formData.activity_id || null,
+      };
+      
+      // Store the image file reference for later upload
+      if (formData.image instanceof File) {
+        imageToUpload = formData.image;
+      }
+      
+      // Send speaker data to the API
+      const result = await addSpeaker(speakerSubmitData);
+      
+      if (result.success && imageToUpload) {
+        try {
+          await uploadMedia(result.data.image, imageToUpload);
+        } catch (imageError) {
+          console.error('Image upload failed:', imageError);
+          showNotification('Speaker created, but image upload failed', 'warning');
+        }
+      }
+      
+      if (result.success) {
+        showNotification('Speaker added successfully!', 'success');
+        resetForm();
+      } else {
+        showNotification(result.error || 'Failed to add speaker', 'error');
+      }
+    } catch (error) {
+      console.error('Speaker submission error:', error);
+      showNotification('An error occurred while adding the speaker', 'error');
     }
   };
 
@@ -228,8 +268,9 @@ const SpeakerManagement = () => {
           </div>
           {formData.activity_id && (
             <div className="mt-2">
-              <span className="badge badge-primary">
-                Selected activity ID: {formData.activity_id}
+              <span className="badge badge-primary flex items-center gap-1">
+                <span className="text-xs opacity-80">Activity:</span>
+                {activities.find(a => a.id === formData.activity_id)?.name || formData.activity_id}
               </span>
             </div>
           )}
@@ -286,6 +327,7 @@ const SpeakerManagement = () => {
                     <th className="uppercase text-xs font-semibold text-base-content/60">Photo</th>
                     <th className="uppercase text-xs font-semibold text-base-content/60">Name</th>
                     <th className="uppercase text-xs font-semibold text-base-content/60">Description</th>
+                    <th className="uppercase text-xs font-semibold text-base-content/60">Activity</th>
                     <th className="uppercase text-xs font-semibold text-base-content/60">Actions</th>
                   </tr>
                 </thead>
@@ -297,7 +339,7 @@ const SpeakerManagement = () => {
                           <div className="w-12 h-12 rounded-full bg-primary text-primary-content flex items-center justify-center text-lg font-semibold">
                             {speaker.image_uuid ? (
                               <img
-                                src={`${import.meta.env.VITE_API_BASE_URL}/media/${speaker.image_uuid}`}
+                                src={getMediaUrl(speaker.image_uuid)}
                                 alt={speaker.name}
                                 className="w-full h-full object-cover rounded-full"
                                 onError={(e) => {
@@ -315,6 +357,12 @@ const SpeakerManagement = () => {
                       </td>
                       <td className="font-medium">{speaker.name}</td>
                       <td className="text-base-content/70">{speaker.description}</td>
+                      <td className="text-base-content/70">
+                        {speaker.activity_id ? 
+                          (activities.find(a => a.id === speaker.activity_id)?.name || `Activity #${speaker.activity_id}`) : 
+                          '—'
+                        }
+                      </td>
                       <td>
                         <div className="flex gap-2">
                           <button
