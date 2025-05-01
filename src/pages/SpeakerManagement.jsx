@@ -1,25 +1,29 @@
 import React, { useEffect, useState } from 'react';
-import { FiUser, FiRefreshCw, FiTrash2, FiSearch } from 'react-icons/fi';
+import { FiUser, FiRefreshCw, FiTrash2, FiSearch, FiEdit, FiPlus } from 'react-icons/fi';
 import { useSpeakers } from '../contexts/SpeakerContext';
 import { useNotification } from '../contexts/NotificationContext';
 import { useActivities } from '../contexts/ActivitiesContext';
 import { useMedia } from '../contexts/MediaContext';
 
 const SpeakerManagement = () => {
-  const { speakers, loading, error, fetchSpeakers, addSpeaker, deleteSpeaker } = useSpeakers();
+  const { speakers, loading, error, fetchSpeakers, addSpeaker, updateSpeaker, deleteSpeaker } = useSpeakers();
   const { activities, fetchActivities } = useActivities();
   const { showNotification } = useNotification();
   const { uploadMedia, getMediaUrl } = useMedia();
-  
+
   const [formData, setFormData] = useState({
     name: '',
     title: '',
     image: null,
-    activity_id: null
+    activity_id: null,
   });
   const [imagePreview, setImagePreview] = useState(null);
   const [activitySearchQuery, setActivitySearchQuery] = useState('');
   const [showActivityDropdown, setShowActivityDropdown] = useState(false);
+
+  const [editMode, setEditMode] = useState(false);
+  const [editingSpeakerId, setEditingSpeakerId] = useState(null);
+  const [showSpeakerModal, setShowSpeakerModal] = useState(false);
 
   useEffect(() => {
     fetchSpeakers();
@@ -30,8 +34,8 @@ const SpeakerManagement = () => {
     const { name, value, files } = e.target;
     if (name === 'image') {
       if (files && files[0]) {
-        setFormData(prev => ({ ...prev, [name]: files[0] }));
-        
+        setFormData((prev) => ({ ...prev, [name]: files[0] }));
+
         const reader = new FileReader();
         reader.onloadend = () => {
           setImagePreview(reader.result);
@@ -39,7 +43,7 @@ const SpeakerManagement = () => {
         reader.readAsDataURL(files[0]);
       }
     } else {
-      setFormData(prev => ({ ...prev, [name]: value }));
+      setFormData((prev) => ({ ...prev, [name]: value }));
     }
   };
 
@@ -49,51 +53,81 @@ const SpeakerManagement = () => {
   };
 
   const selectActivity = (activity) => {
-    setFormData(prev => ({ 
-      ...prev, 
-      activity_id: activity.id 
+    setFormData((prev) => ({
+      ...prev,
+      activity_id: activity.id,
     }));
     setActivitySearchQuery(activity.name);
     setShowActivityDropdown(false);
   };
 
   const clearSelectedActivity = () => {
-    setFormData(prev => ({ ...prev, activity_id: null }));
+    setFormData((prev) => ({ ...prev, activity_id: null }));
     setActivitySearchQuery('');
   };
 
   const resetForm = () => {
-    // Reset all form fields
     setFormData({
       name: '',
       title: '',
       image: null,
-      activity_id: null
+      activity_id: null,
     });
-    
-    // Clear image preview
     setImagePreview(null);
-    
-    // Reset activity search
     setActivitySearchQuery('');
-    
-    // Reset file input (important!)
+    setEditMode(false);
+    setEditingSpeakerId(null);
+
+    // Reset file input
     const fileInput = document.getElementById('speaker-image');
     if (fileInput) {
       fileInput.value = '';
     }
   };
 
+  const handleShowAddModal = () => {
+    resetForm();
+    setEditMode(false);
+    setShowSpeakerModal(true);
+  };
+
+  const handleEdit = (speaker) => {
+    const activityName = speaker.activity_id
+      ? activities.find((a) => a.id === speaker.activity_id)?.name || ''
+      : '';
+
+    setFormData({
+      name: speaker.name || '',
+      title: speaker.description || '',
+      image: null,
+      image_uuid: speaker.image_uuid,
+      activity_id: speaker.activity_id || null,
+    });
+
+    setActivitySearchQuery(activityName);
+
+    if (speaker.image_uuid) {
+      setImagePreview(getMediaUrl(speaker.image_uuid));
+    } else {
+      setImagePreview(null);
+    }
+
+    setEditMode(true);
+    setEditingSpeakerId(speaker.id);
+
+    setShowSpeakerModal(true);
+  };
+
   const handleSubmit = async (e) => {
     e.preventDefault();
-    
+
     if (!formData.name.trim()) {
       showNotification('Speaker name is required', 'error');
       return;
     }
-    
-    showNotification('Adding speaker...', 'info');
-    
+
+    showNotification(`${editMode ? 'Updating' : 'Adding'} speaker...`, 'info');
+
     try {
       let imageToUpload = null;
       
@@ -102,33 +136,92 @@ const SpeakerManagement = () => {
         title: formData.title,
         activity_id: formData.activity_id || null,
       };
-      
-      // Store the image file reference for later upload
+
+      // Handle image logic based on state
       if (formData.image instanceof File) {
         imageToUpload = formData.image;
-      }
-      
-      // Send speaker data to the API
-      const result = await addSpeaker(speakerSubmitData);
-      
-      if (result.success && imageToUpload) {
-        try {
-          await uploadMedia(result.data.image, imageToUpload);
-        } catch (imageError) {
-          console.error('Image upload failed:', imageError);
-          showNotification('Speaker created, but image upload failed', 'warning');
-        }
-      }
-      
-      if (result.success) {
-        showNotification('Speaker added successfully!', 'success');
-        resetForm();
+        console.log('New image selected for upload:', formData.image.name);
+      } else if (editMode && formData.image_uuid) {
+        console.log('Keeping existing image by omitting field, UUID:', formData.image_uuid);
       } else {
-        showNotification(result.error || 'Failed to add speaker', 'error');
+        // No image
+        speakerSubmitData.image = null;
+        console.log('No image for this speaker');
+      }
+      
+      console.log('Speaker submit data:', speakerSubmitData);
+
+      try {
+        let result;
+        if (editMode) {
+          result = await updateSpeaker(editingSpeakerId, speakerSubmitData);
+        } else {
+          result = await addSpeaker(speakerSubmitData);
+        }
+
+        // Handle image upload if needed
+        if (result.success && imageToUpload) {
+          try {
+            // Get UUID from the API response
+            const imageUuid = result.data.image;
+            console.log('Uploading image with UUID from response:', imageUuid);
+            
+            if (!imageUuid) {
+              console.error('No image UUID received from API');
+              showNotification('Error: No image UUID received from API', 'error');
+              return;
+            }
+            
+            // Make sure the file is valid
+            if (!(imageToUpload instanceof File)) {
+              console.error('Invalid file object:', imageToUpload);
+              showNotification('Error: Invalid file object', 'error');
+              return;
+            }
+            
+            const isUpdate = editMode;
+            console.log(`Uploading media with isUpdate=${isUpdate}`);
+            
+            try {
+              // Try with PUT first (update existing)
+              const uploadResult = await uploadMedia(imageUuid, imageToUpload, true);
+              console.log('Image upload successful using PUT');
+              showNotification('Image uploaded successfully', 'success');
+            } catch (putError) {
+              console.error('PUT failed, trying with POST:', putError);
+              
+              // If PUT fails, try with POST as fallback
+              try {
+                const uploadResult = await uploadMedia(imageUuid, imageToUpload, false);
+                console.log('Image upload successful using POST');
+                showNotification('Image uploaded successfully', 'success');
+              } catch (postError) {
+                console.error('Both PUT and POST failed:', postError);
+                showNotification(`Speaker ${editMode ? 'updated' : 'created'}, but image upload failed`, 'warning');
+              }
+            }
+          } catch (imageError) {
+            console.error('Image upload failed:', imageError);
+            showNotification(`Speaker ${editMode ? 'updated' : 'created'}, but image upload failed`, 'warning');
+          }
+        }
+
+        if (result.success) {
+          showNotification(`Speaker ${editMode ? 'updated' : 'added'} successfully!`, 'success');
+          resetForm();
+          setShowSpeakerModal(false);
+          // Make sure to refresh speakers after changes
+          await fetchSpeakers();
+        } else {
+          showNotification(result.error || `Failed to ${editMode ? 'update' : 'add'} speaker`, 'error');
+        }
+      } catch (apiError) {
+        console.error('API request failed:', apiError);
+        showNotification(`Failed to ${editMode ? 'update' : 'create'} speaker`, 'error');
       }
     } catch (error) {
       console.error('Speaker submission error:', error);
-      showNotification('An error occurred while adding the speaker', 'error');
+      showNotification(`An error occurred while ${editMode ? 'updating' : 'adding'} the speaker`, 'error');
     }
   };
 
@@ -146,7 +239,7 @@ const SpeakerManagement = () => {
   const getInitials = (name) => {
     return name
       .split(' ')
-      .map(word => word[0])
+      .map((word) => word[0])
       .join('')
       .toUpperCase()
       .slice(0, 2);
@@ -168,10 +261,7 @@ const SpeakerManagement = () => {
           <FiRefreshCw className="w-6 h-6" />
           <span>{error}</span>
         </div>
-        <button 
-          className="btn btn-primary"
-          onClick={fetchSpeakers}
-        >
+        <button className="btn btn-primary" onClick={fetchSpeakers}>
           <FiRefreshCw className="mr-2" />
           Try Again
         </button>
@@ -179,144 +269,175 @@ const SpeakerManagement = () => {
     );
   }
 
-  const filteredActivities = activities.filter(activity =>
+  const filteredActivities = activities.filter((activity) =>
     activity.name.toLowerCase().includes(activitySearchQuery.toLowerCase())
   );
 
   return (
     <div className="p-6">
-      <h1 className="text-3xl font-bold mb-8">Speaker Management</h1>
-      
-      <form onSubmit={handleSubmit} className="card bg-base-200 p-6 mb-8">
-        <div className="form-control w-full max-w-md mb-4">
-          <label htmlFor="speaker-name" className="label">
-            <span className="label-text">Name</span>
-          </label>
-          <input
-            id="speaker-name"
-            type="text"
-            name="name"
-            value={formData.name}
-            onChange={handleInputChange}
-            placeholder="Enter speaker name"
-            className="input input-bordered w-full"
-            required
-          />
-        </div>
-
-        <div className="form-control w-full max-w-md mb-4">
-          <label htmlFor="speaker-description" className="label">
-            <span className="label-text">Description</span>
-          </label>
-          <textarea
-            id="speaker-description"
-            name="title"
-            value={formData.title}
-            onChange={handleInputChange}
-            placeholder="Enter speaker description"
-            className="textarea textarea-bordered w-full h-24"
-            required
-          />
-        </div>
-        
-        <div className="form-control w-full max-w-md mb-4">
-          <label htmlFor="activity-search" className="label">
-            <span className="label-text">Associated Activity (optional)</span>
-          </label>
-          <div className="relative">
-            <div className="input-group w-full">
-              <input
-                id="activity-search"
-                type="text"
-                value={activitySearchQuery}
-                onChange={handleActivitySearch}
-                onClick={() => setShowActivityDropdown(true)}
-                placeholder="Search for an activity"
-                className="input input-bordered w-full pl-10"
-              />
-              <FiSearch className="absolute left-3 top-3 text-gray-400" />
-              {formData.activity_id && (
-                <button
-                  type="button"
-                  className="btn btn-square btn-sm"
-                  onClick={clearSelectedActivity}
-                >
-                  ×
-                </button>
-              )}
-            </div>
-            
-            {showActivityDropdown && activitySearchQuery && (
-              <ul className="menu dropdown-content z-[1] p-2 shadow bg-base-100 rounded-box w-full mt-1 max-h-60 overflow-auto">
-                {filteredActivities.length > 0 ? (
-                  filteredActivities.map(activity => (
-                    <li key={activity.id}>
-                      <button
-                        type="button"
-                        onClick={() => selectActivity(activity)}
-                        className="w-full text-left py-2"
-                      >
-                        {activity.name}
-                      </button>
-                    </li>
-                  ))
-                ) : (
-                  <li className="text-sm text-gray-500 py-2 px-4">No activities found</li>
-                )}
-              </ul>
-            )}
-          </div>
-          {formData.activity_id && (
-            <div className="mt-2">
-              <span className="badge badge-primary flex items-center gap-1">
-                <span className="text-xs opacity-80">Activity:</span>
-                {activities.find(a => a.id === formData.activity_id)?.name || formData.activity_id}
-              </span>
-            </div>
-          )}
-        </div>
-
-        <div className="form-control w-full max-w-md mb-6">
-          <label htmlFor="speaker-image" className="label">
-            <span className="label-text">Image</span>
-          </label>
-          <input
-            id="speaker-image"
-            type="file"
-            name="image"
-            onChange={handleInputChange}
-            accept="image/*"
-            className="file-input file-input-bordered w-full"
-          />
-          {imagePreview && (
-            <div className="mt-2">
-              <div className="avatar">
-                <div className="w-24 h-24 rounded-full">
-                  <img src={imagePreview} alt="Preview" />
-                </div>
-              </div>
-            </div>
-          )}
-        </div>
-
-        <button 
-          type="submit" 
-          className="btn btn-primary w-fit"
-          disabled={loading}
-        >
+      <div className="flex justify-between items-center mb-6">
+        <h1 className="text-3xl font-bold">Speaker Management</h1>
+        <button onClick={handleShowAddModal} className="btn btn-primary">
+          <FiPlus className="mr-2" />
           Add Speaker
         </button>
-      </form>
+      </div>
+
+      {/* Speaker Form Modal (for both Add and Edit) */}
+      {showSpeakerModal && (
+        <div className="modal modal-open">
+          <div className="modal-box max-w-2xl">
+            <h3 className="font-bold text-lg mb-4">
+              {editMode ? 'Edit Speaker' : 'Add New Speaker'}
+            </h3>
+
+            <form onSubmit={handleSubmit}>
+              <div className="form-control w-full mb-4">
+                <label htmlFor="speaker-name" className="label">
+                  <span className="label-text">Name</span>
+                </label>
+                <input
+                  id="speaker-name"
+                  type="text"
+                  name="name"
+                  value={formData.name}
+                  onChange={handleInputChange}
+                  placeholder="Enter speaker name"
+                  className="input input-bordered w-full"
+                  required
+                />
+              </div>
+
+              <div className="form-control w-full mb-4">
+                <label htmlFor="speaker-description" className="label">
+                  <span className="label-text">Description</span>
+                </label>
+                <textarea
+                  id="speaker-description"
+                  name="title"
+                  value={formData.title}
+                  onChange={handleInputChange}
+                  placeholder="Enter speaker description"
+                  className="textarea textarea-bordered w-full h-24"
+                  required
+                />
+              </div>
+
+              <div className="form-control w-full mb-4">
+                <label htmlFor="activity-search" className="label">
+                  <span className="label-text">Associated Activity (optional)</span>
+                </label>
+                <div className="relative">
+                  <div className="input-group w-full">
+                    <input
+                      id="activity-search"
+                      type="text"
+                      value={activitySearchQuery}
+                      onChange={handleActivitySearch}
+                      onClick={() => setShowActivityDropdown(true)}
+                      placeholder="Search for an activity"
+                      className="input input-bordered w-full pl-10"
+                    />
+                    <FiSearch className="absolute left-3 top-3 text-gray-400" />
+                    {formData.activity_id && (
+                      <button
+                        type="button"
+                        className="btn btn-square btn-sm"
+                        onClick={clearSelectedActivity}
+                      >
+                        ×
+                      </button>
+                    )}
+                  </div>
+
+                  {showActivityDropdown && activitySearchQuery && (
+                    <ul className="menu dropdown-content z-[2] p-2 shadow bg-base-100 rounded-box w-full mt-1 max-h-60 overflow-auto">
+                      {filteredActivities.length > 0 ? (
+                        filteredActivities.map((activity) => (
+                          <li key={activity.id}>
+                            <button
+                              type="button"
+                              onClick={() => selectActivity(activity)}
+                              className="w-full text-left py-2"
+                            >
+                              {activity.name}
+                            </button>
+                          </li>
+                        ))
+                      ) : (
+                        <li className="text-sm text-gray-500 py-2 px-4">No activities found</li>
+                      )}
+                    </ul>
+                  )}
+                </div>
+                {formData.activity_id && (
+                  <div className="mt-2">
+                    <span className="badge badge-primary flex items-center gap-1">
+                      <span className="text-xs opacity-80">Activity:</span>
+                      {activities.find((a) => a.id === formData.activity_id)?.name || formData.activity_id}
+                    </span>
+                  </div>
+                )}
+              </div>
+
+              <div className="form-control w-full mb-6">
+                <label htmlFor="speaker-image" className="label">
+                  <span className="label-text">Image</span>
+                </label>
+                <input
+                  id="speaker-image"
+                  type="file"
+                  name="image"
+                  onChange={handleInputChange}
+                  accept="image/*"
+                  className="file-input file-input-bordered w-full"
+                />
+                {imagePreview && (
+                  <div className="mt-2">
+                    <div className="avatar">
+                      <div className="w-24 h-24 rounded-full">
+                        <img src={imagePreview} alt="Preview" className="w-full h-full object-cover" />
+                      </div>
+                    </div>
+                    {editMode && formData.image_uuid && !formData.image && (
+                      <p className="text-xs text-base-content/70 mt-1">
+                        Current image will be kept unless a new one is uploaded
+                      </p>
+                    )}
+                  </div>
+                )}
+              </div>
+
+              <div className="modal-action">
+                <button
+                  type="button"
+                  className="btn btn-ghost"
+                  onClick={() => {
+                    resetForm();
+                    setShowSpeakerModal(false);
+                  }}
+                >
+                  Cancel
+                </button>
+                <button type="submit" className="btn btn-primary" disabled={loading}>
+                  {editMode ? 'Save Changes' : 'Add Speaker'}
+                </button>
+              </div>
+            </form>
+          </div>
+          <div className="modal-backdrop" onClick={() => setShowSpeakerModal(false)}></div>
+        </div>
+      )}
 
       <div className="card bg-base-100 shadow-xl">
         <div className="card-body">
           <h2 className="text-2xl font-semibold mb-6">All Speakers</h2>
-          
+
           {!speakers || speakers.length === 0 ? (
             <div className="text-center py-8">
               <div className="alert alert-info">
                 <FiUser className="w-6 h-6" />
-                <span>No speakers found. Add your first speaker using the form above.</span>
+                <span>No speakers found. Add your first speaker using the button above.</span>
               </div>
             </div>
           ) : (
@@ -332,51 +453,58 @@ const SpeakerManagement = () => {
                   </tr>
                 </thead>
                 <tbody>
-                  {Array.isArray(speakers) && speakers.map((speaker) => (
-                    <tr key={speaker.id}>
-                      <td>
-                        <div className="avatar">
-                          <div className="w-12 h-12 rounded-full bg-primary text-primary-content flex items-center justify-center text-lg font-semibold">
-                            {speaker.image_uuid ? (
-                              <img
-                                src={getMediaUrl(speaker.image_uuid)}
-                                alt={speaker.name}
-                                className="w-full h-full object-cover rounded-full"
-                                onError={(e) => {
-                                  console.log('Image load error for:', speaker.name, speaker.image_uuid);
-                                  e.target.onerror = null;
-                                  e.target.style.display = 'none';
-                                  e.target.parentElement.textContent = getInitials(speaker.name);
-                                }}
-                              />
-                            ) : (
-                              getInitials(speaker.name)
-                            )}
+                  {Array.isArray(speakers) &&
+                    speakers.map((speaker) => (
+                      <tr key={speaker.id}>
+                        <td>
+                          <div className="avatar">
+                            <div className="w-12 h-12 rounded-full bg-primary text-primary-content flex items-center justify-center text-lg font-semibold">
+                              {speaker.image_uuid ? (
+                                <img
+                                  src={getMediaUrl(speaker.image_uuid)}
+                                  alt={speaker.name}
+                                  className="w-full h-full object-cover rounded-full"
+                                  onError={(e) => {
+                                    console.log('Image load error for:', speaker.name, speaker.image_uuid);
+                                    e.target.onerror = null;
+                                    e.target.style.display = 'none';
+                                    e.target.parentElement.textContent = getInitials(speaker.name);
+                                  }}
+                                />
+                              ) : (
+                                getInitials(speaker.name)
+                              )}
+                            </div>
                           </div>
-                        </div>
-                      </td>
-                      <td className="font-medium">{speaker.name}</td>
-                      <td className="text-base-content/70">{speaker.description}</td>
-                      <td className="text-base-content/70">
-                        {speaker.activity_id ? 
-                          (activities.find(a => a.id === speaker.activity_id)?.name || `Activity #${speaker.activity_id}`) : 
-                          '—'
-                        }
-                      </td>
-                      <td>
-                        <div className="flex gap-2">
-                          <button
-                            onClick={() => handleDelete(speaker.id)}
-                            className="btn btn-error btn-sm"
-                            aria-label={`Delete ${speaker.name}`}
-                          >
-                            <FiTrash2 className="w-4 h-4" />
-                            Delete
-                          </button>
-                        </div>
-                      </td>
-                    </tr>
-                  ))}
+                        </td>
+                        <td className="font-medium">{speaker.name}</td>
+                        <td className="text-base-content/70">{speaker.description}</td>
+                        <td className="text-base-content/70">
+                          {speaker.activity_id
+                            ? activities.find((a) => a.id === speaker.activity_id)?.name ||
+                              `Activity #${speaker.activity_id}`
+                            : '—'}
+                        </td>
+                        <td>
+                          <div className="flex gap-2">
+                            <button
+                              onClick={() => handleEdit(speaker)}
+                              className="btn btn-primary btn-sm"
+                              aria-label={`Edit ${speaker.name}`}
+                            >
+                              <FiEdit className="w-4 h-4" />
+                            </button>
+                            <button
+                              onClick={() => handleDelete(speaker.id)}
+                              className="btn btn-error btn-sm"
+                              aria-label={`Delete ${speaker.name}`}
+                            >
+                              <FiTrash2 className="w-4 h-4" />
+                            </button>
+                          </div>
+                        </td>
+                      </tr>
+                    ))}
                 </tbody>
               </table>
             </div>

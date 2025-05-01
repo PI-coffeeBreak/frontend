@@ -110,38 +110,54 @@ export const SpeakerProvider = ({ children }) => {
 
   const updateSpeaker = async (id, speakerData) => {
     setLoading(true);
+    setError(null);
+    
     try {
-      let imageUuid = speakerData.image_uuid;
-
-      if (speakerData.image instanceof File) {
-        imageUuid = await uploadImage(speakerData.image);
-      }
-
-      const updatedSpeakerData = {
+      // Create a clean payload with only basic fields
+      const payload = {
         name: speakerData.name,
         description: speakerData.title || '',
-        image: imageUuid || null,
+        activity_id: speakerData.activity_id || null,
       };
-
-      console.log(`Updating speaker ${id} with data:`, updatedSpeakerData);
       
-      await axiosWithAuth(keycloak).put(`${API_ENDPOINTS.SPEAKERS}${id}/`, updatedSpeakerData);
-      
-      await fetchSpeakers();
-      return { success: true };
-    } catch (err) {
-      const errorMessage = err.response?.data?.detail || 'Failed to update speaker';
-      setError(errorMessage);
-      
-      // Detailed error logging
-      if (err.response) {
-        console.error(`Update speaker error ${err.response.status}:`, err.response.data);
-      } else if (err.request) {
-        console.error('No response received when updating speaker:', err.request);
-      } else {
-        console.error('Error setting up update speaker request:', err.message);
+      // IMPORTANT CHANGE: Never include the image field when keeping the existing image
+      // Only include image field for null (remove image) or new images
+      if (speakerData.image === null) {
+        payload.image = null;
+      } else if (speakerData.image && speakerData.image !== 'keep') {
+        // Only include if we're changing the image
+        payload.image = speakerData.image;
       }
       
+      console.log(`Updating speaker ${id} with data:`, payload);
+      
+      const response = await axiosWithAuth(keycloak).patch(
+        `${API_ENDPOINTS.SPEAKERS}${id}/`, 
+        payload,
+        {
+          headers: {
+            'Content-Type': 'application/json'
+          }
+        }
+      );
+      
+      console.log('API Response from updating speaker:', response.data);
+      
+      await fetchSpeakers();
+      return { success: true, data: response.data };
+    } catch (err) {
+      console.error('Error in updateSpeaker:', err);
+      
+      if (err.response) {
+        console.error(`API Error (${err.response.status}):`, err.response.data);
+      } else if (err.request) {
+        console.error('No response received:', err.request);
+      } else {
+        console.error('Error setting up request:', err.message);
+      }
+      
+      const errorMessage = err.response?.data?.detail || 'Failed to update speaker';
+      setError(errorMessage);
       return { success: false, error: errorMessage };
     } finally {
       setLoading(false);
