@@ -562,7 +562,7 @@ const SpeakerManagement = () => {
               </div>
             </form>
           </div>
-          <div 
+          <button 
             className="modal-backdrop" 
             onClick={() => setShowSpeakerModal(false)}
             onKeyDown={(e) => {
@@ -570,10 +570,8 @@ const SpeakerManagement = () => {
                 setShowSpeakerModal(false);
               }
             }}
-            role="button"
-            tabIndex={0}
             aria-label="Close modal"
-          ></div>
+          ></button>
         </div>
       )}
 
@@ -610,10 +608,16 @@ const SpeakerManagement = () => {
               </button>
             </div>
           </div>
-          <div 
+          <button 
             className="modal-backdrop" 
             onClick={() => setConfirmModal({ show: false, message: '', onConfirm: null })}
-          ></div>
+            onKeyDown={(e) => {
+              if (e.key === 'Escape') {
+                setConfirmModal({ show: false, message: '', onConfirm: null });
+              }
+            }}
+            aria-label="Close confirmation modal"
+          ></button>
         </div>
       )}
 
