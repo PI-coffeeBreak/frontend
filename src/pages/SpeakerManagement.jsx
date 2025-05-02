@@ -15,6 +15,38 @@ const truncateText = (text, maxLength = 80) => {
   return `${truncated}...`;
 };
 
+// Extract the image handling logic to a separate function
+const prepareImageUpload = (formData, editMode) => {
+  if (formData.image instanceof File) {
+    console.log('New image selected for upload:', formData.image.name);
+    return formData.image;
+  } 
+  
+  if (editMode && formData.image_uuid) {
+    console.log('Keeping existing image by omitting field, UUID:', formData.image_uuid);
+  } else {
+    console.log('No image for this speaker');
+  }
+  
+  return null;
+};
+
+// Extract speaker data preparation to a separate function
+const prepareSpeakerData = (formData, imageToUpload) => {
+  const speakerData = {
+    name: formData.name,
+    title: formData.title,
+    activity_id: formData.activity_id || null,
+  };
+
+  // Add image null field only when explicitly removing an image
+  if (!imageToUpload && !formData.image_uuid) {
+    speakerData.image = null;
+  }
+  
+  return speakerData;
+};
+
 const SpeakerManagement = () => {
   const { speakers, loading, error, fetchSpeakers, addSpeaker, updateSpeaker, deleteSpeaker } = useSpeakers();
   const { activities, fetchActivities } = useActivities();
@@ -154,49 +186,26 @@ const SpeakerManagement = () => {
     showNotification(`${editMode ? 'Updating' : 'Adding'} speaker...`, 'info');
 
     try {
-      let imageToUpload = null;
+      // Prepare data
+      const imageToUpload = prepareImageUpload(formData, editMode);
+      const speakerData = prepareSpeakerData(formData, imageToUpload);
       
-      const speakerSubmitData = {
-        name: formData.name,
-        title: formData.title,
-        activity_id: formData.activity_id || null,
-      };
-
-      // Handle image logic based on state
-      if (formData.image instanceof File) {
-        imageToUpload = formData.image;
-        console.log('New image selected for upload:', formData.image.name);
-      } else if (editMode && formData.image_uuid) {
-        console.log('Keeping existing image by omitting field, UUID:', formData.image_uuid);
-      } else {
-        // No image
-        speakerSubmitData.image = null;
-        console.log('No image for this speaker');
-      }
-      
-      const result = editMode 
-        ? await updateSpeaker(editingSpeakerId, speakerSubmitData)
-        : await addSpeaker(speakerSubmitData);
+      // Submit to API
+      const result = editMode
+        ? await updateSpeaker(editingSpeakerId, speakerData)
+        : await addSpeaker(speakerData);
 
       if (!result.success) {
         showNotification(result.error || `Failed to ${editMode ? 'update' : 'add'} speaker`, 'error');
         return;
       }
 
+      // Handle image upload if needed
       if (result.success && imageToUpload) {
-        const imageUuid = result.data.image;
-        
-        if (!imageUuid) {
-          console.error('No image UUID received from API');
-          showNotification('Error: No image UUID received from API', 'error');
-        } else if (!(imageToUpload instanceof File)) {
-          console.error('Invalid file object:', imageToUpload);
-          showNotification('Error: Invalid file object', 'error');
-        } else {
-          await uploadSpeakerImage(imageUuid, imageToUpload);
-        }
+        await handleImageUpload(result.data.image, imageToUpload);
       }
 
+      // Success handling
       showNotification(`Speaker ${editMode ? 'updated' : 'added'} successfully!`, 'success');
       resetForm();
       setShowSpeakerModal(false);
@@ -226,6 +235,22 @@ const SpeakerManagement = () => {
         showNotification('Speaker saved, but image upload failed', 'warning');
       }
     }
+  };
+
+  const handleImageUpload = async (imageUuid, imageFile) => {
+    if (!imageUuid) {
+      console.error('No image UUID received from API');
+      showNotification('Error: No image UUID received from API', 'error');
+      return;
+    }
+    
+    if (!(imageFile instanceof File)) {
+      console.error('Invalid file object:', imageFile);
+      showNotification('Error: Invalid file object', 'error');
+      return;
+    }
+    
+    await uploadSpeakerImage(imageUuid, imageFile);
   };
 
   const showConfirmation = (message, onConfirm) => {
