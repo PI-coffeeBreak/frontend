@@ -621,7 +621,6 @@ const SpeakerManagement = () => {
                   }
                 }
                 }
-                role="button"
                 tabIndex={0}
                 aria-label="Cancel confirmation"
               >
