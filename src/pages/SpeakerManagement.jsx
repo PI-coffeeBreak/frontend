@@ -58,7 +58,7 @@ const SpeakerManagement = () => {
   const handleInputChange = (e) => {
     const { name, value, files } = e.target;
     if (name === 'image') {
-      if (files && files[0]) {
+      if (files?.[0]) {
         setFormData((prev) => ({ ...prev, [name]: files[0] }));
 
         const reader = new FileReader();
@@ -291,7 +291,7 @@ const SpeakerManagement = () => {
     ? speakers.filter(speaker => {
         const matchesSearch = searchQuery === '' || 
           speaker.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
-          (speaker.description && speaker.description.toLowerCase().includes(searchQuery.toLowerCase()));
+          (speaker.description?.toLowerCase().includes(searchQuery.toLowerCase()));
         
         const matchesActivity = filterActivity === null || speaker.activity_id === filterActivity;
         
@@ -562,7 +562,18 @@ const SpeakerManagement = () => {
               </div>
             </form>
           </div>
-          <div className="modal-backdrop" onClick={() => setShowSpeakerModal(false)}></div>
+          <div 
+            className="modal-backdrop" 
+            onClick={() => setShowSpeakerModal(false)}
+            onKeyDown={(e) => {
+              if (e.key === 'Escape') {
+                setShowSpeakerModal(false);
+              }
+            }}
+            role="button"
+            tabIndex={0}
+            aria-label="Close modal"
+          ></div>
         </div>
       )}
 
@@ -576,6 +587,15 @@ const SpeakerManagement = () => {
               <button 
                 className="btn btn-ghost" 
                 onClick={() => setConfirmModal({ show: false, message: '', onConfirm: null })}
+                onKeyDown={(e) => {
+                  if (e.key === 'Enter') {
+                    setConfirmModal({ show: false, message: '', onConfirm: null });
+                  }
+                }
+                }
+                role="button"
+                tabIndex={0}
+                aria-label="Cancel confirmation"
               >
                 Cancel
               </button>
