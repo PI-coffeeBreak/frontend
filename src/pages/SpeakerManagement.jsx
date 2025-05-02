@@ -25,6 +25,12 @@ const SpeakerManagement = () => {
   const [editingSpeakerId, setEditingSpeakerId] = useState(null);
   const [showSpeakerModal, setShowSpeakerModal] = useState(false);
 
+  const [searchQuery, setSearchQuery] = useState('');
+  const [filterActivity, setFilterActivity] = useState(null);
+
+  const [currentPage, setCurrentPage] = useState(1);
+  const itemsPerPage = 7;
+
   useEffect(() => {
     fetchSpeakers();
     fetchActivities();
@@ -245,6 +251,25 @@ const SpeakerManagement = () => {
       .slice(0, 2);
   };
 
+  const filteredSpeakers = Array.isArray(speakers) 
+    ? speakers.filter(speaker => {
+        const matchesSearch = searchQuery === '' || 
+          speaker.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
+          (speaker.description && speaker.description.toLowerCase().includes(searchQuery.toLowerCase()));
+        
+        const matchesActivity = filterActivity === null || speaker.activity_id === filterActivity;
+        
+        return matchesSearch && matchesActivity;
+      })
+    : [];
+
+  // Calculate pagination
+  const totalPages = Math.ceil((filteredSpeakers?.length || 0) / itemsPerPage);
+  const paginatedSpeakers = filteredSpeakers.slice(
+    (currentPage - 1) * itemsPerPage,
+    currentPage * itemsPerPage
+  );
+
   if (loading) {
     return (
       <div className="flex items-center justify-center min-h-screen">
@@ -281,6 +306,31 @@ const SpeakerManagement = () => {
           <FiPlus className="mr-2" />
           Add Speaker
         </button>
+      </div>
+
+      <div className="flex flex-col md:flex-row gap-4 mb-4">
+        <div className="form-control flex-1">
+          <div className="input-group">
+            <input
+              type="text"
+              placeholder="Search speakers..."
+              className="input input-bordered w-full"
+              value={searchQuery}
+              onChange={(e) => setSearchQuery(e.target.value)}
+            />
+          </div>
+        </div>
+        
+        <select 
+          className="select select-bordered max-w-xs"
+          value={filterActivity || ''}
+          onChange={(e) => setFilterActivity(e.target.value ? Number(e.target.value) : null)}
+        >
+          <option value="">All Activities</option>
+          {activities.map(activity => (
+            <option key={activity.id} value={activity.id}>{activity.name}</option>
+          ))}
+        </select>
       </div>
 
       {/* Speaker Form Modal (for both Add and Edit) */}
@@ -453,62 +503,92 @@ const SpeakerManagement = () => {
                   </tr>
                 </thead>
                 <tbody>
-                  {Array.isArray(speakers) &&
-                    speakers.map((speaker) => (
-                      <tr key={speaker.id}>
-                        <td>
-                          <div className="avatar">
-                            <div className="w-12 h-12 rounded-full bg-primary text-primary-content flex items-center justify-center text-lg font-semibold">
-                              {speaker.image_uuid ? (
-                                <img
-                                  src={getMediaUrl(speaker.image_uuid)}
-                                  alt={speaker.name}
-                                  className="w-full h-full object-cover rounded-full"
-                                  onError={(e) => {
-                                    console.log('Image load error for:', speaker.name, speaker.image_uuid);
-                                    e.target.onerror = null;
-                                    e.target.style.display = 'none';
-                                    e.target.parentElement.textContent = getInitials(speaker.name);
-                                  }}
-                                />
-                              ) : (
-                                getInitials(speaker.name)
-                              )}
-                            </div>
+                  {Array.isArray(paginatedSpeakers) && paginatedSpeakers.map((speaker) => (
+                    <tr key={speaker.id}>
+                      <td>
+                        <div className="avatar">
+                          <div className="w-12 h-12 rounded-full bg-primary text-primary-content flex items-center justify-center text-lg font-semibold">
+                            {speaker.image_uuid ? (
+                              <img
+                                src={getMediaUrl(speaker.image_uuid)}
+                                alt={speaker.name}
+                                className="w-full h-full object-cover rounded-full"
+                                onError={(e) => {
+                                  console.log('Image load error for:', speaker.name, speaker.image_uuid);
+                                  e.target.onerror = null;
+                                  e.target.style.display = 'none';
+                                  e.target.parentElement.textContent = getInitials(speaker.name);
+                                }}
+                              />
+                            ) : (
+                              getInitials(speaker.name)
+                            )}
                           </div>
-                        </td>
-                        <td className="font-medium">{speaker.name}</td>
-                        <td className="text-base-content/70">{speaker.description}</td>
-                        <td className="text-base-content/70">
-                          {speaker.activity_id
-                            ? activities.find((a) => a.id === speaker.activity_id)?.name ||
-                              `Activity #${speaker.activity_id}`
-                            : '—'}
-                        </td>
-                        <td>
-                          <div className="flex gap-2">
-                            <button
-                              onClick={() => handleEdit(speaker)}
-                              className="btn btn-primary btn-sm"
-                              aria-label={`Edit ${speaker.name}`}
-                            >
-                              <FiEdit className="w-4 h-4" />
-                            </button>
-                            <button
-                              onClick={() => handleDelete(speaker.id)}
-                              className="btn btn-error btn-sm"
-                              aria-label={`Delete ${speaker.name}`}
-                            >
-                              <FiTrash2 className="w-4 h-4" />
-                            </button>
-                          </div>
-                        </td>
-                      </tr>
-                    ))}
+                        </div>
+                      </td>
+                      <td className="font-medium">{speaker.name}</td>
+                      <td className="text-base-content/70">{speaker.description}</td>
+                      <td className="text-base-content/70">
+                        {speaker.activity_id
+                          ? activities.find((a) => a.id === speaker.activity_id)?.name ||
+                            `Activity #${speaker.activity_id}`
+                          : '—'}
+                      </td>
+                      <td>
+                        <div className="flex gap-2">
+                          <button
+                            onClick={() => handleEdit(speaker)}
+                            className="btn btn-primary btn-sm"
+                            aria-label={`Edit ${speaker.name}`}
+                          >
+                            <FiEdit className="w-4 h-4" />
+                          </button>
+                          <button
+                            onClick={() => handleDelete(speaker.id)}
+                            className="btn btn-error btn-sm"
+                            aria-label={`Delete ${speaker.name}`}
+                          >
+                            <FiTrash2 className="w-4 h-4" />
+                          </button>
+                        </div>
+                      </td>
+                    </tr>
+                  ))}
                 </tbody>
               </table>
             </div>
           )}
+
+          {/* Add pagination controls below the table */}
+          <div className="flex justify-center mt-6">
+            <div className="join">
+              <button 
+                className="join-item btn"
+                onClick={() => setCurrentPage(Math.max(1, currentPage - 1))}
+                disabled={currentPage === 1}
+              >
+                «
+              </button>
+              
+              {Array.from({ length: totalPages }, (_, i) => i + 1).map(page => (
+                <button 
+                  key={page}
+                  className={`join-item btn ${currentPage === page ? 'btn-active' : ''}`}
+                  onClick={() => setCurrentPage(page)}
+                >
+                  {page}
+                </button>
+              ))}
+              
+              <button 
+                className="join-item btn"
+                onClick={() => setCurrentPage(Math.min(totalPages, currentPage + 1))}
+                disabled={currentPage === totalPages}
+              >
+                »
+              </button>
+            </div>
+          </div>
         </div>
       </div>
     </div>
