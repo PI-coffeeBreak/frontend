@@ -31,6 +31,10 @@ const SpeakerManagement = () => {
   const [currentPage, setCurrentPage] = useState(1);
   const itemsPerPage = 7;
 
+  // Add sorting state
+  const [sortField, setSortField] = useState('name');
+  const [sortDirection, setSortDirection] = useState('asc');
+
   useEffect(() => {
     fetchSpeakers();
     fetchActivities();
@@ -251,6 +255,15 @@ const SpeakerManagement = () => {
       .slice(0, 2);
   };
 
+  const handleSort = (field) => {
+    if (sortField === field) {
+      setSortDirection(sortDirection === 'asc' ? 'desc' : 'asc');
+    } else {
+      setSortField(field);
+      setSortDirection('asc');
+    }
+  };
+
   const filteredSpeakers = Array.isArray(speakers) 
     ? speakers.filter(speaker => {
         const matchesSearch = searchQuery === '' || 
@@ -263,9 +276,24 @@ const SpeakerManagement = () => {
       })
     : [];
 
+  // Sort the filtered speakers
+  const sortedSpeakers = [...filteredSpeakers].sort((a, b) => {
+    let fieldA = a[sortField === 'description' ? 'description' : sortField];
+    let fieldB = b[sortField === 'description' ? 'description' : sortField];
+    
+    if (sortField === 'activity') {
+      fieldA = activities.find(act => act.id === a.activity_id)?.name || '';
+      fieldB = activities.find(act => act.id === b.activity_id)?.name || '';
+    }
+    
+    if (fieldA < fieldB) return sortDirection === 'asc' ? -1 : 1;
+    if (fieldA > fieldB) return sortDirection === 'asc' ? 1 : -1;
+    return 0;
+  });
+
   // Calculate pagination
-  const totalPages = Math.ceil((filteredSpeakers?.length || 0) / itemsPerPage);
-  const paginatedSpeakers = filteredSpeakers.slice(
+  const totalPages = Math.ceil((sortedSpeakers?.length || 0) / itemsPerPage);
+  const paginatedSpeakers = sortedSpeakers.slice(
     (currentPage - 1) * itemsPerPage,
     currentPage * itemsPerPage
   );
@@ -431,31 +459,57 @@ const SpeakerManagement = () => {
               </div>
 
               <div className="form-control w-full mb-6">
-                <label htmlFor="speaker-image" className="label">
+                <label htmlFor="speaker-image" className="label flex justify-between">
                   <span className="label-text">Image</span>
+                  {imagePreview && (
+                    <button 
+                      type="button" 
+                      className="btn btn-xs btn-ghost"
+                      onClick={() => {
+                        setFormData(prev => ({ ...prev, image: null }));
+                        setImagePreview(null);
+                        document.getElementById('speaker-image').value = '';
+                        if (editMode) {
+                          setFormData(prev => ({ ...prev, image_uuid: null }));
+                        }
+                      }}
+                    >
+                      Clear Image
+                    </button>
+                  )}
                 </label>
-                <input
-                  id="speaker-image"
-                  type="file"
-                  name="image"
-                  onChange={handleInputChange}
-                  accept="image/*"
-                  className="file-input file-input-bordered w-full"
-                />
-                {imagePreview && (
-                  <div className="mt-2">
-                    <div className="avatar">
-                      <div className="w-24 h-24 rounded-full">
-                        <img src={imagePreview} alt="Preview" className="w-full h-full object-cover" />
+                
+                <div className="flex gap-4 items-start">
+                  <div>
+                    {imagePreview ? (
+                      <div className="avatar mb-2">
+                        <div className="w-24 h-24 rounded-full">
+                          <img src={imagePreview} alt="Preview" className="object-cover" />
+                        </div>
                       </div>
-                    </div>
-                    {editMode && formData.image_uuid && !formData.image && (
-                      <p className="text-xs text-base-content/70 mt-1">
-                        Current image will be kept unless a new one is uploaded
-                      </p>
+                    ) : (
+                      <div className="avatar mb-2">
+                        <div className="w-24 h-24 rounded-full bg-base-300 flex items-center justify-center">
+                          {formData.name ? getInitials(formData.name) : 'No Image'}
+                        </div>
+                      </div>
                     )}
                   </div>
-                )}
+                  
+                  <div className="flex-1">
+                    <input
+                      id="speaker-image"
+                      type="file"
+                      name="image"
+                      onChange={handleInputChange}
+                      accept="image/*"
+                      className="file-input file-input-bordered w-full"
+                    />
+                    <p className="text-xs text-base-content/70 mt-1">
+                      Recommended: Square image, at least 300x300px
+                    </p>
+                  </div>
+                </div>
               </div>
 
               <div className="modal-action">
@@ -496,9 +550,24 @@ const SpeakerManagement = () => {
                 <thead>
                   <tr>
                     <th className="uppercase text-xs font-semibold text-base-content/60">Photo</th>
-                    <th className="uppercase text-xs font-semibold text-base-content/60">Name</th>
-                    <th className="uppercase text-xs font-semibold text-base-content/60">Description</th>
-                    <th className="uppercase text-xs font-semibold text-base-content/60">Activity</th>
+                    <th 
+                      className="uppercase text-xs font-semibold text-base-content/60 cursor-pointer"
+                      onClick={() => handleSort('name')}
+                    >
+                      Name {sortField === 'name' && (sortDirection === 'asc' ? '↑' : '↓')}
+                    </th>
+                    <th 
+                      className="uppercase text-xs font-semibold text-base-content/60 cursor-pointer"
+                      onClick={() => handleSort('description')}
+                    >
+                      Description {sortField === 'description' && (sortDirection === 'asc' ? '↑' : '↓')}
+                    </th>
+                    <th 
+                      className="uppercase text-xs font-semibold text-base-content/60 cursor-pointer"
+                      onClick={() => handleSort('activity')}
+                    >
+                      Activity {sortField === 'activity' && (sortDirection === 'asc' ? '↑' : '↓')}
+                    </th>
                     <th className="uppercase text-xs font-semibold text-base-content/60">Actions</th>
                   </tr>
                 </thead>
