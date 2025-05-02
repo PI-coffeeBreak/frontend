@@ -5,6 +5,16 @@ import { useNotification } from '../contexts/NotificationContext';
 import { useActivities } from '../contexts/ActivitiesContext';
 import { useMedia } from '../contexts/MediaContext';
 
+const truncateText = (text, maxLength = 80) => {
+  if (!text || text.length <= maxLength) return text;
+  
+  // Find the last space within the limit
+  const lastSpace = text.substring(0, maxLength).lastIndexOf(' ');
+  const truncated = text.substring(0, lastSpace > 0 ? lastSpace : maxLength);
+  
+  return `${truncated}...`;
+};
+
 const SpeakerManagement = () => {
   const { speakers, loading, error, fetchSpeakers, addSpeaker, updateSpeaker, deleteSpeaker } = useSpeakers();
   const { activities, fetchActivities } = useActivities();
@@ -29,7 +39,7 @@ const SpeakerManagement = () => {
   const [filterActivity, setFilterActivity] = useState(null);
 
   const [currentPage, setCurrentPage] = useState(1);
-  const itemsPerPage = 7;
+  const itemsPerPage = 6;
 
   const [sortField, setSortField] = useState('name');
   const [sortDirection, setSortDirection] = useState('asc');
@@ -508,8 +518,12 @@ const SpeakerManagement = () => {
                       </div>
                     ) : (
                       <div className="avatar mb-2">
-                        <div className="w-24 h-24 rounded-full bg-base-300 flex items-center justify-center">
-                          {formData.name ? getInitials(formData.name) : 'No Image'}
+                        <div className="w-24 h-24 rounded-full bg-base-300 relative">
+                          <div className="absolute inset-0 flex items-center justify-center">
+                            <span className="text-base-content text-xl font-medium leading-none">
+                              {formData.name ? getInitials(formData.name) : 'NA'}
+                            </span>
+                          </div>
                         </div>
                       </div>
                     )}
@@ -626,7 +640,7 @@ const SpeakerManagement = () => {
                     <tr key={speaker.id}>
                       <td>
                         <div className="avatar">
-                          <div className="w-12 h-12 rounded-full bg-primary text-primary-content flex items-center justify-center text-lg font-semibold">
+                          <div className="w-12 h-12 rounded-full bg-primary text-primary-content flex items-center justify-center">
                             {speaker.image_uuid ? (
                               <img
                                 src={getMediaUrl(speaker.image_uuid)}
@@ -636,17 +650,19 @@ const SpeakerManagement = () => {
                                   console.log('Image load error for:', speaker.name, speaker.image_uuid);
                                   e.target.onerror = null;
                                   e.target.style.display = 'none';
-                                  e.target.parentElement.textContent = getInitials(speaker.name);
+                                  e.target.parentElement.innerHTML = `<span class="flex h-full w-full items-center justify-center text-lg font-medium">${getInitials(speaker.name)}</span>`;
                                 }}
                               />
                             ) : (
-                              getInitials(speaker.name)
+                              <span className="flex h-full w-full items-center justify-center text-lg font-medium">
+                                {getInitials(speaker.name)}
+                              </span>
                             )}
                           </div>
                         </div>
                       </td>
                       <td className="font-medium">{speaker.name}</td>
-                      <td className="text-base-content/70">{speaker.description}</td>
+                      <td className="text-base-content/70">{truncateText(speaker.description)}</td>
                       <td className="text-base-content/70">
                         {speaker.activity_id
                           ? activities.find((a) => a.id === speaker.activity_id)?.name ||
@@ -677,37 +693,36 @@ const SpeakerManagement = () => {
               </table>
             </div>
           )}
+        </div>
+      </div>
 
-          {/* Add pagination controls below the table */}
-          <div className="flex justify-center mt-6">
-            <div className="join">
-              <button 
-                className="join-item btn"
-                onClick={() => setCurrentPage(Math.max(1, currentPage - 1))}
-                disabled={currentPage === 1}
-              >
-                «
-              </button>
-              
-              {Array.from({ length: totalPages }, (_, i) => i + 1).map(page => (
-                <button 
-                  key={page}
-                  className={`join-item btn ${currentPage === page ? 'btn-active' : ''}`}
-                  onClick={() => setCurrentPage(page)}
-                >
-                  {page}
-                </button>
-              ))}
-              
-              <button 
-                className="join-item btn"
-                onClick={() => setCurrentPage(Math.min(totalPages, currentPage + 1))}
-                disabled={currentPage === totalPages}
-              >
-                »
-              </button>
-            </div>
-          </div>
+      <div className="flex justify-center mt-6">
+        <div className="join">
+          <button 
+            className="join-item btn"
+            onClick={() => setCurrentPage(Math.max(1, currentPage - 1))}
+            disabled={currentPage === 1}
+          >
+            «
+          </button>
+          
+          {Array.from({ length: totalPages }, (_, i) => i + 1).map(page => (
+            <button 
+              key={page}
+              className={`join-item btn ${currentPage === page ? 'btn-active' : ''}`}
+              onClick={() => setCurrentPage(page)}
+            >
+              {page}
+            </button>
+          ))}
+          
+          <button 
+            className="join-item btn"
+            onClick={() => setCurrentPage(Math.min(totalPages, currentPage + 1))}
+            disabled={currentPage === totalPages}
+          >
+            »
+          </button>
         </div>
       </div>
     </div>
