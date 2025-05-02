@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { FiUser, FiRefreshCw, FiTrash2, FiSearch, FiEdit, FiPlus } from 'react-icons/fi';
+import { FiUser, FiRefreshCw, FiTrash2, FiSearch, FiEdit, FiPlus, FiDownload } from 'react-icons/fi';
 import { useSpeakers } from '../contexts/SpeakerContext';
 import { useNotification } from '../contexts/NotificationContext';
 import { useActivities } from '../contexts/ActivitiesContext';
@@ -31,9 +31,14 @@ const SpeakerManagement = () => {
   const [currentPage, setCurrentPage] = useState(1);
   const itemsPerPage = 7;
 
-  // Add sorting state
   const [sortField, setSortField] = useState('name');
   const [sortDirection, setSortDirection] = useState('asc');
+
+  const [confirmModal, setConfirmModal] = useState({
+    show: false,
+    message: '',
+    onConfirm: null,
+  });
 
   useEffect(() => {
     fetchSpeakers();
@@ -159,91 +164,80 @@ const SpeakerManagement = () => {
         console.log('No image for this speaker');
       }
       
-      console.log('Speaker submit data:', speakerSubmitData);
+      const result = editMode 
+        ? await updateSpeaker(editingSpeakerId, speakerSubmitData)
+        : await addSpeaker(speakerSubmitData);
 
-      try {
-        let result;
-        if (editMode) {
-          result = await updateSpeaker(editingSpeakerId, speakerSubmitData);
-        } else {
-          result = await addSpeaker(speakerSubmitData);
-        }
-
-        // Handle image upload if needed
-        if (result.success && imageToUpload) {
-          try {
-            // Get UUID from the API response
-            const imageUuid = result.data.image;
-            console.log('Uploading image with UUID from response:', imageUuid);
-            
-            if (!imageUuid) {
-              console.error('No image UUID received from API');
-              showNotification('Error: No image UUID received from API', 'error');
-              return;
-            }
-            
-            // Make sure the file is valid
-            if (!(imageToUpload instanceof File)) {
-              console.error('Invalid file object:', imageToUpload);
-              showNotification('Error: Invalid file object', 'error');
-              return;
-            }
-            
-            const isUpdate = editMode;
-            console.log(`Uploading media with isUpdate=${isUpdate}`);
-            
-            try {
-              // Try with PUT first (update existing)
-              const uploadResult = await uploadMedia(imageUuid, imageToUpload, true);
-              console.log('Image upload successful using PUT');
-              showNotification('Image uploaded successfully', 'success');
-            } catch (putError) {
-              console.error('PUT failed, trying with POST:', putError);
-              
-              // If PUT fails, try with POST as fallback
-              try {
-                const uploadResult = await uploadMedia(imageUuid, imageToUpload, false);
-                console.log('Image upload successful using POST');
-                showNotification('Image uploaded successfully', 'success');
-              } catch (postError) {
-                console.error('Both PUT and POST failed:', postError);
-                showNotification(`Speaker ${editMode ? 'updated' : 'created'}, but image upload failed`, 'warning');
-              }
-            }
-          } catch (imageError) {
-            console.error('Image upload failed:', imageError);
-            showNotification(`Speaker ${editMode ? 'updated' : 'created'}, but image upload failed`, 'warning');
-          }
-        }
-
-        if (result.success) {
-          showNotification(`Speaker ${editMode ? 'updated' : 'added'} successfully!`, 'success');
-          resetForm();
-          setShowSpeakerModal(false);
-          // Make sure to refresh speakers after changes
-          await fetchSpeakers();
-        } else {
-          showNotification(result.error || `Failed to ${editMode ? 'update' : 'add'} speaker`, 'error');
-        }
-      } catch (apiError) {
-        console.error('API request failed:', apiError);
-        showNotification(`Failed to ${editMode ? 'update' : 'create'} speaker`, 'error');
+      if (!result.success) {
+        showNotification(result.error || `Failed to ${editMode ? 'update' : 'add'} speaker`, 'error');
+        return;
       }
+
+      if (result.success && imageToUpload) {
+        const imageUuid = result.data.image;
+        
+        if (!imageUuid) {
+          console.error('No image UUID received from API');
+          showNotification('Error: No image UUID received from API', 'error');
+        } else if (!(imageToUpload instanceof File)) {
+          console.error('Invalid file object:', imageToUpload);
+          showNotification('Error: Invalid file object', 'error');
+        } else {
+          await uploadSpeakerImage(imageUuid, imageToUpload);
+        }
+      }
+
+      showNotification(`Speaker ${editMode ? 'updated' : 'added'} successfully!`, 'success');
+      resetForm();
+      setShowSpeakerModal(false);
+      await fetchSpeakers();
+      
     } catch (error) {
       console.error('Speaker submission error:', error);
       showNotification(`An error occurred while ${editMode ? 'updating' : 'adding'} the speaker`, 'error');
     }
   };
 
-  const handleDelete = async (id) => {
-    if (window.confirm('Are you sure you want to delete this speaker?')) {
-      const result = await deleteSpeaker(id);
-      if (result.success) {
-        showNotification('Speaker deleted successfully!', 'success');
-      } else {
-        showNotification(result.error || 'Failed to delete speaker', 'error');
+  // Helper function to upload speaker images with fallback logic
+  const uploadSpeakerImage = async (imageUuid, imageFile) => {
+    try {
+      await uploadMedia(imageUuid, imageFile, true);
+      console.log('Image upload successful using PUT');
+      showNotification('Image uploaded successfully', 'success');
+    } catch (putError) {
+      console.error('PUT failed, trying with POST:', putError);
+      
+      try {
+        await uploadMedia(imageUuid, imageFile, false);
+        console.log('Image upload successful using POST');
+        showNotification('Image uploaded successfully', 'success');
+      } catch (postError) {
+        console.error('Both PUT and POST failed:', postError);
+        showNotification('Speaker saved, but image upload failed', 'warning');
       }
     }
+  };
+
+  const showConfirmation = (message, onConfirm) => {
+    setConfirmModal({
+      show: true,
+      message,
+      onConfirm,
+    });
+  };
+
+  const handleDelete = (id) => {
+    showConfirmation(
+      'Are you sure you want to delete this speaker?',
+      async () => {
+        const result = await deleteSpeaker(id);
+        if (result.success) {
+          showNotification('Speaker deleted successfully!', 'success');
+        } else {
+          showNotification(result.error || 'Failed to delete speaker', 'error');
+        }
+      }
+    );
   };
 
   const getInitials = (name) => {
@@ -262,6 +256,25 @@ const SpeakerManagement = () => {
       setSortField(field);
       setSortDirection('asc');
     }
+  };
+
+  const exportSpeakers = () => {
+    const exportData = speakers.map(speaker => ({
+      name: speaker.name,
+      description: speaker.description,
+      activity: activities.find(a => a.id === speaker.activity_id)?.name || '',
+      image_url: speaker.image_uuid ? getMediaUrl(speaker.image_uuid) : ''
+    }));
+    
+    const blob = new Blob([JSON.stringify(exportData, null, 2)], { type: 'application/json' });
+    const url = URL.createObjectURL(blob);
+    
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = 'speakers-export.json';
+    document.body.appendChild(a);
+    a.click();
+    document.body.removeChild(a);
   };
 
   const filteredSpeakers = Array.isArray(speakers) 
@@ -330,10 +343,16 @@ const SpeakerManagement = () => {
     <div className="p-6">
       <div className="flex justify-between items-center mb-6">
         <h1 className="text-3xl font-bold">Speaker Management</h1>
-        <button onClick={handleShowAddModal} className="btn btn-primary">
-          <FiPlus className="mr-2" />
-          Add Speaker
-        </button>
+        <div className="flex gap-2">
+          <button onClick={exportSpeakers} className="btn btn-outline">
+            <FiDownload className="mr-2" />
+            Export
+          </button>
+          <button onClick={handleShowAddModal} className="btn btn-primary">
+            <FiPlus className="mr-2" />
+            Add Speaker
+          </button>
+        </div>
       </div>
 
       <div className="flex flex-col md:flex-row gap-4 mb-4">
@@ -361,7 +380,7 @@ const SpeakerManagement = () => {
         </select>
       </div>
 
-      {/* Speaker Form Modal (for both Add and Edit) */}
+      {/* Speaker Form Modal */}
       {showSpeakerModal && (
         <div className="modal modal-open">
           <div className="modal-box max-w-2xl">
@@ -530,6 +549,37 @@ const SpeakerManagement = () => {
             </form>
           </div>
           <div className="modal-backdrop" onClick={() => setShowSpeakerModal(false)}></div>
+        </div>
+      )}
+
+      {/* Confirmation Modal */}
+      {confirmModal.show && (
+        <div className="modal modal-open">
+          <div className="modal-box">
+            <h3 className="font-bold text-lg">Confirmation</h3>
+            <p className="py-4">{confirmModal.message}</p>
+            <div className="modal-action">
+              <button 
+                className="btn btn-ghost" 
+                onClick={() => setConfirmModal({ show: false, message: '', onConfirm: null })}
+              >
+                Cancel
+              </button>
+              <button 
+                className="btn btn-error" 
+                onClick={() => {
+                  confirmModal.onConfirm();
+                  setConfirmModal({ show: false, message: '', onConfirm: null });
+                }}
+              >
+                Confirm
+              </button>
+            </div>
+          </div>
+          <div 
+            className="modal-backdrop" 
+            onClick={() => setConfirmModal({ show: false, message: '', onConfirm: null })}
+          ></div>
         </div>
       )}
 
