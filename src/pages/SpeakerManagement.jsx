@@ -293,6 +293,11 @@ const SpeakerManagement = () => {
     }
   };
 
+  const getSortIndicator = (field) => {
+    if (sortField !== field) return null;
+    return sortDirection === 'asc' ? '↑' : '↓';
+  };
+
   const exportSpeakers = () => {
     const exportData = speakers.map(speaker => ({
       name: speaker.name,
@@ -667,19 +672,19 @@ const SpeakerManagement = () => {
                       className="uppercase text-xs font-semibold text-base-content/60 cursor-pointer"
                       onClick={() => handleSort('name')}
                     >
-                      Name {sortField === 'name' && (sortDirection === 'asc' ? '↑' : '↓')}
+                      Name {getSortIndicator('name')}
                     </th>
                     <th 
                       className="uppercase text-xs font-semibold text-base-content/60 cursor-pointer"
                       onClick={() => handleSort('description')}
                     >
-                      Description {sortField === 'description' && (sortDirection === 'asc' ? '↑' : '↓')}
+                      Description {getSortIndicator('description')}
                     </th>
                     <th 
                       className="uppercase text-xs font-semibold text-base-content/60 cursor-pointer"
                       onClick={() => handleSort('activity')}
                     >
-                      Activity {sortField === 'activity' && (sortDirection === 'asc' ? '↑' : '↓')}
+                      Activity {getSortIndicator('activity')}
                     </th>
                     <th className="uppercase text-xs font-semibold text-base-content/60">Actions</th>
                   </tr>
