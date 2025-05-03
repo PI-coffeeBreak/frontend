@@ -49,10 +49,22 @@ export function FloorPlans() {
     try {
       const { data } = await axiosWithAuth(keycloak).get(apiUrl);
 
-      const resolved = data.map(fp => ({
-        ...fp,
-        image: fp.image?.startsWith("http") ? fp.image : fp.image ? `${baseUrl}/media/${fp.image}` : "",
-      }));
+      const resolved = data.map(fp => {
+        let imageUrl = "";
+      
+        if (fp.image) {
+          if (fp.image.startsWith("http")) {
+            imageUrl = fp.image;
+          } else {
+            imageUrl = `${baseUrl}/media/${fp.image}`;
+          }
+        }
+      
+        return {
+          ...fp,
+          image: imageUrl,
+        };
+      });      
 
       setFloorPlans(resolved);
     } catch (err) {
@@ -335,34 +347,33 @@ export function FloorPlans() {
             {editing ? "Edit Floor-plan" : "Add Floor-plan"}
           </h2>
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-
-            <div>
-              <label className="label">Name *</label>
-              <input
-                name="name"
-                className="input input-bordered w-full"
-                value={form.name}
-                onChange={(e) =>
-                  setForm((f) => ({ ...f, name: e.target.value }))
-                }
-              />
-            </div>
-
-            <div>
-              <label className="label">
-                Image URL <span className="text-gray-400">(opt.)</span>
-              </label>
-              <input
-                name="image"
-                className="input input-bordered w-full"
-                value={form.image}
-                onChange={(e) =>
-                  setForm((f) => ({ ...f, image: e.target.value }))
-                }
-                placeholder="http(s)://… or leave blank to upload"
-              />
-            </div>
-
+          <div>
+            <label className="label" htmlFor="name">Name *</label>
+            <input
+              id="name"
+              name="name"
+              className="input input-bordered w-full"
+              value={form.name}
+              onChange={(e) =>
+                setForm((f) => ({ ...f, name: e.target.value }))
+              }
+            />
+          </div>
+          <div>
+            <label className="label" htmlFor="image">
+              Image URL <span className="text-gray-400">(opt.)</span>
+            </label>
+            <input
+              id="image"
+              name="image"
+              className="input input-bordered w-full"
+              value={form.image}
+              onChange={(e) =>
+                setForm((f) => ({ ...f, image: e.target.value }))
+              }
+              placeholder="http(s)://… or leave blank to upload"
+            />
+          </div>
             <div className="md:col-span-2">
               <label className="label flex items-center gap-2">
                 <FaImage /> Upload new image
@@ -403,8 +414,9 @@ export function FloorPlans() {
             </div>
 
             <div className="md:col-span-2">
-              <label className="label">Details / Description</label>
+              <label className="label" htmlFor="details">Details / Description</label>
               <textarea
+                id="details"
                 className="textarea textarea-bordered w-full"
                 rows={4}
                 value={form.details}
@@ -413,8 +425,6 @@ export function FloorPlans() {
                 }
               />
             </div>
-          </div>
-
           <div className="flex justify-end gap-2 mt-6">
             <button className="btn btn-outline" onClick={cancelForm}>
               Cancel
