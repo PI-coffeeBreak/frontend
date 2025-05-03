@@ -61,7 +61,6 @@ export default function App() {
             <Route path="event-schedule-plugin" element={<Schedule />} />
             <Route path="sponsors-promotion-plugin" element={<Sponsors />} />
             <Route path="floor-plan-plugin" element={<FloorPlans />} />
-            <Route path="schedule" element={<Schedule />} />
             <Route path="speaker-presentation-plugin" element={<SpeakerManagement />} />
           </Route>
         </Route>
