@@ -425,6 +425,8 @@ export function FloorPlans() {
                 }
               />
             </div>
+          </div>
+
           <div className="flex justify-end gap-2 mt-6">
             <button className="btn btn-outline" onClick={cancelForm}>
               Cancel
