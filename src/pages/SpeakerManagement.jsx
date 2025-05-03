@@ -1,21 +1,25 @@
 import React, { useEffect, useState } from 'react';
 import { FiUser, FiRefreshCw, FiTrash2, FiSearch, FiEdit, FiPlus, FiDownload } from 'react-icons/fi';
-import { useSpeakers } from '../contexts/SpeakerContext';
 import { useNotification } from '../contexts/NotificationContext';
 import { useActivities } from '../contexts/ActivitiesContext';
 import { useMedia } from '../contexts/MediaContext';
+import { axiosWithAuth } from '../utils/axiosWithAuth';
+import { useKeycloak } from "@react-keycloak/web";
+import { baseUrl } from '../consts';
+
+const API_ENDPOINTS = {
+  SPEAKERS: `${baseUrl}/speaker-presentation-plugin/speakers/`,
+};
 
 const truncateText = (text, maxLength = 80) => {
   if (!text || text.length <= maxLength) return text;
   
-  // Find the last space within the limit
   const lastSpace = text.substring(0, maxLength).lastIndexOf(' ');
   const truncated = text.substring(0, lastSpace > 0 ? lastSpace : maxLength);
   
   return `${truncated}...`;
 };
 
-// Extract the image handling logic to a separate function
 const prepareImageUpload = (formData, editMode) => {
   if (formData.image instanceof File) {
     console.log('New image selected for upload:', formData.image.name);
@@ -31,7 +35,6 @@ const prepareImageUpload = (formData, editMode) => {
   return null;
 };
 
-// Extract speaker data preparation to a separate function
 const prepareSpeakerData = (formData, imageToUpload) => {
   const speakerData = {
     name: formData.name,
@@ -39,7 +42,6 @@ const prepareSpeakerData = (formData, imageToUpload) => {
     activity_id: formData.activity_id || null,
   };
 
-  // Add image null field only when explicitly removing an image
   if (!imageToUpload && !formData.image_uuid) {
     speakerData.image = null;
   }
@@ -48,10 +50,14 @@ const prepareSpeakerData = (formData, imageToUpload) => {
 };
 
 const SpeakerManagement = () => {
-  const { speakers, loading, error, fetchSpeakers, addSpeaker, updateSpeaker, deleteSpeaker } = useSpeakers();
+  const { keycloak } = useKeycloak();
   const { activities, fetchActivities } = useActivities();
   const { showNotification } = useNotification();
   const { uploadMedia, getMediaUrl } = useMedia();
+
+  const [speakers, setSpeakers] = useState([]);
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState(null);
 
   const [formData, setFormData] = useState({
     name: '',
@@ -82,11 +88,175 @@ const SpeakerManagement = () => {
     onConfirm: null,
   });
 
-  useEffect(() => {
-    fetchSpeakers();
-    fetchActivities();
-  }, []);
+  const fetchSpeakers = async () => {
+    setLoading(true);
+    setError(null);
+    try {
+      console.log(`Fetching speakers from: ${API_ENDPOINTS.SPEAKERS}`);
+      
+      const response = await axiosWithAuth(keycloak).get(API_ENDPOINTS.SPEAKERS);
+      
+      if (Array.isArray(response.data)) {
+        const normalizedSpeakers = response.data.map(speaker => ({
+          id: speaker.id,
+          name: speaker.name || 'Unnamed Speaker',
+          description: speaker.description || '',
+          image_uuid: speaker.image,
+          activity_id: speaker.activity_id
+        }));
+        setSpeakers(normalizedSpeakers);
+        console.log(`Successfully loaded ${normalizedSpeakers.length} speakers`);
+      } else if (response.data && typeof response.data === 'object') {
+        const dataArray = response.data.results || response.data.items || [];
+        const normalizedSpeakers = dataArray.map(speaker => ({
+          id: speaker.id,
+          name: speaker.name || 'Unnamed Speaker',
+          description: speaker.description || '',
+          image_uuid: speaker.image,
+          activity_id: speaker.activity_id
+        }));
+        setSpeakers(normalizedSpeakers);
+        console.log(`Successfully loaded ${normalizedSpeakers.length} speakers from nested data`);
+      } else {
+        console.error('Unexpected API response structure:', response.data);
+        setSpeakers([]);
+      }
+    } catch (err) {
+      setError('Failed to fetch speakers. Please try again.');
+      
+      if (err.response) {
+        console.error(`API error ${err.response.status}:`, err.response.data);
+      } else if (err.request) {
+        console.error('No response received:', err.request);
+      } else {
+        console.error('Error setting up request:', err.message);
+      }
+    } finally {
+      setLoading(false);
+    }
+  };
 
+  const addSpeaker = async (speakerData) => {
+    setLoading(true);
+    setError(null);
+    
+    try {
+      const payload = {
+        name: speakerData.name,
+        description: speakerData.title || '',
+        activity_id: speakerData.activity_id || null
+      };
+      
+      console.log('API Payload for creating speaker:', payload);
+      console.log('API URL:', API_ENDPOINTS.SPEAKERS);
+      
+      const response = await axiosWithAuth(keycloak).post(API_ENDPOINTS.SPEAKERS, payload);
+      console.log('API Response from creating speaker:', response.data);
+      
+      return { success: true, data: response.data };
+    } catch (err) {
+      console.error('Error in addSpeaker:', err);
+      
+      if (err.response) {
+        console.error(`API Error (${err.response.status}):`, err.response.data);
+      }
+      
+      const errorMessage = err.response?.data?.detail || 'Failed to add speaker';
+      setError(errorMessage);
+      return { success: false, error: errorMessage };
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const updateSpeaker = async (id, speakerData) => {
+    setLoading(true);
+    setError(null);
+    
+    try {
+      const payload = {
+        name: speakerData.name,
+        description: speakerData.title || '',
+        activity_id: speakerData.activity_id || null,
+      };
+      
+      if (speakerData.image === null) {
+        payload.image = null;
+      } else if (speakerData.image && speakerData.image !== 'keep') {
+        payload.image = speakerData.image;
+      }
+      
+      console.log(`Updating speaker ${id} with data:`, payload);
+      
+      const response = await axiosWithAuth(keycloak).patch(
+        `${API_ENDPOINTS.SPEAKERS}${id}/`, 
+        payload,
+        {
+          headers: {
+            'Content-Type': 'application/json'
+          }
+        }
+      );
+      
+      console.log('API Response from updating speaker:', response.data);
+      
+      return { success: true, data: response.data };
+    } catch (err) {
+      console.error('Error in updateSpeaker:', err);
+      
+      if (err.response) {
+        console.error(`API Error (${err.response.status}):`, err.response.data);
+      } else if (err.request) {
+        console.error('No response received:', err.request);
+      } else {
+        console.error('Error setting up request:', err.message);
+      }
+      
+      const errorMessage = err.response?.data?.detail || 'Failed to update speaker';
+      setError(errorMessage);
+      return { success: false, error: errorMessage };
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const deleteSpeaker = async (id) => {
+    setLoading(true);
+    try {
+      console.log(`Deleting speaker ${id}...`);
+      
+      await axiosWithAuth(keycloak).delete(`${API_ENDPOINTS.SPEAKERS}${id}/`);
+      
+      console.log('Speaker deleted, refreshing list');
+      return { success: true };
+    } catch (err) {
+      const errorMessage = err.response?.data?.detail || 'Failed to delete speaker';
+      setError(errorMessage);
+      
+      if (err.response) {
+        console.error(`Delete speaker error ${err.response.status}:`, err.response.data);
+      } else if (err.request) {
+        console.error('No response received when deleting speaker:', err.request);
+      } else {
+        console.error('Error setting up delete speaker request:', err.message);
+      }
+      
+      return { success: false, error: errorMessage };
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  useEffect(() => {
+    if (keycloak?.authenticated) {
+      console.log('Authenticated, fetching speakers');
+      fetchSpeakers();
+      fetchActivities();
+    } else {
+      console.log('Not authenticated yet, waiting...');
+    }
+  }, [keycloak?.authenticated]);
+  
   const handleInputChange = (e) => {
     const { name, value, files } = e.target;
     if (name === 'image') {
@@ -135,7 +305,6 @@ const SpeakerManagement = () => {
     setEditMode(false);
     setEditingSpeakerId(null);
 
-    // Reset file input
     const fileInput = document.getElementById('speaker-image');
     if (fileInput) {
       fileInput.value = '';
@@ -186,11 +355,9 @@ const SpeakerManagement = () => {
     showNotification(`${editMode ? 'Updating' : 'Adding'} speaker...`, 'info');
 
     try {
-      // Prepare data
       const imageToUpload = prepareImageUpload(formData, editMode);
       const speakerData = prepareSpeakerData(formData, imageToUpload);
       
-      // Submit to API
       const result = editMode
         ? await updateSpeaker(editingSpeakerId, speakerData)
         : await addSpeaker(speakerData);
@@ -200,12 +367,10 @@ const SpeakerManagement = () => {
         return;
       }
 
-      // Handle image upload if needed
       if (result.success && imageToUpload) {
         await handleImageUpload(result.data.image, imageToUpload);
       }
 
-      // Success handling
       showNotification(`Speaker ${editMode ? 'updated' : 'added'} successfully!`, 'success');
       resetForm();
       setShowSpeakerModal(false);
@@ -217,7 +382,6 @@ const SpeakerManagement = () => {
     }
   };
 
-  // Helper function to upload speaker images with fallback logic
   const uploadSpeakerImage = async (imageUuid, imageFile) => {
     try {
       await uploadMedia(imageUuid, imageFile, true);
@@ -268,6 +432,7 @@ const SpeakerManagement = () => {
         const result = await deleteSpeaker(id);
         if (result.success) {
           showNotification('Speaker deleted successfully!', 'success');
+          await fetchSpeakers();
         } else {
           showNotification(result.error || 'Failed to delete speaker', 'error');
         }
@@ -329,7 +494,6 @@ const SpeakerManagement = () => {
       })
     : [];
 
-  // Sort the filtered speakers
   const sortedSpeakers = [...filteredSpeakers].sort((a, b) => {
     let fieldA = a[sortField === 'description' ? 'description' : sortField];
     let fieldB = b[sortField === 'description' ? 'description' : sortField];
@@ -344,7 +508,6 @@ const SpeakerManagement = () => {
     return 0;
   });
 
-  // Calculate pagination
   const totalPages = Math.ceil((sortedSpeakers?.length || 0) / itemsPerPage);
   const paginatedSpeakers = sortedSpeakers.slice(
     (currentPage - 1) * itemsPerPage,
@@ -420,7 +583,6 @@ const SpeakerManagement = () => {
         </select>
       </div>
 
-      {/* Speaker Form Modal */}
       {showSpeakerModal && (
         <div className="modal modal-open">
           <div className="modal-box max-w-2xl">
@@ -605,7 +767,6 @@ const SpeakerManagement = () => {
         </div>
       )}
 
-      {/* Confirmation Modal */}
       {confirmModal.show && (
         <div className="modal modal-open">
           <div className="modal-box">
