@@ -258,6 +258,60 @@ export function FloorPlans() {
     removeImageTitle = "Only media-service images can be removed";
   }
 
+  let content;
+  if (loading) {
+    content = (
+      <div className="flex justify-center py-20">
+        <span className="loading loading-spinner loading-lg"></span>
+      </div>
+    );
+  } else if (floorPlans.length === 0) {
+    content = (
+      <p className="text-center text-gray-500">No floor-plans yet</p>
+    );
+  } else {
+    content = (
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+        {currentSlice.map((fp) => (
+          <div
+            key={fp.id}
+            className="bg-base-100 rounded-lg shadow-lg overflow-hidden flex flex-col"
+          >
+            <div className="relative h-48 bg-gray-100">
+              <img
+                src={fp.image}
+                alt={fp.name}
+                className="object-cover w-full h-full"
+              />
+            </div>
+            <div className="p-4 flex-1 flex flex-col">
+              <h2 className="text-lg font-semibold mb-2">{fp.name}</h2>
+              <p className="text-sm text-gray-600 flex-1 truncate whitespace-pre-wrap">
+                {fp.details || "—"}
+              </p>
+              <div className="mt-4 flex gap-2 justify-end">
+                <button
+                  className="btn btn-ghost btn-xs"
+                  onClick={() => beginEdit(fp)}
+                  title="Edit"
+                >
+                  <FaEdit />
+                </button>
+                <button
+                  className="btn btn-ghost btn-xs text-error"
+                  onClick={() => handleDelete(fp.id)}
+                  title="Delete"
+                >
+                  <FaTrash />
+                </button>
+              </div>
+            </div>
+          </div>
+        ))}
+      </div>
+    );
+  }
+
   return (
     <div className="p-8 space-y-6">
       <h1 className="text-3xl font-bold text-primary">
@@ -301,52 +355,7 @@ export function FloorPlans() {
         </button>
       </div>
 
-      {loading ? (
-        <div className="flex justify-center py-20">
-          <span className="loading loading-spinner loading-lg"></span>
-        </div>
-      ) : floorPlans.length === 0 ? (
-        <p className="text-center text-gray-500">No floor-plans yet</p>
-      ) : (
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
-          {currentSlice.map((fp) => (
-            <div
-              key={fp.id}
-              className="bg-base-100 rounded-lg shadow-lg overflow-hidden flex flex-col"
-            >
-              <div className="relative h-48 bg-gray-100">
-                <img
-                  src={fp.image}
-                  alt={fp.name}
-                  className="object-cover w-full h-full"
-                />
-              </div>
-              <div className="p-4 flex-1 flex flex-col">
-                <h2 className="text-lg font-semibold mb-2">{fp.name}</h2>
-                <p className="text-sm text-gray-600 flex-1 truncate whitespace-pre-wrap">
-                  {fp.details || "—"}
-                </p>
-                <div className="mt-4 flex gap-2 justify-end">
-                  <button
-                    className="btn btn-ghost btn-xs"
-                    onClick={() => beginEdit(fp)}
-                    title="Edit"
-                  >
-                    <FaEdit />
-                  </button>
-                  <button
-                    className="btn btn-ghost btn-xs text-error"
-                    onClick={() => handleDelete(fp.id)}
-                    title="Delete"
-                  >
-                    <FaTrash />
-                  </button>
-                </div>
-              </div>
-            </div>
-          ))}
-        </div>
-      )}
+      {content}
 
       {(adding || editing) && (
         <div className="bg-base-200 p-6 rounded-lg">
