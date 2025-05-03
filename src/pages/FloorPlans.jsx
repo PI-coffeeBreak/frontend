@@ -251,6 +251,13 @@ export function FloorPlans() {
     page * ITEMS_PER_PAGE
   );
 
+  let removeImageTitle = "Remove image";
+  if (!form.image) {
+    removeImageTitle = "No image to remove";
+  } else if (!isImageMedia) {
+    removeImageTitle = "Only media-service images can be removed";
+  }
+
   return (
     <div className="p-8 space-y-6">
       <h1 className="text-3xl font-bold text-primary">
@@ -393,13 +400,7 @@ export function FloorPlans() {
                     onClick={handleRemoveImage}
                     className={`btn btn-sm ${isImageMedia ? "btn-error" : "btn-disabled text-gray-400 cursor-not-allowed"}`}
                     disabled={!isImageMedia}
-                    title={
-                      !form.image
-                        ? "No image to remove"
-                        : !isImageMedia
-                        ? "Only media-service images can be removed"
-                        : "Remove image"
-                    }
+                    title={removeImageTitle}
                   >
                     <FaTrash className="mr-1" />
                     Remove Image
