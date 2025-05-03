@@ -21,6 +21,7 @@ import { CreatePage } from "./pages/page_editor/CreatePage.jsx";
 import { EditPage } from "./pages/page_editor/EditPage.jsx";
 import AuthRedirect from "./pages/AuthRedirect";
 import { Sponsors } from "./pages/Sponsors.jsx";
+import { FloorPlans } from "./pages/FloorPlans.jsx";
 import { EventEditor } from "./pages/EventEditor.jsx";
 import Provider from "./contexts/Provider.jsx";
 import Management from "./pages/Management.jsx";
@@ -59,6 +60,7 @@ export default function App() {
             <Route path="alert-system-plugin" element={<Alerts />} />
             <Route path="event-schedule-plugin" element={<Schedule />} />
             <Route path="sponsors-promotion-plugin" element={<Sponsors />} />
+            <Route path="floor-plan-plugin" element={<FloorPlans />} />
             <Route path="speaker-presentation-plugin" element={<SpeakerManagement />} />
           </Route>
         </Route>
