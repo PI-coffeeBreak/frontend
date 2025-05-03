@@ -25,6 +25,7 @@ import { FloorPlans } from "./pages/FloorPlans.jsx";
 import { EventEditor } from "./pages/EventEditor.jsx";
 import Provider from "./contexts/Provider.jsx";
 import Management from "./pages/Management.jsx";
+import SpeakerManagement from "./pages/SpeakerManagement.jsx";
 
 export default function App() {
   return (
@@ -61,6 +62,7 @@ export default function App() {
             <Route path="sponsors-promotion-plugin" element={<Sponsors />} />
             <Route path="floor-plan-plugin" element={<FloorPlans />} />
             <Route path="schedule" element={<Schedule />} />
+            <Route path="speaker-presentation-plugin" element={<SpeakerManagement />} />
           </Route>
         </Route>
         <Route path="/auth-redirect" element={<AuthRedirect />} />
