@@ -25,15 +25,6 @@ export default function Management() {
             color: "purple",
             buttonText: t('management.cards.sessions.buttonText')
         },
-        {
-            id: 'alerts',
-            title: t('management.cards.alerts.title'),
-            description: t('management.cards.alerts.description'),
-            icon: FaBell,
-            path: "alerts",
-            color: "red",
-            buttonText: t('management.cards.alerts.buttonText')
-        },
     ], [t]);
 
     return (
