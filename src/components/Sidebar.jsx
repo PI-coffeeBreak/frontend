@@ -243,7 +243,6 @@ export default function Sidebar() {
                 links={[
                   { label: t('menu.sections.management.links.users'), path: "management/users", icon: FaUsers },
                   { label: t('menu.sections.management.links.sessions'), path: "management/sessions", icon: FaCalendarAlt },
-                  { label: t('menu.sections.management.links.alerts'), path: "management/alerts", icon: FaBell },
                 ]}
               />
               

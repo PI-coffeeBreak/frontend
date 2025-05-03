@@ -44,7 +44,6 @@ export default function App() {
             <Route index element={<Management />} />
             <Route path="users" element={<Users />} />
             <Route path="sessions" element={<Activities />} />
-            <Route path="alerts" element={<Alerts />} />
           </Route>
           <Route path="eventmaker">
             <Route index element={<EventMaker />} />
