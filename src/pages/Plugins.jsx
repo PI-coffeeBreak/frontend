@@ -23,7 +23,7 @@ export default function Plugins() {
     const currentPlugins = filteredPlugins.slice(indexOfLastPlugin - pluginsPerPage, indexOfLastPlugin);
 
     const openModal = (plugin) => {
-        const pluginConfig = pluginsConfig.find((config) => config.title === plugin.name);
+        const pluginConfig = pluginsConfig.find((config) => config.title === plugin.title);
         if (pluginConfig) {
             setSelectedPlugin({
                 ...plugin,
@@ -104,7 +104,7 @@ export default function Plugins() {
                                     </label>
                                 </td>
                                 <td className="p-3 text-center">
-                                    {pluginsConfig.some((config) => config.title === plugin.name) && (
+                                    {pluginsConfig.some((config) => config.title === plugin.title) && (
                                         <button
                                             onClick={() => openModal(plugin)}
                                             className="text-gray-700 hover:text-black"
