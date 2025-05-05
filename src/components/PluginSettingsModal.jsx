@@ -34,8 +34,47 @@ function PluginSettingsModal({ pluginConfig, onClose }) {
     const handleSubmit = async (event) => {
         event.preventDefault();
         const formData = new FormData(event.target);
-        const settings = Object.fromEntries(formData.entries());
-
+        
+        // Process form data to handle special cases
+        const formEntries = Array.from(formData.entries());
+        const settings = {};
+        
+        // Track checkbox groups to combine their values
+        const checkboxGroups = {};
+        
+        formEntries.forEach(([key, value]) => {
+            // Handle checkbox arrays (with [0], [1], etc. in the name)
+            const checkboxMatch = key.match(/^(.+)\[(\d+)\]$/);
+            if (checkboxMatch) {
+                const baseKey = checkboxMatch[1];
+                if (!checkboxGroups[baseKey]) {
+                    checkboxGroups[baseKey] = [];
+                }
+                checkboxGroups[baseKey].push(value);
+                return;
+            }
+            
+            // Handle JSON strings (from ComposedText component)
+            if (value && typeof value === 'string' && value.startsWith('{') && value.endsWith('}')) {
+                try {
+                    settings[key] = JSON.parse(value);
+                    return;
+                } catch (e) {
+                    // If it's not valid JSON, just use the string value
+                }
+            }
+            
+            // Regular inputs
+            settings[key] = value;
+        });
+        
+        // Merge processed checkbox groups into settings
+        Object.entries(checkboxGroups).forEach(([key, values]) => {
+            settings[key] = values;
+        });
+        
+        console.log("Form data processed:", settings);
+        
         try {
             const response = await axiosWithAuth(keycloak).post(submitSettingsBaseUrl + `/${pluginConfig.title}`, {
                 settings: settings,
@@ -48,26 +87,37 @@ function PluginSettingsModal({ pluginConfig, onClose }) {
     };
 
     const renderFormFields = () => {
-        return pluginConfig.inputs.map((input) => {
-            const { type, name } = input;
+        if (!pluginConfig.inputs || !Array.isArray(pluginConfig.inputs)) {
+            return null;
+        }
+        
+        return pluginConfig.inputs.map((input, index) => {
+            const { type, name, title } = input;
+            const inputName = name || title?.toLowerCase().replace(/\s+/g, '_') || `input_${index}`;
+            const itemKey = inputName || `input-${index}`;
+            
+            const commonProps = {
+                ...input,
+                name: inputName
+            };
 
             switch (type) {
                 case "selector":
-                    return <Selector key={name} {...input} />;
+                    return <Selector key={itemKey} {...commonProps} />;
                 case "text":
-                    return <TextInput key={name} {...input} />;
+                    return <TextInput key={itemKey} {...commonProps} />;
                 case "shortText":
-                    return <ShortTextInput key={name} {...input} />;
+                    return <ShortTextInput key={itemKey} {...commonProps} />;
                 case "composedText":
-                    return <ComposedText key={name} {...input} />;
+                    return <ComposedText key={itemKey} {...commonProps} />;
                 case "number":
-                    return <NumberInput key={name} {...input} />;
+                    return <NumberInput key={itemKey} {...commonProps} />;
                 case "checkbox":
-                    return <Checkbox key={name} {...input} />;
+                    return <Checkbox key={itemKey} {...commonProps} />;
                 case "toggle":
-                    return <Toggle key={name} {...input} />;
+                    return <Toggle key={itemKey} {...commonProps} />;
                 case "radio":
-                    return <Radio key={name} {...input} />;
+                    return <Radio key={itemKey} {...commonProps} />;
                 default:
                     return null;
             }
@@ -124,7 +174,7 @@ function PluginSettingsModal({ pluginConfig, onClose }) {
                 </form>
             </div>
             
-            <form method="dialog" className="modal-backdrop">
+            <form method="dialog" className="modal-backdrop" key="modal-backdrop-form">
                 <button onClick={onClose}>close</button>
             </form>
         </dialog>
