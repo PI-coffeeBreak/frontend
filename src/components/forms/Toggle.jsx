@@ -1,21 +1,36 @@
-import React from "react";
+import React, { useState, useEffect } from "react";
 import PropTypes from "prop-types";
 
-function Toggle({ 
+export function Toggle({ 
   title, 
   description, 
   text, 
-  value = false, 
+  default: defaultValue = false,
+  value: controlledValue,
   onChange, 
   name,
   required = false
 }) {
+  const [isChecked, setIsChecked] = useState(() => {
+    if (controlledValue !== undefined) return controlledValue;
+    return defaultValue;
+  });
+
+  useEffect(() => {
+    if (controlledValue !== undefined) {
+      setIsChecked(controlledValue);
+    }
+  }, [controlledValue]);
+
   const handleChange = () => {
+    const newValue = !isChecked;
+    setIsChecked(newValue);
+    
     if (onChange) {
       onChange({
         target: {
           name: name,
-          value: !value,
+          value: newValue,
           type: 'checkbox'
         }
       });
@@ -40,9 +55,10 @@ function Toggle({
         <input
           type="checkbox"
           className="toggle toggle-primary"
-          checked={value}
+          checked={isChecked}
           onChange={handleChange}
           name={name}
+          required={required}
         />
         <span className="label-text">{text}</span>
       </label>
@@ -54,8 +70,9 @@ Toggle.propTypes = {
   title: PropTypes.string.isRequired,
   description: PropTypes.string,
   text: PropTypes.string.isRequired,
+  default: PropTypes.bool,
   value: PropTypes.bool,
-  onChange: PropTypes.func.isRequired,
+  onChange: PropTypes.func,
   name: PropTypes.string.isRequired,
   required: PropTypes.bool
 };

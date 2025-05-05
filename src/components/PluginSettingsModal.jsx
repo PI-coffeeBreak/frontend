@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useEffect, useRef } from 'react';
 import PropTypes from 'prop-types';
 import Selector from './forms/Selector';
 import Checkbox from './forms/Checkbox';
@@ -17,7 +17,20 @@ const submitSettingsBaseUrl = `${baseUrl}/plugins/submit-settings`;
 function PluginSettingsModal({ pluginConfig, onClose }) {
     console.log("PluginConfig:", pluginConfig);
     const { keycloak } = useKeycloak();
-
+    const modalRef = useRef(null);
+    const dialogRef = useRef(null);
+    
+    useEffect(() => {
+        if (dialogRef.current) {
+            dialogRef.current.showModal();
+        }
+        document.body.classList.add('overflow-hidden');
+        
+        return () => {
+            document.body.classList.remove('overflow-hidden');
+        };
+    }, []);
+    
     const handleSubmit = async (event) => {
         event.preventDefault();
         const formData = new FormData(event.target);
@@ -36,7 +49,7 @@ function PluginSettingsModal({ pluginConfig, onClose }) {
 
     const renderFormFields = () => {
         return pluginConfig.inputs.map((input) => {
-            const { type, name } = input; // Destructure to get the unique `name` property
+            const { type, name } = input;
 
             switch (type) {
                 case "selector":
@@ -51,7 +64,7 @@ function PluginSettingsModal({ pluginConfig, onClose }) {
                     return <NumberInput key={name} {...input} />;
                 case "checkbox":
                     return <Checkbox key={name} {...input} />;
-                case "toogle":
+                case "toggle":
                     return <Toggle key={name} {...input} />;
                 case "radio":
                     return <Radio key={name} {...input} />;
@@ -62,37 +75,62 @@ function PluginSettingsModal({ pluginConfig, onClose }) {
     };
 
     return (
-        <div className="modal modal-open fixed inset-0 flex justify-center items-center">
-            <div className="bg-white p-6 rounded-lg w-1/3 relative">
-                {/* Close Button */}
-                <button
-                    className="btn btn-sm btn-circle btn-ghost absolute right-2 top-2"
-                    onClick={onClose}
-                >
-                    ✕
-                </button>
+        <dialog 
+            ref={dialogRef} 
+            className="modal" 
+            onClose={onClose}
+            id="plugin-settings-modal"
+        >
+            <div className="modal-box max-w-3xl w-full">
+                {/* Modal Header */}
+                <div className="font-bold text-lg mb-4 flex justify-between items-center">
+                    <h2 id="plugin-settings-title">
+                        Settings for {pluginConfig.formatted_name}
+                    </h2>
+                    <button
+                        className="btn btn-sm btn-circle btn-ghost"
+                        onClick={onClose}
+                        aria-label="Close modal"
+                    >
+                        ✕
+                    </button>
+                </div>
 
-                <h2 className="text-xl font-bold mb-4">Settings for {pluginConfig.formatted_name}</h2>
-                <p className="mb-4">{pluginConfig.description}</p>
-
+                {/* Description */}
+                <p className="mb-4 text-base-content/70">{pluginConfig.description}</p>
+                
+                {/* Form */}
                 <form id="plugin-settings-form" onSubmit={handleSubmit}>
-                    {renderFormFields()}
+                    <div className="space-y-4 overflow-y-auto max-h-[60vh]">
+                        {renderFormFields()}
+                    </div>
 
-                    <div className="flex justify-center mt-4">
+                    {/* Modal Footer */}
+                    <div className="modal-action mt-6">
                         <button
-                            className="px-4 py-2 bg-gray-500 text-white rounded hover:bg-gray-700"
-                            type="submit"
+                            type="button"
+                            className="btn btn-ghost"
+                            onClick={onClose}
                         >
-                            Submit
+                            Cancel
+                        </button>
+                        <button
+                            type="submit"
+                            className="btn btn-primary"
+                        >
+                            Save Settings
                         </button>
                     </div>
                 </form>
             </div>
-        </div>
+            
+            <form method="dialog" className="modal-backdrop">
+                <button onClick={onClose}>close</button>
+            </form>
+        </dialog>
     );
 }
 
-// Add PropTypes validation for all props
 PluginSettingsModal.propTypes = {
     pluginConfig: PropTypes.shape({
         title: PropTypes.string.isRequired,
@@ -102,13 +140,27 @@ PluginSettingsModal.propTypes = {
             PropTypes.shape({
                 type: PropTypes.string.isRequired,
                 name: PropTypes.string.isRequired,
-                label: PropTypes.string,
-                options: PropTypes.arrayOf(
-                    PropTypes.shape({
-                        value: PropTypes.string.isRequired,
-                        label: PropTypes.string.isRequired,
-                    })
-                ),
+                title: PropTypes.string,
+                description: PropTypes.string,
+                options: PropTypes.oneOfType([
+                    PropTypes.arrayOf(PropTypes.string),
+                    PropTypes.arrayOf(
+                        PropTypes.shape({
+                            value: PropTypes.string,
+                            label: PropTypes.string,
+                        })
+                    ),
+                ]),
+                min: PropTypes.number,
+                max: PropTypes.number,
+                step: PropTypes.number,
+                default: PropTypes.oneOfType([
+                    PropTypes.string,
+                    PropTypes.number,
+                    PropTypes.bool,
+                    PropTypes.array
+                ]),
+                required: PropTypes.bool,
             })
         ).isRequired,
     }).isRequired,
