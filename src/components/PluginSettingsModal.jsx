@@ -1,10 +1,13 @@
 import React from 'react';
-import PropTypes from 'prop-types'; // Import PropTypes
+import PropTypes from 'prop-types';
 import Selector from './forms/Selector';
 import Checkbox from './forms/Checkbox';
 import ComposedText from './forms/ComposedText';
 import ShortTextInput from './forms/ShortTextInput';
 import TextInput from './forms/TextInput';
+import NumberInput from './forms/NumberInput';
+import Toggle from './forms/Toggle';
+import Radio from './forms/Radio';
 import { baseUrl } from '../consts';
 import { useKeycloak } from '@react-keycloak/web';
 import { axiosWithAuth } from '../utils/axiosWithAuth';
@@ -12,6 +15,7 @@ import { axiosWithAuth } from '../utils/axiosWithAuth';
 const submitSettingsBaseUrl = `${baseUrl}/plugins/submit-settings`;
 
 function PluginSettingsModal({ pluginConfig, onClose }) {
+    console.log("PluginConfig:", pluginConfig);
     const { keycloak } = useKeycloak();
 
     const handleSubmit = async (event) => {
@@ -37,14 +41,20 @@ function PluginSettingsModal({ pluginConfig, onClose }) {
             switch (type) {
                 case "selector":
                     return <Selector key={name} {...input} />;
-                case "checkbox":
-                    return <Checkbox key={name} {...input} />;
-                case "composedText":
-                    return <ComposedText key={name} {...input} />;
-                case "shortText":
-                    return <ShortTextInput key={name} {...input} />;
                 case "text":
                     return <TextInput key={name} {...input} />;
+                case "shortText":
+                    return <ShortTextInput key={name} {...input} />;
+                case "composedText":
+                    return <ComposedText key={name} {...input} />;
+                case "number":
+                    return <NumberInput key={name} {...input} />;
+                case "checkbox":
+                    return <Checkbox key={name} {...input} />;
+                case "toogle":
+                    return <Toggle key={name} {...input} />;
+                case "radio":
+                    return <Radio key={name} {...input} />;
                 default:
                     return null;
             }

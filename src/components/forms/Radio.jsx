@@ -1,38 +1,33 @@
 import React, { useState, useEffect } from "react";
 import PropTypes from "prop-types";
 
-export function Checkbox({ 
+export function Radio({ 
   title, 
-  description,
+  description, 
   options = [], 
-  default: defaultValues = [],
-  value,
-  onChange,
+  default: defaultValue = null,
+  value: controlledValue,
+  onChange, 
   name,
-  required = false 
+  required = false
 }) {
-  const [selectedOptions, setSelectedOptions] = useState(value || [...defaultValues]);
-  
-  // Keep internal state in sync with external value (for controlled component)
+  const [selectedValue, setSelectedValue] = useState(controlledValue !== undefined ? controlledValue : defaultValue);
+
   useEffect(() => {
-    if (value !== undefined) {
-      setSelectedOptions(value);
+    if (controlledValue !== undefined) {
+      setSelectedValue(controlledValue);
     }
-  }, [value]);
-  
-  const handleOptionChange = (option) => {
-    const newSelectedOptions = selectedOptions.includes(option)
-      ? selectedOptions.filter(item => item !== option)
-      : [...selectedOptions, option];
-    
-    setSelectedOptions(newSelectedOptions);
+  }, [controlledValue]);
+
+  const handleChange = (optionValue) => {
+    setSelectedValue(optionValue);
     
     if (onChange) {
       onChange({
         target: {
-          name,
-          value: newSelectedOptions,
-          type: 'checkbox'
+          name: name,
+          value: optionValue,
+          type: 'radio'
         }
       });
     }
@@ -59,40 +54,31 @@ export function Checkbox({
             className="flex items-center gap-2 cursor-pointer hover:bg-base-200 p-2 rounded-md transition-colors"
           >
             <input 
-              type="checkbox"
-              className="checkbox checkbox-primary"
-              checked={selectedOptions.includes(option)}
-              onChange={() => handleOptionChange(option)}
-              name={`${name}[${idx}]`}
+              type="radio" 
+              className="radio radio-primary" 
+              checked={selectedValue === option}
+              onChange={() => handleChange(option)}
+              name={name}
               value={option}
+              required={required && idx === 0}
             />
             <span className="label-text">{option}</span>
           </label>
         ))}
       </div>
-
-      {/* Hidden inputs to ensure all selected values are submitted in a form */}
-      {selectedOptions.map((option, idx) => (
-        <input 
-          key={idx}
-          type="hidden"
-          name={name}
-          value={option}
-        />
-      ))}
     </div>
   );
 }
 
-Checkbox.propTypes = {
+Radio.propTypes = {
   title: PropTypes.string.isRequired,
   description: PropTypes.string,
   options: PropTypes.arrayOf(PropTypes.string),
-  default: PropTypes.arrayOf(PropTypes.string),
-  value: PropTypes.arrayOf(PropTypes.string),
+  default: PropTypes.string,
+  value: PropTypes.string,
   onChange: PropTypes.func,
   name: PropTypes.string.isRequired,
   required: PropTypes.bool
 };
 
-export default Checkbox;
+export default Radio;
