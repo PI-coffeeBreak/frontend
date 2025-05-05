@@ -43,7 +43,7 @@ export function NumberInput({
   };
 
   return (
-    <div className="form-control w-full mb-4">
+    <div className="form-control w-full mb-4 px-2 flex flex-col">
       <label htmlFor={`number-input-${name}`} className="label">
         <span className="label-text font-medium">
           {title}
@@ -52,7 +52,7 @@ export function NumberInput({
       </label>
 
       {description && (
-        <span className="text-sm text-base-content/70 mb-2">{description}</span>
+        <span className="text-sm text-base-content/70">{description}</span>
       )}
 
       <input

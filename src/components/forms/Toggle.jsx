@@ -38,8 +38,8 @@ export function Toggle({
   };
 
   return (
-    <div className="form-control w-full mb-4">
-      <div className="flex flex-col mb-2">
+    <div className="form-control w-full mb-4 px-2 flex flex-col">
+      <div className="flex flex-col">
         <label className="label">
           <span className="label-text font-medium">
             {title}
@@ -47,7 +47,7 @@ export function Toggle({
           </span>
         </label>
         {description && (
-          <span className="text-sm text-base-content/70 mt-1">{description}</span>
+          <span className="text-sm text-base-content/70">{description}</span>
         )}
       </div>
 
