@@ -1,7 +1,7 @@
 import React, { useMemo } from 'react';
 import { useTranslation } from "react-i18next";
 import { FaUsers, FaCalendarCheck, FaBell } from 'react-icons/fa';
-import DashboardCard from '../components/DashboardCard';
+import DashboardCard from '../components/common/DashboardCard.jsx';
 
 export default function InstantiateHome() {
     const { t } = useTranslation();

@@ -1,7 +1,7 @@
 import React, { useState, useRef, useEffect } from "react";
 import PropTypes from "prop-types";
 import { FaChevronDown, FaChevronUp } from "react-icons/fa";
-import { ColorThemeLayout } from "./ColorThemeLayout";
+import { ColorThemeLayout } from "./ColorThemeLayout.jsx";
 
 function ColorCircle({ color }) {
   return (

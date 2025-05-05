@@ -6,8 +6,8 @@ import { SortableItemLayout } from "./SortableItemLayout";
 import { TextInput, CheckboxInput, SelectInput } from "./CommonInputs";
 import { NumberInput } from "../../forms/NumberInput.jsx";
 import { MediaInput } from "../../../components/forms/MediaInput";
-import { ColorSelector } from "../../../components/ColorSelector";
-import { ColorThemeLayout } from "../../../components/ColorThemeLayout";
+import { ColorSelector } from "../ColorSelector.jsx";
+import { ColorThemeLayout } from "../ColorThemeLayout.jsx";
 import * as Components from "./components";
 import { useTranslation } from "react-i18next";
 

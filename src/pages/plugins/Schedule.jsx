@@ -3,9 +3,9 @@ import FullCalendar from "@fullcalendar/react";
 import interactionPlugin, { Draggable } from "@fullcalendar/interaction";
 import dayGridPlugin from "@fullcalendar/daygrid";
 import timeGridPlugin from "@fullcalendar/timegrid";
-import Activity from "../components/Activity.jsx";
-import { useActivities } from "../contexts/ActivitiesContext";
-import { useNotification } from "../contexts/NotificationContext";
+import Activity from "../../components/common/Activity.jsx";
+import { useActivities } from "../../contexts/ActivitiesContext.jsx";
+import { useNotification } from "../../contexts/NotificationContext.jsx";
 import { FaCalendarAlt, FaChevronDown, FaChevronUp, FaSearch, FaTimes } from "react-icons/fa";
 
 // Helper functions remain unchanged

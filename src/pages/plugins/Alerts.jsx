@@ -1,11 +1,11 @@
 import { useState, useEffect } from "react";
-import { CreateAlertCards } from "../components/alerts/CreateAlertCards";
-import { AlertList } from "../components/alerts/AlertList";
-import { AlertFilters } from "../components/alerts/AlertFilters";
-import { AlertTemplateModal } from "../components/alerts/AlertTemplateModal";
-import { CreateAlertModal } from "../components/alerts/CreateAlertModal";
-import { useAlerts } from "../contexts/AlertsContext";
-import { useNotification } from "../contexts/NotificationContext";
+import { CreateAlertCards } from "../../components/alerts/CreateAlertCards.jsx";
+import { AlertList } from "../../components/alerts/AlertList.jsx";
+import { AlertFilters } from "../../components/alerts/AlertFilters.jsx";
+import { AlertTemplateModal } from "../../components/alerts/AlertTemplateModal.jsx";
+import { CreateAlertModal } from "../../components/alerts/CreateAlertModal.jsx";
+import { useAlerts } from "../../contexts/AlertsContext.jsx";
+import { useNotification } from "../../contexts/NotificationContext.jsx";
 
 export default function Alerts() {
     const [editingTemplate, setEditingTemplate] = useState(null);

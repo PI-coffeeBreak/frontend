@@ -1,13 +1,13 @@
 import React from 'react';
 import PropTypes from 'prop-types'; // Import PropTypes
-import Selector from './forms/Selector';
-import Checkbox from './forms/Checkbox';
-import ComposedText from './forms/ComposedText';
-import ShortTextInput from './forms/ShortTextInput';
-import TextInput from './forms/TextInput';
-import { baseUrl } from '../consts';
+import Selector from '../forms/Selector.jsx';
+import Checkbox from '../forms/Checkbox.jsx';
+import ComposedText from '../forms/ComposedText.jsx';
+import ShortTextInput from '../forms/ShortTextInput.jsx';
+import TextInput from '../forms/TextInput.jsx';
+import { baseUrl } from '../../consts.js';
 import { useKeycloak } from '@react-keycloak/web';
-import { axiosWithAuth } from '../utils/axiosWithAuth';
+import { axiosWithAuth } from '../../utils/axiosWithAuth.js';
 
 const submitSettingsBaseUrl = `${baseUrl}/plugins/submit-settings`;
 
