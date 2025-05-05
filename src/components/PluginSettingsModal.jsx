@@ -1,9 +1,7 @@
-import React, { useEffect, useRef } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import PropTypes from 'prop-types';
 import Selector from './forms/Selector';
 import Checkbox from './forms/Checkbox';
-import ComposedText from './forms/ComposedText';
-import ShortTextInput from './forms/ShortTextInput';
 import TextInput from './forms/TextInput';
 import NumberInput from './forms/NumberInput';
 import Toggle from './forms/Toggle';
@@ -13,12 +11,36 @@ import { useKeycloak } from '@react-keycloak/web';
 import { axiosWithAuth } from '../utils/axiosWithAuth';
 
 const submitSettingsBaseUrl = `${baseUrl}/plugins/submit-settings`;
+const getSettingsBaseUrl = `${baseUrl}/plugins/settings`;
 
 function PluginSettingsModal({ pluginConfig, onClose }) {
     console.log("PluginConfig:", pluginConfig);
     const { keycloak } = useKeycloak();
     const modalRef = useRef(null);
     const dialogRef = useRef(null);
+    const [settings, setSettings] = useState({});
+    const [isLoading, setIsLoading] = useState(true);
+    
+    // Fetch current settings when modal opens
+    useEffect(() => {
+        const fetchSettings = async () => {
+            try {
+                setIsLoading(true);
+                const response = await axiosWithAuth(keycloak).get(`${getSettingsBaseUrl}/${pluginConfig.title}`);
+                console.log("Retrieved settings:", response.data);
+                if (response.data) {
+                    setSettings(response.data);
+                }
+            } catch (error) {
+                console.error("Error fetching plugin settings:", error);
+                // Continue with default values if settings can't be fetched
+            } finally {
+                setIsLoading(false);
+            }
+        };
+        
+        fetchSettings();
+    }, [pluginConfig.title, keycloak]);
     
     useEffect(() => {
         if (dialogRef.current) {
@@ -37,7 +59,7 @@ function PluginSettingsModal({ pluginConfig, onClose }) {
         
         // Process form data to handle special cases
         const formEntries = Array.from(formData.entries());
-        const settings = {};
+        const newSettings = {};
         
         // Track checkbox groups to combine their values
         const checkboxGroups = {};
@@ -54,30 +76,28 @@ function PluginSettingsModal({ pluginConfig, onClose }) {
                 return;
             }
             
-            // Handle JSON strings (from ComposedText component)
-            if (value && typeof value === 'string' && value.startsWith('{') && value.endsWith('}')) {
-                try {
-                    settings[key] = JSON.parse(value);
-                    return;
-                } catch (e) {
-                    // If it's not valid JSON, just use the string value
-                }
+
+            
+            // Handle toggle values (convert string "true"/"false" to boolean)
+            if (value === "true" || value === "false") {
+                newSettings[key] = value === "true";
+                return;
             }
             
             // Regular inputs
-            settings[key] = value;
+            newSettings[key] = value;
         });
         
         // Merge processed checkbox groups into settings
         Object.entries(checkboxGroups).forEach(([key, values]) => {
-            settings[key] = values;
+            newSettings[key] = values;
         });
         
-        console.log("Form data processed:", settings);
+        console.log("Form data processed:", newSettings);
         
         try {
             const response = await axiosWithAuth(keycloak).post(submitSettingsBaseUrl + `/${pluginConfig.title}`, {
-                settings: settings,
+                settings: newSettings,
             });
             console.log("Settings submitted successfully:", response.data);
             onClose();
@@ -95,21 +115,20 @@ function PluginSettingsModal({ pluginConfig, onClose }) {
             const { type, name, title } = input;
             const inputName = name || title?.toLowerCase().replace(/\s+/g, '_') || `input_${index}`;
             const itemKey = inputName || `input-${index}`;
+            const savedValue = settings[inputName] !== undefined ? settings[inputName] : undefined;
             
             const commonProps = {
                 ...input,
-                name: inputName
+                name: inputName,
+                value: savedValue
             };
 
             switch (type) {
                 case "selector":
                     return <Selector key={itemKey} {...commonProps} />;
                 case "text":
+                    console.log("TextInput - commonProps:", commonProps);
                     return <TextInput key={itemKey} {...commonProps} />;
-                case "shortText":
-                    return <ShortTextInput key={itemKey} {...commonProps} />;
-                case "composedText":
-                    return <ComposedText key={itemKey} {...commonProps} />;
                 case "number":
                     return <NumberInput key={itemKey} {...commonProps} />;
                 case "checkbox":
@@ -150,28 +169,34 @@ function PluginSettingsModal({ pluginConfig, onClose }) {
                 <p className="mb-4 text-base-content/70">{pluginConfig.description}</p>
                 
                 {/* Form */}
-                <form id="plugin-settings-form" onSubmit={handleSubmit}>
-                    <div className="space-y-4 overflow-y-auto max-h-[60vh]">
-                        {renderFormFields()}
+                {isLoading ? (
+                    <div className="flex justify-center p-8">
+                        <div className="loading loading-spinner loading-lg"></div>
                     </div>
+                ) : (
+                    <form id="plugin-settings-form" onSubmit={handleSubmit}>
+                        <div className="space-y-4 overflow-y-auto max-h-[60vh]">
+                            {renderFormFields()}
+                        </div>
 
-                    {/* Modal Footer */}
-                    <div className="modal-action mt-6">
-                        <button
-                            type="button"
-                            className="btn btn-ghost"
-                            onClick={onClose}
-                        >
-                            Cancel
-                        </button>
-                        <button
-                            type="submit"
-                            className="btn btn-primary"
-                        >
-                            Save Settings
-                        </button>
-                    </div>
-                </form>
+                        {/* Modal Footer */}
+                        <div className="modal-action mt-6">
+                            <button
+                                type="button"
+                                className="btn btn-ghost"
+                                onClick={onClose}
+                            >
+                                Cancel
+                            </button>
+                            <button
+                                type="submit"
+                                className="btn btn-primary"
+                            >
+                                Save Settings
+                            </button>
+                        </div>
+                    </form>
+                )}
             </div>
             
             <form method="dialog" className="modal-backdrop" key="modal-backdrop-form">
@@ -189,7 +214,7 @@ PluginSettingsModal.propTypes = {
         inputs: PropTypes.arrayOf(
             PropTypes.shape({
                 type: PropTypes.string.isRequired,
-                name: PropTypes.string.isRequired,
+                name: PropTypes.string,  // Changed from isRequired to optional, since we have a fallback
                 title: PropTypes.string,
                 description: PropTypes.string,
                 options: PropTypes.oneOfType([

@@ -9,11 +9,11 @@ export function TextInput({
   onChange,
   name,
   required = false,
-  placeholder = ""
+  placeholder = "",
+  max_length
 }) {
   const [inputValue, setInputValue] = useState(() => {
-    if (controlledValue !== undefined) return controlledValue;
-    return defaultValue;
+    return controlledValue !== undefined ? controlledValue : defaultValue;
   });
 
   useEffect(() => {
@@ -54,12 +54,19 @@ export function TextInput({
         id={`text-input-${name}`}
         type="text"
         name={name}
-        value={inputValue}
+        value={inputValue || ""}
         onChange={handleChange}
         className="input input-bordered w-full"
         placeholder={placeholder || description}
+        maxLength={max_length}
         required={required}
       />
+      
+      {max_length && (
+        <div className="flex justify-end text-xs text-base-content/70 mt-1">
+          {(inputValue || "").length}/{max_length}
+        </div>
+      )}
     </div>
   );
 }
@@ -72,7 +79,8 @@ TextInput.propTypes = {
   onChange: PropTypes.func,
   name: PropTypes.string.isRequired,
   required: PropTypes.bool,
-  placeholder: PropTypes.string
+  placeholder: PropTypes.string,
+  max_length: PropTypes.number
 };
 
 export default TextInput;
