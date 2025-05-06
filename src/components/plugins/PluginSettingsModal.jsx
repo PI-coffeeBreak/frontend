@@ -1,29 +1,77 @@
-import React from 'react';
-import PropTypes from 'prop-types'; // Import PropTypes
-import Selector from '../forms/Selector.jsx';
-import Checkbox from '../forms/Checkbox.jsx';
-import ComposedText from '../forms/ComposedText.jsx';
-import ShortTextInput from '../forms/ShortTextInput.jsx';
-import TextInput from '../forms/TextInput.jsx';
-import { baseUrl } from '../../consts.js';
-import { useKeycloak } from '@react-keycloak/web';
-import { axiosWithAuth } from '../../utils/axiosWithAuth.js';
-
-const submitSettingsBaseUrl = `${baseUrl}/plugins/submit-settings`;
+import React, { useEffect, useRef, useState } from 'react';
+import PropTypes from 'prop-types';
+import Selector from './config/Selector';
+import Checkbox from './config/Checkbox';
+import TextInput from './config/TextInput';
+import NumberInput from './config/NumberInput';
+import Toggle from './config/Toggle';
+import Radio from './config/Radio';
+import { usePlugins } from '../../contexts/PluginsContext';
 
 function PluginSettingsModal({ pluginConfig, onClose }) {
-    const { keycloak } = useKeycloak();
-
+    const { 
+        fetchPluginSettings, 
+        submitPluginSettings, 
+        processPluginFormData 
+    } = usePlugins();
+    
+    const dialogRef = useRef(null);
+    const [settings, setSettings] = useState({});
+    const [isLoading, setIsLoading] = useState(true);
+    
+    // Fetch current settings when modal opens
+    useEffect(() => {
+        let isMounted = true;
+        
+        const loadSettings = async () => {
+            if (!pluginConfig.title) return;
+            
+            try {
+                setIsLoading(true);
+                const settingsData = await fetchPluginSettings(pluginConfig.title);
+                console.log("Retrieved settings:", settingsData);
+                
+                if (isMounted && settingsData) {
+                    setSettings(settingsData);
+                }
+            } catch (error) {
+                console.error("Error fetching plugin settings:", error);
+            } finally {
+                if (isMounted) {
+                    setIsLoading(false);
+                }
+            }
+        };
+        
+        loadSettings();
+        
+        return () => {
+            isMounted = false;
+        };
+    }, [pluginConfig.title]);
+    
+    useEffect(() => {
+        if (dialogRef.current) {
+            dialogRef.current.showModal();
+        }
+        document.body.classList.add('overflow-hidden');
+        
+        return () => {
+            document.body.classList.remove('overflow-hidden');
+        };
+    }, []);
+    
     const handleSubmit = async (event) => {
         event.preventDefault();
         const formData = new FormData(event.target);
-        const settings = Object.fromEntries(formData.entries());
-
+        
+        // Use the context function to process form data
+        const processedSettings = processPluginFormData(formData);
+        console.log("Form data processed:", processedSettings);
+        
         try {
-            const response = await axiosWithAuth(keycloak).post(submitSettingsBaseUrl + `/${pluginConfig.title}`, {
-                settings: settings,
-            });
-            console.log("Settings submitted successfully:", response.data);
+            await submitPluginSettings(pluginConfig.title, processedSettings);
+            console.log("Settings submitted successfully");
             onClose();
         } catch (error) {
             console.error("Error submitting settings:", error);
@@ -31,20 +79,37 @@ function PluginSettingsModal({ pluginConfig, onClose }) {
     };
 
     const renderFormFields = () => {
-        return pluginConfig.inputs.map((input) => {
-            const { type, name } = input; // Destructure to get the unique `name` property
+        if (!pluginConfig.inputs || !Array.isArray(pluginConfig.inputs)) {
+            return null;
+        }
+        
+        return pluginConfig.inputs.map((input, index) => {
+            const { type, name, title } = input;
+            const inputName = name || title?.toLowerCase().replace(/\s+/g, '_') || `input_${index}`;
+            const itemKey = inputName || `input-${index}`;
+            
+            // First check settings, then fall back to default value from config
+            const savedValue = settings[inputName] !== undefined ? settings[inputName] : input.default;
+            
+            const commonProps = {
+                ...input,
+                name: inputName,
+                value: savedValue
+            };
 
             switch (type) {
                 case "selector":
-                    return <Selector key={name} {...input} />;
-                case "checkbox":
-                    return <Checkbox key={name} {...input} />;
-                case "composedText":
-                    return <ComposedText key={name} {...input} />;
-                case "shortText":
-                    return <ShortTextInput key={name} {...input} />;
+                    return <Selector key={itemKey} {...commonProps} />;
                 case "text":
-                    return <TextInput key={name} {...input} />;
+                    return <TextInput key={itemKey} {...commonProps} />;
+                case "number":
+                    return <NumberInput key={itemKey} {...commonProps} />;
+                case "checkbox":
+                    return <Checkbox key={itemKey} {...commonProps} />;
+                case "toggle":
+                    return <Toggle key={itemKey} {...commonProps} />;
+                case "radio":
+                    return <Radio key={itemKey} {...commonProps} />;
                 default:
                     return null;
             }
@@ -52,37 +117,68 @@ function PluginSettingsModal({ pluginConfig, onClose }) {
     };
 
     return (
-        <div className="modal modal-open fixed inset-0 flex justify-center items-center">
-            <div className="bg-white p-6 rounded-lg w-1/3 relative">
-                {/* Close Button */}
-                <button
-                    className="btn btn-sm btn-circle btn-ghost absolute right-2 top-2"
-                    onClick={onClose}
-                >
-                    ✕
-                </button>
+        <dialog 
+            ref={dialogRef} 
+            className="modal" 
+            onClose={onClose}
+            id="plugin-settings-modal"
+        >
+            <div className="modal-box max-w-3xl w-full">
+                {/* Modal Header */}
+                <div className="font-bold text-lg mb-4 flex justify-between items-center">
+                    <h2 id="plugin-settings-title">
+                        Settings for {pluginConfig.formatted_name}
+                    </h2>
+                    <button
+                        className="btn btn-sm btn-circle btn-ghost"
+                        onClick={onClose}
+                        aria-label="Close modal"
+                    >
+                        ✕
+                    </button>
+                </div>
 
-                <h2 className="text-xl font-bold mb-4">Settings for {pluginConfig.formatted_name}</h2>
-                <p className="mb-4">{pluginConfig.description}</p>
-
-                <form id="plugin-settings-form" onSubmit={handleSubmit}>
-                    {renderFormFields()}
-
-                    <div className="flex justify-center mt-4">
-                        <button
-                            className="px-4 py-2 bg-gray-500 text-white rounded hover:bg-gray-700"
-                            type="submit"
-                        >
-                            Submit
-                        </button>
+                {/* Description */}
+                <p className="mb-4 text-base-content/70">{pluginConfig.description}</p>
+                
+                {/* Form */}
+                {isLoading ? (
+                    <div className="flex justify-center p-8">
+                        <div className="loading loading-spinner loading-lg"></div>
                     </div>
-                </form>
+                ) : (
+                    <form id="plugin-settings-form" onSubmit={handleSubmit}>
+                        <div className="space-y-4 overflow-y-auto max-h-[60vh]">
+                            {renderFormFields()}
+                        </div>
+
+                        {/* Modal Footer */}
+                        <div className="modal-action mt-6">
+                            <button
+                                type="button"
+                                className="btn btn-ghost"
+                                onClick={onClose}
+                            >
+                                Cancel
+                            </button>
+                            <button
+                                type="submit"
+                                className="btn btn-primary"
+                            >
+                                Save Settings
+                            </button>
+                        </div>
+                    </form>
+                )}
             </div>
-        </div>
+            
+            <form method="dialog" className="modal-backdrop" key="modal-backdrop-form">
+                <button onClick={onClose}>close</button>
+            </form>
+        </dialog>
     );
 }
 
-// Add PropTypes validation for all props
 PluginSettingsModal.propTypes = {
     pluginConfig: PropTypes.shape({
         title: PropTypes.string.isRequired,
@@ -91,14 +187,28 @@ PluginSettingsModal.propTypes = {
         inputs: PropTypes.arrayOf(
             PropTypes.shape({
                 type: PropTypes.string.isRequired,
-                name: PropTypes.string.isRequired,
-                label: PropTypes.string,
-                options: PropTypes.arrayOf(
-                    PropTypes.shape({
-                        value: PropTypes.string.isRequired,
-                        label: PropTypes.string.isRequired,
-                    })
-                ),
+                name: PropTypes.string,
+                title: PropTypes.string,
+                description: PropTypes.string,
+                options: PropTypes.oneOfType([
+                    PropTypes.arrayOf(PropTypes.string),
+                    PropTypes.arrayOf(
+                        PropTypes.shape({
+                            value: PropTypes.string,
+                            label: PropTypes.string,
+                        })
+                    ),
+                ]),
+                min: PropTypes.number,
+                max: PropTypes.number,
+                step: PropTypes.number,
+                default: PropTypes.oneOfType([
+                    PropTypes.string,
+                    PropTypes.number,
+                    PropTypes.bool,
+                    PropTypes.array
+                ]),
+                required: PropTypes.bool,
             })
         ).isRequired,
     }).isRequired,
