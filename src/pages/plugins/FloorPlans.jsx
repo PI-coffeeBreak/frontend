@@ -347,11 +347,15 @@ export function FloorPlans() {
         <button
           className="btn btn-primary btn-sm"
           onClick={() => {
-            cancelForm();
-            setAdding(true);
-          }}
+            if (adding) {
+              cancelForm();
+            } else {
+              cancelForm();
+              setAdding(true);
+            }
+          }}          
         >
-          <FaPlus className="mr-1" /> Add Floor-plan
+          <FaPlus className="mr-1" /> Add Floor Plan
         </button>
       </div>
 
@@ -360,7 +364,7 @@ export function FloorPlans() {
       {(adding || editing) && (
         <div className="bg-base-200 p-6 rounded-lg">
           <h2 className="text-xl font-semibold mb-4">
-            {editing ? "Edit Floor-plan" : "Add Floor-plan"}
+            {editing ? "Edit Floor Plan" : "Add Floor Plan"}
           </h2>
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
           <div>
