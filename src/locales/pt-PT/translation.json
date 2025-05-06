@@ -59,7 +59,7 @@
       },
       "management": {
         "title": "Gestão",
-        "description": "Gerir utilizadores, sessões e alertas",
+        "description": "Gerir utilizadores e sessões",
         "links": {
           "users": "Utilizadores",
           "sessions": "Sessões",

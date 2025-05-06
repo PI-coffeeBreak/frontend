@@ -44,7 +44,7 @@
     "sections": {
       "home": {
         "title": "Início",
-        "description": "Gerenciar usuários, sessões e alertas",
+        "description": "Gerenciar usuários e sessões",
         "links": {
           "users": "Usuários",
           "sessions": "Sessões",
