@@ -59,12 +59,12 @@ export function Selector({
         required={required}
       >
         <option value="" disabled>Select an option</option>
-        {Array.isArray(options) && options.map((option, idx) => {
+        {Array.isArray(options) && options.map(option => {
           const value = typeof option === 'object' ? option.value : option;
           const label = typeof option === 'object' ? option.label : option;
           
           return (
-            <option key={idx} value={value}>
+            <option key={`${name}-${value}`} value={value}>
               {label}
             </option>
           );

@@ -36,9 +36,9 @@ export function Radio({
 
   const renderOptions = () => (
     <div className="space-y-2">
-      {options.map((option, idx) => (
+      {options.map((option) => (
         <label 
-          key={idx} 
+          key={`${name}-${option}`}
           className="flex items-center gap-2 cursor-pointer hover:bg-base-200 p-2 rounded-md transition-colors"
         >
           <input 

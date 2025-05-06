@@ -14,7 +14,6 @@ export function Checkbox({
 }) {
   const [selectedOptions, setSelectedOptions] = useState(value || [...defaultValues]);
   
-  // Keep internal state in sync with external value (for controlled component)
   useEffect(() => {
     if (value !== undefined) {
       setSelectedOptions(value);
@@ -41,9 +40,9 @@ export function Checkbox({
 
   const renderOptions = () => (
     <div className="space-y-2">
-      {options.map((option, idx) => (
+      {options.map((option) => (
         <label 
-          key={idx} 
+          key={`${name}-${option}`}
           className="flex items-center gap-2 cursor-pointer hover:bg-base-200 p-2 rounded-md transition-colors"
         >
           <input 
@@ -51,7 +50,7 @@ export function Checkbox({
             className="checkbox checkbox-primary"
             checked={selectedOptions.includes(option)}
             onChange={() => handleOptionChange(option)}
-            name={`${name}[${idx}]`}
+            name={`${name}[${option}]`}
             value={option}
           />
           <span className="label-text">{option}</span>
@@ -59,9 +58,9 @@ export function Checkbox({
       ))}
 
       {/* Hidden inputs to ensure all selected values are submitted in a form */}
-      {selectedOptions.map((option, idx) => (
+      {selectedOptions.map((option) => (
         <input 
-          key={idx}
+          key={`${name}-hidden-${option}`}
           type="hidden"
           name={name}
           value={option}

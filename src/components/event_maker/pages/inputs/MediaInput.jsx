@@ -123,6 +123,31 @@ export function MediaInput({
         }
     };
 
+    const renderUploadContent = () => {
+        if (isUploading) {
+            return <p role="status" aria-live="polite">Uploading...</p>;
+        }
+        
+        if (preview) {
+            return (
+                <>
+                    <img
+                        src={preview}
+                        alt="Preview"
+                        style={{
+                            maxWidth: "100%",
+                            maxHeight: "200px",
+                            marginBottom: "10px"
+                        }}
+                    />
+                    <p>Click or drag to change file</p>
+                </>
+            );
+        }
+        
+        return <p>Click or drag files here</p>;
+    };
+
     return (
         <div className={className}>
             <input
@@ -157,24 +182,7 @@ export function MediaInput({
                     display: "block"
                 }}
             >
-                {isUploading ? (
-                    <p role="status" aria-live="polite">Uploading...</p>
-                ) : preview ? (
-                    <>
-                        <img
-                            src={preview}
-                            alt="Preview"
-                            style={{
-                                maxWidth: "100%",
-                                maxHeight: "200px",
-                                marginBottom: "10px"
-                            }}
-                        />
-                        <p>Click or drag to change file</p>
-                    </>
-                ) : (
-                    <p>Click or drag files here</p>
-                )}
+                {renderUploadContent()}
                 {error && (
                     <p
                         role="alert"
@@ -202,4 +210,4 @@ MediaInput.propTypes = {
     maxSize: PropTypes.number,
     className: PropTypes.string,
     name: PropTypes.string,
-}; 
+};
