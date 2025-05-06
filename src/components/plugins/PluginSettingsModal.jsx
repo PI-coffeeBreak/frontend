@@ -1,12 +1,12 @@
 import React, { useEffect, useRef, useState } from 'react';
 import PropTypes from 'prop-types';
-import Selector from './forms/Selector';
-import Checkbox from './forms/Checkbox';
-import TextInput from './forms/TextInput';
-import NumberInput from './forms/NumberInput';
-import Toggle from './forms/Toggle';
-import Radio from './forms/Radio';
-import { usePlugins } from '../contexts/PluginsContext';
+import Selector from './config/Selector';
+import Checkbox from './config/Checkbox';
+import TextInput from './config/TextInput';
+import NumberInput from './config/NumberInput';
+import Toggle from './config/Toggle';
+import Radio from './config/Radio';
+import { usePlugins } from '../../contexts/PluginsContext';
 
 function PluginSettingsModal({ pluginConfig, onClose }) {
     const { 
