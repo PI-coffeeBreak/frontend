@@ -1,7 +1,7 @@
 import PropTypes from 'prop-types';
 import { useTranslation } from "react-i18next";
 import { FaFileExcel, FaPlus, FaTags } from 'react-icons/fa';
-import CreateCard from "../CreateCard.jsx";
+import CreateCard from "../common/CreateCard.jsx";
 
 export function CreateActivityCards({
   onOpenNewSessionTypeModal,

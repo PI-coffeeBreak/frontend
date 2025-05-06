@@ -2,7 +2,7 @@ import PropTypes from 'prop-types';
 import { useTranslation } from "react-i18next";
 import { FaTrash } from 'react-icons/fa';
 import { useState, useEffect } from 'react';
-import { useMedia } from '../contexts/MediaContext';
+import { useMedia } from '../../contexts/MediaContext.jsx';
 
 export default function Activity({id, title, description, image, category, type, onDelete }) {
     const { t } = useTranslation();

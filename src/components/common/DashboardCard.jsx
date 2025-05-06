@@ -6,7 +6,7 @@ import PropTypes from 'prop-types';
  * DashboardCard component for displaying feature cards in the dashboard
  */
 export default function DashboardCard({ title, description, icon: Icon, path, color, buttonText }) {
-    // Map color names to Tailwind classes
+
     const getColorClasses = (colorName) => {
         const colorMap = {
             'blue': { bg: 'bg-blue-500', text: 'text-blue-500', hover: 'hover:bg-blue-500', border: 'border-blue-500' },

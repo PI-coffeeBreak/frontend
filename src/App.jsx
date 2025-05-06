@@ -6,9 +6,9 @@ import Layout from "./components/layout/Layout.jsx";
 import LayoutAuth from "./components/layout/LayoutAuth.jsx";
 import LayoutInstantiate from "./components/layout/LayoutInstantiate.jsx";
 import Users from "./pages/Users.jsx";
-import Alerts from "./pages/Alerts.jsx";
+import Alerts from "./pages/plugins/Alerts.jsx";
 import Activities from "./pages/Activities.jsx";
-import Schedule from "./pages/Schedule.jsx";
+import Schedule from "./pages/plugins/Schedule.jsx";
 import Plugins from "./pages/Plugins.jsx";
 import Colors from "./pages/Colors.jsx";
 import PrivateRoute from "./PrivateRoute.js";
@@ -20,12 +20,12 @@ import Instantiate from "./pages/Instantiate.jsx";
 import { CreatePage } from "./pages/page_editor/CreatePage.jsx";
 import { EditPage } from "./pages/page_editor/EditPage.jsx";
 import AuthRedirect from "./pages/AuthRedirect";
-import { Sponsors } from "./pages/Sponsors.jsx";
-import { FloorPlans } from "./pages/FloorPlans.jsx";
+import { Sponsors } from "./pages/plugins/Sponsors.jsx";
+import { FloorPlans } from "./pages/plugins/FloorPlans.jsx";
 import { EventEditor } from "./pages/EventEditor.jsx";
 import Provider from "./contexts/Provider.jsx";
 import Management from "./pages/Management.jsx";
-import SpeakerManagement from "./pages/SpeakerManagement.jsx";
+import SpeakerManagement from "./pages/plugins/SpeakerManagement.jsx";
 
 export default function App() {
   return (
