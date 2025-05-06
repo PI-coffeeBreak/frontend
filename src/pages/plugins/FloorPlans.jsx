@@ -49,9 +49,9 @@ export function FloorPlans() {
     try {
       const { data } = await axiosWithAuth(keycloak).get(apiUrl);
 
-      const resolved = data.map(fp => {
+      const resolved = data.map((fp) => {
         let imageUrl = "";
-      
+
         if (fp.image) {
           if (fp.image.startsWith("http")) {
             imageUrl = fp.image;
@@ -59,12 +59,12 @@ export function FloorPlans() {
             imageUrl = `${baseUrl}/media/${fp.image}`;
           }
         }
-      
+
         return {
           ...fp,
           image: imageUrl,
         };
-      });      
+      });
 
       setFloorPlans(resolved);
     } catch (err) {
@@ -73,13 +73,12 @@ export function FloorPlans() {
     } finally {
       setLoading(false);
     }
-  };  
+  };
 
   useEffect(fetchFloorPlans, []);
 
   const extractUuid = (image) =>
     image?.startsWith(`${baseUrl}/media/`) ? image.split("/").pop() : image;
-  
 
   const checkIfImageIsMedia = async (imageIdOrUrl) => {
     const uuid = extractUuid(imageIdOrUrl);
@@ -99,14 +98,14 @@ export function FloorPlans() {
     await axiosWithAuth(keycloak, {
       headers: { "Content-Type": "multipart/form-data" },
     }).post(`${baseUrl}/media/${uuid}`, fd);
-  };  
+  };
 
   const handleCreate = async () => {
     if (!form.name.trim()) {
       showNotification("Name is required", "warning");
       return;
     }
-  
+
     try {
       const body = {
         name: form.name,
@@ -114,11 +113,11 @@ export function FloorPlans() {
         image: form.file ? "" : form.image.trim(),
       };
       const { data } = await axiosWithAuth(keycloak).post(apiUrl, body);
-  
+
       if (form.file && data.image && !data.image.startsWith("http")) {
         await uploadToMediaService(data.image, form.file);
       }
-  
+
       setFloorPlans((fps) => [
         ...fps,
         {
@@ -129,7 +128,7 @@ export function FloorPlans() {
               : data.image,
         },
       ]);
-  
+
       showNotification("Floor Plan Created", "success");
       cancelForm();
       setPage(Math.ceil((floorPlans.length + 1) / ITEMS_PER_PAGE) || 1);
@@ -138,22 +137,22 @@ export function FloorPlans() {
       showNotification("Creation failed", "error");
     }
   };
-  
+
   const handleUpdate = async () => {
     if (!selected || !form.name.trim()) {
       if (!form.name.trim()) showNotification("Name is required", "warning");
       return;
     }
-  
+
     try {
       let imagePayload = extractUuid(form.image);
-  
+
       if (form.file) {
         const currentUuid = extractUuid(selected.image);
 
         imagePayload = currentUuid || "";
       }
-  
+
       const { data } = await axiosWithAuth(keycloak).put(
         `${apiUrl}/${selected.id}`,
         {
@@ -162,11 +161,11 @@ export function FloorPlans() {
           image: imagePayload,
         }
       );
-  
+
       if (form.file && data.image && !data.image.startsWith("http")) {
         await uploadToMediaService(data.image, form.file);
       }
-  
+
       setFloorPlans((fps) =>
         fps.map((fp) =>
           fp.id === selected.id
@@ -179,15 +178,15 @@ export function FloorPlans() {
               }
             : fp
         )
-      );      
-  
+      );
+
       showNotification("Floor Plan Updated", "success");
       cancelForm();
     } catch (err) {
       console.error(err);
       showNotification("Update failed", "error");
     }
-  };  
+  };
 
   const handleDelete = async (id) => {
     if (!confirm("Delete this floor-plan?")) return;
@@ -209,11 +208,11 @@ export function FloorPlans() {
     if (!selected) return;
     const uuid = extractUuid(selected.image);
     if (!uuid || uuid.startsWith("http")) return;
-  
+
     try {
       await axiosWithAuth(keycloak).delete(`${baseUrl}/media/${uuid}`);
       showNotification("Image removed", "success");
-  
+
       setForm((f) => ({ ...f, file: null }));
       setIsImageMedia(false);
       setFloorPlans((fps) =>
@@ -228,10 +227,13 @@ export function FloorPlans() {
       showNotification("Failed to remove image", "error");
     }
   };
-  
+
   const beginEdit = (fp) => {
-    if (editing && selected?.id === fp.id) { cancelForm(); return; }
-  
+    if (editing && selected?.id === fp.id) {
+      cancelForm();
+      return;
+    }
+
     const uuidOrUrl = extractUuid(fp.image);
     setSelected(fp);
     setForm({
@@ -243,20 +245,13 @@ export function FloorPlans() {
     checkIfImageIsMedia(uuidOrUrl);
     setAdding(false);
     setEditing(true);
-  };  
+  };
 
   const totalPages = Math.ceil(floorPlans.length / ITEMS_PER_PAGE) || 1;
   const currentSlice = floorPlans.slice(
     (page - 1) * ITEMS_PER_PAGE,
     page * ITEMS_PER_PAGE
   );
-
-  let removeImageTitle = "Remove image";
-  if (!form.image) {
-    removeImageTitle = "No image to remove";
-  } else if (!isImageMedia) {
-    removeImageTitle = "Only media-service images can be removed";
-  }
 
   let content;
   if (loading) {
@@ -353,107 +348,155 @@ export function FloorPlans() {
               cancelForm();
               setAdding(true);
             }
-          }}          
+          }}
         >
           <FaPlus className="mr-1" /> Add Floor Plan
         </button>
       </div>
 
-      {content}
-
-      {(adding || editing) && (
-        <div className="bg-base-200 p-6 rounded-lg">
-          <h2 className="text-xl font-semibold mb-4">
-            {editing ? "Edit Floor Plan" : "Add Floor Plan"}
-          </h2>
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-          <div>
-            <label className="label" htmlFor="name">Name *</label>
-            <input
-              id="name"
-              name="name"
-              className="input input-bordered w-full"
-              value={form.name}
-              onChange={(e) =>
-                setForm((f) => ({ ...f, name: e.target.value }))
-              }
-            />
-          </div>
-          <div>
-            <label className="label" htmlFor="image">
-              Image URL <span className="text-gray-400">(opt.)</span>
-            </label>
-            <input
-              id="image"
-              name="image"
-              className="input input-bordered w-full"
-              value={form.image}
-              onChange={(e) =>
-                setForm((f) => ({ ...f, image: e.target.value }))
-              }
-              placeholder="http(s)://… or leave blank to upload"
-            />
-          </div>
-            <div className="md:col-span-2">
-              <label className="label flex items-center gap-2">
-                <FaImage /> Upload new image
-              </label>
-              <div className="flex items-center gap-2">
-                <input
-                  type="file"
-                  accept="image/*"
-                  onChange={(e) =>
-                    setForm((f) => ({ ...f, file: e.target.files[0] }))
-                  }
-                  className="file-input w-full"
-                />
-                {editing && (
-                  <button
-                    type="button"
-                    onClick={handleRemoveImage}
-                    className={`btn btn-sm ${isImageMedia ? "btn-error" : "btn-disabled text-gray-400 cursor-not-allowed"}`}
-                    disabled={!isImageMedia}
-                    title={removeImageTitle}
-                  >
-                    <FaTrash className="mr-1" />
-                    Remove Image
-                  </button>
-                )}
-              </div>
-              {form.file && (
-                <p className="text-xs mt-1 flex items-center gap-1 text-gray-500">
-                  <FaUpload /> {form.file.name}
-                </p>
-              )}
-            </div>
-
-            <div className="md:col-span-2">
-              <label className="label" htmlFor="details">Details / Description</label>
-              <textarea
-                id="details"
-                className="textarea textarea-bordered w-full"
-                rows={4}
-                value={form.details}
-                onChange={(e) =>
-                  setForm((f) => ({ ...f, details: e.target.value }))
-                }
-              />
-            </div>
-          </div>
-
-          <div className="flex justify-end gap-2 mt-6">
-            <button className="btn btn-outline" onClick={cancelForm}>
-              Cancel
-            </button>
-            <button
-              className="btn btn-primary"
-              onClick={editing ? handleUpdate : handleCreate}
-            >
-              {editing ? "Update" : "Save"}
-            </button>
-          </div>
+      {adding && (
+        <div className="mt-4">
+          <FloorPlanForm
+            form={form}
+            setForm={setForm}
+            isImageMedia={isImageMedia}
+            handleRemoveImage={handleRemoveImage}
+            cancelForm={cancelForm}
+            handleSubmit={handleCreate}
+            editing={false}
+          />
         </div>
       )}
+
+      {content}
+
+      {editing && (
+        <FloorPlanForm
+          form={form}
+          setForm={setForm}
+          isImageMedia={isImageMedia}
+          handleRemoveImage={handleRemoveImage}
+          cancelForm={cancelForm}
+          handleSubmit={handleUpdate}
+          editing={true}
+        />
+      )}
+    </div>
+  );
+}
+
+function FloorPlanForm({
+  form,
+  setForm,
+  isImageMedia,
+  handleRemoveImage,
+  cancelForm,
+  handleSubmit,
+  editing,
+}) {
+  let removeImageTitle = "Remove image";
+  if (!form.image) {
+    removeImageTitle = "No image to remove";
+  } else if (!isImageMedia) {
+    removeImageTitle = "Only media-service images can be removed";
+  }
+
+  return (
+    <div className="bg-base-200 p-6 rounded-lg">
+      <h2 className="text-xl font-semibold mb-4">
+        {editing ? "Edit Floor Plan" : "Add Floor Plan"}
+      </h2>
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+        <div>
+          <label className="label" htmlFor="name">
+            Name *
+          </label>
+          <input
+            id="name"
+            name="name"
+            className="input input-bordered w-full"
+            value={form.name}
+            onChange={(e) =>
+              setForm((f) => ({ ...f, name: e.target.value }))
+            }
+          />
+        </div>
+        <div>
+          <label className="label" htmlFor="image">
+            Image URL <span className="text-gray-400">(opt.)</span>
+          </label>
+          <input
+            id="image"
+            name="image"
+            className="input input-bordered w-full"
+            value={form.image}
+            onChange={(e) =>
+              setForm((f) => ({ ...f, image: e.target.value }))
+            }
+            placeholder="http(s)://… or leave blank to upload"
+          />
+        </div>
+        <div className="md:col-span-2">
+          <label className="label flex items-center gap-2">
+            <FaImage /> Upload new image
+          </label>
+          <div className="flex items-center gap-2">
+            <input
+              type="file"
+              accept="image/*"
+              onChange={(e) =>
+                setForm((f) => ({ ...f, file: e.target.files[0] }))
+              }
+              className="file-input w-full"
+            />
+            {editing && (
+              <button
+                type="button"
+                onClick={handleRemoveImage}
+                className={`btn btn-sm ${
+                  isImageMedia
+                    ? "btn-error"
+                    : "btn-disabled text-gray-400 cursor-not-allowed"
+                }`}
+                disabled={!isImageMedia}
+                title={removeImageTitle}
+              >
+                <FaTrash className="mr-1" />
+                Remove Image
+              </button>
+            )}
+          </div>
+          {form.file && (
+            <p className="text-xs mt-1 flex items-center gap-1 text-gray-500">
+              <FaUpload /> {form.file.name}
+            </p>
+          )}
+        </div>
+
+        <div className="md:col-span-2">
+          <label className="label" htmlFor="details">
+            Details / Description
+          </label>
+          <textarea
+            id="details"
+            className="textarea textarea-bordered w-full"
+            rows={4}
+            value={form.details}
+            onChange={(e) =>
+              setForm((f) => ({ ...f, details: e.target.value }))
+            }
+          />
+        </div>
+      </div>
+
+      <div className="flex justify-end gap-2 mt-6">
+        <button className="btn btn-outline" onClick={cancelForm}>
+          Cancel
+        </button>
+        <button className="btn btn-primary" onClick={handleSubmit}>
+          {editing ? "Update" : "Save"}
+        </button>
+      </div>
     </div>
   );
 }
