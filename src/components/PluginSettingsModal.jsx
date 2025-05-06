@@ -6,41 +6,50 @@ import TextInput from './forms/TextInput';
 import NumberInput from './forms/NumberInput';
 import Toggle from './forms/Toggle';
 import Radio from './forms/Radio';
-import { baseUrl } from '../consts';
-import { useKeycloak } from '@react-keycloak/web';
-import { axiosWithAuth } from '../utils/axiosWithAuth';
-
-const submitSettingsBaseUrl = `${baseUrl}/plugins/submit-settings`;
-const getSettingsBaseUrl = `${baseUrl}/plugins/settings`;
+import { usePlugins } from '../contexts/PluginsContext';
 
 function PluginSettingsModal({ pluginConfig, onClose }) {
-    console.log("PluginConfig:", pluginConfig);
-    const { keycloak } = useKeycloak();
-    const modalRef = useRef(null);
+    const { 
+        fetchPluginSettings, 
+        submitPluginSettings, 
+        processPluginFormData 
+    } = usePlugins();
+    
     const dialogRef = useRef(null);
     const [settings, setSettings] = useState({});
     const [isLoading, setIsLoading] = useState(true);
     
     // Fetch current settings when modal opens
     useEffect(() => {
-        const fetchSettings = async () => {
+        let isMounted = true;
+        
+        const loadSettings = async () => {
+            if (!pluginConfig.title) return;
+            
             try {
                 setIsLoading(true);
-                const response = await axiosWithAuth(keycloak).get(`${getSettingsBaseUrl}/${pluginConfig.title}`);
-                console.log("Retrieved settings:", response.data);
-                if (response.data) {
-                    setSettings(response.data);
+                const settingsData = await fetchPluginSettings(pluginConfig.title);
+                console.log("Retrieved settings:", settingsData);
+                
+                if (isMounted && settingsData) {
+                    setSettings(settingsData);
                 }
             } catch (error) {
                 console.error("Error fetching plugin settings:", error);
-                // Continue with default values if settings can't be fetched
             } finally {
-                setIsLoading(false);
+                if (isMounted) {
+                    setIsLoading(false);
+                }
             }
         };
         
-        fetchSettings();
-    }, [pluginConfig.title, keycloak]);
+        loadSettings();
+        
+        // Cleanup function to prevent state updates after unmount
+        return () => {
+            isMounted = false;
+        };
+    }, [pluginConfig.title]); // Remove fetchPluginSettings from dependencies
     
     useEffect(() => {
         if (dialogRef.current) {
@@ -57,49 +66,13 @@ function PluginSettingsModal({ pluginConfig, onClose }) {
         event.preventDefault();
         const formData = new FormData(event.target);
         
-        // Process form data to handle special cases
-        const formEntries = Array.from(formData.entries());
-        const newSettings = {};
-        
-        // Track checkbox groups to combine their values
-        const checkboxGroups = {};
-        
-        formEntries.forEach(([key, value]) => {
-            // Handle checkbox arrays (with [0], [1], etc. in the name)
-            const checkboxMatch = key.match(/^(.+)\[(\d+)\]$/);
-            if (checkboxMatch) {
-                const baseKey = checkboxMatch[1];
-                if (!checkboxGroups[baseKey]) {
-                    checkboxGroups[baseKey] = [];
-                }
-                checkboxGroups[baseKey].push(value);
-                return;
-            }
-            
-
-            
-            // Handle toggle values (convert string "true"/"false" to boolean)
-            if (value === "true" || value === "false") {
-                newSettings[key] = value === "true";
-                return;
-            }
-            
-            // Regular inputs
-            newSettings[key] = value;
-        });
-        
-        // Merge processed checkbox groups into settings
-        Object.entries(checkboxGroups).forEach(([key, values]) => {
-            newSettings[key] = values;
-        });
-        
-        console.log("Form data processed:", newSettings);
+        // Use the context function to process form data
+        const processedSettings = processPluginFormData(formData);
+        console.log("Form data processed:", processedSettings);
         
         try {
-            const response = await axiosWithAuth(keycloak).post(submitSettingsBaseUrl + `/${pluginConfig.title}`, {
-                settings: newSettings,
-            });
-            console.log("Settings submitted successfully:", response.data);
+            await submitPluginSettings(pluginConfig.title, processedSettings);
+            console.log("Settings submitted successfully");
             onClose();
         } catch (error) {
             console.error("Error submitting settings:", error);
@@ -115,7 +88,9 @@ function PluginSettingsModal({ pluginConfig, onClose }) {
             const { type, name, title } = input;
             const inputName = name || title?.toLowerCase().replace(/\s+/g, '_') || `input_${index}`;
             const itemKey = inputName || `input-${index}`;
-            const savedValue = settings[inputName] !== undefined ? settings[inputName] : undefined;
+            
+            // First check settings, then fall back to default value from config
+            const savedValue = settings[inputName] !== undefined ? settings[inputName] : input.default;
             
             const commonProps = {
                 ...input,
@@ -127,7 +102,6 @@ function PluginSettingsModal({ pluginConfig, onClose }) {
                 case "selector":
                     return <Selector key={itemKey} {...commonProps} />;
                 case "text":
-                    console.log("TextInput - commonProps:", commonProps);
                     return <TextInput key={itemKey} {...commonProps} />;
                 case "number":
                     return <NumberInput key={itemKey} {...commonProps} />;
@@ -214,7 +188,7 @@ PluginSettingsModal.propTypes = {
         inputs: PropTypes.arrayOf(
             PropTypes.shape({
                 type: PropTypes.string.isRequired,
-                name: PropTypes.string,  // Changed from isRequired to optional, since we have a fallback
+                name: PropTypes.string,
                 title: PropTypes.string,
                 description: PropTypes.string,
                 options: PropTypes.oneOfType([

@@ -11,7 +11,7 @@ export default function Plugins() {
     const [selectedPlugin, setSelectedPlugin] = useState(null);
     const [searchTerm, setSearchTerm] = useState("");
     const [currentPage, setCurrentPage] = useState(1);
-    const pluginsPerPage = 4;
+    const pluginsPerPage = 6;
     const [loadingPlugin, setLoadingPlugin] = useState(null);
 
     const filteredPlugins = plugins.filter((plugin) =>
@@ -24,6 +24,7 @@ export default function Plugins() {
 
     const openModal = (plugin) => {
         const pluginConfig = pluginsConfig.find((config) => config.title === plugin.title);
+        console.log("Plugin config:", pluginConfig);
         if (pluginConfig) {
             setSelectedPlugin({
                 ...plugin,
