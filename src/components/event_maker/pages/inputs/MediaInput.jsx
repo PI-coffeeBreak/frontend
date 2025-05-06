@@ -1,7 +1,7 @@
 import React, { useState, useRef, useEffect } from "react";
 import PropTypes from "prop-types";
-import { baseUrl } from "../../consts";
-import { axiosWithAuth } from "../../utils/axiosWithAuth";
+import { baseUrl } from "../../../../consts";
+import { axiosWithAuth } from "../../../../utils/axiosWithAuth";
 import { useKeycloak } from "@react-keycloak/web";
 
 export function MediaInput({
