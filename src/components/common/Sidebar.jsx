@@ -19,9 +19,9 @@ import {
 import { RiApps2AddLine } from "react-icons/ri";
 import DropdownMenu from "./DropdownMenu.jsx";
 import { useKeycloak } from "@react-keycloak/web";
-import { usePlugins } from "../contexts/PluginsContext";
-import { useEvent } from "../contexts/EventContext";
-import { useMedia } from "../contexts/MediaContext";
+import { usePlugins } from "../../contexts/PluginsContext.jsx";
+import { useEvent } from "../../contexts/EventContext.jsx";
+import { useMedia } from "../../contexts/MediaContext.jsx";
 import PropTypes from "prop-types";
 import { useTranslation } from "react-i18next";
 

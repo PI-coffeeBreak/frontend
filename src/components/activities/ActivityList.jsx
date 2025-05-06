@@ -1,7 +1,7 @@
 import PropTypes from 'prop-types';
 import { useTranslation } from "react-i18next";
 import { useState } from 'react';
-import Activity from "../Activity.jsx";
+import Activity from "../common/Activity.jsx";
 import { FaSearch } from "react-icons/fa";
 import { useActivities } from "../../contexts/ActivitiesContext";
 import { useNotification } from "../../contexts/NotificationContext";

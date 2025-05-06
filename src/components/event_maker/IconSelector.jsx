@@ -1,7 +1,7 @@
 import React, { useState, useEffect, useMemo } from "react";
 import PropTypes from "prop-types";
 import { FaChevronUp, FaChevronDown, FaQuestion, FaSearch } from "react-icons/fa";
-import { useMenus } from "../contexts/MenuContext";
+import { useMenus } from "../../contexts/MenuContext.jsx";
 
 export function IconSelector({ value, onChange, maxDisplayIcons = 200, onSelectorToggle }) {
   const [isOpen, setIsOpen] = useState(false);

@@ -7,7 +7,7 @@ import { SortableContext, arrayMove, verticalListSortingStrategy, useSortable } 
 import { restrictToVerticalAxis } from '@dnd-kit/modifiers';
 import { CSS } from "@dnd-kit/utilities";
 import { FaPlus, FaEdit, FaTrash, FaBars, FaSearch } from "react-icons/fa";
-import { IconSelector } from "../components/IconSelector";
+import { IconSelector } from "../components/event_maker/IconSelector.jsx";
 import { useTranslation } from "react-i18next";
 
 function SortableMenuItem({ option, onEdit, onDelete }) {

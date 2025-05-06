@@ -1,11 +1,11 @@
 import React, { useEffect, useState } from 'react';
 import { FiUser, FiRefreshCw, FiTrash2, FiSearch, FiEdit, FiPlus, FiDownload } from 'react-icons/fi';
-import { useNotification } from '../contexts/NotificationContext';
-import { useActivities } from '../contexts/ActivitiesContext';
-import { useMedia } from '../contexts/MediaContext';
-import { axiosWithAuth } from '../utils/axiosWithAuth';
+import { useNotification } from '../../contexts/NotificationContext.jsx';
+import { useActivities } from '../../contexts/ActivitiesContext.jsx';
+import { useMedia } from '../../contexts/MediaContext.jsx';
+import { axiosWithAuth } from '../../utils/axiosWithAuth.js';
 import { useKeycloak } from "@react-keycloak/web";
-import { baseUrl } from '../consts';
+import { baseUrl } from '../../consts.js';
 
 const API_ENDPOINTS = {
   SPEAKERS: `${baseUrl}/speaker-presentation-plugin/speakers/`,

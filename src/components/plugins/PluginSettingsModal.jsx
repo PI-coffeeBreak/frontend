@@ -45,11 +45,10 @@ function PluginSettingsModal({ pluginConfig, onClose }) {
         
         loadSettings();
         
-        // Cleanup function to prevent state updates after unmount
         return () => {
             isMounted = false;
         };
-    }, [pluginConfig.title]); // Remove fetchPluginSettings from dependencies
+    }, [pluginConfig.title]);
     
     useEffect(() => {
         if (dialogRef.current) {

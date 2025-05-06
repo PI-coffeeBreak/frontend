@@ -1,8 +1,8 @@
 import { useState } from "react";
 import { FaCog } from "react-icons/fa";
 import { AiOutlineLoading3Quarters } from "react-icons/ai";
-import Pagination from "../components/Pagination";
-import PluginSettingsModal from "../components/PluginSettingsModal";
+import Pagination from "../components/common/Pagination.jsx";
+import PluginSettingsModal from "../components/plugins/PluginSettingsModal.jsx";
 import { usePlugins } from "../contexts/PluginsContext";
 
 export default function Plugins() {

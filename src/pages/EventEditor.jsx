@@ -8,8 +8,8 @@ import axios from "axios";
 import { FaRegCalendarAlt, FaMapMarkerAlt, FaImage, FaInfoCircle } from "react-icons/fa";
 import PropTypes from "prop-types";
 import { renderLocationSuggestions as renderLocationSuggestionsUtil } from '../utils/LocationUtils';
-import { ImagePlaceholder } from '../components/ImagePlaceholder';
-import { ImageError } from '../components/ImageError';
+import { ImagePlaceholder } from '../components/common/ImagePlaceholder.jsx';
+import { ImageError } from '../components/event_maker/ImageError.jsx';
 
 export function EventEditor() {
     const { t } = useTranslation();
