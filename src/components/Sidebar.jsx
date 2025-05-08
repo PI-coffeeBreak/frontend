@@ -83,7 +83,6 @@ export default function Sidebar() {
   // Extract plugin-related logic
   const enabledPlugins = plugins
     .filter((plugin) => plugin.is_loaded)
-    .filter((plugin) => plugin.config_page)
     .map((plugin) => ({
       label: plugin.formatted_name,
       path: `plugins/${plugin.name.toLowerCase()}`,
@@ -130,7 +129,7 @@ export default function Sidebar() {
           <img
             src={`${eventImageUrl}?v=${Date.now()}`}
             alt={eventInfo?.name || "Event"}
-            className="w-full h-full object-cover sidebar-event-image"
+            className="w-full h-full object-contain p-1 sidebar-event-image"
             data-event-image
             onError={() => {
               console.error("Failed to load event image");
