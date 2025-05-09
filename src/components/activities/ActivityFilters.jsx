@@ -6,6 +6,7 @@ export function ActivityFilters({
   activityTypes, 
   searchQuery, 
   onSearchChange,
+  selectedType,
   onTypeChange 
 }) {
   const { t } = useTranslation();
@@ -38,11 +39,17 @@ export function ActivityFilters({
           />
           {activityTypes.map((type) => (
             <input 
-              className="btn btn-primary" 
+              key={type.id}
+              className="btn" 
               type="radio" 
               name="metaframeworks" 
               onClick={() => onTypeChange(type.id.toString())} 
               aria-label={type.type}
+              style={{
+                backgroundColor: type.color || '#3788d8',
+                borderColor: type.color || '#3788d8',
+                color: '#ffffff'
+              }}
             />
           ))}
         </div>
