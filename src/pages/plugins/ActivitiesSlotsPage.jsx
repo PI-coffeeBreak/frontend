@@ -13,7 +13,6 @@ export default function ActivitySlotsPage() {
   const { t } = useTranslation();
 
   const [activityData, setActivityData] = useState({});
-  const [setIsModalOpen] = useState(false);
   const [selectedActivityId, setSelectedActivityId] = useState(null);
   const [isLoadingData, setIsLoadingData] = useState(true);
 
