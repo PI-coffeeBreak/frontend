@@ -15,7 +15,7 @@ export default function Plugins() {
     const [loadingPlugin, setLoadingPlugin] = useState(null);
 
     const filteredPlugins = plugins.filter((plugin) =>
-        plugin.formatted_name.toLowerCase().includes(searchTerm.toLowerCase())
+        plugin.name.toLowerCase().includes(searchTerm.toLowerCase())
     );
 
     const totalPages = Math.ceil(filteredPlugins.length / pluginsPerPage);
@@ -30,7 +30,6 @@ export default function Plugins() {
                 ...plugin,
                 config: {
                     ...pluginConfig,
-                    formatted_name: plugin.formatted_name
                 }
             });
         }
@@ -79,7 +78,7 @@ export default function Plugins() {
                     <tbody>
                         {currentPlugins.map((plugin, index) => (
                             <tr key={index} className="hover:bg-gray-50">
-                                <td className="p-3">{plugin.formatted_name}</td>
+                                <td className="p-3">{plugin.name}</td>
                                 <td className="p-3">{plugin.description}</td>
                                 <td className="p-3 text-center">
                                     <label className="flex items-center justify-center cursor-pointer">

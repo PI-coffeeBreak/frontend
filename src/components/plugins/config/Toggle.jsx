@@ -62,6 +62,12 @@ export function Toggle({
         />
         <span className="label-text">{text}</span>
       </label>
+      
+      <input
+        type="hidden"
+        name={name}
+        value={isChecked ? "true" : "false"}
+      />
     </div>
   );
 }
