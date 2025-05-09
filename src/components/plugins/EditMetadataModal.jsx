@@ -3,6 +3,7 @@ import { useEffect, useState } from "react";
 import { Modal } from "../common/Modal";
 import { useNotification } from "../../contexts/NotificationContext";
 import { useKeycloak } from "@react-keycloak/web";
+import { useTranslation } from "react-i18next";
 import axios from "axios";
 import { FaTimes } from "react-icons/fa";
 import { baseUrl } from "../../consts";
@@ -12,6 +13,7 @@ const apiUrl = `${baseUrl}/registration-system-plugin/activity-registration/meta
 export default function EditMetadataModal({ isOpen, onClose, activityId, onUpdate }) {
   const { showNotification } = useNotification();
   const { keycloak } = useKeycloak();
+  const { t } = useTranslation();
 
   const [isRestricted, setIsRestricted] = useState(false);
   const [slots, setSlots] = useState(0);
@@ -32,7 +34,7 @@ export default function EditMetadataModal({ isOpen, onClose, activityId, onUpdat
     } catch {
       setIsRestricted(false);
       setSlots(0);
-      showNotification("Esta atividade ainda não tem metadados definidos.", "info");
+      showNotification(t("activities.slots.noMetadataInfo"), "info");
     } finally {
       setIsLoading(false);
     }
@@ -54,12 +56,12 @@ export default function EditMetadataModal({ isOpen, onClose, activityId, onUpdat
         }
       );
 
-      showNotification("Metadados atualizados com sucesso", "success");
-      await onUpdate(activityId); // atualizar os dados no pai
+      showNotification(t("activities.slots.saveSuccess"), "success");
+      await onUpdate(activityId);
       onClose();
     } catch (error) {
       console.error(error);
-      showNotification("Erro ao atualizar os metadados", "error");
+      showNotification(t("activities.slots.saveError"), "error");
     }
   };
 
@@ -69,12 +71,12 @@ export default function EditMetadataModal({ isOpen, onClose, activityId, onUpdat
       onClose={onClose}
       title={
         <div className="flex justify-between items-center w-full">
-          <span>Editar Limites de Vagas</span>
+          <span>{t("activities.slots.modalTitle")}</span>
           <button
             onClick={onClose}
             className="text-gray-400 hover:text-error p-1 rounded-full focus:outline-none focus:ring-2 focus:ring-error"
             type="button"
-            aria-label="Fechar"
+            aria-label="Close"
           >
             <FaTimes className="h-4 w-4" />
           </button>
@@ -101,19 +103,19 @@ export default function EditMetadataModal({ isOpen, onClose, activityId, onUpdat
                   onChange={(e) => setIsRestricted(e.target.checked)}
                   className="checkbox checkbox-primary"
                 />
-                Limitar número de vagas
+                {t("activities.slots.limitLabel")}
               </label>
 
               <div>
-                <input
-                  type="number"
-                  id="slots"
-                  value={slots}
-                  onChange={(e) => setSlots(e.target.value)}
-                  className="input input-bordered w-full"
-                  min={0}
-                  disabled={!isRestricted}
-                  placeholder="Número máximo de participantes. Ex: 50"
+              <input
+                type="number"
+                id="slots"
+                value={isRestricted ? slots : ""}
+                onChange={(e) => setSlots(e.target.value)}
+                className="input input-bordered w-full"
+                min={0}
+                disabled={!isRestricted}
+                placeholder={t("activities.slots.slotPlaceholder")}
                 />
               </div>
             </div>
@@ -121,7 +123,7 @@ export default function EditMetadataModal({ isOpen, onClose, activityId, onUpdat
 
           <div className="mt-6 flex justify-end">
             <button type="submit" className="btn btn-primary">
-              Guardar
+              {t("common.save")}
             </button>
           </div>
         </form>

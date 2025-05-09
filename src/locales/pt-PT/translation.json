@@ -189,6 +189,15 @@
     "noImage": "Sem imagem",
     "permissions": {
       "disabled": "Não tem permissão para gerir atividades"
+    },
+    "editSlotsTitle": "Gestão de Vagas",
+    "slots": {
+      "modalTitle": "Editar o Número Vagas",
+      "limitLabel": "Limitar número de vagas?",
+      "slotPlaceholder": "Número máximo de participantes. Ex: 50",
+      "saveSuccess": "Dados atualizados com sucesso",
+      "saveError": "Erro ao atualizar os dados",
+      "noMetadataInfo": "Esta atividade ainda não tem metadados definidos."
     }
   },
   "eventEditor": {

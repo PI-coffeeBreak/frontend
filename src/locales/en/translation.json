@@ -209,6 +209,15 @@
     "noImage": "No image",
     "permissions": {
       "disabled": "You don't have permission to create activities"
+    },
+    "editSlotsTitle": "Slot Management",
+    "slots": {
+      "modalTitle": "Edit Slot Count",
+      "limitLabel": "Limit number of slots?",
+      "slotPlaceholder": "Maximum number of participants. E.g. 50",
+      "saveSuccess": "Data updated successfully",
+      "saveError": "Error updating data",
+      "noMetadataInfo": "This activity has no metadata defined yet."
     }
   },
   "eventEditor": {
