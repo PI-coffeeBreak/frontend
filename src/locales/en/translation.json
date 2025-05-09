@@ -562,5 +562,13 @@
         "buttonText": "Manage Plugins"
       }
     }
+  },
+  "feedback": {
+    "title": "Rate this Session",
+    "description": "Your opinion helps us improve!",
+    "submit": "Submit Feedback",
+    "ratingLabel": "Rating:",
+    "commentLabel": "Comment:",
+    "commentPlaceholder": "Write your comment here..."
   }
 } 
