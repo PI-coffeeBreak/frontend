@@ -4,7 +4,7 @@ import { useNotification } from "../../contexts/NotificationContext";
 import { useKeycloak } from "@react-keycloak/web";
 import { useTranslation } from "react-i18next";
 import axios from "axios";
-import { FaCheck, FaExclamationTriangle } from "react-icons/fa";
+import { FaExclamationTriangle } from "react-icons/fa";
 import { baseUrl } from "../../consts";
 
 const apiUrl = `${baseUrl}/registration-system-plugin/activity-registration/metadata`;

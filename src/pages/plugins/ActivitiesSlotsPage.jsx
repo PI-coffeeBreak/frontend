@@ -13,7 +13,7 @@ export default function ActivitySlotsPage() {
   const { t } = useTranslation();
 
   const [activityData, setActivityData] = useState({});
-  const [isModalOpen, setIsModalOpen] = useState(false);
+  const [setIsModalOpen] = useState(false);
   const [selectedActivityId, setSelectedActivityId] = useState(null);
   const [isLoadingData, setIsLoadingData] = useState(true);
 
@@ -57,12 +57,6 @@ export default function ActivitySlotsPage() {
   const handleEditClick = (activityId) => {
     setSelectedActivityId(activityId);
     document.getElementById("edit_slots_modal").showModal();
-  };
-  
-
-  const closeModal = () => {
-    setIsModalOpen(false);
-    setSelectedActivityId(null);
   };
 
   const handleMetadataUpdate = async (activityId) => {
