@@ -1,0 +1,6 @@
+fileignoreconfig:
+- filename: src/components/event_maker/IconSelector.jsx
+  checksum: 9e7d332ce2c4073157429c5d5f68b8881ff8ad0f0b92c2d510686631ad76022f
+- filename: src/contexts/MenuContext.jsx
+  checksum: f3a4885b3198924450520c06e9e7817c2eb5929a7ce8be61509b8d24bb39f989
+version: "1.0"
