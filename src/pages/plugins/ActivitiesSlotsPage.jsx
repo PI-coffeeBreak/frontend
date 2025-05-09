@@ -95,6 +95,7 @@ export default function ActivitySlotsPage() {
         activities={mappedActivities}
         onEdit={handleEditClick}
         mode="edit"
+        metadata={activityData}
       />
       {selectedActivityId && (
         <EditMetadataModal
