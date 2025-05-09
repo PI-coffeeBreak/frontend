@@ -83,7 +83,6 @@ export default function Sidebar() {
   // Extract plugin-related logic
   const enabledPlugins = plugins
     .filter((plugin) => plugin.is_loaded)
-    .filter((plugin) => plugin.config_page)
     .map((plugin) => ({
       label: plugin.formatted_name,
       path: `plugins/${plugin.name.toLowerCase()}`,

@@ -5,14 +5,14 @@ import Checkbox from './forms/Checkbox';
 import ComposedText from './forms/ComposedText';
 import ShortTextInput from './forms/ShortTextInput';
 import TextInput from './forms/TextInput';
-import { baseUrl } from '../consts';
 import { useKeycloak } from '@react-keycloak/web';
 import { axiosWithAuth } from '../utils/axiosWithAuth';
-
-const submitSettingsBaseUrl = `${baseUrl}/plugins/submit-settings`;
+import { baseUrl } from '../consts';
 
 function PluginSettingsModal({ pluginConfig, onClose }) {
     const { keycloak } = useKeycloak();
+
+    const submitSettingsBaseUrl = `${baseUrl}/plugins/submit-settings`;
 
     const handleSubmit = async (event) => {
         event.preventDefault();

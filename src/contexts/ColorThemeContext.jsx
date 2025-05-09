@@ -1,7 +1,6 @@
-import React, { createContext, useContext, useEffect, useState } from 'react';
+import React, { createContext, useContext, useEffect, useState, useMemo } from 'react';
 import PropTypes from 'prop-types';
-import axios from 'axios';
-import { baseUrl } from '../consts';
+import axiosWithAuth from '../utils/axiosWithAuth';
 
 const ColorThemeContext = createContext();
 
@@ -18,10 +17,12 @@ export function ColorThemeProvider({ children }) {
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState(null);
 
+    const api = axiosWithAuth();
+
     useEffect(() => {
         const fetchColorTheme = async () => {
             try {
-                const response = await axios.get(`${baseUrl}/ui/color-theme/color-theme`);
+                const response = await api.get(`/ui/color-theme/color-theme`);
                 setColorTheme(response.data);
                 setError(null);
             } catch (err) {
@@ -35,7 +36,7 @@ export function ColorThemeProvider({ children }) {
         fetchColorTheme();
     }, []);
 
-    const value = {
+    const value = useMemo(() => ({
         colorTheme,
         loading,
         error,
@@ -43,7 +44,7 @@ export function ColorThemeProvider({ children }) {
             setLoading(true);
             fetchColorTheme();
         }
-    };
+    }), [colorTheme, loading, error]);
 
     return (
         <ColorThemeContext.Provider value={value}>

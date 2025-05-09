@@ -1,6 +1,7 @@
 import axios from "axios";
 import { keycloakUrl, keycloakRealm } from "../consts";
-import { formatRoleName, getAdminToken, hasUserManagementPermissions, hasRoleManagementPermissions } from "../utils/keycloakAdminUtils";
+import { formatRoleName, hasUserManagementPermissions, hasRoleManagementPermissions } from "../utils/keycloakAdminUtils";
+import keycloak from "../keycloak"
 
 class KeycloakAdminService {
   constructor(token) {
@@ -163,7 +164,7 @@ class KeycloakAdminService {
   // Get an authenticated admin service instance
   static async getAdminInstance() {
     try {
-      const adminToken = await getAdminToken();
+      const adminToken = keycloak.token;
       return new KeycloakAdminService(adminToken);
     } catch (error) {
       console.error("Failed to create admin service instance:", error);
