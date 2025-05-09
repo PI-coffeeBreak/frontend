@@ -4,7 +4,7 @@ import { FaTrash, FaEdit } from 'react-icons/fa';
 import { useState, useEffect } from 'react';
 import { useMedia } from '../../contexts/MediaContext.jsx';
 
-export default function Activity({ id, title, description, image, category, type, onDelete, onEdit, mode }) {
+export default function Activity({ id, title, description, image, category, type, onDelete, onEdit, metadata }) {
   const { t } = useTranslation();
   const { getMediaUrl } = useMedia();
   const [imageUrl, setImageUrl] = useState(image);
@@ -12,7 +12,11 @@ export default function Activity({ id, title, description, image, category, type
   useEffect(() => {
     if (image) {
       const isImageLink = image.startsWith('http');
-      setImageUrl(isImageLink ? image : getMediaUrl(image));
+      if (!isImageLink) {
+        setImageUrl(getMediaUrl(image));
+      } else {
+        setImageUrl(image);
+      }
     }
   }, [image]);
 
@@ -22,21 +26,7 @@ export default function Activity({ id, title, description, image, category, type
       data-id={id}
       data-title={title}
     >
-      {mode === 'edit' && onEdit && (
-        <button
-          onClick={(e) => {
-            e.stopPropagation();
-            onEdit(id);
-          }}
-          className="absolute top-2 right-2 p-2 text-gray-400 hover:text-primary rounded-full hover:bg-gray-100 transition-colors"
-          aria-label={t('activities.edit')}
-          type="button"
-        >
-          <FaEdit className="w-4 h-4" aria-hidden="true" />
-        </button>
-      )}
-
-      {mode === 'delete' && onDelete && (
+      {onDelete && (
         <button
           onClick={(e) => {
             e.stopPropagation();
@@ -50,8 +40,22 @@ export default function Activity({ id, title, description, image, category, type
         </button>
       )}
 
+      {onEdit && (
+        <button
+          onClick={(e) => {
+            e.stopPropagation();
+            onEdit(id);
+          }}
+          className="absolute top-2 right-2 p-2 text-gray-400 hover:text-primary rounded-full hover:bg-gray-100 transition-colors"
+          aria-label={t('activities.edit')}
+          type="button"
+        >
+          <FaEdit className="w-4 h-4" aria-hidden="true" />
+        </button>
+      )}
+
       <div className="w-1/3 h-full items-center justify-center hidden sm:block">
-        {imageUrl ? (
+        {image ? (
           <img
             src={imageUrl}
             alt={t('activities.imageAlt')}
@@ -60,8 +64,8 @@ export default function Activity({ id, title, description, image, category, type
               e.target.onerror = null;
               e.target.style.display = 'none';
               e.target.parentElement.innerHTML = `
-                <div class='w-full h-full bg-gray-200 rounded-md flex items-center justify-center'>
-                  <span class='text-gray-400'>${t('activities.noImage')}</span>
+                <div class="w-full h-full bg-gray-200 rounded-md flex items-center justify-center">
+                  <span class="text-gray-400">${t('activities.noImage')}</span>
                 </div>
               `;
             }}
@@ -76,9 +80,14 @@ export default function Activity({ id, title, description, image, category, type
       <div className="w-2/3">
         <h1 className="font-bold text-secondary text-sm">{title}</h1>
         <p className="text-sm mt-2 text-gray-600">{description}</p>
-        <div className="mt-1 flex">
+        <div className="mt-1 flex flex-wrap gap-2">
           <span className="badge badge-secondary">{type}</span>
-          {category && <span className="badge ml-2 badge-primary">{category}</span>}
+          {category && <span className="badge badge-primary">{category}</span>}
+          {metadata?.is_restricted && (
+            <span className="badge badge-outline">
+              {metadata.registered} / {metadata.slots} slots
+            </span>
+          )}
         </div>
       </div>
     </div>
@@ -94,7 +103,11 @@ Activity.propTypes = {
   type: PropTypes.string.isRequired,
   onDelete: PropTypes.func,
   onEdit: PropTypes.func,
-  mode: PropTypes.oneOf(['edit', 'delete'])
+  metadata: PropTypes.shape({
+    is_restricted: PropTypes.bool,
+    slots: PropTypes.number,
+    registered: PropTypes.number
+  })
 };
 
 Activity.defaultProps = {
@@ -103,5 +116,5 @@ Activity.defaultProps = {
   category: '',
   onDelete: null,
   onEdit: null,
-  mode: 'delete'
+  metadata: null
 };

@@ -9,7 +9,7 @@ import { baseUrl } from "../../consts";
 
 const apiUrl = `${baseUrl}/registration-system-plugin/activity-registration/metadata`;
 
-export default function EditMetadataModal({ isOpen, onClose, activityId }) {
+export default function EditMetadataModal({ isOpen, onClose, activityId, onUpdate }) {
   const { showNotification } = useNotification();
   const { keycloak } = useKeycloak();
 
@@ -36,7 +36,7 @@ export default function EditMetadataModal({ isOpen, onClose, activityId }) {
     } finally {
       setIsLoading(false);
     }
-  };  
+  };
 
   const handleSave = async () => {
     try {
@@ -53,14 +53,16 @@ export default function EditMetadataModal({ isOpen, onClose, activityId }) {
           }
         }
       );
+
       showNotification("Metadados atualizados com sucesso", "success");
+      await onUpdate(activityId); // atualizar os dados no pai
       onClose();
     } catch (error) {
       console.error(error);
       showNotification("Erro ao atualizar os metadados", "error");
     }
   };
-  
+
   return (
     <Modal
       isOpen={isOpen}
@@ -87,7 +89,6 @@ export default function EditMetadataModal({ isOpen, onClose, activityId }) {
         <form
           onSubmit={(e) => {
             e.preventDefault();
-            console.log(isRestricted, slots);
             handleSave();
           }}
         >
@@ -132,5 +133,6 @@ export default function EditMetadataModal({ isOpen, onClose, activityId }) {
 EditMetadataModal.propTypes = {
   isOpen: PropTypes.bool.isRequired,
   onClose: PropTypes.func.isRequired,
-  activityId: PropTypes.number.isRequired
+  activityId: PropTypes.number.isRequired,
+  onUpdate: PropTypes.func.isRequired
 };

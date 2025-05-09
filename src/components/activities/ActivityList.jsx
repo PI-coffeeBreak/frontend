@@ -66,6 +66,7 @@ export function ActivityList({ activities, onDelete, onEdit, mode = 'delete' }) 
             onDelete={mode === 'delete' ? handleDeleteClick : undefined}
             onEdit={mode === 'edit' ? onEdit : undefined}
             mode={mode}
+            metadata={activity.metadata}
           />
         ))}
       </div>
