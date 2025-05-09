@@ -2,11 +2,17 @@ import PropTypes from "prop-types";
 import { useEffect, useState } from "react";
 import { Modal } from "../common/Modal";
 import { useNotification } from "../../contexts/NotificationContext";
+import { useKeycloak } from "@react-keycloak/web";
 import axios from "axios";
 import { FaTimes } from "react-icons/fa";
+import { baseUrl } from "../../consts";
+
+const apiUrl = `${baseUrl}/registration-system-plugin/activity-registration/metadata`;
 
 export default function EditMetadataModal({ isOpen, onClose, activityId }) {
   const { showNotification } = useNotification();
+  const { keycloak } = useKeycloak();
+
   const [isRestricted, setIsRestricted] = useState(false);
   const [slots, setSlots] = useState(0);
   const [isLoading, setIsLoading] = useState(false);
@@ -20,7 +26,7 @@ export default function EditMetadataModal({ isOpen, onClose, activityId }) {
   const fetchMetadata = async () => {
     setIsLoading(true);
     try {
-      const res = await axios.get(`/api/register/metadata/${activityId}`);
+      const res = await axios.get(`${apiUrl}/${activityId}`);
       setIsRestricted(res.data.is_restricted);
       setSlots(res.data.slots);
     } catch {
@@ -30,22 +36,31 @@ export default function EditMetadataModal({ isOpen, onClose, activityId }) {
     } finally {
       setIsLoading(false);
     }
-  };
+  };  
 
   const handleSave = async () => {
     try {
-      await axios.post(`/api/register/metadata/${activityId}`, {
-        is_restricted: isRestricted,
-        slots: parseInt(slots, 10)
-      });
+      await axios.post(
+        `${apiUrl}/${activityId}`,
+        null,
+        {
+          params: {
+            is_restricted: isRestricted,
+            slots: parseInt(slots, 10)
+          },
+          headers: {
+            Authorization: `Bearer ${keycloak.token}`
+          }
+        }
+      );
       showNotification("Metadados atualizados com sucesso", "success");
-      onClose(); // <- estado será atualizado corretamente
+      onClose();
     } catch (error) {
       console.error(error);
       showNotification("Erro ao atualizar os metadados", "error");
     }
   };
-
+  
   return (
     <Modal
       isOpen={isOpen}
@@ -72,6 +87,7 @@ export default function EditMetadataModal({ isOpen, onClose, activityId }) {
         <form
           onSubmit={(e) => {
             e.preventDefault();
+            console.log(isRestricted, slots);
             handleSave();
           }}
         >
@@ -88,9 +104,6 @@ export default function EditMetadataModal({ isOpen, onClose, activityId }) {
               </label>
 
               <div>
-                <label htmlFor="slots" className="block text-sm font-medium mb-1">
-                  Número máximo de participantes
-                </label>
                 <input
                   type="number"
                   id="slots"
@@ -99,7 +112,7 @@ export default function EditMetadataModal({ isOpen, onClose, activityId }) {
                   className="input input-bordered w-full"
                   min={0}
                   disabled={!isRestricted}
-                  placeholder="ex: 50"
+                  placeholder="Número máximo de participantes. Ex: 50"
                 />
               </div>
             </div>
