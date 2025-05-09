@@ -88,7 +88,7 @@ export function NewSessionTypeModal({ isOpen, onClose, onSubmit }) {
                 name="color"
                 value={values.color}
                 onChange={handleChange}
-                className="w-12 h-12 p-1 border rounded cursor-pointer"
+                className="w-12 h-12 rounded cursor-pointer"
               />
               <input
                 type="text"
