@@ -85,7 +85,7 @@ export default function Sidebar() {
     .filter((plugin) => plugin.is_loaded)
     .filter((plugin) => plugin.config_page)
     .map((plugin) => ({
-      label: plugin.formatted_name,
+      label: plugin.name,
       path: `plugins/${plugin.name.toLowerCase()}`,
       icon: FaPuzzlePiece
     }));
