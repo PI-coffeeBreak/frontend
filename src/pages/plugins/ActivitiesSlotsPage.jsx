@@ -15,6 +15,7 @@ export default function ActivitySlotsPage() {
   const [activityData, setActivityData] = useState({});
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [selectedActivityId, setSelectedActivityId] = useState(null);
+  const [selectedActivityName, setSelectedActivityName] = useState("");
 
   useEffect(() => {
     const enrichActivities = async () => {
@@ -52,6 +53,8 @@ export default function ActivitySlotsPage() {
 
   const handleEditClick = (activityId) => {
     setSelectedActivityId(activityId);
+    const activity = activities.find((a) => a.id === activityId);
+    setSelectedActivityName(activity?.name || "");
     setIsModalOpen(true);
   };
 
@@ -98,9 +101,10 @@ export default function ActivitySlotsPage() {
         <EditMetadataModal
           isOpen={isModalOpen}
           activityId={selectedActivityId}
+          activityName={selectedActivityName}
           onClose={closeModal}
           onUpdate={handleMetadataUpdate}
-        />
+      />
       )}
     </div>
   );

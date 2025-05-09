@@ -10,7 +10,7 @@ import { baseUrl } from "../../consts";
 
 const apiUrl = `${baseUrl}/registration-system-plugin/activity-registration/metadata`;
 
-export default function EditMetadataModal({ isOpen, onClose, activityId, onUpdate }) {
+export default function EditMetadataModal({ isOpen, onClose, activityId, activityName, onUpdate }) {
   const { showNotification } = useNotification();
   const { keycloak } = useKeycloak();
   const { t } = useTranslation();
@@ -70,18 +70,21 @@ export default function EditMetadataModal({ isOpen, onClose, activityId, onUpdat
       isOpen={isOpen}
       onClose={onClose}
       title={
-        <div className="flex justify-between items-center w-full">
-          <span>{t("activities.slots.modalTitle")}</span>
-          <button
-            onClick={onClose}
-            className="text-gray-400 hover:text-error p-1 rounded-full focus:outline-none focus:ring-2 focus:ring-error"
-            type="button"
-            aria-label="Close"
-          >
-            <FaTimes className="h-4 w-4" />
-          </button>
+        <div className="flex flex-col gap-1 w-full">
+          <div className="flex justify-between items-center">
+            <span className="text-lg font-semibold">{t("activities.slots.modalTitle")}</span>
+            <button
+              onClick={onClose}
+              className="text-gray-400 hover:text-error p-1 rounded-full focus:outline-none focus:ring-2 focus:ring-error"
+              type="button"
+              aria-label="Fechar"
+            >
+              <FaTimes className="h-4 w-4" />
+            </button>
+          </div>
+          <span className="text-sm text-secondary">{activityName}</span>
         </div>
-      }
+      }      
     >
       {isLoading ? (
         <div className="flex justify-center my-8">
