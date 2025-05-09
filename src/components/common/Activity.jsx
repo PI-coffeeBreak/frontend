@@ -85,7 +85,7 @@ export default function Activity({ id, title, description, image, category, type
           {category && <span className="badge badge-primary">{category}</span>}
           {metadata?.is_restricted && (
             <span className="badge badge-outline">
-              {metadata.registered} / {metadata.slots} slots
+              {metadata.registered} / {metadata.slots} {t('activities.slots.title')}
             </span>
           )}
         </div>

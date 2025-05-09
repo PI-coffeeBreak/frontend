@@ -192,6 +192,7 @@
     },
     "editSlotsTitle": "Gestão de Vagas",
     "slots": {
+      "title": "vaga(s)",
       "modalTitle": "Editar o Número Vagas",
       "limitLabel": "Limitar número de vagas?",
       "slotPlaceholder": "Número máximo de participantes. Ex: 50",

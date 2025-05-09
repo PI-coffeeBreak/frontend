@@ -212,6 +212,7 @@
     },
     "editSlotsTitle": "Slot Management",
     "slots": {
+      "title": "slot(s)",
       "modalTitle": "Edit Slot Count",
       "limitLabel": "Limit number of slots?",
       "slotPlaceholder": "Maximum number of participants. E.g. 50",

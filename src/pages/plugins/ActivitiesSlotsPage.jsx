@@ -15,19 +15,22 @@ export default function ActivitySlotsPage() {
   const [activityData, setActivityData] = useState({});
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [selectedActivityId, setSelectedActivityId] = useState(null);
-  const [selectedActivityName, setSelectedActivityName] = useState("");
+  const [isLoadingData, setIsLoadingData] = useState(true);
+
 
   useEffect(() => {
     const enrichActivities = async () => {
+      setIsLoadingData(true);
       await fetchActivities();
       const ids = activities.map((a) => a.id);
       const metadataMap = await fetchAllMetadata(ids);
       setActivityData(metadataMap);
+      setIsLoadingData(false);
     };
-
+  
     enrichActivities();
   }, []);
-
+  
   const fetchAllMetadata = async (activityIds) => {
     const result = {};
     await Promise.all(
@@ -78,7 +81,7 @@ export default function ActivitySlotsPage() {
         }
       }));
     } catch (err) {
-      console.error("Erro ao atualizar metadados", err);
+      console.error("Error: ", err);
     }
   };
 
@@ -91,19 +94,26 @@ export default function ActivitySlotsPage() {
   return (
     <div className="w-full min-h-svh p-4 lg:p-8">
       <h1 className="text-3xl font-bold mb-6">{t("activities.editSlotsTitle")}</h1>
-      <ActivityList
-        activities={mappedActivities}
-        onEdit={handleEditClick}
-        mode="edit"
-        metadata={activityData}
-      />
-      {selectedActivityId && (
-        <EditMetadataModal
-          activityId={selectedActivityId}
-          activityName={activities.find(a => a.id === selectedActivityId)?.name}
-          onUpdate={handleMetadataUpdate}
-        />
+  
+      {isLoadingData ? (
+        <div className="flex justify-center items-center h-64">
+          <span className="loading loading-spinner loading-lg"></span>
+        </div>
+      ) : (
+        <>
+          <ActivityList
+            activities={mappedActivities}
+            onEdit={handleEditClick}
+            mode="edit"
+            metadata={activityData}
+          />
+          <EditMetadataModal
+            activityId={selectedActivityId}
+            activityName={activities.find(a => a.id === selectedActivityId)?.name}
+            onUpdate={handleMetadataUpdate}
+          />
+        </>
       )}
     </div>
-  );
+  );  
 }
