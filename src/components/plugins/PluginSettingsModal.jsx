@@ -127,7 +127,7 @@ function PluginSettingsModal({ pluginConfig, onClose }) {
                 {/* Modal Header */}
                 <div className="font-bold text-lg mb-4 flex justify-between items-center">
                     <h2 id="plugin-settings-title">
-                        Settings for {pluginConfig.formatted_name}
+                        Settings for {pluginConfig.name ? pluginConfig.name : pluginConfig.title}
                     </h2>
                     <button
                         className="btn btn-sm btn-circle btn-ghost"
@@ -182,7 +182,7 @@ function PluginSettingsModal({ pluginConfig, onClose }) {
 PluginSettingsModal.propTypes = {
     pluginConfig: PropTypes.shape({
         title: PropTypes.string.isRequired,
-        formatted_name: PropTypes.string.isRequired,
+        name: PropTypes.string,
         description: PropTypes.string.isRequired,
         inputs: PropTypes.arrayOf(
             PropTypes.shape({
