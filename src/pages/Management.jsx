@@ -1,6 +1,6 @@
 import React, { useMemo } from 'react';
 import { FaUsers, FaCalendarAlt, FaBell } from 'react-icons/fa';
-import DashboardCard from '../components/DashboardCard';
+import DashboardCard from '../components/common/DashboardCard.jsx';
 import { useTranslation } from 'react-i18next';
 
 export default function Management() {

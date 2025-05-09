@@ -1,9 +1,9 @@
 import { useState, useEffect, useMemo } from 'react';
 import { FaPlus, FaTrash, FaEdit, FaGlobe } from 'react-icons/fa';
 import { useKeycloak } from '@react-keycloak/web';
-import { axiosWithAuth } from '../utils/axiosWithAuth';
-import { baseUrl } from '../consts';
-import { useNotification } from '../contexts/NotificationContext';
+import { axiosWithAuth } from '../../utils/axiosWithAuth.js';
+import { baseUrl } from '../../consts.js';
+import { useNotification } from '../../contexts/NotificationContext.jsx';
 
 const API_ENDPOINTS = {
   LEVELS: `${baseUrl}/sponsors-promotion-plugin/sponsors/levels/`,

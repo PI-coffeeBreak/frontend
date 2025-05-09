@@ -1,6 +1,6 @@
 import React from 'react';
 import PropTypes from 'prop-types';
-import { useColorTheme } from '../contexts/ColorThemeContext';
+import { useColorTheme } from '../../contexts/ColorThemeContext.jsx';
 
 export function ColorThemeLayout({ children }) {
   const { colorTheme, loading, error } = useColorTheme();

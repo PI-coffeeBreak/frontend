@@ -1,7 +1,7 @@
 import { useState, useEffect } from "react"
 import { Save, Undo, Calendar, Users, MapPin, Bell, Clock, Gift, Music, Camera } from "lucide-react"
-import { useTheme } from "../contexts/ThemeContext";
-import { useNotification } from "../contexts/NotificationContext";
+import { useTheme } from "../../contexts/ThemeContext.jsx";
+import { useNotification } from "../../contexts/NotificationContext.jsx";
 import { useTranslation } from "react-i18next";
 
 

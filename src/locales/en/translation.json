@@ -44,7 +44,7 @@
     "sections": {
       "home": {
         "title": "Home",
-        "description": "Manage users, sessions, and alerts",
+        "description": "Manage users and sessions",
         "links": {
           "users": "Users",
           "sessions": "Sessions",
@@ -78,7 +78,7 @@
       },
       "management": {
         "title": "Management",
-        "description": "Manage users, sessions and alerts",
+        "description": "Manage users and sessions",
         "links": {
           "users": "Users",
           "sessions": "Sessions",
@@ -99,7 +99,7 @@
     "cards": {
       "management": {
         "title": "Management",
-        "description": "Access tools to manage users, sessions and alerts for your event."
+        "description": "Access tools to manage users and sessions for your event."
       },
       "eventMaker": {
         "title": "Event Maker",

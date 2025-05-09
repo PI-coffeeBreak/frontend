@@ -1,8 +1,8 @@
 import { useState } from "react";
 import { FaCog } from "react-icons/fa";
 import { AiOutlineLoading3Quarters } from "react-icons/ai";
-import Pagination from "../components/Pagination";
-import PluginSettingsModal from "../components/PluginSettingsModal";
+import Pagination from "../components/common/Pagination.jsx";
+import PluginSettingsModal from "../components/plugins/PluginSettingsModal.jsx";
 import { usePlugins } from "../contexts/PluginsContext";
 
 export default function Plugins() {
@@ -11,11 +11,11 @@ export default function Plugins() {
     const [selectedPlugin, setSelectedPlugin] = useState(null);
     const [searchTerm, setSearchTerm] = useState("");
     const [currentPage, setCurrentPage] = useState(1);
-    const pluginsPerPage = 4;
+    const pluginsPerPage = 6;
     const [loadingPlugin, setLoadingPlugin] = useState(null);
 
     const filteredPlugins = plugins.filter((plugin) =>
-        plugin.formatted_name.toLowerCase().includes(searchTerm.toLowerCase())
+        plugin.name.toLowerCase().includes(searchTerm.toLowerCase())
     );
 
     const totalPages = Math.ceil(filteredPlugins.length / pluginsPerPage);
@@ -23,13 +23,13 @@ export default function Plugins() {
     const currentPlugins = filteredPlugins.slice(indexOfLastPlugin - pluginsPerPage, indexOfLastPlugin);
 
     const openModal = (plugin) => {
-        const pluginConfig = pluginsConfig.find((config) => config.title === plugin.name);
+        const pluginConfig = pluginsConfig.find((config) => config.title === plugin.title);
+        console.log("Plugin config:", pluginConfig);
         if (pluginConfig) {
             setSelectedPlugin({
                 ...plugin,
                 config: {
                     ...pluginConfig,
-                    formatted_name: plugin.formatted_name
                 }
             });
         }
@@ -78,7 +78,7 @@ export default function Plugins() {
                     <tbody>
                         {currentPlugins.map((plugin, index) => (
                             <tr key={index} className="hover:bg-gray-50">
-                                <td className="p-3">{plugin.formatted_name}</td>
+                                <td className="p-3">{plugin.name}</td>
                                 <td className="p-3">{plugin.description}</td>
                                 <td className="p-3 text-center">
                                     <label className="flex items-center justify-center cursor-pointer">
@@ -104,7 +104,7 @@ export default function Plugins() {
                                     </label>
                                 </td>
                                 <td className="p-3 text-center">
-                                    {pluginsConfig.some((config) => config.title === plugin.name) && (
+                                    {pluginsConfig.some((config) => config.title === plugin.title) && (
                                         <button
                                             onClick={() => openModal(plugin)}
                                             className="text-gray-700 hover:text-black"
