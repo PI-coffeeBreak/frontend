@@ -6,15 +6,6 @@ import { useKeycloak } from "@react-keycloak/web";
 
 const PluginsContext = createContext();
 
-// Format plugin name: replace - and _ with spaces and capitalize first letter of each word
-const formatPluginName = (name) => {
-    return name
-        .replace(/[-_]/g, ' ')
-        .split(' ')
-        .map(word => word.charAt(0).toUpperCase() + word.slice(1).toLowerCase())
-        .join(' ');
-};
-
 export const PluginsProvider = ({ children }) => {
     const pluginsBaseUrl = `${baseUrl}/plugins`;
     const pluginsConfigBaseUrl = `${baseUrl}/ui/plugin-config`;
@@ -30,11 +21,8 @@ export const PluginsProvider = ({ children }) => {
     const fetchPlugins = async () => {
         try {
             const response = await axiosWithAuth(keycloak).get(pluginsBaseUrl);
-            const formattedPlugins = response.data.map(plugin => ({
-                ...plugin,
-                formatted_name: formatPluginName(plugin.name)
-            }));
-            setPlugins(formattedPlugins);
+            console.log("plugins", response.data);
+            setPlugins(response.data);
         } catch (error) {
             console.error("Error fetching plugins:", error);
         }
@@ -55,21 +43,20 @@ export const PluginsProvider = ({ children }) => {
         const endpoint = plugin.is_loaded ? `${pluginsBaseUrl}/unload` : `${pluginsBaseUrl}/load`;
 
         try {
-            await axiosWithAuth(keycloak).post(endpoint, { plugin_name: plugin.name });
+            await axiosWithAuth(keycloak).post(endpoint, { plugin_name: plugin.title });
             // Update the local state
-            setPlugins((prevPlugins) =>
-                prevPlugins.map((p) =>
-                    p.name === plugin.name ? {
+            setPlugins(prevPlugins =>
+                prevPlugins.map(p =>
+                    p.title === plugin.title ? {
                         ...p,
-                        is_loaded: !p.is_loaded,
-                        formatted_name: formatPluginName(p.name)
+                        is_loaded: !p.is_loaded
                     } : p
                 )
             );
 
-            console.log(`Plugin ${plugin.formatted_name} ${plugin.is_loaded ? "unloaded" : "loaded"} successfully.`);
+            console.log(`Plugin ${plugin.name} ${plugin.is_loaded ? "unloaded" : "loaded"} successfully.`);
         } catch (error) {
-            console.error(`Error ${plugin.is_loaded ? "unloading" : "loading"} plugin ${plugin.formatted_name}:`, error);
+            console.error(`Error ${plugin.is_loaded ? "unloading" : "loading"} plugin ${plugin.name}:`, error);
         }
     };
 
