@@ -84,8 +84,8 @@ export default function Sidebar() {
   const enabledPlugins = plugins
     .filter((plugin) => plugin.is_loaded)
     .map((plugin) => ({
-      label: plugin.formatted_name,
-      path: `plugins/${plugin.name.toLowerCase()}`,
+      label: plugin.name,
+      path: `plugins/${plugin.title.toLowerCase()}`,
       icon: FaPuzzlePiece
     }));
   const hasEnabledPlugins = enabledPlugins.length > 0;
