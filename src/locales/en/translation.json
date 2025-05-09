@@ -1,0 +1,566 @@
+{
+  "common": {
+    "home": "Home",
+    "users": "Users",
+    "sessions": "Sessions",
+    "alerts": "Alerts",
+    "schedule": "Schedule",
+    "plugins": "Plugins",
+    "colors": "Colors",
+    "menus": "Menus",
+    "pages": "Pages",
+    "create": "Create",
+    "edit": "Edit",
+    "save": "Save",
+    "cancel": "Cancel",
+    "delete": "Delete",
+    "loading": "Loading...",
+    "error": "Error",
+    "success": "Success",
+    "media": {
+      "selectImage": "Select Image",
+      "changeImage": "Change Image",
+      "noImage": "No image selected",
+      "imageError": "Unable to display image",
+      "imageErrorDetails": "The image may be missing or unavailable",
+      "sizeError": "Image size must be less than 50MB",
+      "typeError": "Please upload an image file",
+      "removeImage": "Remove Image",
+      "imageAlt": "Image"
+    }
+  },
+  "auth": {
+    "login": "Login",
+    "logout": "Logout",
+    "setup": "Setup"
+  },
+  "event": {
+    "defaultTitle": "Event",
+    "maker": "Event Maker",
+    "editor": "Event Editor",
+    "setup": "Event Setup"
+  },
+  "menu": {
+    "sections": {
+      "home": {
+        "title": "Home",
+        "description": "Manage users and sessions",
+        "links": {
+          "users": "Users",
+          "sessions": "Sessions",
+          "alerts": "Alerts"
+        },
+        "descriptions": {
+          "users": "Manage user accounts, roles and permissions",
+          "sessions": "Schedule and organize sessions and activities",
+          "alerts": "Create and send notifications to participants"
+        },
+        "buttons": {
+          "users": "Manage Users",
+          "sessions": "View Sessions",
+          "alerts": "Manage Alerts"
+        }
+      },
+      "eventMaker": {
+        "title": "My Event",
+        "description": "Customize and configure your event",
+        "links": {
+          "eventInfo": "Event Info",
+          "colors": "Colors",
+          "menus": "Menus",
+          "pages": "Pages",
+          "plugins": "Manage Plugins"
+        }
+      },
+      "plugins": {
+        "title": "Plugins",
+        "description": "Manage and configure plugins"
+      },
+      "management": {
+        "title": "Management",
+        "description": "Manage users and sessions",
+        "links": {
+          "users": "Users",
+          "sessions": "Sessions",
+          "alerts": "Alerts"
+        }
+      }
+    },
+    "actions": {
+      "logout": "Logout"
+    }
+  },
+  "instantiate": {
+    "welcome": "Welcome to",
+    "accessTools": "Access all event management tools in one place",
+    "eventDate": "Event Date",
+    "openDashboard": "Open Dashboard",
+    "quickAccess": "Quick Access",
+    "cards": {
+      "management": {
+        "title": "Management",
+        "description": "Access tools to manage users and sessions for your event."
+      },
+      "eventMaker": {
+        "title": "Event Maker",
+        "description": "Customize the appearance, content and functionality of your event."
+      }
+    }
+  },
+  "users": {
+    "title": "Create Users",
+    "searchPlaceholder": "Search users",
+    "table": {
+      "name": "Name",
+      "email": "Email",
+      "role": "Role",
+      "actions": "Actions"
+    },
+    "actions": {
+      "assignRoles": "Assign Roles",
+      "banUser": "Ban User",
+      "unbanUser": "Unban User"
+    },
+    "create": {
+      "title": "Create New User",
+      "success": "User created successfully!",
+      "firstName": "First Name",
+      "lastName": "Last Name",
+      "email": "Email Address",
+      "role": "Role",
+      "temporaryPassword": "Temporary Password",
+      "hidePassword": "Hide",
+      "showPassword": "Show",
+      "passwordStrength": "Password Strength",
+      "passwordChangeNote": "The user will be prompted to change this password on first login.",
+      "generatePassword": "Generate Password",
+      "createUser": "Create User"
+    },
+    "manageRoles": {
+      "title": "Manage Roles",
+      "create": "Create Role",
+      "permissions": "Manage Permissions",
+      "permissionsWarning": "You don't have permission to manage roles. You need one of these roles: realm-admin, create-realm, manage-realm, cb-admin or admin. Role creation may fail with permission error.",
+      "roleName": "Role Name",
+      "roleNamePlaceholder": "organizer",
+      "createRole": "Create Role",
+      "selectRole": "Select Role:",
+      "permissionName": "Permission Name",
+      "description": "Description",
+      "actions": "Actions",
+      "noDescription": "No description",
+      "assigned": "Assigned",
+      "assign": "Assign",
+      "noRoles": "No roles available. Create a role first."
+    },
+    "list": {
+      "title": "Users"
+    },
+    "import": {
+      "title": "Add with Excel file",
+      "description": "Upload an Excel file to quickly add multiple users at once",
+      "results": "Import Results",
+      "success": "Successfully imported {{success}} of {{total}} users",
+      "failed": "Failed to import {{failed}} users. Check console for details."
+    },
+    "adminPermissionsWarning": "You don't have administrative permissions to manage user roles and permissions",
+    "roles": {
+      "participant": "Participant",
+      "speaker": "Speaker",
+      "staff": "Staff",
+      "organizer": "Organizer"
+    }
+  },
+  "activities": {
+    "title": "Create Sessions",
+    "sessions": "Sessions",
+    "create": {
+      "title": "Create New Session",
+      "description": "Create a new session manually",
+      "name": "Name",
+      "date": "Date",
+      "duration": "Duration",
+      "type": "Type",
+      "topic": "Topic",
+      "speaker": "Speaker",
+      "facilitator": "Facilitator",
+      "image": "Image"
+    },
+    "types": {
+      "title": "Create New Session Type",
+      "description": "Create a new session type manually",
+      "name": "Name"
+    },
+    "import": {
+      "title": "Add with Excel file",
+      "description": "Upload an Excel file to quickly add multiple sessions at once"
+    },
+    "filters": {
+      "searchPlaceholder": "Search activities by name or description",
+      "all": "All"
+    },
+    "delete": "Delete activity",
+    "deleteConfirm": "Are you sure you want to delete this activity?",
+    "deleteSuccess": "Activity deleted successfully",
+    "deleteError": "Failed to delete activity",
+    "noActivities": "No activities found",
+    "trySearch": "Try changing your search or filters",
+    "imageAlt": "Activity image",
+    "noImage": "No image",
+    "permissions": {
+      "disabled": "You don't have permission to create activities"
+    }
+  },
+  "eventEditor": {
+    "title": "Event Settings",
+    "basicInfo": {
+      "title": "Basic Information",
+      "eventName": {
+        "label": "Event Name",
+        "placeholder": "Enter the name of your event",
+        "required": "Event name is required"
+      },
+      "description": {
+        "label": "Description",
+        "placeholder": "Describe your event",
+        "required": "Description is required"
+      }
+    },
+    "dateTime": {
+      "title": "Date and Time",
+      "startDate": {
+        "label": "Start Date & Time",
+        "required": "Start date is required"
+      },
+      "endDate": {
+        "label": "End Date & Time",
+        "required": "End date is required",
+        "invalid": "End date must be after start date"
+      }
+    },
+    "location": {
+      "title": "Location",
+      "label": "Event Location",
+      "placeholder": "Enter the event venue or address",
+      "required": "Location is required"
+    },
+    "image": {
+      "title": "Event Image",
+      "label": "Event Logo",
+      "selectImage": "Select Image",
+      "changeImage": "Change Image",
+      "noImage": "No image selected",
+      "imageError": "Unable to display image",
+      "imageErrorDetails": "The image may be missing or unavailable",
+      "sizeError": "Image size should be less than 50MB",
+      "typeError": "Please upload an image file"
+    },
+    "actions": {
+      "cancel": "Cancel",
+      "save": "Save Changes",
+      "saving": "Saving..."
+    },
+    "validation": {
+      "requiredFields": "Please correct the errors in the form"
+    },
+    "success": {
+      "update": "Event updated successfully"
+    },
+    "error": {
+      "update": "Failed to update event",
+      "imageUpload": "Failed to upload image. Event will be updated without image changes."
+    }
+  },
+  "themeCustomizer": {
+    "title": "Event Theme Designer",
+    "subtitle": "Customize your event's colors and see how they look in real-time",
+    "tabs": {
+      "colors": "Choose Colors",
+      "preview": "Preview Your Event"
+    },
+    "instructions": "Click on any color below to change it. You'll see your changes in the 'Preview Your Event' tab.",
+    "colorGroups": {
+      "brandColors": "Brand Colors",
+      "backgroundText": "Background & Text",
+      "statusColors": "Status Colors"
+    },
+    "colorNames": {
+      "primary": "Main Brand Color",
+      "primary-content": "Text on Main Color",
+      "secondary": "Secondary Brand Color",
+      "secondary-content": "Text on Secondary Color",
+      "accent": "Accent Color (Highlights)",
+      "accent-content": "Text on Accent Color",
+      "base-100": "Background Color",
+      "base-200": "Card Background",
+      "base-300": "Border Color",
+      "base-content": "Main Text Color",
+      "info": "Information Color",
+      "info-content": "Text on Information Color",
+      "success": "Success Color",
+      "success-content": "Text on Success Color",
+      "warning": "Warning Color",
+      "warning-content": "Text on Warning Color",
+      "error": "Error Color",
+      "error-content": "Text on Error Color",
+      "neutral": "Neutral Color",
+      "neutral-content": "Text on Neutral Color"
+    },
+    "preview": {
+      "title": "TEDx Aveiro",
+      "talks": "Talks",
+      "eventLocation": "Event Location",
+      "attendees": "Attendees",
+      "tickets": "tickets",
+      "sponsors": "Sponsors",
+      "eventUpdates": "Event Updates",
+      "eventStart": "Event is about to start",
+      "coffeeBreak": "Coffee Break in 10 minutes",
+      "talkDelay": "Talk x staring hour was delayed from 15:00 to 17:00",
+      "eventSchedule": "Event Schedule",
+      "contactOrganizer": "Contact Organizer"
+    },
+    "actions": {
+      "reset": "Reset",
+      "resetTitle": "Reset to original theme",
+      "save": "Save",
+      "text": "Text"
+    }
+  },
+  "menuEditor": {
+    "title": "Menu Editor",
+    "description": "Manage navigation menu items. Drag and drop to reorder items. Changes will be reflected in your event's navigation.",
+    "searchPlaceholder": "Search menu items...",
+    "addButton": "Add Item",
+    "modal": {
+      "add": {
+        "title": "Add New Item",
+        "label": "Label",
+        "labelPlaceholder": "Item label",
+        "url": "URL / Path",
+        "urlPlaceholder": "/path/to/page",
+        "cancel": "Cancel",
+        "add": "Add"
+      },
+      "edit": {
+        "title": "Edit Item",
+        "cancel": "Cancel",
+        "update": "Update"
+      }
+    },
+    "actions": {
+      "edit": "Edit",
+      "delete": "Delete",
+      "addSuccess": "Item added successfully!",
+      "addError": "Failed to add item. Please try again.",
+      "updateSuccess": "Item updated successfully!",
+      "updateError": "Failed to update item. Please try again.",
+      "deleteConfirm": "Are you sure you want to delete this item?",
+      "deleteSuccess": "Item deleted successfully!",
+      "deleteError": "Failed to delete item. Please try again.",
+      "orderSuccess": "Menu order updated successfully!",
+      "orderError": "Failed to update menu order. Please try again."
+    },
+    "validation": {
+      "requiredFields": "Label and URL are required.",
+      "invalidData": "Invalid data format. Please try again.",
+      "reload": "Try Again"
+    },
+    "emptyState": {
+      "title": "No items found",
+      "description": {
+        "default": "Start by adding your first item.",
+        "search": "No results for \"{{searchTerm}}\""
+      },
+      "clearSearch": "Clear search",
+      "addFirstItem": "Add Item"
+    }
+  },
+  "pagesList": {
+    "title": "Pages",
+    "createButton": "Create Page",
+    "searchPlaceholder": "Search pages...",
+    "filters": {
+      "all": "All Pages",
+      "enabled": "Enabled",
+      "disabled": "Disabled"
+    },
+    "table": {
+      "title": "Title",
+      "description": "Description",
+      "status": "Status",
+      "actions": "Actions"
+    },
+    "status": {
+      "enabled": "Enabled",
+      "disabled": "Disabled"
+    },
+    "actions": {
+      "edit": "Edit",
+      "delete": "Delete",
+      "clone": "Clone",
+      "toggleEnabled": "Enable/Disable",
+      "deleteConfirm": "Are you sure you want to delete this page?",
+      "deleteSuccess": "Page deleted successfully!",
+      "deleteError": "Failed to delete page. Please try again.",
+      "toggleSuccess": "Page {{status}} successfully!",
+      "toggleError": "Failed to {{action}} page. Please try again.",
+      "cloneSuccess": "Page cloned successfully!",
+      "cloneError": "Failed to clone page. Please try again."
+    },
+    "emptyState": {
+      "title": "No pages found",
+      "description": {
+        "default": "Start by creating your first page.",
+        "search": "No results for \"{{searchTerm}}\""
+      },
+      "clearSearch": "Clear search",
+      "createFirstPage": "Create First Page"
+    },
+    "loading": "Loading pages...",
+    "error": "Error loading pages"
+  },
+  "pageEditor": {
+    "edit": {
+      "title": "Edit Page",
+      "subtitle": "Edit your page components and content",
+      "loading": "Loading page...",
+      "noChanges": "No changes detected",
+      "updateSuccess": "Page updated successfully!",
+      "updateError": "Failed to update the page",
+      "unsavedChanges": "You have unsaved changes. Do you really want to leave this page? All changes will be lost.",
+      "saveButton": "Update Page"
+    },
+    "create": {
+      "title": "Create New Page",
+      "subtitle": "Design your new page by adding and organizing components",
+      "unsavedChanges": "You have unsaved changes. Are you sure you want to leave?",
+      "titleRequired": "Page title is required",
+      "createSuccess": "Page created successfully!",
+      "createError": "Failed to create page. Please try again.",
+      "loading": "Loading...",
+      "saveButton": "Save Page"
+    },
+    "common": {
+      "backButton": "Back",
+      "titlePlaceholder": "Enter page title",
+      "addComponent": "Add Component",
+      "removeComponent": "Remove Component",
+      "dragToReorder": "Drag to reorder",
+      "componentSettings": "Component Settings",
+      "noComponents": "No components added",
+      "addFirstComponent": "Add your first component"
+    }
+  },
+  "components": {
+    "pageTitleInput": {
+      "label": "Page Title"
+    },
+    "dynamicComponentConfiguration": {
+      "componentType": "Component Type",
+      "editProperties": "Edit Properties",
+      "componentPreview": "Component Preview",
+      "sourceType": "Source Type",
+      "uploadMedia": "Upload Media",
+      "externalUrl": "External URL",
+      "error": {
+        "missingData": "Error: Component data missing"
+      }
+    },
+    "pageContent": {
+      "noSections": "No sections added yet",
+      "startBuilding": "Start building your page by clicking \"Add New Section\" below to add content components.",
+      "addNewSection": "Add New Section"
+    }
+  },
+  "navbar": {
+    "logoAlt": "coffeeBreak Logo",
+    "develop": "Develop",
+    "login": "Login",
+    "logout": "Logout"
+  },
+  "home": {
+    "title": "Plan, Manage and Elevate Your Events with Ease.",
+    "subtitle": "coffeeBreak. makes event management easy. Plan, organize and execute events without complication, all in one place. Simple tools, smart resources and a seamless experience for amazing events.",
+    "getStarted": "Get Started",
+    "learnMore": "Learn More",
+    "loading": "Loading...",
+    "features": {
+      "title": "Manage Events Effortlessly",
+      "subtitle": "Everything you need to plan and execute your event without complications.",
+      "dashboard": {
+        "title": "Site Dashboard",
+        "description": "A complete platform to configure, monitor and collect data from your events."
+      },
+      "customizable": {
+        "title": "Customizable Resources",
+        "description": "A variety of additional modules to customize your event experience as you wish."
+      },
+      "mobile": {
+        "title": "Mobile App",
+        "description": "A perfect extension of your event, reflecting everything configured on the site."
+      }
+    },
+    "newsletter": {
+      "title": "Want to receive our updates? Subscribe to our newsletter.",
+      "placeholder": "Enter your email",
+      "button": "Notify me",
+      "privacy": {
+        "text": "We respect your data. Read our",
+        "link": "privacy policy"
+      }
+    }
+  },
+  "management": {
+    "title": "Management",
+    "subtitle": "Manage all aspects of your event through these administrative tools",
+    "cards": {
+      "users": {
+        "title": "Users",
+        "description": "Manage user accounts, roles and permissions. Add new users, edit existing ones or control access to different resources of your event.",
+        "buttonText": "Manage Users"
+      },
+      "sessions": {
+        "title": "Sessions",
+        "description": "Schedule and organize sessions, workshops and event activities. Control schedules, locations and participant registration for all event activities.",
+        "buttonText": "View Sessions"
+      },
+      "alerts": {
+        "title": "Alerts",
+        "description": "Create and send notifications to event participants. Keep everyone informed about important updates, schedule changes and announcements.",
+        "buttonText": "Manage Alerts"
+      }
+    }
+  },
+  "eventMaker": {
+    "title": "Event Maker",
+    "subtitle": "Customize and configure your event with these powerful tools",
+    "cards": {
+      "eventInfo": {
+        "title": "Event Info",
+        "description": "Manage your event's basic information.",
+        "buttonText": "Edit Event"
+      },
+      "colors": {
+        "title": "Colors",
+        "description": "Create a unique visual identity for your event by customizing the color scheme. Choose colors that reflect your brand and create the perfect atmosphere.",
+        "buttonText": "Customize Colors"
+      },
+      "menus": {
+        "title": "Menus",
+        "description": "Design your event's navigation structure. Create, organize and customize menu items for an optimal user experience.",
+        "buttonText": "Edit Menus"
+      },
+      "pages": {
+        "title": "Pages",
+        "description": "Create and manage content pages for your event. Create custom layouts to present information effectively.",
+        "buttonText": "Manage Pages"
+      },
+      "choosePlugins": {
+        "title": "Choose Plugins",
+        "description": "Enhance your event with powerful plugins. Add the features you need to create the perfect experience.",
+        "buttonText": "Manage Plugins"
+      }
+    }
+  }
+} 

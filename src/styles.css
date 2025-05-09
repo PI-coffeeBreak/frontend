@@ -1,0 +1,53 @@
+@import "tailwindcss";
+
+@custom-variant dark (&:is(.dark *));
+@plugin "daisyui";
+@plugin "daisyui/theme" {
+    name: "mytheme";
+    default: true;
+    prefersdark: false;
+    color-scheme: light;
+
+    --color-base-100: oklch(98% 0.01 240);
+    --color-base-200: oklch(87.5% 0.004 108.23);
+    --color-base-300: oklch(87.5% 0.004 108.23);
+    --color-base-content: oklch(53.68% 0.0137 79.74);
+    --color-primary: oklch(33.21% 0.0585 41.76);
+    --color-primary-content: oklch(98% 0.01 240);
+    --color-secondary: oklch(0.792 0.036 84.575);
+    --color-secondary-content: oklch(98% 0.01 200);
+    --color-accent: oklch(79.05% 0.1208 47.52);
+    --color-accent-content: oklch(98% 0.01 160);
+    --color-neutral: oklch(0.743 0.113 87.265);
+    --color-neutral-content: oklch(98% 0.01 240);
+    --color-info: oklch(70% 0.2 220);
+    --color-info-content: oklch(98% 0.01 220);
+    --color-success: oklch(65% 0.25 140);
+    --color-success-content: oklch(98% 0.01 140);
+    --color-warning: oklch(80% 0.25 80);
+    --color-warning-content: oklch(20% 0.05 80);
+    --color-error: oklch(65% 0.3 30);
+    --color-error-content: oklch(98% 0.01 30);
+
+    /* border radius */
+    --radius-selector: 1rem;
+    --radius-field: 0.25rem;
+    --radius-box: 0.5rem;
+
+    /* base sizes */
+    --size-selector: 0.25rem;
+    --size-field: 0.25rem;
+
+    /* border size */
+    --border: 1px;
+
+    /* effects */
+    --depth: 1;
+    --noise: 0;
+}
+:where(:root:has(.modal-open, .modal[open], .modal:target, .modal-toggle:checked, .drawer:not(.drawer-open) > .drawer-toggle:checked)) {
+    scrollbar-gutter: stable;
+    background-image: linear-gradient(var(--color-base-100), var(--color-base-100));
+    --root-bg: color-mix(in srgb, var(--color-base-100), oklch(100% 0 0) 100%);
+}
+
