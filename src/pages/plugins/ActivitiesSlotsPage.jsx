@@ -1,6 +1,5 @@
 import { useState, useEffect } from "react";
 import { useActivities } from "../../contexts/ActivitiesContext";
-import { useNotification } from "../../contexts/NotificationContext";
 import { ActivityList } from "../../components/activities/ActivityList";
 import EditMetadataModal from "../../components/plugins/EditMetadataModal";
 import { useTranslation } from "react-i18next";
@@ -16,7 +15,7 @@ export default function ActivitySlotsPage() {
     fetchActivities();
   }, []);
 
-  const handleEditClick = (activityId) => {
+  const openModal = (activityId) => {
     setSelectedActivityId(activityId);
     setIsModalOpen(true);
   };
@@ -34,16 +33,14 @@ export default function ActivitySlotsPage() {
   return (
     <div className="w-full min-h-svh p-4 lg:p-8">
       <h1 className="text-3xl font-bold mb-6">{t("activities.editSlotsTitle")}</h1>
-      <ActivityList
-        activities={mappedActivities}
-        onEdit={handleEditClick}
-        mode="edit"
-      />
+
+      <ActivityList activities={mappedActivities} onEdit={openModal} mode="edit" />
+
       {selectedActivityId && (
         <EditMetadataModal
           isOpen={isModalOpen}
           activityId={selectedActivityId}
-          onClose={closeModal}
+          onClose={closeModal} // <- aqui é garantido que o estado muda
         />
       )}
     </div>

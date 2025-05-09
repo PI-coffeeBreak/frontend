@@ -1,9 +1,9 @@
-// EditMetadataModal.jsx
 import PropTypes from "prop-types";
 import { useEffect, useState } from "react";
 import { Modal } from "../common/Modal";
 import { useNotification } from "../../contexts/NotificationContext";
 import axios from "axios";
+import { FaTimes } from "react-icons/fa";
 
 export default function EditMetadataModal({ isOpen, onClose, activityId }) {
   const { showNotification } = useNotification();
@@ -23,8 +23,7 @@ export default function EditMetadataModal({ isOpen, onClose, activityId }) {
       const res = await axios.get(`/api/register/metadata/${activityId}`);
       setIsRestricted(res.data.is_restricted);
       setSlots(res.data.slots);
-    } catch (err) {
-      // If metadata not found, just keep defaults
+    } catch {
       setIsRestricted(false);
       setSlots(0);
       showNotification("Esta atividade ainda não tem metadados definidos.", "info");
@@ -40,7 +39,7 @@ export default function EditMetadataModal({ isOpen, onClose, activityId }) {
         slots: parseInt(slots, 10)
       });
       showNotification("Metadados atualizados com sucesso", "success");
-      onClose();
+      onClose(); // <- estado será atualizado corretamente
     } catch (error) {
       console.error(error);
       showNotification("Erro ao atualizar os metadados", "error");
@@ -48,15 +47,36 @@ export default function EditMetadataModal({ isOpen, onClose, activityId }) {
   };
 
   return (
-    <Modal isOpen={isOpen} onClose={onClose} title="Editar Limites de Vagas">
+    <Modal
+      isOpen={isOpen}
+      onClose={onClose}
+      title={
+        <div className="flex justify-between items-center w-full">
+          <span>Editar Limites de Vagas</span>
+          <button
+            onClick={onClose}
+            className="text-gray-400 hover:text-error p-1 rounded-full focus:outline-none focus:ring-2 focus:ring-error"
+            type="button"
+            aria-label="Fechar"
+          >
+            <FaTimes className="h-4 w-4" />
+          </button>
+        </div>
+      }
+    >
       {isLoading ? (
         <div className="flex justify-center my-8">
           <span className="loading loading-spinner loading-lg"></span>
         </div>
       ) : (
-        <form onSubmit={(e) => { e.preventDefault(); handleSave(); }}>
+        <form
+          onSubmit={(e) => {
+            e.preventDefault();
+            handleSave();
+          }}
+        >
           <div className="space-y-4">
-            <div>
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4 items-center">
               <label className="flex items-center gap-2">
                 <input
                   type="checkbox"
@@ -66,8 +86,7 @@ export default function EditMetadataModal({ isOpen, onClose, activityId }) {
                 />
                 Limitar número de vagas
               </label>
-            </div>
-            {isRestricted && (
+
               <div>
                 <label htmlFor="slots" className="block text-sm font-medium mb-1">
                   Número máximo de participantes
@@ -79,14 +98,14 @@ export default function EditMetadataModal({ isOpen, onClose, activityId }) {
                   onChange={(e) => setSlots(e.target.value)}
                   className="input input-bordered w-full"
                   min={0}
+                  disabled={!isRestricted}
+                  placeholder="ex: 50"
                 />
               </div>
-            )}
+            </div>
           </div>
-          <div className="mt-6 flex justify-end gap-2">
-            <button type="button" onClick={onClose} className="btn">
-              Cancelar
-            </button>
+
+          <div className="mt-6 flex justify-end">
             <button type="submit" className="btn btn-primary">
               Guardar
             </button>
