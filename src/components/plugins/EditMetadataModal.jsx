@@ -64,13 +64,26 @@ export default function EditMetadataModal({ activityId, activityName, onUpdate }
     }
   };
 
+  const handleCancel = () => {
+    document.getElementById("edit_slots_modal").close();
+  
+    setTimeout(() => {
+      fetchMetadata();
+    }, 200);
+  };
+  
+
   return (
     <dialog id="edit_slots_modal" className="modal">
       <div className="modal-box max-w-xl">
         <form method="dialog">
-          <button className="btn btn-sm btn-circle btn-ghost absolute right-2 top-2">
-            ✕
-          </button>
+        <button
+          type="button"
+          className="btn btn-sm btn-circle btn-ghost absolute right-2 top-2"
+          onClick={handleCancel}
+        >
+          ✕
+        </button>
         </form>
 
         <h3 className="font-bold text-lg mb-1">{t("activities.slots.modalTitle")}</h3>
@@ -91,7 +104,10 @@ export default function EditMetadataModal({ activityId, activityName, onUpdate }
               <input
                 type="checkbox"
                 checked={isRestricted}
-                onChange={(e) => setIsRestricted(e.target.checked)}
+                onChange={(e) => {
+                  setIsRestricted(e.target.checked);
+                  setErrorMsg("");
+                }}
                 className="checkbox checkbox-primary"
               />
               <span className="label-text">{t("activities.slots.limitLabel")}</span>
@@ -112,7 +128,7 @@ export default function EditMetadataModal({ activityId, activityName, onUpdate }
             <button type="submit" className="btn btn-primary" disabled={isLoading}>
               {isLoading ? <span className="loading loading-spinner"></span> : t("common.save")}
             </button>
-            <button type="button" className="btn" onClick={() => document.getElementById("edit_slots_modal").close()}>
+            <button type="button" className="btn" onClick={handleCancel}>
               {t("common.cancel")}
             </button>
           </div>
