@@ -1,37 +1,3 @@
-import { keycloakUrl, keycloakRealm, keycloakAdminClientId, keycloakServiceAccountSecret } from "../consts";
-import axios from "axios";
-
-// Service account credentials from environment variables
-const serviceAccountClient = keycloakAdminClientId;
-const serviceAccountSecret = keycloakServiceAccountSecret;
-
-/**
- * Get an admin token using client credentials grant
- * This should be used for secure server-side calls, not directly from frontend
- */
-export const getAdminToken = async () => {
-  try {
-    const response = await axios.post(
-      `${keycloakUrl}/realms/${keycloakRealm}/protocol/openid-connect/token`,
-      new URLSearchParams({
-        grant_type: "client_credentials",
-        client_id: serviceAccountClient,
-        client_secret: serviceAccountSecret,
-      }),
-      {
-        headers: {
-          "Content-Type": "application/x-www-form-urlencoded",
-        },
-      }
-    );
-    
-    return response.data.access_token;
-  } catch (error) {
-    console.error("Error getting admin token:", error);
-    throw error;
-  }
-};
-
 /**
  * Check if the current user token has admin privileges for user management
  */
@@ -79,7 +45,7 @@ export const hasRoleManagementPermissions = (keycloak) => {
   console.log("User roles from token:", realm_access.roles);
 
   // Check for the relevant role management roles
-  const requiredRoles = ["realm-admin", "create-realm", "manage-realm","cb-organizer","cb-admin", "admin"];
+  const requiredRoles = ["cb-organizer", "manage-realm"];
   const hasRole = requiredRoles.some(role => realm_access.roles.includes(role));
   
   console.log("User has role management permissions:", hasRole);
