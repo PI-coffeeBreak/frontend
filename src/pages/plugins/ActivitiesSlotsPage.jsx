@@ -53,10 +53,9 @@ export default function ActivitySlotsPage() {
 
   const handleEditClick = (activityId) => {
     setSelectedActivityId(activityId);
-    const activity = activities.find((a) => a.id === activityId);
-    setSelectedActivityName(activity?.name || "");
-    setIsModalOpen(true);
+    document.getElementById("edit_slots_modal").showModal();
   };
+  
 
   const closeModal = () => {
     setIsModalOpen(false);
@@ -99,12 +98,10 @@ export default function ActivitySlotsPage() {
       />
       {selectedActivityId && (
         <EditMetadataModal
-          isOpen={isModalOpen}
           activityId={selectedActivityId}
-          activityName={selectedActivityName}
-          onClose={closeModal}
+          activityName={activities.find(a => a.id === selectedActivityId)?.name}
           onUpdate={handleMetadataUpdate}
-      />
+        />
       )}
     </div>
   );
