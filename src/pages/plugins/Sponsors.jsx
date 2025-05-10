@@ -1,9 +1,10 @@
 import { useState, useEffect, useMemo } from 'react';
-import { FaPlus, FaTrash, FaEdit, FaGlobe } from 'react-icons/fa';
+import { FaPlus, FaTrash, FaEdit, FaGlobe, FaUpload, FaLink } from 'react-icons/fa';
 import { useKeycloak } from '@react-keycloak/web';
 import { axiosWithAuth } from '../../utils/axiosWithAuth.js';
 import { baseUrl } from '../../consts.js';
 import { useNotification } from '../../contexts/NotificationContext.jsx';
+import { useMedia } from '../../contexts/MediaContext.jsx';
 
 const API_ENDPOINTS = {
   LEVELS: `${baseUrl}/sponsors-promotion-plugin/sponsors/levels/`,
@@ -38,6 +39,8 @@ export function Sponsors() {
   // Authentication and notification
   const { keycloak } = useKeycloak();
   const { showNotification } = useNotification();
+  const { getMediaUrl, uploadMedia } = useMedia();
+  const [logoMedia, setLogoMedia] = useState(null);
   
   // Group sponsors by level - helper function
   const sponsorsByLevel = useMemo(() => {
@@ -207,40 +210,121 @@ export function Sponsors() {
     }));
   };
   
-  // Create new sponsor
+  // Handle media change
+  const handleMediaChange = (e) => {
+    const mediaValue = e.target.value;
+    setLogoMedia(mediaValue);
+    setSponsorForm(prev => ({
+      ...prev,
+      logo_url: mediaValue?.uuid ? getMediaUrl(mediaValue.uuid) : ''
+    }));
+  };
+  
+  // Reset logo-related state
+  const resetLogoState = () => {
+    setLogoMedia(null);
+    setLogoInputType('url');
+    setSponsorForm(prev => ({
+      ...prev,
+      logo_url: ''
+    }));
+  };
+  
+  // Reset sponsor form
+  const resetSponsorForm = () => {
+    setSponsorForm({
+      name: '',
+      logo_url: '',
+      website_url: '',
+      description: '',
+      level_id: levels.length > 0 ? levels[0].id : 0
+    });
+    resetLogoState();
+  };
+  
+  // Handle file selection
+  const handleLogoFileChange = (e) => {
+    const file = e.target.files[0];
+    if (file) {
+      if (file.size > 5 * 1024 * 1024) { // 5MB limit
+        showNotification("File size should be less than 5MB", "error");
+        return;
+      }
+
+      if (!file.type.startsWith('image/')) {
+        showNotification("Please upload an image file", "error");
+        return;
+      }
+
+      setLogoFile(file);
+      setLogoPreview(URL.createObjectURL(file));
+      setSponsorForm(prev => ({
+        ...prev,
+        logo_url: '' // Clear URL when file is selected
+      }));
+    } else {
+      // Handle case when file is cleared
+      setLogoFile(null);
+      setLogoPreview(null);
+      setSponsorForm(prev => ({
+        ...prev,
+        logo_url: ''
+      }));
+    }
+  };
+
+  // Helper function to get the correct logo URL
+  const getLogoUrl = (url) => {
+    if (!url) return '';
+    // If it's already a full URL, return as is
+    if (url.startsWith('http')) return url;
+    // If it's a UUID (media), use getMediaUrl
+    if (url.match(/^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i)) {
+      return getMediaUrl(url);
+    }
+    // Otherwise, assume it's a relative path and prepend baseUrl
+    return `${baseUrl}${url.startsWith('/') ? '' : '/'}${url}`;
+  };
+
+  // Modify handleAddSponsor to handle file upload
   const handleAddSponsor = async () => {
     if (!sponsorForm.name.trim()) {
       showNotification("Sponsor name cannot be empty", "error");
       return;
     }
-    
+
     if (!sponsorForm.level_id) {
       showNotification("Please select a sponsor level", "error");
       return;
     }
-    
+
     setIsLoading(prev => ({ ...prev, sponsors: true }));
     try {
-      console.log("Attempting to create sponsor with data:", sponsorForm);
-      console.log("Using API URL:", API_ENDPOINTS.SPONSORS);
-      
-      const response = await axiosWithAuth(keycloak).post(API_ENDPOINTS.SPONSORS, sponsorForm);
-      
-      setSponsors(prevSponsors => [...prevSponsors, response.data]);
+      // First create the sponsor with empty image
+      const response = await axiosWithAuth(keycloak).post(API_ENDPOINTS.SPONSORS, {
+        ...sponsorForm,
+        logo_url: logoInputType === 'file' ? '' : sponsorForm.logo_url
+      });
+
+      console.log("SPONSOR Response:", response.data);
+
+      // If we have a file, upload it to the media service
+      if (logoInputType === 'file' && logoFile && response.data.logo_url) {
+        await uploadMedia(response.data.logo_url, logoFile);
+      }
+
+      // Update the sponsor in the list with the correct URL
+      const updatedSponsor = {
+        ...response.data,
+        logo_url: getLogoUrl(response.data.logo_url)
+      };
+
+      setSponsors(prevSponsors => [...prevSponsors, updatedSponsor]);
       showNotification(`Sponsor "${sponsorForm.name}" created successfully`, "success");
       resetSponsorForm();
       setIsAddingSponsor(false);
     } catch (err) {
       console.error("Error creating sponsor:", err);
-      
-      if (err.response) {
-        console.error("API Error Details:", {
-          status: err.response.status,
-          headers: err.response.headers,
-          data: err.response.data
-        });
-      }
-      
       showNotification("Failed to create sponsor", "error");
     } finally {
       setIsLoading(prev => ({ ...prev, sponsors: false }));
@@ -260,10 +344,16 @@ export function Sponsors() {
         `${API_ENDPOINTS.SPONSORS}${selectedSponsor.id}`, 
         sponsorForm
       );
+
+      // Update the sponsor in the list with the correct URL
+      const updatedSponsor = {
+        ...response.data,
+        logo_url: getLogoUrl(response.data.logo_url)
+      };
       
       setSponsors(prevSponsors => 
         prevSponsors.map(sponsor => 
-          sponsor.id === selectedSponsor.id ? response.data : sponsor
+          sponsor.id === selectedSponsor.id ? updatedSponsor : sponsor
         )
       );
       
@@ -273,15 +363,6 @@ export function Sponsors() {
       setSelectedSponsor(null);
     } catch (err) {
       console.error("Error updating sponsor:", err);
-      
-      if (err.response) {
-        console.error("API Error Details:", {
-          status: err.response.status,
-          headers: err.response.headers,
-          data: err.response.data
-        });
-      }
-      
       showNotification("Failed to update sponsor", "error");
     } finally {
       setIsLoading(prev => ({ ...prev, sponsors: false }));
@@ -327,16 +408,9 @@ export function Sponsors() {
     setIsEditingSponsor(true);
   };
   
-  // Reset sponsor form
-  const resetSponsorForm = () => {
-    setSponsorForm({
-      name: '',
-      logo_url: '',
-      website_url: '',
-      description: '',
-      level_id: levels.length > 0 ? levels[0].id : 0
-    });
-  };
+  const [logoInputType, setLogoInputType] = useState('url');
+  const [logoFile, setLogoFile] = useState(null);
+  const [logoPreview, setLogoPreview] = useState(null);
 
   return (
     <div className="w-full min-h-svh p-8">
@@ -523,28 +597,63 @@ export function Sponsors() {
                   </div>
                   
                   <div>
-                    <label className="block text-sm font-medium mb-1" htmlFor="logo_url">
-                      Logo URL
+                    <label className="block text-sm font-medium mb-1" htmlFor="logo">
+                      Logo
                     </label>
                     <div className="flex flex-col gap-2">
-                      <input
-                        type="url"
-                        name="logo_url"
-                        id="logo_url"
-                        value={sponsorForm.logo_url}
-                        onChange={handleSponsorInputChange}
-                        placeholder="https://example.com/logo.png"
-                        className="input input-bordered w-full"
-                      />
-                      {sponsorForm.logo_url && (
+                      <div className="flex gap-2 mb-2">
+                        <button
+                          type="button"
+                          className={`btn btn-sm ${logoInputType === 'url' ? 'btn-primary' : 'btn-outline'}`}
+                          onClick={() => {
+                            setLogoInputType('url');
+                            resetLogoState();
+                          }}
+                        >
+                          <FaLink className="mr-1" /> URL
+                        </button>
+                        <button
+                          type="button"
+                          className={`btn btn-sm ${logoInputType === 'file' ? 'btn-primary' : 'btn-outline'}`}
+                          onClick={() => {
+                            setLogoInputType('file');
+                            setSponsorForm(prev => ({ ...prev, logo_url: '' }));
+                          }}
+                        >
+                          <FaUpload className="mr-1" /> Upload
+                        </button>
+                      </div>
+
+                      {logoInputType === 'url' ? (
+                        <input
+                          type="url"
+                          name="logo_url"
+                          id="logo_url"
+                          value={sponsorForm.logo_url || ''}
+                          onChange={handleSponsorInputChange}
+                          placeholder="https://example.com/logo.png"
+                          className="input input-bordered w-full"
+                        />
+                      ) : (
+                        <input
+                          type="file"
+                          name="logo"
+                          id="logo"
+                          accept="image/*"
+                          onChange={handleLogoFileChange}
+                          className="file-input file-input-bordered w-full"
+                        />
+                      )}
+
+                      {(sponsorForm.logo_url || logoPreview) && (
                         <div className="mt-2">
                           <img 
-                            src={sponsorForm.logo_url} 
+                            src={logoPreview || sponsorForm.logo_url} 
                             alt="Logo preview" 
                             className="h-16 object-contain"
                             onError={(e) => {
                               e.target.onerror = null;
-                              e.target.src = "https://placehold.co/200x100?text=Invalid+Image+URL";
+                              e.target.src = "https://placehold.co/200x100?text=Invalid+Image";
                             }}
                           />
                         </div>
@@ -632,7 +741,7 @@ export function Sponsors() {
                               {sponsor.logo_url && (
                                 <div className="h-20 flex items-center justify-center bg-base-200 rounded mb-3">
                                   <img 
-                                    src={sponsor.logo_url} 
+                                    src={getLogoUrl(sponsor.logo_url)}
                                     alt={`${sponsor.name} logo`}
                                     className="max-h-16 max-w-full object-contain"
                                     onError={(e) => {
