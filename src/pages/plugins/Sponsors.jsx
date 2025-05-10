@@ -1,5 +1,5 @@
 import { useState, useEffect, useMemo } from 'react';
-import { FaPlus, FaTrash, FaEdit, FaGlobe, FaUpload, FaLink, FaSort, FaSortUp, FaSortDown, FaSearch, FaTimes } from 'react-icons/fa';
+import { FaPlus, FaTrash, FaEdit, FaGlobe, FaUpload, FaLink, FaSearch, FaTimes } from 'react-icons/fa';
 import { useKeycloak } from '@react-keycloak/web';
 import { axiosWithAuth } from '../../utils/axiosWithAuth.js';
 import { baseUrl } from '../../consts.js';
@@ -41,62 +41,6 @@ export function Sponsors() {
   const { showNotification } = useNotification();
   const { getMediaUrl, uploadMedia } = useMedia();
   const [logoMedia, setLogoMedia] = useState(null);
-  
-  // Group sponsors by level - helper function
-  const sponsorsByLevel = useMemo(() => {
-    return levels.map(level => ({
-      ...level,
-      sponsors: sponsors.filter(sponsor => sponsor.level_id === level.id)
-    }));
-  }, [sponsors, levels]);
-  
-  // Sort sponsors
-  const [sortBy, setSortBy] = useState('name');
-  const [sortOrder, setSortOrder] = useState('asc');
-
-  // Sort sponsors
-  const sortedSponsorsByLevel = useMemo(() => {
-    return levels.map(level => ({
-      ...level,
-      sponsors: [...sponsors]
-        .filter(sponsor => sponsor.level_id === level.id)
-        .sort((a, b) => {
-          let aValue = a[sortBy];
-          let bValue = b[sortBy];
-
-          // Handle level sorting
-          if (sortBy === 'level_id') {
-            aValue = levels.find(l => l.id === a.level_id)?.name || '';
-            bValue = levels.find(l => l.id === b.level_id)?.name || '';
-          }
-
-          // Convert to lowercase for string comparison
-          if (typeof aValue === 'string') aValue = aValue.toLowerCase();
-          if (typeof bValue === 'string') bValue = bValue.toLowerCase();
-
-          // Compare values
-          if (aValue < bValue) return sortOrder === 'asc' ? -1 : 1;
-          if (aValue > bValue) return sortOrder === 'asc' ? 1 : -1;
-          return 0;
-        })
-    }));
-  }, [sponsors, levels, sortBy, sortOrder]);
-  
-  // Toggle sort order
-  const handleSort = (field) => {
-    if (sortBy === field) {
-      setSortOrder(prev => prev === 'asc' ? 'desc' : 'asc');
-    } else {
-      setSortBy(field);
-      setSortOrder('asc');
-    }
-  };
-
-  // Get sort icon
-  const getSortIcon = (field) => {
-    if (sortBy !== field) return <FaSort className="text-gray-400" />;
-    return sortOrder === 'asc' ? <FaSortUp /> : <FaSortDown />;
-  };
   
   // Fetch data on component mount
   useEffect(() => {
@@ -285,7 +229,10 @@ export function Sponsors() {
       description: '',
       level_id: levels.length > 0 ? levels[0].id : 0
     });
-    resetLogoState();
+    setLogoMedia(null);
+    setLogoFile(null);
+    setLogoPreview(null);
+    setLogoInputType('url');
   };
   
   // Handle file selection
