@@ -12,7 +12,9 @@ export default function Navbar() {
     };
 
     const handleLogin = () => {
-        keycloak.login({ redirectUri: window.location.origin + '/instantiate' });
+        keycloak.login({
+            redirectUri: window.location.origin + '/auth-redirect'
+        });
     };
 
     return (
