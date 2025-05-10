@@ -6,42 +6,38 @@ export function Modal({ isOpen, onClose, title, description, children }) {
   const closeButtonRef = useRef(null);
 
   useEffect(() => {
+    const modal = modalRef.current;
+  
+    const handleEscapeKey = (e) => {
+      const activeElement = document.activeElement;
+      const isFormElement =
+        activeElement.tagName === 'INPUT' ||
+        activeElement.tagName === 'TEXTAREA' ||
+        activeElement.tagName === 'SELECT';
+  
+      if (e.key === 'Escape' && !isFormElement) {
+        onClose();
+      }
+    };
+  
     if (isOpen) {
-      modalRef.current?.showModal();
+      modal?.showModal();
       document.body.classList.add('modal-open');
-      
-      // Don't automatically focus the close button - this can cause issues with forms
-      // closeButtonRef.current?.focus();
-      
-      // This is the problematic code that needs to be fixed:
-      const handleEscapeKey = (e) => {
-        // Check if the active element is a form element before handling Escape
-        const activeElement = document.activeElement;
-        const isFormElement = 
-          activeElement.tagName === 'INPUT' || 
-          activeElement.tagName === 'TEXTAREA' || 
-          activeElement.tagName === 'SELECT';
-        
-        // Only handle Escape if not in a form element
-        if (e.key === 'Escape' && !isFormElement) {
-          onClose();
-        }
-      };
-      
       document.addEventListener('keydown', handleEscapeKey);
-      
-      return () => {
-        document.removeEventListener('keydown', handleEscapeKey);
-      };
     } else {
-      modalRef.current?.close();
+      modal?.close();
       document.body.classList.remove('modal-open');
     }
-
+  
     return () => {
-      document.body.classList.remove('modal-open');
+      document.removeEventListener('keydown', handleEscapeKey);
+      // Só remove `modal-open` se ainda estiver presente
+      if (document.body.classList.contains('modal-open')) {
+        document.body.classList.remove('modal-open');
+      }
     };
   }, [isOpen, onClose]);
+  
 
   return (
     <dialog
