@@ -325,14 +325,22 @@ export function FloorPlans() {
                       <div className="mt-4 flex gap-2 justify-end">
                         <button
                           className="btn btn-ghost btn-xs"
-                          onClick={() => openEditModal(fp)}
+                          onPointerDown={(e) => e.stopPropagation()}
+                          onClick={(e) => {
+                            e.stopPropagation();
+                            openEditModal(fp);
+                          }}
                           title="Edit"
                         >
                           <FaEdit />
                         </button>
                         <button
                           className="btn btn-ghost btn-xs text-error"
-                          onClick={() => handleDelete(fp.id)}
+                          onPointerDown={(e) => e.stopPropagation()}
+                          onClick={(e) => {
+                            e.stopPropagation();
+                            handleDelete(fp.id);
+                          }}
                           title="Delete"
                         >
                           <FaTrash />
