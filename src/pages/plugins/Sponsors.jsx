@@ -1,5 +1,5 @@
 import { useState, useEffect, useMemo } from 'react';
-import { FaPlus, FaTrash, FaEdit, FaGlobe, FaUpload, FaLink } from 'react-icons/fa';
+import { FaPlus, FaTrash, FaEdit, FaGlobe, FaUpload, FaLink, FaSort, FaSortUp, FaSortDown, FaSearch, FaTimes } from 'react-icons/fa';
 import { useKeycloak } from '@react-keycloak/web';
 import { axiosWithAuth } from '../../utils/axiosWithAuth.js';
 import { baseUrl } from '../../consts.js';
@@ -50,6 +50,54 @@ export function Sponsors() {
     }));
   }, [sponsors, levels]);
   
+  // Sort sponsors
+  const [sortBy, setSortBy] = useState('name');
+  const [sortOrder, setSortOrder] = useState('asc');
+
+  // Sort sponsors
+  const sortedSponsorsByLevel = useMemo(() => {
+    return levels.map(level => ({
+      ...level,
+      sponsors: [...sponsors]
+        .filter(sponsor => sponsor.level_id === level.id)
+        .sort((a, b) => {
+          let aValue = a[sortBy];
+          let bValue = b[sortBy];
+
+          // Handle level sorting
+          if (sortBy === 'level_id') {
+            aValue = levels.find(l => l.id === a.level_id)?.name || '';
+            bValue = levels.find(l => l.id === b.level_id)?.name || '';
+          }
+
+          // Convert to lowercase for string comparison
+          if (typeof aValue === 'string') aValue = aValue.toLowerCase();
+          if (typeof bValue === 'string') bValue = bValue.toLowerCase();
+
+          // Compare values
+          if (aValue < bValue) return sortOrder === 'asc' ? -1 : 1;
+          if (aValue > bValue) return sortOrder === 'asc' ? 1 : -1;
+          return 0;
+        })
+    }));
+  }, [sponsors, levels, sortBy, sortOrder]);
+  
+  // Toggle sort order
+  const handleSort = (field) => {
+    if (sortBy === field) {
+      setSortOrder(prev => prev === 'asc' ? 'desc' : 'asc');
+    } else {
+      setSortBy(field);
+      setSortOrder('asc');
+    }
+  };
+
+  // Get sort icon
+  const getSortIcon = (field) => {
+    if (sortBy !== field) return <FaSort className="text-gray-400" />;
+    return sortOrder === 'asc' ? <FaSortUp /> : <FaSortDown />;
+  };
+  
   // Fetch data on component mount
   useEffect(() => {
     if (keycloak?.authenticated) {
@@ -69,7 +117,6 @@ export function Sponsors() {
       
       if (Array.isArray(response.data)) {
         setLevels(response.data);
-        console.log(`Successfully loaded ${response.data.length} sponsor levels`);
       } else {
         console.error("Unexpected API response structure for levels:", response.data);
         setLevels([]);
@@ -103,7 +150,6 @@ export function Sponsors() {
       
       if (Array.isArray(response.data)) {
         setSponsors(response.data);
-        console.log(`Successfully loaded ${response.data.length} sponsors`);
       } else {
         console.error("Unexpected API response structure for sponsors:", response.data);
         setSponsors([]);
@@ -412,16 +458,74 @@ export function Sponsors() {
   const [logoFile, setLogoFile] = useState(null);
   const [logoPreview, setLogoPreview] = useState(null);
 
+  const [searchQuery, setSearchQuery] = useState('');
+
+  // Filter sponsors based on search query
+  const filteredSponsorsByLevel = useMemo(() => {
+    const query = searchQuery.toLowerCase().trim();
+    
+    return levels.map(level => ({
+      ...level,
+      sponsors: sponsors
+        .filter(sponsor => sponsor.level_id === level.id)
+        .filter(sponsor => 
+          !query || 
+          sponsor.name.toLowerCase().includes(query) ||
+          sponsor.description?.toLowerCase().includes(query) ||
+          sponsor.website_url?.toLowerCase().includes(query)
+        )
+    }));
+  }, [sponsors, levels, searchQuery]);
+
+  const [isEditingLevel, setIsEditingLevel] = useState(false);
+  const [editingLevel, setEditingLevel] = useState(null);
+
+  // Handle edit level
+  const handleEditLevel = async () => {
+    if (!editingLevel.name.trim()) {
+      showNotification("Level name cannot be empty", "error");
+      return;
+    }
+    
+    setIsLoading(prev => ({ ...prev, levels: true }));
+    try {
+      const response = await axiosWithAuth(keycloak).put(
+        `${API_ENDPOINTS.LEVELS}${editingLevel.id}`,
+        { name: editingLevel.name }
+      );
+      
+      setLevels(prevLevels => 
+        prevLevels.map(level => 
+          level.id === editingLevel.id ? response.data : level
+        )
+      );
+      showNotification(`Level "${editingLevel.name}" updated successfully`, "success");
+      setIsEditingLevel(false);
+      setEditingLevel(null);
+    } catch (err) {
+      console.error("Error updating level:", err);
+      showNotification("Failed to update sponsor level", "error");
+    } finally {
+      setIsLoading(prev => ({ ...prev, levels: false }));
+    }
+  };
+
+  // Start editing level
+  const startEditingLevel = (level) => {
+    setEditingLevel(level);
+    setIsEditingLevel(true);
+  };
+
   return (
-    <div className="w-full min-h-svh p-8">
-      <h1 className="text-3xl font-bold mb-6 text-primary">Sponsors Management</h1>
+    <div className="w-full min-h-svh p-4 sm:p-8">
+      <h1 className="text-2xl sm:text-3xl font-bold mb-4 sm:mb-6 text-primary">Sponsors Management</h1>
       
       {/* Levels Section */}
-      <div className="mb-12">
-        <div className="flex justify-between items-center mb-4">
-          <h2 className="text-2xl font-semibold">Sponsor Levels</h2>
+      <div className="mb-8 sm:mb-12">
+        <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 sm:gap-0 mb-4">
+          <h2 className="text-xl sm:text-2xl font-semibold">Sponsor Levels</h2>
           <button 
-            className="btn btn-primary btn-sm"
+            className="btn btn-primary btn-sm w-full sm:w-auto"
             onClick={() => setIsAddingLevel(true)}
           >
             <FaPlus className="mr-2" /> Add Level
@@ -434,6 +538,41 @@ export function Sponsors() {
           </div>
         ) : (
           <>
+            {/* Edit Level Form */}
+            {isEditingLevel && editingLevel && (
+              <div className="bg-base-200 p-4 rounded-lg mb-4">
+                <h3 className="font-medium mb-2">Edit Level</h3>
+                <div className="flex gap-2">
+                  <input
+                    type="text"
+                    placeholder="Enter level name"
+                    className="input input-bordered flex-1"
+                    value={editingLevel.name}
+                    onChange={(e) => setEditingLevel(prev => ({ ...prev, name: e.target.value }))}
+                  />
+                  <div className="flex gap-2">
+                    <button 
+                      className="btn btn-primary"
+                      onClick={handleEditLevel}
+                      disabled={!editingLevel.name.trim()}
+                    >
+                      Save
+                    </button>
+                    <button 
+                      className="btn btn-outline"
+                      onClick={() => {
+                        setIsEditingLevel(false);
+                        setEditingLevel(null);
+                      }}
+                    >
+                      Cancel
+                    </button>
+                  </div>
+                </div>
+              </div>
+            )}
+
+            {/* Add Level Form */}
             {isAddingLevel && (
               <div className="bg-base-200 p-4 rounded-lg mb-4">
                 <h3 className="font-medium mb-2">Create New Level</h3>
@@ -490,14 +629,23 @@ export function Sponsors() {
                           <td className="font-medium">{level.name}</td>
                           <td>{sponsorCount}</td>
                           <td>
-                            <button 
-                              className="btn btn-error btn-sm"
-                              onClick={() => handleDeleteLevel(level.id)}
-                              disabled={sponsorCount > 0}
-                              title={sponsorCount > 0 ? "Cannot delete levels with sponsors" : "Delete level"}
-                            >
-                              <FaTrash />
-                            </button>
+                            <div className="flex gap-2">
+                              <button 
+                                className="btn btn-ghost btn-sm"
+                                onClick={() => startEditingLevel(level)}
+                                title="Edit level"
+                              >
+                                <FaEdit />
+                              </button>
+                              <button 
+                                className="btn btn-error btn-sm"
+                                onClick={() => handleDeleteLevel(level.id)}
+                                disabled={sponsorCount > 0}
+                                title={sponsorCount > 0 ? "Cannot delete levels with sponsors" : "Delete level"}
+                              >
+                                <FaTrash />
+                              </button>
+                            </div>
                           </td>
                         </tr>
                       );
@@ -512,25 +660,48 @@ export function Sponsors() {
       
       {/* Sponsors Section */}
       <div className="mb-6">
-        <div className="flex justify-between items-center mb-4">
-          <h2 className="text-2xl font-semibold">Sponsors</h2>
-          <button 
-            className="btn btn-primary btn-sm"
-            onClick={() => {
-              if (levels.length === 0) {
-                showNotification("Please create at least one level first", "warning");
-                return;
-              }
-              resetSponsorForm();
-              setSponsorForm(prev => ({
-                ...prev,
-                level_id: levels[0].id
-              }));
-              setIsAddingSponsor(true);
-            }}
-          >
-            <FaPlus className="mr-2" /> Add Sponsor
-          </button>
+        <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 sm:gap-0 mb-4">
+          <h2 className="text-xl sm:text-2xl font-semibold">Sponsors</h2>
+          <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-4 w-full sm:w-auto">
+            {/* Search Bar */}
+            <div className="relative flex-1 sm:flex-none sm:w-64">
+              <input
+                type="text"
+                placeholder="Search sponsors..."
+                value={searchQuery}
+                onChange={(e) => setSearchQuery(e.target.value)}
+                className="input input-bordered input-sm w-full pl-8 pr-8"
+              />
+              <FaSearch className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400" />
+              {searchQuery && (
+                <button
+                  className="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-400 hover:text-gray-600"
+                  onClick={() => setSearchQuery('')}
+                >
+                  <FaTimes />
+                </button>
+              )}
+            </div>
+
+            {/* Add Sponsor Button */}
+            <button 
+              className="btn btn-primary btn-sm w-full sm:w-auto"
+              onClick={() => {
+                if (levels.length === 0) {
+                  showNotification("Please create at least one level first", "warning");
+                  return;
+                }
+                resetSponsorForm();
+                setSponsorForm(prev => ({
+                  ...prev,
+                  level_id: levels[0].id
+                }));
+                setIsAddingSponsor(true);
+              }}
+            >
+              <FaPlus className="mr-2" /> Add Sponsor
+            </button>
+          </div>
         </div>
         
         {isLoading.sponsors ? (
@@ -541,7 +712,7 @@ export function Sponsors() {
           <>
             {/* Sponsor Form (Add/Edit) */}
             {(isAddingSponsor || isEditingSponsor) && (
-              <div className="bg-base-200 p-6 rounded-lg mb-6">
+              <div className="bg-base-200 p-4 sm:p-6 rounded-lg mb-6">
                 <h3 className="font-medium text-lg mb-4">
                   {isEditingSponsor ? "Edit Sponsor" : "Add New Sponsor"}
                 </h3>
@@ -604,7 +775,7 @@ export function Sponsors() {
                       <div className="flex gap-2 mb-2">
                         <button
                           type="button"
-                          className={`btn btn-sm ${logoInputType === 'url' ? 'btn-primary' : 'btn-outline'}`}
+                          className={`btn btn-sm flex-1 ${logoInputType === 'url' ? 'btn-primary' : 'btn-outline'}`}
                           onClick={() => {
                             setLogoInputType('url');
                             resetLogoState();
@@ -614,7 +785,7 @@ export function Sponsors() {
                         </button>
                         <button
                           type="button"
-                          className={`btn btn-sm ${logoInputType === 'file' ? 'btn-primary' : 'btn-outline'}`}
+                          className={`btn btn-sm flex-1 ${logoInputType === 'file' ? 'btn-primary' : 'btn-outline'}`}
                           onClick={() => {
                             setLogoInputType('file');
                             setSponsorForm(prev => ({ ...prev, logo_url: '' }));
@@ -676,9 +847,9 @@ export function Sponsors() {
                   </div>
                 </div>
                 
-                <div className="flex justify-end gap-2 mt-4">
+                <div className="flex flex-col sm:flex-row justify-end gap-2 mt-4">
                   <button 
-                    className="btn btn-outline"
+                    className="btn btn-outline w-full sm:w-auto"
                     onClick={() => {
                       setIsAddingSponsor(false);
                       setIsEditingSponsor(false);
@@ -688,7 +859,7 @@ export function Sponsors() {
                     Cancel
                   </button>
                   <button 
-                    className="btn btn-primary"
+                    className="btn btn-primary w-full sm:w-auto"
                     onClick={isEditingSponsor ? handleUpdateSponsor : handleAddSponsor}
                   >
                     {isEditingSponsor ? "Update" : "Save"} Sponsor
@@ -705,33 +876,39 @@ export function Sponsors() {
               </div>
             ) : (
               <div className="space-y-6">
-                {sponsorsByLevel.map(level => (
+                {filteredSponsorsByLevel.map(level => (
                   <div key={level.id} className="bg-base-200 p-4 rounded-lg">
                     <h3 className="text-xl font-semibold mb-4 text-primary">{level.name}</h3>
                     
                     {level.sponsors.length === 0 ? (
-                      <p className="text-sm text-gray-400 italic">No sponsors in this level</p>
+                      <p className="text-sm text-gray-400 italic">
+                        {searchQuery 
+                          ? "No sponsors match your search"
+                          : "No sponsors in this level"
+                        }
+                      </p>
                     ) : (
-                      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+                      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
                         {level.sponsors.map(sponsor => (
-                          <div key={sponsor.id} className="bg-base-100 rounded-lg shadow-sm overflow-hidden">
+                          <div 
+                            key={sponsor.id} 
+                            className="bg-base-100 rounded-lg shadow-sm overflow-hidden transition-all duration-300 hover:shadow-lg hover:-translate-y-1"
+                          >
                             <div className="p-4">
                               <div className="flex justify-between items-start mb-2">
-                                <h4 className="font-bold">{sponsor.name}</h4>
-                                <div className="flex gap-1">
+                                <h4 className="font-bold group-hover:text-primary transition-colors duration-300">{sponsor.name}</h4>
+                                <div className="flex gap-1 group-hover:opacity-100 transition-opacity duration-300">
                                   <button 
-                                    className="btn btn-sm btn-ghost"
+                                    className="btn btn-sm btn-ghost hover:bg-base-300 transition-colors duration-300"
                                     onClick={() => handleEditSponsor(sponsor)}
                                     title="Edit"
-                                    aria-label={`Edit ${sponsor.name}`}
                                   >
                                     <FaEdit />
                                   </button>
                                   <button 
-                                    className="btn btn-sm btn-ghost text-error"
+                                    className="btn btn-sm btn-ghost text-error hover:bg-error/10 transition-colors duration-300"
                                     onClick={() => handleDeleteSponsor(sponsor.id)}
                                     title="Delete"
-                                    aria-label={`Delete ${sponsor.name}`}
                                   >
                                     <FaTrash />
                                   </button>
@@ -739,7 +916,7 @@ export function Sponsors() {
                               </div>
                               
                               {sponsor.logo_url && (
-                                <div className="h-20 flex items-center justify-center bg-base-200 rounded mb-3">
+                                <div className="h-20 flex items-center justify-center rounded mb-3 transition-transform duration-300 hover:scale-105">
                                   <img 
                                     src={getLogoUrl(sponsor.logo_url)}
                                     alt={`${sponsor.name} logo`}
@@ -753,7 +930,7 @@ export function Sponsors() {
                               )}
                               
                               {sponsor.description && (
-                                <p className="text-sm mb-3 text-gray-600 line-clamp-2">
+                                <p className="text-sm mb-3 text-gray-600 line-clamp-2 transition-colors duration-300 hover:text-gray-800">
                                   {sponsor.description}
                                 </p>
                               )}
@@ -763,7 +940,7 @@ export function Sponsors() {
                                   href={sponsor.website_url}
                                   target="_blank"
                                   rel="noreferrer"
-                                  className="text-sm text-primary flex items-center gap-1"
+                                  className="text-sm text-primary flex items-center gap-1 transition-colors duration-300 hover:text-primary-focus"
                                 >
                                   <FaGlobe className="w-3 h-3" />
                                   Visit Website
