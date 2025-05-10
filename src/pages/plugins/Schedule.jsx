@@ -7,6 +7,7 @@ import Activity from "../../components/common/Activity.jsx";
 import { useActivities } from "../../contexts/ActivitiesContext.jsx";
 import { useNotification } from "../../contexts/NotificationContext.jsx";
 import { FaCalendarAlt, FaChevronDown, FaChevronUp, FaSearch, FaTimes } from "react-icons/fa";
+import { useEvent } from "../../contexts/EventContext";
 
 // Helper functions remain unchanged
 const findActivityById = (activities, activityId) => {
@@ -44,8 +45,9 @@ const formatToLocalISOString = (date) => {
 export default function DragDropCalendar() {
     const calendarRef = useRef(null);
     const [activitiesCollapsed, setActivitiesCollapsed] = useState(false);
-    const [activeFilter, setActiveFilter] = useState(null); // Add a new state for the active filter
-    const [searchQuery, setSearchQuery] = useState(''); // Add a new state for search query
+    const [activeFilter, setActiveFilter] = useState(null);
+    const [searchQuery, setSearchQuery] = useState('');
+    const { eventInfo } = useEvent();
 
     const {
         activities,
@@ -369,8 +371,12 @@ export default function DragDropCalendar() {
                             allDaySlot={false}
                             dayMaxEvents={true}
                             nowIndicator={true}
-                            scrollTime={new Date().getHours() + ":00:00"} // Scroll to current hour
+                            scrollTime={new Date().getHours() + ":00:00"}
                             timeZone="local"
+                            validRange={{
+                                start: eventInfo?.start_time ? new Date(eventInfo.start_time) : undefined,
+                                end: eventInfo?.end_time ? new Date(eventInfo.end_time) : undefined
+                            }}
                             slotLabelFormat={{
                                 hour: "2-digit",
                                 minute: "2-digit",

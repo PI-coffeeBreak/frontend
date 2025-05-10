@@ -426,6 +426,17 @@ export function NewSessionModal({ isOpen, onClose, onSubmit }) {
                     className="input input-bordered w-full"
                 />
               </FormField>
+              <FormField label="Facilitator" id="facilitator">
+                <input
+                    type="text"
+                    id="facilitator"
+                    name="facilitator"
+                    value={values.facilitator}
+                    onChange={handleChangeWithStop}
+                    placeholder="Enter the facilitator's name"
+                    className="input input-bordered w-full"
+                />
+              </FormField>
             </div>
 
             <FormField label="Image" id="image">

@@ -88,13 +88,12 @@ export default function Activities() {
       const payload = {
         name: sessionData.name,
         description: sessionData.description,
-        start_time: sessionData.date,
+        date: sessionData.date,
         duration: parseInt(sessionData.duration, 10),
         type_id: typeof sessionData.type_id === 'string' 
           ? parseInt(sessionData.type_id, 10) 
           : sessionData.type_id,
         topic: sessionData.topic || "",
-        speaker: sessionData.speaker || "",
         facilitator: sessionData.facilitator || ""
       };
 
