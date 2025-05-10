@@ -9,6 +9,9 @@ import { axiosWithAuth } from "../../utils/axiosWithAuth.js";
 import { baseUrl }        from "../../consts.js";
 import { useNotification } from "../../contexts/NotificationContext.jsx";
 import FloorPlanModal from "../../components/floorplans/FloorPlanModal";
+import { DndContext, closestCenter } from "@dnd-kit/core";
+import { arrayMove, SortableContext, verticalListSortingStrategy } from "@dnd-kit/sortable";
+import SortableItem from "../../components/SortableItem"; // Create this component for sortable items
 
 const apiUrl        = `${baseUrl}/floor-plan-plugin/floor_plan`;
 const ITEMS_PER_PAGE = 6;
@@ -236,6 +239,34 @@ export function FloorPlans() {
     page * ITEMS_PER_PAGE
   );
 
+  const handleDragEnd = async (event) => {
+    const { active, over } = event;
+
+    if (active.id !== over.id) {
+      const oldIndex = floorPlans.findIndex((fp) => fp.id === active.id);
+      const newIndex = floorPlans.findIndex((fp) => fp.id === over.id);
+
+      const reorderedFloorPlans = arrayMove(floorPlans, oldIndex, newIndex);
+      setFloorPlans(reorderedFloorPlans);
+
+      try {
+        // Prepare the new order payload
+        const orders = reorderedFloorPlans.map((fp, index) => ({
+          id: fp.id,
+          order: index + 1, // Assuming order starts at 1
+        }));
+
+        // Send the new order to the backend
+        await axiosWithAuth(keycloak).patch(`${apiUrl}/order`, orders);
+
+        showNotification("Order updated successfully", "success");
+      } catch (err) {
+        console.error(err);
+        showNotification("Failed to update order", "error");
+      }
+    }
+  };
+
   return (
     <div className="p-8 space-y-6">
       <h1 className="text-3xl font-bold text-primary">Floor Plan Management</h1>
@@ -273,44 +304,47 @@ export function FloorPlans() {
       ) : floorPlans.length === 0 ? (
         <p className="text-center text-gray-500">No Floor Plans yet.</p>
       ) : (
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
-          {currentSlice.map((fp) => (
-            <div
-              key={fp.id}
-              className="bg-base-100 rounded-lg shadow-lg overflow-hidden flex flex-col"
-            >
-              <div className="relative h-48 bg-gray-100">
-                <img
-                  src={fp.image}
-                  alt={fp.name}
-                  className="object-cover w-full h-full"
-                />
-              </div>
-              <div className="p-4 flex-1 flex flex-col">
-                <h2 className="text-lg font-semibold mb-2">{fp.name}</h2>
-                <p className="text-sm text-gray-600 flex-1 truncate whitespace-pre-wrap">
-                  {fp.details || "—"}
-                </p>
-                <div className="mt-4 flex gap-2 justify-end">
-                  <button
-                    className="btn btn-ghost btn-xs"
-                    onClick={() => openEditModal(fp)}
-                    title="Edit"
-                  >
-                    <FaEdit />
-                  </button>
-                  <button
-                    className="btn btn-ghost btn-xs text-error"
-                    onClick={() => handleDelete(fp.id)}
-                    title="Delete"
-                  >
-                    <FaTrash />
-                  </button>
-                </div>
-              </div>
+        <DndContext collisionDetection={closestCenter} onDragEnd={handleDragEnd}>
+          <SortableContext items={floorPlans.map((fp) => fp.id)} strategy={verticalListSortingStrategy}>
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+              {floorPlans.map((fp) => (
+                <SortableItem key={fp.id} id={fp.id}>
+                  <div className="bg-base-100 rounded-lg shadow-lg overflow-hidden flex flex-col">
+                    <div className="relative h-48 bg-gray-100">
+                      <img
+                        src={fp.image}
+                        alt={fp.name}
+                        className="object-cover w-full h-full"
+                      />
+                    </div>
+                    <div className="p-4 flex-1 flex flex-col">
+                      <h2 className="text-lg font-semibold mb-2">{fp.name}</h2>
+                      <p className="text-sm text-gray-600 flex-1 truncate whitespace-pre-wrap">
+                        {fp.details || "—"}
+                      </p>
+                      <div className="mt-4 flex gap-2 justify-end">
+                        <button
+                          className="btn btn-ghost btn-xs"
+                          onClick={() => openEditModal(fp)}
+                          title="Edit"
+                        >
+                          <FaEdit />
+                        </button>
+                        <button
+                          className="btn btn-ghost btn-xs text-error"
+                          onClick={() => handleDelete(fp.id)}
+                          title="Delete"
+                        >
+                          <FaTrash />
+                        </button>
+                      </div>
+                    </div>
+                  </div>
+                </SortableItem>
+              ))}
             </div>
-          ))}
-        </div>
+          </SortableContext>
+        </DndContext>
       )}
 
       <FloorPlanModal
