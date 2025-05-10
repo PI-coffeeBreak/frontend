@@ -36,7 +36,9 @@ export function FloorPlans() {
   const [modalMode, setModalMode]     = useState("create");
 
   const extractUuid = (image) =>
-    image?.startsWith(`${baseUrl}/media/`) ? image.split("/").pop() : image;
+    image?.startsWith(`${baseUrl}/media/`)
+      ? image.split("?")[0].split("/").pop()
+      : image;
 
   const checkIfImageIsMedia = async (imageIdOrUrl) => {
     const uuid = extractUuid(imageIdOrUrl);
@@ -138,7 +140,7 @@ export function FloorPlans() {
         {
           name: form.name,
           details: form.details,
-          image: imagePayload
+          image: imagePayload || " "
         }
       );
 
@@ -214,13 +216,15 @@ export function FloorPlans() {
 
   const openEditModal = (fp) => {
     const uuidOrUrl = extractUuid(fp.image);
+
     setSelected(fp);
     setForm({
       name: fp.name,
       details: fp.details ?? "",
       image: uuidOrUrl,
-      file: null
+      file: null,
     });
+
     checkIfImageIsMedia(uuidOrUrl);
     setModalMode("edit");
     setModalOpen(true);
@@ -356,14 +360,14 @@ export function FloorPlans() {
       )}
 
       <FloorPlanModal
-        open          ={modalOpen}
-        onClose       ={closeModal}
-        onSubmit      ={modalMode === "edit" ? handleUpdate : handleCreate}
-        form          ={form}
-        setForm       ={setForm}
-        isEditing     ={modalMode === "edit"}
-        isImageMedia  ={isImageMedia}
-        onRemoveImage ={handleRemoveImage}
+        open={modalOpen}
+        onClose={closeModal}
+        onSubmit={modalMode === "edit" ? handleUpdate : handleCreate}
+        form={form}
+        setForm={setForm}
+        isEditing={modalMode === "edit"}
+        isImageMedia={isImageMedia}
+        onRemoveImage={handleRemoveImage}
       />
     </div>
   );
