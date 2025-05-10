@@ -101,9 +101,9 @@ export default function DropdownMenu({
             {/* Dropdown content */}
             {isVisible && (
                 <div className={`overflow-hidden transition-all duration-300 ${
-                    open ? "max-h-96 opacity-100" : "max-h-0 opacity-0"
+                    open ? "max-h-[calc(100vh-400px)] opacity-100" : "max-h-0 opacity-0"
                 }`}>
-                    <ul className="ml-6 mt-2 space-y-2 py-1">
+                    <ul className="ml-6 mt-2 space-y-2 py-1 overflow-y-auto">
                         {links.map((link) => {
                             const isLinkActive = isActive(link.path);
                             const LinkIcon = link.icon;
