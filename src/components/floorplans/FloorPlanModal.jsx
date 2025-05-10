@@ -14,25 +14,44 @@ export default function FloorPlanModal({
 }) {
   const dialogRef = useRef(null);
   const [errors, setErrors] = useState({});
-  const [imageInputType, setImageInputType] = useState("url"); // "url" or "file"
+  const [imageInputType, setImageInputType] = useState("url");
+  const [prevUrl, setPrevUrl] = useState("");
+  const [hasInitialized, setHasInitialized] = useState(false);
 
   useEffect(() => {
     const dialog = dialogRef.current;
     if (!dialog) return;
-
-    if (open) {
-      if (!dialog.open) dialog.showModal();
-    } else {
-      if (dialog.open) dialog.close();
+  
+    if (open && !dialog.open) {
+      dialog.showModal();
+  
+      if (!hasInitialized) {
+        if (form.image && !form.image.startsWith("http")) {
+          setImageInputType("file");
+        } else {
+          setImageInputType("url");
+          setPrevUrl(form.image || "");
+        }
+        setHasInitialized(true);
+      }
+    } else if (!open && dialog.open) {
+      dialog.close();
+      setHasInitialized(false);
     }
+  }, [open]);  
 
-    // Determinar o tipo de input de imagem com base no valor inicial
-    if (form.image && !form.image.startsWith("http")) {
-      setImageInputType("file");
-    } else {
-      setImageInputType("url");
+  const handleImageInputTypeChange = (e) => {
+    const newType = e.target.value;
+    if (newType === "file") {
+      if (form.image && form.image.startsWith("http")) {
+        setPrevUrl(form.image);
+      }
+      setForm((f) => ({ ...f, image: "" }));
+    } else if (newType === "url") {
+      setForm((f) => ({ ...f, image: prevUrl || "" }));
     }
-  }, [open, form.image]);
+    setImageInputType(newType);
+  };
 
   const handleSubmit = (e) => {
     e.preventDefault();
@@ -45,13 +64,15 @@ export default function FloorPlanModal({
     setErrors(newErrors);
 
     if (Object.keys(newErrors).length === 0) {
+      setPrevUrl("");
       onSubmit();
     }
   };
 
   const handleClose = () => {
-    setErrors({}); // Limpa os erros
-    onClose(); // Chama a função de fechamento passada como prop
+    setErrors({});
+    setPrevUrl("");
+    onClose();
   };
 
   const title = isEditing ? "Edit Floor Plan" : "Add Floor Plan";
@@ -59,7 +80,6 @@ export default function FloorPlanModal({
   if (!form.image) removeTitle = "No image to remove";
   else if (!isImageMedia) removeTitle = "Only media‑service images can be removed";
 
-  // Verificar se `form.image` é um UUID
   const isUuid = form.image && !form.image.startsWith("http");
 
   return (
@@ -78,7 +98,6 @@ export default function FloorPlanModal({
 
         <form onSubmit={handleSubmit} className="space-y-4">
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-            {/* Campo Name */}
             <div className="md:col-span-2">
               <label className="label" htmlFor="fp-name">
                 Name <span className="text-error">*</span>
@@ -94,7 +113,6 @@ export default function FloorPlanModal({
               )}
             </div>
 
-            {/* Seletor para Tipo de Input de Imagem */}
             <div className="md:col-span-2">
               <label className="label" htmlFor="image-input-type">
                 Select Image Input Type
@@ -103,14 +121,13 @@ export default function FloorPlanModal({
                 id="image-input-type"
                 className="select select-bordered w-full"
                 value={imageInputType}
-                onChange={(e) => setImageInputType(e.target.value)}
+                onChange={handleImageInputTypeChange}
               >
                 <option value="url">Image URL</option>
                 <option value="file">Upload File</option>
               </select>
             </div>
 
-            {/* Campo para URL da Imagem */}
             {imageInputType === "url" && (
               <div className="md:col-span-2">
                 <label className="label" htmlFor="fp-image">
@@ -120,17 +137,16 @@ export default function FloorPlanModal({
                   id="fp-image"
                   className="input input-bordered w-full"
                   placeholder="http(s)://…"
-                  value={form.image && form.image.startsWith("http") ? form.image : ""} // Exibe apenas URLs válidas
+                  value={form.image && form.image.startsWith("http") ? form.image : ""}
                   onChange={(e) => setForm((f) => ({ ...f, image: e.target.value }))}
                 />
               </div>
             )}
 
-            {/* Campo para Upload de Arquivo */}
             {imageInputType === "file" && (
               <div className="md:col-span-2">
                 <label className="label flex items-center gap-2">
-                <FaImage /> Upload new image {isUuid && <span className="text-xs">({form.image})</span>}
+                  <FaImage /> Upload new image {isUuid && <span className="text-xs">({form.image})</span>}
                 </label>
                 <div className="flex items-center gap-2">
                   <input
@@ -159,7 +175,6 @@ export default function FloorPlanModal({
               </div>
             )}
 
-            {/* Campo Details */}
             <div className="md:col-span-2">
               <label className="label" htmlFor="fp-details">
                 Details / Description
@@ -174,7 +189,6 @@ export default function FloorPlanModal({
             </div>
           </div>
 
-          {/* Botões de Ação */}
           <div className="modal-action mt-0">
             <button type="button" className="btn" onClick={handleClose}>
               Cancel
@@ -190,14 +204,3 @@ export default function FloorPlanModal({
     </dialog>
   );
 }
-
-FloorPlanModal.propTypes = {
-  open: PropTypes.bool.isRequired,
-  onClose: PropTypes.func.isRequired,
-  onSubmit: PropTypes.func.isRequired,
-  form: PropTypes.object.isRequired,
-  setForm: PropTypes.func.isRequired,
-  isEditing: PropTypes.bool.isRequired,
-  isImageMedia: PropTypes.bool.isRequired,
-  onRemoveImage: PropTypes.func.isRequired,
-};
