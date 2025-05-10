@@ -1,4 +1,4 @@
-import { useState, useEffect, useMemo } from 'react';
+import { useState, useEffect, useMemo, useRef } from 'react';
 import { FaPlus, FaTrash, FaEdit, FaGlobe, FaUpload, FaLink, FaSearch, FaTimes } from 'react-icons/fa';
 import { useKeycloak } from '@react-keycloak/web';
 import { axiosWithAuth } from '../../utils/axiosWithAuth.js';
@@ -40,7 +40,7 @@ export function Sponsors() {
   const { keycloak } = useKeycloak();
   const { showNotification } = useNotification();
   const { getMediaUrl, uploadMedia } = useMedia();
-  const [logoMedia, setLogoMedia] = useState(null);
+  const logoMediaRef = useRef(null);
   
   // Fetch data on component mount
   useEffect(() => {
@@ -56,7 +56,6 @@ export function Sponsors() {
     setError(null);
     
     try {
-      console.log("Fetching levels from API:", API_ENDPOINTS.LEVELS);
       const response = await axiosWithAuth(keycloak).get(API_ENDPOINTS.LEVELS);
       
       if (Array.isArray(response.data)) {
@@ -89,7 +88,6 @@ export function Sponsors() {
     setError(null);
     
     try {
-      console.log("Fetching sponsors from API:", API_ENDPOINTS.SPONSORS);
       const response = await axiosWithAuth(keycloak).get(API_ENDPOINTS.SPONSORS);
       
       if (Array.isArray(response.data)) {
@@ -125,9 +123,6 @@ export function Sponsors() {
     
     setIsLoading(prev => ({ ...prev, levels: true }));
     try {
-      console.log("Attempting to create level with name:", newLevelName);
-      console.log("Using API URL:", API_ENDPOINTS.LEVELS);
-      
       const response = await axiosWithAuth(keycloak).post(API_ENDPOINTS.LEVELS, {
         name: newLevelName
       });
@@ -200,19 +195,42 @@ export function Sponsors() {
     }));
   };
   
-  // Handle media change
-  const handleMediaChange = (e) => {
-    const mediaValue = e.target.value;
-    setLogoMedia(mediaValue);
-    setSponsorForm(prev => ({
-      ...prev,
-      logo_url: mediaValue?.uuid ? getMediaUrl(mediaValue.uuid) : ''
-    }));
+  // Handle file selection
+  const handleLogoFileChange = (e) => {
+    const file = e.target.files[0];
+    if (file) {
+      if (file.size > 5 * 1024 * 1024) { // 5MB limit
+        showNotification("File size should be less than 5MB", "error");
+        return;
+      }
+
+      if (!file.type.startsWith('image/')) {
+        showNotification("Please upload an image file", "error");
+        return;
+      }
+
+      setLogoFile(file);
+      logoMediaRef.current = file;
+      setLogoPreview(URL.createObjectURL(file));
+      setSponsorForm(prev => ({
+        ...prev,
+        logo_url: '' // Clear URL when file is selected
+      }));
+    } else {
+      // Handle case when file is cleared
+      setLogoFile(null);
+      logoMediaRef.current = null;
+      setLogoPreview(null);
+      setSponsorForm(prev => ({
+        ...prev,
+        logo_url: ''
+      }));
+    }
   };
-  
+
   // Reset logo-related state
   const resetLogoState = () => {
-    setLogoMedia(null);
+    logoMediaRef.current = null;
     setLogoInputType('url');
     setSponsorForm(prev => ({
       ...prev,
@@ -229,43 +247,12 @@ export function Sponsors() {
       description: '',
       level_id: levels.length > 0 ? levels[0].id : 0
     });
-    setLogoMedia(null);
+    logoMediaRef.current = null;
     setLogoFile(null);
     setLogoPreview(null);
     setLogoInputType('url');
   };
   
-  // Handle file selection
-  const handleLogoFileChange = (e) => {
-    const file = e.target.files[0];
-    if (file) {
-      if (file.size > 5 * 1024 * 1024) { // 5MB limit
-        showNotification("File size should be less than 5MB", "error");
-        return;
-      }
-
-      if (!file.type.startsWith('image/')) {
-        showNotification("Please upload an image file", "error");
-        return;
-      }
-
-      setLogoFile(file);
-      setLogoPreview(URL.createObjectURL(file));
-      setSponsorForm(prev => ({
-        ...prev,
-        logo_url: '' // Clear URL when file is selected
-      }));
-    } else {
-      // Handle case when file is cleared
-      setLogoFile(null);
-      setLogoPreview(null);
-      setSponsorForm(prev => ({
-        ...prev,
-        logo_url: ''
-      }));
-    }
-  };
-
   // Helper function to get the correct logo URL
   const getLogoUrl = (url) => {
     if (!url) return '';
@@ -298,8 +285,6 @@ export function Sponsors() {
         ...sponsorForm,
         logo_url: logoInputType === 'file' ? '' : sponsorForm.logo_url
       });
-
-      console.log("SPONSOR Response:", response.data);
 
       // If we have a file, upload it to the media service
       if (logoInputType === 'file' && logoFile && response.data.logo_url) {
