@@ -123,6 +123,7 @@
     },
     "create": {
       "title": "Create New User",
+      "description": "Add a new user to the system",
       "success": "User created successfully!",
       "firstName": "First Name",
       "lastName": "Last Name",
@@ -146,7 +147,7 @@
       "createRole": "Create Role",
       "selectRole": "Select Role:",
       "permissionName": "Permission Name",
-      "description": "Description",
+      "description": "Manage the roles and permissions",
       "actions": "Actions",
       "noDescription": "No description",
       "assigned": "Assigned",

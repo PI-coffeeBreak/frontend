@@ -1,6 +1,7 @@
 import { useState, useEffect, useRef } from "react";
 import { Link, useLocation } from "react-router-dom";
 import { VscLayoutSidebarLeft, VscLayoutSidebarLeftOff } from "react-icons/vsc";
+import { MdSettings } from "react-icons/md";
 import { 
   FaHome, 
   FaPen, 
@@ -125,12 +126,12 @@ export default function Sidebar() {
     if (eventImageUrl && !imageError) {
       return (
         <div
-          className={`overflow-hidden flex-shrink-0 rounded-lg shadow-md border border-base-300 transition-all duration-300 ${sizeClass}`}
+          className={`overflow-hidden flex-shrink-0 rounded-xl border-2 border-white shadow-md hover:scale-110 hover:shadow-lg transition-all duration-300 ${sizeClass}`}
         >
           <img
             src={`${eventImageUrl}?v=${Date.now()}`}
             alt={eventInfo?.name || "Event"}
-            className="w-full h-full object-cover sidebar-event-image"
+            className="w-full h-full object-contain p-1 sidebar-event-image"
             data-event-image
             onError={() => {
               console.error("Failed to load event image");
@@ -204,7 +205,6 @@ export default function Sidebar() {
           </div>
         </div>
 
-        {/* Navigation sections */}
         <div 
           className="flex-grow overflow-y-auto scrollbar-thin scrollbar-thumb-white/20 scrollbar-track-transparent"
           ref={navigationRef}
@@ -220,7 +220,7 @@ export default function Sidebar() {
               <li>
                 <Link
                   to="/instantiate"
-                  className={`btn btn-sm w-full ${
+                  className={`btn btn-sm rounded-xl w-full ${
                     location.pathname === "/instantiate" ? "btn-primary" : "btn-ghost"
                   } ${
                     isVisible
@@ -235,7 +235,7 @@ export default function Sidebar() {
               
               {/* Management section */}
               <DropdownMenu
-                icon={FaCogs}
+                icon={MdSettings}
                 title={t('menu.sections.management.title')}
                 isVisible={isVisible}
                 basePath="management"
@@ -285,6 +285,7 @@ export default function Sidebar() {
                   basePath="plugins"
                   hasHomepage={false}
                   links={enabledPlugins}
+                  className="rounded-xl"
                 />
               </ul>
             </div>

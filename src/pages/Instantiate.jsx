@@ -8,6 +8,8 @@ export default function Instantiate() {
     const { t } = useTranslation();
     const { eventInfo, isLoading } = useEvent();
 
+    
+
     // Add section cards with direct homepage links
     const sectionCards = [
         {
