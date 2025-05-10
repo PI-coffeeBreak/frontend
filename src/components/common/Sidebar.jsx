@@ -1,5 +1,5 @@
 import { useState, useEffect, useRef } from "react";
-import { Link, useLocation } from "react-router-dom";
+import { Link, useLocation, useNavigate } from "react-router-dom";
 import { VscLayoutSidebarLeft, VscLayoutSidebarLeftOff } from "react-icons/vsc";
 import { MdSettings } from "react-icons/md";
 import { 
@@ -7,10 +7,8 @@ import {
   FaPen, 
   FaUser, 
   FaSignOutAlt, 
-  FaCogs, 
   FaUsers, 
   FaCalendarAlt,
-  FaBell,
   FaPalette,
   FaPuzzlePiece,
   FaEdit,
@@ -60,6 +58,7 @@ export default function Sidebar() {
   const { getMediaUrl } = useMedia();
   const [imageError, setImageError] = useState(false);
   const navigationRef = useRef(null);
+  const navigate = useNavigate();
 
   // Fetch user profile from Keycloak when initialized
   useEffect(() => {
@@ -303,15 +302,23 @@ export default function Sidebar() {
             </div>
           )}
 
-          <button
-            onClick={handleLogout}
-            className={`btn btn-primary rounded-xl mt-2 flex items-center justify-center gap-2 ${
-              isVisible ? "w-full" : "w-12 mx-auto"
-            }`}
-          >
-            <FaSignOutAlt className="text-white" />
-            {isVisible && <span>{t('menu.actions.logout')}</span>}
-          </button>
+          {/* Home and Logout buttons */}
+          <div className={`flex items-center gap-2 w-full ${!isVisible && 'flex-col'}`}>
+            <button
+              onClick={() => navigate('/')}
+              className="btn btn-primary rounded-xl flex items-center justify-center"
+            >
+              <FaHome className="text-white" />
+            </button>
+
+            <button
+              onClick={handleLogout}
+              className={`btn btn-primary rounded-xl flex items-center justify-center ${isVisible && 'flex-1'}`}
+            >
+              <FaSignOutAlt className="text-white" />
+              {isVisible && <span>{t('menu.actions.logout')}</span>}
+            </button>
+          </div>
         </div>
       </div>
 
