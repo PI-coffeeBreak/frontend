@@ -305,9 +305,11 @@ export function FloorPlans() {
         <DndContext collisionDetection={closestCenter} onDragEnd={handleDragEnd}>
           <SortableContext items={floorPlans.map((fp) => fp.id)} strategy={rectSortingStrategy}>
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
-              {floorPlans.map((fp) => (
+              {currentSlice.map((fp) => (
                 <SortableItem key={fp.id} id={fp.id}>
-                  <div className="bg-base-100 rounded-lg shadow-lg overflow-hidden flex flex-col">
+                  <div
+                    className="bg-base-100 rounded-lg shadow-lg overflow-hidden flex flex-col hover:shadow-xl hover:scale-105 transition-transform duration-200"
+                  >
                     <div className="relative h-48 bg-gray-100">
                       <img
                         src={fp.image}
