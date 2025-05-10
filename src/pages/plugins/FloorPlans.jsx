@@ -85,11 +85,6 @@ export function FloorPlans() {
   useEffect(fetchFloorPlans, []);
 
   const handleCreate = async () => {
-    if (!form.name.trim()) {
-      showNotification("Name is required", "warning");
-      return;
-    }
-
     try {
       const body = {
         name: form.name,
@@ -123,11 +118,6 @@ export function FloorPlans() {
   };
 
   const handleUpdate = async () => {
-    if (!selected || !form.name.trim()) {
-      if (!form.name.trim()) showNotification("Name is required", "warning");
-      return;
-    }
-
     try {
       let imagePayload = extractUuid(form.image);
       if (form.file) {

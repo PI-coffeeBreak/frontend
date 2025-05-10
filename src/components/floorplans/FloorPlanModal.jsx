@@ -1,4 +1,4 @@
-import { useEffect, useRef } from "react";
+import { useEffect, useRef, useState } from "react";
 import PropTypes            from "prop-types";
 import { FaTimes, FaImage, FaTrash, FaUpload } from "react-icons/fa";
 
@@ -12,8 +12,8 @@ export default function FloorPlanModal({
   isImageMedia,
   onRemoveImage
 }) {
-
   const dialogRef = useRef(null);
+  const [errors, setErrors] = useState({});
 
   useEffect(() => {
     const dialog = dialogRef.current;
@@ -25,6 +25,21 @@ export default function FloorPlanModal({
       if (dialog.open) dialog.close();
     }
   }, [open]);
+
+  const handleSubmit = (e) => {
+    e.preventDefault();
+
+    const newErrors = {};
+    if (!form.name.trim()) {
+      newErrors.name = "Name is required";
+    }
+
+    setErrors(newErrors);
+
+    if (Object.keys(newErrors).length === 0) {
+      onSubmit();
+    }
+  };
 
   const title       = isEditing ? "Edit Floor Plan" : "Add Floor Plan";
   let   removeTitle = "Remove image";
@@ -45,13 +60,7 @@ export default function FloorPlanModal({
 
         <h3 className="font-bold text-lg mb-4">{title}</h3>
 
-        <form
-          onSubmit={(e) => {
-            e.preventDefault();
-            onSubmit();
-          }}
-          className="space-y-4"
-        >
+        <form onSubmit={handleSubmit} className="space-y-4">
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             <div>
               <label className="label" htmlFor="fp-name">
@@ -59,10 +68,13 @@ export default function FloorPlanModal({
               </label>
               <input
                 id="fp-name"
-                className="input input-bordered w-full"
+                className={`input input-bordered w-full ${errors.name ? "input-error" : ""}`}
                 value={form.name}
                 onChange={(e) => setForm((f) => ({ ...f, name: e.target.value }))}
               />
+              {errors.name && (
+                <p className="text-error text-sm mt-1">{errors.name}</p>
+              )}
             </div>
 
             <div>
