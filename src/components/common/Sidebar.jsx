@@ -1,5 +1,5 @@
 import { useState, useEffect, useRef } from "react";
-import { Link, useLocation } from "react-router-dom";
+import { Link, useLocation, useNavigate } from "react-router-dom";
 import { VscLayoutSidebarLeft, VscLayoutSidebarLeftOff } from "react-icons/vsc";
 import { MdSettings } from "react-icons/md";
 import { 
@@ -23,7 +23,7 @@ import { useEvent } from "../../contexts/EventContext.jsx";
 import { useMedia } from "../../contexts/MediaContext.jsx";
 import PropTypes from "prop-types";
 import { useTranslation } from "react-i18next";
-import { useNavigate } from "react-router-dom";
+
 const Breadcrumbs = ({ pathnames }) => (
   <ul className="flex gap-2">
     {pathnames.map((name, index) => {
