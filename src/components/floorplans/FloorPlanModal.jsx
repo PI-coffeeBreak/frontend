@@ -41,6 +41,11 @@ export default function FloorPlanModal({
     }
   };
 
+  const handleClose = () => {
+    setErrors({}); // Limpa os erros
+    onClose(); // Chama a função de fechamento passada como prop
+  };
+
   const title       = isEditing ? "Edit Floor Plan" : "Add Floor Plan";
   let   removeTitle = "Remove image";
   if (!form.image)        removeTitle = "No image to remove";
@@ -51,7 +56,7 @@ export default function FloorPlanModal({
       <div className="modal-box max-w-3xl">
         <button
           type="button"
-          onClick={onClose}
+          onClick={handleClose}
           className="btn btn-sm btn-circle btn-ghost absolute right-2 top-2"
           aria-label="Close"
         >
@@ -138,7 +143,7 @@ export default function FloorPlanModal({
           </div>
 
           <div className="modal-action mt-0">
-            <button type="button" className="btn" onClick={onClose}>
+            <button type="button" className="btn" onClick={handleClose}>
               Cancel
             </button>
             <button type="submit" className="btn btn-primary">
@@ -148,7 +153,7 @@ export default function FloorPlanModal({
         </form>
       </div>
 
-      <button className="modal-backdrop" onClick={onClose} aria-label="Close modal" />
+      <button className="modal-backdrop" onClick={handleClose} aria-label="Close modal" />
     </dialog>
   );
 }
