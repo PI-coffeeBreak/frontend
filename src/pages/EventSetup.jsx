@@ -5,15 +5,18 @@ import { useKeycloak } from "@react-keycloak/web";
 import { axiosWithAuth } from '../utils/axiosWithAuth';
 import axios from 'axios';
 import { renderLocationSuggestions as renderLocationSuggestionsUtil } from '../utils/LocationUtils';
+import { useEvent } from "../contexts/EventContext";
 
 export default function EventSetup() {
     const navigate = useNavigate();
     const { keycloak } = useKeycloak();
+    const { getEventInfo} = useEvent();
     const [step, setStep] = useState(1);
     const [isSubmitting, setIsSubmitting] = useState(false);
     const [submitError, setSubmitError] = useState(null);
     const [locationSuggestions, setLocationSuggestions] = useState([]);
     const [isLoadingLocations, setIsLoadingLocations] = useState(false);
+    
     const locationTimeoutRef = useRef(null);
     const [imagePreview, setImagePreview] = useState(null);
     const fileInputRef = useRef(null);
@@ -167,6 +170,7 @@ export default function EventSetup() {
                 }
                 
                 navigate('/instantiate/eventmaker');
+                getEventInfo();
             } catch (error) {
                 console.error('Error creating event:', error);
                 setSubmitError(error.response?.data?.message || 'Failed to create event. Please try again.');
@@ -314,7 +318,7 @@ export default function EventSetup() {
                                             <img
                                                 src={imagePreview}
                                                 alt="Event preview"
-                                                className="w-full h-full object-cover"
+                                                className="w-full h-full object-contain p-2"
                                             />
                                             <button
                                                 type="button"
