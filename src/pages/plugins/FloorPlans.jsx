@@ -11,7 +11,7 @@ import { useNotification } from "../../contexts/NotificationContext.jsx";
 import FloorPlanModal from "../../components/floorplans/FloorPlanModal";
 import { DndContext, closestCenter } from "@dnd-kit/core";
 import { arrayMove, SortableContext, rectSortingStrategy } from "@dnd-kit/sortable";
-import SortableItem from "../../components/SortableItem";
+import SortableItem from "../../components/floorplans/SortableItem.jsx";
 
 const apiUrl = `${baseUrl}/floor-plan-plugin/floor_plan`;
 const ITEMS_PER_PAGE = 6;
