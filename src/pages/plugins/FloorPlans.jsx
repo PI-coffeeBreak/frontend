@@ -10,7 +10,7 @@ import { baseUrl }        from "../../consts.js";
 import { useNotification } from "../../contexts/NotificationContext.jsx";
 import FloorPlanModal from "../../components/floorplans/FloorPlanModal";
 import { DndContext, closestCenter } from "@dnd-kit/core";
-import { arrayMove, SortableContext, verticalListSortingStrategy } from "@dnd-kit/sortable";
+import { arrayMove, SortableContext, rectSortingStrategy } from "@dnd-kit/sortable";
 import SortableItem from "../../components/SortableItem";
 
 const apiUrl = `${baseUrl}/floor-plan-plugin/floor_plan`;
@@ -303,7 +303,7 @@ export function FloorPlans() {
         <p className="text-center text-gray-500">No Floor Plans yet.</p>
       ) : (
         <DndContext collisionDetection={closestCenter} onDragEnd={handleDragEnd}>
-          <SortableContext items={floorPlans.map((fp) => fp.id)} strategy={verticalListSortingStrategy}>
+          <SortableContext items={floorPlans.map((fp) => fp.id)} strategy={rectSortingStrategy}>
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
               {floorPlans.map((fp) => (
                 <SortableItem key={fp.id} id={fp.id}>
