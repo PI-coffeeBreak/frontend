@@ -119,22 +119,20 @@ export function FloorPlans() {
 
   const handleUpdate = async () => {
     try {
-      let imagePayload = extractUuid(form.image);
-      if (form.file) {
-        const currentUuid = extractUuid(selected.image);
-        imagePayload = currentUuid || "";
-      }
-
+      const hasFile = !!form.file;
+      const isUrl = form.image?.startsWith("http");
+      const imagePayload = hasFile ? "" : form.image?.trim() || " ";
+  
       const { data } = await axiosWithAuth(keycloak).put(
         `${apiUrl}/${selected.id}`,
         {
           name: form.name,
           details: form.details,
-          image: imagePayload || " "
+          image: imagePayload || " ",
         }
       );
-
-      if (form.file && data.image && !data.image.startsWith("http")) {
+  
+      if (hasFile && data.image && !data.image.startsWith("http")) {
         await uploadToMediaService(data.image, form.file);
       }
 
@@ -146,19 +144,19 @@ export function FloorPlans() {
                 image:
                   data.image && !data.image.startsWith("http")
                     ? `${baseUrl}/media/${data.image}?t=${Date.now()}`
-                    : data.image
+                    : data.image,
               }
             : fp
         )
       );
-
+  
       showNotification("Floor Plan Updated", "success");
       closeModal();
     } catch (err) {
       console.error(err);
       showNotification("Update failed", "error");
     }
-  };
+  };  
 
   const handleDelete = async (id) => {
     if (!confirm("Delete this floor‑plan?")) return;
