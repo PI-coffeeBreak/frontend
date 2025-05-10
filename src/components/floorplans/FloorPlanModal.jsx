@@ -99,7 +99,7 @@ export default function FloorPlanModal({
                     disabled={!isImageMedia}
                     title={removeTitle}
                   >
-                    <FaTrash className="mr-1" /> Remove
+                    <FaTrash className="mr-1" /> Remove Image
                   </button>
                 )}
               </div>
