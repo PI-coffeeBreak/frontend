@@ -11,9 +11,9 @@ import { useNotification } from "../../contexts/NotificationContext.jsx";
 import FloorPlanModal from "../../components/floorplans/FloorPlanModal";
 import { DndContext, closestCenter } from "@dnd-kit/core";
 import { arrayMove, SortableContext, verticalListSortingStrategy } from "@dnd-kit/sortable";
-import SortableItem from "../../components/SortableItem"; // Create this component for sortable items
+import SortableItem from "../../components/SortableItem";
 
-const apiUrl        = `${baseUrl}/floor-plan-plugin/floor_plan`;
+const apiUrl = `${baseUrl}/floor-plan-plugin/floor_plan`;
 const ITEMS_PER_PAGE = 6;
 
 export function FloorPlans() {
@@ -250,13 +250,11 @@ export function FloorPlans() {
       setFloorPlans(reorderedFloorPlans);
 
       try {
-        // Prepare the new order payload
         const orders = reorderedFloorPlans.map((fp, index) => ({
           id: fp.id,
-          order: index + 1, // Assuming order starts at 1
+          order: index + 1,
         }));
 
-        // Send the new order to the backend
         await axiosWithAuth(keycloak).patch(`${apiUrl}/order`, orders);
 
         showNotification("Order updated successfully", "success");
