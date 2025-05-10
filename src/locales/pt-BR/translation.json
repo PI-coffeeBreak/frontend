@@ -44,7 +44,7 @@
     "sections": {
       "home": {
         "title": "Início",
-        "description": "Gerenciar usuários, sessões e alertas",
+        "description": "Gerenciar usuários e sessões",
         "links": {
           "users": "Usuários",
           "sessions": "Sessões",
@@ -131,7 +131,7 @@
       "createRole": "Criar Função",
       "selectRole": "Selecionar Função:",
       "permissionName": "Nome da Permissão",
-      "description": "Descrição",
+      "description": "Gerir os papéis e permissões",
       "actions": "Ações",
       "noDescription": "Sem descrição",
       "assigned": "Atribuída",
@@ -207,6 +207,16 @@
     "noImage": "Sem imagem",
     "permissions": {
       "disabled": "Você não tem permissão para criar sessões"
+    },
+    "editSlotsTitle": "Gestão de Vagas",
+    "slots": {
+      "title": "vaga(s)",
+      "modalTitle": "Editar Número de Vagas",
+      "limitLabel": "Limitar número de vagas?",
+      "slotPlaceholder": "Número máximo de participantes. Ex: 50",
+      "saveSuccess": "Dados atualizados com sucesso",
+      "saveError": "Erro ao atualizar os dados",
+      "noMetadataInfo": "Esta atividade ainda não possui metadados definidos."
     }
   },
   "eventEditor": {
@@ -587,5 +597,13 @@
   "instantiateHome": {
     "title": "Painel do Evento",
     "subtitle": "Monitore e gerencie todos os aspectos do seu evento em um só lugar"
+  },
+  "feedback": {
+    "title": "Avalie esta Sessão",
+    "description": "Sua opinião nos ajuda a melhorar!",
+    "submit": "Enviar Feedback",
+    "ratingLabel": "Avaliação:",
+    "commentLabel": "Comentário:",
+    "commentPlaceholder": "Escreva seu comentário aqui..."
   }
 } 

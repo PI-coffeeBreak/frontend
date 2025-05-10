@@ -1,4 +1,4 @@
-import { ThemeCustomizer } from "../components/ThemeCustomizer";
+import { ThemeCustomizer } from "../components/event_maker/ThemeCustomizer.jsx";
 
 export default function Colors() {
   return (

@@ -3,23 +3,36 @@ import PropTypes from "prop-types";
 import { baseUrl } from "../consts";
 
 // Import all icon libraries
-import * as Fa from "react-icons/fa";
-import * as Fi from "react-icons/fi";
 import * as Ai from "react-icons/ai";
 import * as Bi from "react-icons/bi";
 import * as Bs from "react-icons/bs";
 import * as Ci from "react-icons/ci";
+import * as Cg from "react-icons/cg";
 import * as Di from "react-icons/di";
+import * as Fa from "react-icons/fa";
+import * as Fa6 from "react-icons/fa6";
+import * as Fi from "react-icons/fi";
+import * as Fc from "react-icons/fc";
 import * as Gi from "react-icons/gi";
 import * as Go from "react-icons/go";
+import * as Gr from "react-icons/gr";
 import * as Hi from "react-icons/hi";
+import * as Hi2 from "react-icons/hi2";
 import * as Im from "react-icons/im";
 import * as Io from "react-icons/io";
 import * as Io5 from "react-icons/io5";
+import * as Lia from "react-icons/lia";
+import * as Lu from "react-icons/lu";
 import * as Md from "react-icons/md";
+import * as Pi from "react-icons/pi";
+import * as Rx from "react-icons/rx";
 import * as Ri from "react-icons/ri";
 import * as Si from "react-icons/si";
+import * as Sl from "react-icons/sl";
+import * as Tb from "react-icons/tb";
+import * as Tfi from "react-icons/tfi";
 import * as Ti from "react-icons/ti";
+import * as Vsc from "react-icons/vsc";
 import * as Wi from "react-icons/wi";
 
 import { axiosWithAuth } from "../utils/axiosWithAuth";
@@ -37,11 +50,14 @@ export const MenuProvider = ({ children }) => {
     const [error, setError] = useState(null);
 
     const getIconComponent = (iconName) => {
+        if (iconName.includes('/')) {
+            iconName = iconName.split('/')[1];
+        }
         if (!iconName) return Fa.FaQuestion;
 
         // 1. Try direct lookup first (most efficient)
         // Go through each icon library and check if the icon exists
-        const allLibraries = { Fa, Fi, Ai, Bi, Bs, Ci, Di, Gi, Go, Hi, Im, Io, Io5, Md, Ri, Si, Ti, Wi };
+        const allLibraries = { Ai, Bi, Bs, Ci, Cg, Di, Fa, Fa6, Fi, Fc, Gi, Go, Gr, Hi, Hi2, Im, Io, Io5, Lia, Lu, Md, Pi, Rx, Ri, Si, Sl, Tb, Tfi, Ti, Vsc, Wi };
 
         for (const [, library] of Object.entries(allLibraries)) {
             if (library[iconName]) {
@@ -50,7 +66,7 @@ export const MenuProvider = ({ children }) => {
         }
 
         // 2. If direct lookup fails, try to parse the icon name
-        const commonPrefixes = ['Fa', 'Fi', 'Ai', 'Bi', 'Bs', 'Ci', 'Di', 'Gi', 'Go', 'Hi', 'Im', 'Io', 'Io5', 'Md', 'Ri', 'Si', 'Ti', 'Wi'];
+        const commonPrefixes = ['Ai', 'Bi', 'Bs', 'Ci', 'Cg', 'Di', 'Fi', 'Fc', 'Fa', 'Fa6', 'Gi', 'Go', 'Gr', 'Hi', 'Hi2', 'Im', 'Io', 'Io5', 'Lia', 'Lu', 'Md', 'Pi', 'Rx', 'Ri', 'Si', 'Sl', 'Tb', 'Tfi', 'Ti', 'Vsc', 'Wi'];
 
         // Find the matching prefix (if any)
         let matchedPrefix = null;
@@ -249,74 +265,152 @@ export const MenuProvider = ({ children }) => {
     // Get all available icons from all libraries
     const getAllAvailableIcons = () => {
         const iconsByLibrary = {
-            // Font Awesome icons
-            'Fa': Object.keys(Fa).filter(key => key.startsWith('Fa')),
-
-            // Feather icons
-            'Fi': Object.keys(Fi).filter(key => key.startsWith('Fi')),
-
             // Ant Design icons
-            'Ai': Object.keys(Ai).filter(key => key.startsWith('Ai')),
+            'Ai': Object.keys(Ai),
+
+            // Box icons
+            'Bi': Object.keys(Bi),
 
             // Bootstrap icons
-            'Bi': Object.keys(Bi).filter(key => key.startsWith('Bi')),
-            'Bs': Object.keys(Bs).filter(key => key.startsWith('Bs')),
+            'Bs': Object.keys(Bs),
 
             // Circum icons
-            'Ci': Object.keys(Ci).filter(key => key.startsWith('Ci')),
+            'Ci': Object.keys(Ci),
+
+            // css.gg icons
+            'Cg': Object.keys(Cg),
 
             // Devicons
-            'Di': Object.keys(Di).filter(key => key.startsWith('Di')),
+            'Di': Object.keys(Di),
+
+            // Feather icons
+            'Fi': Object.keys(Fi),
+
+            // Flat color icons
+            'Fc': Object.keys(Fc),
+
+            // Font Awesome icons
+            'Fa': Object.keys(Fa),
+            'Fa6': Object.keys(Fa6),
 
             // Game icons
-            'Gi': Object.keys(Gi).filter(key => key.startsWith('Gi')),
+            'Gi': Object.keys(Gi),
 
             // Github Octicons
-            'Go': Object.keys(Go).filter(key => key.startsWith('Go')),
+            'Go': Object.keys(Go),
+
+            // Grommet icons
+            'Gr': Object.keys(Gr),
 
             // Heroicons
-            'Hi': Object.keys(Hi).filter(key => key.startsWith('Hi')),
+            'Hi': Object.keys(Hi),
+            'Hi2': Object.keys(Hi2),
 
-            // Remix icon
-            'Ri': Object.keys(Ri).filter(key => key.startsWith('Ri')),
+            // Icomoon icons
+            'Im': Object.keys(Im),
 
-            // Material Design icons
-            'Md': Object.keys(Md).filter(key => key.startsWith('Md')),
+            // Icons8 line awesome icons
+            'Lia': Object.keys(Lia),
 
             // Ionicons 
-            'Io': Object.keys(Io).filter(key => key.startsWith('Io')),
-            'Io5': Object.keys(Io5).filter(key => key.startsWith('Io5')),
+            'Io': Object.keys(Io),
+            'Io5': Object.keys(Io5),
 
-            // Simple Icons
-            'Si': Object.keys(Si).filter(key => key.startsWith('Si')),
+            // Lucide icons
+            'Lu': Object.keys(Lu),
+
+            // Material Design icons
+            'Md': Object.keys(Md),
+
+            // Phosphor icons
+            'Pi': Object.keys(Pi),
+
+            // Radix icons
+            'Rx': Object.keys(Rx),
+
+            // Remix icons
+            'Ri': Object.keys(Ri),
+
+            // Simple icons
+            'Si': Object.keys(Si),
+            
+            // Simple line icons
+            'Sl': Object.keys(Sl),
+
+            // Tabler icons
+            'Tb': Object.keys(Tb),
+
+            // Themify icons
+            'Tfi': Object.keys(Tfi),
 
             // Typicons
-            'Ti': Object.keys(Ti).filter(key => key.startsWith('Ti')),
+            'Ti': Object.keys(Ti),
 
-            // Weather Icons
-            'Wi': Object.keys(Wi).filter(key => key.startsWith('Wi')),
+            // VS Code icons
+            'Vsc': Object.keys(Vsc),
+
+            // Weather icons
+            'Wi': Object.keys(Wi),
         };
 
         return iconsByLibrary;
     };
 
+    const libraryName = (library) => {
+        const libraryNames = {
+            'Ai': 'Ant Design',
+            'Bi': 'Box Icons',
+            'Bs': 'Bootstrap Icons',
+            'Ci': 'Circum Icons',
+            'Cg': 'css.gg Icons',
+            'Di': 'Devicons',
+            'Fi': 'Feather Icons',
+            'Fc': 'Flat Color Icons',
+            'Fa': 'Font Awesome 5',
+            'Fa6': 'Font Awesome 6',
+            'Gi': 'Game Icons',
+            'Go': 'Github Octicons',
+            'Gr': 'Grommet Icons',
+            'Hi': 'Heroicons',
+            'Hi2': 'Heroicons 2',
+            'Im': 'Icomoon Icons',
+            'Lia': 'Line Awesome Icons',
+            'Io': 'Ionicons',
+            'Io5': 'Ionicons 5',
+            'Lu': 'Lucide Icons',
+            'Md': 'Material Design Icons',
+            'Pi': 'Phosphor Icons',
+            'Rx': 'Radix Icons',
+            'Ri': 'Remix Icons',
+            'Si': 'Simple Icons',
+            'Sl': 'Simple Line Icons',
+            'Tb': 'Tabler Icons',
+            'Tfi': 'Themify Icons',
+            'Ti': 'Typicons',
+            'Vsc': 'VS Code Icons',
+            'Wi': 'Weather Icons'
+        };
+
+        return libraryNames[library] || library;
+    };
+
     const commonIcons = [
         // Font Awesome icons - widely supported and popular
-        "FaHome", "FaUser", "FaBook", "FaCalendar", "FaCog", "FaBell",
-        "FaEnvelope", "FaSearch", "FaShoppingCart", "FaHeart", "FaStar",
-        "FaChartBar", "FaListUl", "FaFileAlt", "FaLink", "FaQuestion",
-        "FaImage", "FaVideo", "FaMusic", "FaGamepad", "FaMap", "FaArrowRight",
-        "FaCheckCircle", "FaExclamationCircle", "FaInfoCircle", "FaTimes",
-        "FaPlus", "FaMinus", "FaPen", "FaTrash", "FaShare", "FaDownload",
-        "FaUpload", "FaClock", "FaCode", "FaPaperPlane", "FaBuilding",
+        "fa/FaHome", "fa/FaUser", "fa/FaBook", "fa/FaCalendar", "fa/FaCog", "fa/FaBell",
+        "fa/FaEnvelope", "fa/FaSearch", "fa/FaShoppingCart", "fa/FaHeart", "fa/FaStar",
+        "fa/FaChartBar", "fa/FaListUl", "fa/FaFileAlt", "fa/FaLink", "fa/FaQuestion",
+        "fa/FaImage", "fa/FaVideo", "fa/FaMusic", "fa/FaGamepad", "fa/FaMap", "fa/FaArrowRight",
+        "fa/FaCheckCircle", "fa/FaExclamationCircle", "fa/FaInfoCircle", "fa/FaTimes",
+        "fa/FaPlus", "fa/FaMinus", "fa/FaPen", "fa/FaTrash", "fa/FaShare", "fa/FaDownload",
+        "fa/FaUpload", "fa/FaClock", "fa/FaCode", "fa/FaPaperPlane", "fa/FaBuilding",
 
         // Material Design - also widely supported
-        "MdDashboard", "MdSettings", "MdNotifications", "MdPeople",
-        "MdHome", "MdMenu", "MdLock", "MdPerson", "MdMail", "MdPhone",
+        "md/MdDashboard", "md/MdSettings", "md/MdNotifications", "md/MdPeople",
+        "md/MdHome", "md/MdMenu", "md/MdLock", "md/MdPerson", "md/MdMail", "md/MdPhone",
 
         // Simple outline icons from Ant Design
-        "AiOutlineTeam", "AiOutlineProject", "AiOutlineFileSearch",
-        "AiOutlineUser", "AiOutlineSetting", "AiOutlineHome"
+        "ai/AiOutlineTeam", "ai/AiOutlineProject", "ai/AiOutlineFileSearch",
+        "ai/AiOutlineUser", "ai/AiOutlineSetting", "ai/AiOutlineHome"
     ];
 
     // Memoize the context value to prevent unnecessary re-renders
@@ -325,6 +419,7 @@ export const MenuProvider = ({ children }) => {
             menuOptions,
             isLoading,
             error,
+            commonIcons,
             getMenuOptions,
             addMenuOption,
             updateMenuOption,
@@ -332,7 +427,7 @@ export const MenuProvider = ({ children }) => {
             updateMenuOptionsOrder,
             getIconComponent,
             getAllAvailableIcons,
-            commonIcons
+            libraryName
         }),
         [menuOptions, isLoading, error]
     );

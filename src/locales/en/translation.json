@@ -44,7 +44,7 @@
     "sections": {
       "home": {
         "title": "Home",
-        "description": "Manage users, sessions, and alerts",
+        "description": "Manage users and sessions",
         "links": {
           "users": "Users",
           "sessions": "Sessions",
@@ -78,7 +78,7 @@
       },
       "management": {
         "title": "Management",
-        "description": "Manage users, sessions and alerts",
+        "description": "Manage users and sessions",
         "links": {
           "users": "Users",
           "sessions": "Sessions",
@@ -99,7 +99,7 @@
     "cards": {
       "management": {
         "title": "Management",
-        "description": "Access tools to manage users, sessions and alerts for your event."
+        "description": "Access tools to manage users and sessions for your event."
       },
       "eventMaker": {
         "title": "Event Maker",
@@ -123,6 +123,7 @@
     },
     "create": {
       "title": "Create New User",
+      "description": "Add a new user to the system",
       "success": "User created successfully!",
       "firstName": "First Name",
       "lastName": "Last Name",
@@ -146,7 +147,7 @@
       "createRole": "Create Role",
       "selectRole": "Select Role:",
       "permissionName": "Permission Name",
-      "description": "Description",
+      "description": "Manage the roles and permissions",
       "actions": "Actions",
       "noDescription": "No description",
       "assigned": "Assigned",
@@ -209,6 +210,16 @@
     "noImage": "No image",
     "permissions": {
       "disabled": "You don't have permission to create activities"
+    },
+    "editSlotsTitle": "Slot Management",
+    "slots": {
+      "title": "slot(s)",
+      "modalTitle": "Edit Slot Count",
+      "limitLabel": "Limit number of slots?",
+      "slotPlaceholder": "Maximum number of participants. E.g. 50",
+      "saveSuccess": "Data updated successfully",
+      "saveError": "Error updating data",
+      "noMetadataInfo": "This activity has no metadata defined yet."
     }
   },
   "eventEditor": {
@@ -562,5 +573,13 @@
         "buttonText": "Manage Plugins"
       }
     }
+  },
+  "feedback": {
+    "title": "Rate this Session",
+    "description": "Your opinion helps us improve!",
+    "submit": "Submit Feedback",
+    "ratingLabel": "Rating:",
+    "commentLabel": "Comment:",
+    "commentPlaceholder": "Write your comment here..."
   }
 } 

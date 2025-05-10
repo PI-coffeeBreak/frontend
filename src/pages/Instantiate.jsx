@@ -1,12 +1,14 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
-import { FaPalette, FaCogs, FaCalendarAlt, FaPuzzlePiece, FaUsers, FaBell, FaArrowRight, FaFile } from 'react-icons/fa';
+import { FaPalette, FaCogs, FaCalendarAlt, FaPuzzlePiece, FaUsers, FaBars, FaArrowRight, FaFile } from 'react-icons/fa';
 import { useEvent } from '../contexts/EventContext';
 import { useTranslation } from 'react-i18next';
 
 export default function Instantiate() {
     const { t } = useTranslation();
     const { eventInfo, isLoading } = useEvent();
+
+    
 
     // Add section cards with direct homepage links
     const sectionCards = [
@@ -38,7 +40,6 @@ export default function Instantiate() {
             links: [
                 { label: t('menu.sections.management.links.users'), path: 'management/users', icon: FaUsers },
                 { label: t('menu.sections.management.links.sessions'), path: 'management/sessions', icon: FaCalendarAlt },
-                { label: t('menu.sections.management.links.alerts'), path: 'management/alerts', icon: FaBell }
             ]
         },
         {
@@ -50,6 +51,7 @@ export default function Instantiate() {
             links: [
                 { label: t('menu.sections.eventMaker.links.colors'), path: 'eventmaker/colors', icon: FaPalette },
                 { label: t('menu.sections.eventMaker.links.eventInfo'), path: 'eventmaker/edit', icon: FaCogs },
+                { label: t('menu.sections.eventMaker.links.menus'), path: 'eventmaker/menus', icon: FaBars },
                 { label: t('menu.sections.eventMaker.links.pages'), path: 'eventmaker/pages', icon: FaFile },
                 { label: t('menu.sections.eventMaker.links.plugins'), path: 'eventmaker/choose-plugins', icon: FaPuzzlePiece }
             ]

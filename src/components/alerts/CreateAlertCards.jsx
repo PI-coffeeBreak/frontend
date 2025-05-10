@@ -1,7 +1,7 @@
 import PropTypes from 'prop-types';
 import { BiSolidBellPlus } from "react-icons/bi";
 import { HiTemplate } from "react-icons/hi";
-import CreateCard from "../CreateCard.jsx";
+import CreateCard from "../common/CreateCard.jsx";
 
 export function CreateAlertCards({
   onOpenAlertModal,

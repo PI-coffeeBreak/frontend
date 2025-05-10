@@ -42,7 +42,7 @@
     --border: 1px;
 
     /* effects */
-    --depth: 1;
+    --depth: 0;
     --noise: 0;
 }
 :where(:root:has(.modal-open, .modal[open], .modal:target, .modal-toggle:checked, .drawer:not(.drawer-open) > .drawer-toggle:checked)) {
