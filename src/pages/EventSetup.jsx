@@ -297,7 +297,7 @@ export default function EventSetup() {
                                     onChange={handleImageChange}
                                 />
                                 <div
-                                    className="w-full h-48 bg-base-200 rounded-xl flex items-center justify-center cursor-pointer relative overflow-hidden"
+                                    className="w-full min-h-48 bg-base-200 rounded-xl flex items-center justify-center cursor-pointer relative overflow-hidden"
                                     onClick={handleImageClick}
                                     onKeyDown={(e) => {
                                         if (e.key === 'Enter' || e.key === ' ') {
@@ -314,7 +314,7 @@ export default function EventSetup() {
                                             <img
                                                 src={imagePreview}
                                                 alt="Event preview"
-                                                className="w-full h-full object-cover"
+                                                className="w-full max-h-72 object-contain"
                                             />
                                             <button
                                                 type="button"
