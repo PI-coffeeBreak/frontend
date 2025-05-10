@@ -11,24 +11,28 @@ export default function FloorPlanModal({
   isEditing,
   isImageMedia,
   onRemoveImage,
-  floorPlans
+  floorPlans,
 }) {
   const dialogRef = useRef(null);
+  const fileInputRef = useRef(null);
+
   const [errors, setErrors] = useState({});
   const [imageInputType, setImageInputType] = useState("url");
   const [prevUrl, setPrevUrl] = useState("");
   const [hasInitialized, setHasInitialized] = useState(false);
+  const [imagePreview, setImagePreview] = useState(null);
 
   useEffect(() => {
     const dialog = dialogRef.current;
     if (!dialog) return;
-  
+
     if (open && !dialog.open) {
       dialog.showModal();
-  
+
       if (!hasInitialized) {
         if (form.image && !form.image.startsWith("http")) {
           setImageInputType("file");
+          setImagePreview(form.file ? URL.createObjectURL(form.file) : null);
         } else {
           setImageInputType("url");
           setPrevUrl(form.image || "");
@@ -39,7 +43,7 @@ export default function FloorPlanModal({
       dialog.close();
       setHasInitialized(false);
     }
-  }, [open]);  
+  }, [open]);
 
   const handleImageInputTypeChange = (e) => {
     const newType = e.target.value;
@@ -47,9 +51,11 @@ export default function FloorPlanModal({
       if (form.image && form.image.startsWith("http")) {
         setPrevUrl(form.image);
       }
-      setForm((f) => ({ ...f, image: "" }));
+      setForm((f) => ({ ...f, image: "", file: null }));
+      setImagePreview(null);
     } else if (newType === "url") {
-      setForm((f) => ({ ...f, image: prevUrl || "" }));
+      setForm((f) => ({ ...f, image: prevUrl || "", file: null }));
+      setImagePreview(null);
     }
     setImageInputType(newType);
   };
@@ -62,7 +68,9 @@ export default function FloorPlanModal({
       newErrors.name = "Name is required";
     } else if (
       floorPlans.some(
-        (fp) => fp.name.trim().toLowerCase() === form.name.trim().toLowerCase() && fp.id !== form.id
+        (fp) =>
+          fp.name.trim().toLowerCase() === form.name.trim().toLowerCase() &&
+          fp.id !== form.id
       )
     ) {
       newErrors.name = "A floor plan with this name already exists";
@@ -79,7 +87,33 @@ export default function FloorPlanModal({
   const handleClose = () => {
     setErrors({});
     setPrevUrl("");
+    setImagePreview(null);
     onClose();
+  };
+
+  const handleFileSelect = (e) => {
+    const file = e.target.files[0];
+    if (!file) return;
+
+    setForm((f) => ({ ...f, file }));
+    setImagePreview(URL.createObjectURL(file));
+  };
+
+  const handleDrop = (event) => {
+    event.preventDefault();
+    event.stopPropagation();
+
+    const file = event.dataTransfer.files[0];
+    if (file) {
+      setForm((f) => ({ ...f, file }));
+      setImagePreview(URL.createObjectURL(file));
+    }
+  };
+
+  const handleClearFile = () => {
+    setForm((f) => ({ ...f, file: null }));
+    setImagePreview(null);
+    if (fileInputRef.current) fileInputRef.current.value = "";
   };
 
   const title = isEditing ? "Edit Floor Plan" : "Add Floor Plan";
@@ -115,9 +149,7 @@ export default function FloorPlanModal({
                 value={form.name}
                 onChange={(e) => setForm((f) => ({ ...f, name: e.target.value }))}
               />
-              {errors.name && (
-                <p className="text-error text-sm mt-1">{errors.name}</p>
-              )}
+              {errors.name && <p className="text-error text-sm mt-1">{errors.name}</p>}
             </div>
 
             <div className="md:col-span-2">
@@ -152,33 +184,47 @@ export default function FloorPlanModal({
 
             {imageInputType === "file" && (
               <div className="md:col-span-2">
-                <label className="label flex items-center gap-2">
-                  <FaImage /> Upload new image {isUuid && <span className="text-xs">({form.image})</span>}
-                </label>
-                <div className="flex items-center gap-2">
-                  <input
-                    type="file"
-                    accept="image/*"
-                    className="file-input w-full"
-                    onChange={(e) => setForm((f) => ({ ...f, file: e.target.files[0] }))}
-                  />
-                  {isEditing && (
+                {!imagePreview ? (
+                  <div
+                    className="w-full border-dashed border-2 rounded-xl p-4 text-center bg-transparent border-gray-400"
+                    onClick={() => fileInputRef.current?.click()}
+                    onDrop={handleDrop}
+                    onDragOver={(e) => e.preventDefault()}
+                  >
+                    <div className="rounded-full bg-base-content w-16 h-16 mx-auto my-4 flex items-center justify-center">
+                      <FaUpload className="text-base-100 text-2xl" />
+                    </div>
+                    <p>Drag and drop your image here or <span className="text-primary font-bold">Browse</span></p>
+                    <p className="text-sm text-gray-400">Maximum file size: 5MB</p>
+                  </div>
+                ) : (
+                  <div className="bg-base-200 w-full p-4 rounded-lg relative">
                     <button
+                      onClick={handleClearFile}
+                      className="text-primary hover:text-error absolute right-3 top-3"
                       type="button"
-                      onClick={onRemoveImage}
-                      className={`btn btn-sm ${isImageMedia ? "btn-error" : "btn-disabled text-gray-400"}`}
-                      disabled={!isImageMedia}
-                      title={removeTitle}
+                      aria-label="Remove image"
                     >
-                      <FaTrash className="mr-1" /> Remove Image
+                      <FaTrash />
                     </button>
-                  )}
-                </div>
-                {form.file && (
-                  <p className="text-xs mt-1 flex items-center gap-1 text-gray-500">
-                    <FaUpload /> {form.file.name}
-                  </p>
+                    <div className="flex items-center gap-3">
+                      <div className="w-12 h-12 overflow-hidden rounded-md">
+                        <img src={imagePreview} alt="Preview" className="w-full h-full object-cover" />
+                      </div>
+                      <div>
+                        <p className="font-medium">Image selected</p>
+                        <p className="text-sm text-gray-500">Click to remove and upload a different image</p>
+                      </div>
+                    </div>
+                  </div>
                 )}
+                <input
+                  type="file"
+                  ref={fileInputRef}
+                  accept="image/*"
+                  onChange={handleFileSelect}
+                  className="hidden"
+                />
               </div>
             )}
 
@@ -197,17 +243,24 @@ export default function FloorPlanModal({
           </div>
 
           <div className="modal-action mt-0">
-            <button type="button" className="btn" onClick={handleClose}>
-              Cancel
-            </button>
-            <button type="submit" className="btn btn-primary">
-              {isEditing ? "Update" : "Save"}
-            </button>
+            <button type="button" className="btn" onClick={handleClose}>Cancel</button>
+            <button type="submit" className="btn btn-primary">{isEditing ? "Update" : "Save"}</button>
           </div>
         </form>
       </div>
-
       <button className="modal-backdrop" onClick={handleClose} aria-label="Close modal" />
     </dialog>
   );
 }
+
+FloorPlanModal.propTypes = {
+  open: PropTypes.bool.isRequired,
+  onClose: PropTypes.func.isRequired,
+  onSubmit: PropTypes.func.isRequired,
+  form: PropTypes.object.isRequired,
+  setForm: PropTypes.func.isRequired,
+  isEditing: PropTypes.bool.isRequired,
+  isImageMedia: PropTypes.bool.isRequired,
+  onRemoveImage: PropTypes.func.isRequired,
+  floorPlans: PropTypes.array.isRequired,
+};
