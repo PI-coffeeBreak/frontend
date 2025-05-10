@@ -1,5 +1,5 @@
 import { useEffect, useRef, useState } from "react";
-import PropTypes            from "prop-types";
+import PropTypes from "prop-types";
 import { FaTimes, FaImage, FaTrash, FaUpload } from "react-icons/fa";
 
 export default function FloorPlanModal({
@@ -14,6 +14,7 @@ export default function FloorPlanModal({
 }) {
   const dialogRef = useRef(null);
   const [errors, setErrors] = useState({});
+  const [imageInputType, setImageInputType] = useState("url"); // "url" or "file"
 
   useEffect(() => {
     const dialog = dialogRef.current;
@@ -24,7 +25,14 @@ export default function FloorPlanModal({
     } else {
       if (dialog.open) dialog.close();
     }
-  }, [open]);
+
+    // Determinar o tipo de input de imagem com base no valor inicial
+    if (form.image && !form.image.startsWith("http")) {
+      setImageInputType("file");
+    } else {
+      setImageInputType("url");
+    }
+  }, [open, form.image]);
 
   const handleSubmit = (e) => {
     e.preventDefault();
@@ -46,10 +54,13 @@ export default function FloorPlanModal({
     onClose(); // Chama a função de fechamento passada como prop
   };
 
-  const title       = isEditing ? "Edit Floor Plan" : "Add Floor Plan";
-  let   removeTitle = "Remove image";
-  if (!form.image)        removeTitle = "No image to remove";
+  const title = isEditing ? "Edit Floor Plan" : "Add Floor Plan";
+  let removeTitle = "Remove image";
+  if (!form.image) removeTitle = "No image to remove";
   else if (!isImageMedia) removeTitle = "Only media‑service images can be removed";
+
+  // Verificar se `form.image` é um UUID
+  const isUuid = form.image && !form.image.startsWith("http");
 
   return (
     <dialog ref={dialogRef} id="floor_plan_modal" className="modal">
@@ -67,7 +78,8 @@ export default function FloorPlanModal({
 
         <form onSubmit={handleSubmit} className="space-y-4">
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-            <div>
+            {/* Campo Name */}
+            <div className="md:col-span-2">
               <label className="label" htmlFor="fp-name">
                 Name <span className="text-error">*</span>
               </label>
@@ -82,52 +94,72 @@ export default function FloorPlanModal({
               )}
             </div>
 
-            <div>
-              <label className="label" htmlFor="fp-image">
-                Image URL <span className="text-xs text-base-content/60">(optional)</span>
+            {/* Seletor para Tipo de Input de Imagem */}
+            <div className="md:col-span-2">
+              <label className="label" htmlFor="image-input-type">
+                Select Image Input Type
               </label>
-              <input
-                id="fp-image"
-                className="input input-bordered w-full"
-                placeholder="http(s)://…"
-                value={form.image}
-                onChange={(e) => setForm((f) => ({ ...f, image: e.target.value }))}
-              />
+              <select
+                id="image-input-type"
+                className="select select-bordered w-full"
+                value={imageInputType}
+                onChange={(e) => setImageInputType(e.target.value)}
+              >
+                <option value="url">Image URL</option>
+                <option value="file">Upload File</option>
+              </select>
             </div>
 
-            <div className="md:col-span-2">
-              <label className="label flex items-center gap-2">
-                <FaImage /> Upload new image
-              </label>
-
-              <div className="flex items-center gap-2">
+            {/* Campo para URL da Imagem */}
+            {imageInputType === "url" && (
+              <div className="md:col-span-2">
+                <label className="label" htmlFor="fp-image">
+                  Image URL <span className="text-xs text-base-content/60">(optional)</span>
+                </label>
                 <input
-                  type="file"
-                  accept="image/*"
-                  className="file-input w-full"
-                  onChange={(e) => setForm((f) => ({ ...f, file: e.target.files[0] }))}
+                  id="fp-image"
+                  className="input input-bordered w-full"
+                  placeholder="http(s)://…"
+                  value={form.image && form.image.startsWith("http") ? form.image : ""} // Exibe apenas URLs válidas
+                  onChange={(e) => setForm((f) => ({ ...f, image: e.target.value }))}
                 />
+              </div>
+            )}
 
-                {isEditing && (
-                  <button
-                    type="button"
-                    onClick={onRemoveImage}
-                    className={`btn btn-sm ${isImageMedia ? "btn-error" : "btn-disabled text-gray-400"}`}
-                    disabled={!isImageMedia}
-                    title={removeTitle}
-                  >
-                    <FaTrash className="mr-1" /> Remove Image
-                  </button>
+            {/* Campo para Upload de Arquivo */}
+            {imageInputType === "file" && (
+              <div className="md:col-span-2">
+                <label className="label flex items-center gap-2">
+                <FaImage /> Upload new image {isUuid && <span className="text-xs">({form.image})</span>}
+                </label>
+                <div className="flex items-center gap-2">
+                  <input
+                    type="file"
+                    accept="image/*"
+                    className="file-input w-full"
+                    onChange={(e) => setForm((f) => ({ ...f, file: e.target.files[0] }))}
+                  />
+                  {isEditing && (
+                    <button
+                      type="button"
+                      onClick={onRemoveImage}
+                      className={`btn btn-sm ${isImageMedia ? "btn-error" : "btn-disabled text-gray-400"}`}
+                      disabled={!isImageMedia}
+                      title={removeTitle}
+                    >
+                      <FaTrash className="mr-1" /> Remove Image
+                    </button>
+                  )}
+                </div>
+                {form.file && (
+                  <p className="text-xs mt-1 flex items-center gap-1 text-gray-500">
+                    <FaUpload /> {form.file.name}
+                  </p>
                 )}
               </div>
+            )}
 
-              {form.file && (
-                <p className="text-xs mt-1 flex items-center gap-1 text-gray-500">
-                  <FaUpload /> {form.file.name}
-                </p>
-              )}
-            </div>
-
+            {/* Campo Details */}
             <div className="md:col-span-2">
               <label className="label" htmlFor="fp-details">
                 Details / Description
@@ -142,6 +174,7 @@ export default function FloorPlanModal({
             </div>
           </div>
 
+          {/* Botões de Ação */}
           <div className="modal-action mt-0">
             <button type="button" className="btn" onClick={handleClose}>
               Cancel
@@ -159,12 +192,12 @@ export default function FloorPlanModal({
 }
 
 FloorPlanModal.propTypes = {
-  open:          PropTypes.bool.isRequired,
-  onClose:       PropTypes.func.isRequired,
-  onSubmit:      PropTypes.func.isRequired,
-  form:          PropTypes.object.isRequired,
-  setForm:       PropTypes.func.isRequired,
-  isEditing:     PropTypes.bool.isRequired,
-  isImageMedia:  PropTypes.bool.isRequired,
-  onRemoveImage: PropTypes.func.isRequired
+  open: PropTypes.bool.isRequired,
+  onClose: PropTypes.func.isRequired,
+  onSubmit: PropTypes.func.isRequired,
+  form: PropTypes.object.isRequired,
+  setForm: PropTypes.func.isRequired,
+  isEditing: PropTypes.bool.isRequired,
+  isImageMedia: PropTypes.bool.isRequired,
+  onRemoveImage: PropTypes.func.isRequired,
 };
