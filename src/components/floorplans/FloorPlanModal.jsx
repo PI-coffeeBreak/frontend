@@ -10,7 +10,8 @@ export default function FloorPlanModal({
   setForm,
   isEditing,
   isImageMedia,
-  onRemoveImage
+  onRemoveImage,
+  floorPlans
 }) {
   const dialogRef = useRef(null);
   const [errors, setErrors] = useState({});
@@ -59,6 +60,12 @@ export default function FloorPlanModal({
     const newErrors = {};
     if (!form.name.trim()) {
       newErrors.name = "Name is required";
+    } else if (
+      floorPlans.some(
+        (fp) => fp.name.trim().toLowerCase() === form.name.trim().toLowerCase() && fp.id !== form.id
+      )
+    ) {
+      newErrors.name = "A floor plan with this name already exists";
     }
 
     setErrors(newErrors);

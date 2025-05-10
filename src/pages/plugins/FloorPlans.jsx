@@ -356,6 +356,7 @@ export function FloorPlans() {
         isEditing={modalMode === "edit"}
         isImageMedia={isImageMedia}
         onRemoveImage={handleRemoveImage}
+        floorPlans={floorPlans}
       />
     </div>
   );
