@@ -7,6 +7,7 @@ import { useNotification } from "../../contexts/NotificationContext";
 export function NewSessionTypeModal({ isOpen, onClose, onSubmit }) {
   const initialValues = {
     type: "",
+    color: "#3788d8", // Default color
   };
 
   const { handleChange, values, resetForm, errors, setErrors } = useForm(initialValues);
@@ -32,7 +33,7 @@ export function NewSessionTypeModal({ isOpen, onClose, onSubmit }) {
     setIsSubmitting(true);
     
     try {
-      await onSubmit({ type: values.type.trim() });
+      await onSubmit({ type: values.type.trim(), color: values.color });
       resetForm();
       showNotification("Session type created successfully", "success");
     } catch (error) {
@@ -74,6 +75,30 @@ export function NewSessionTypeModal({ isOpen, onClose, onSubmit }) {
               placeholder="Enter session type name"
             />
             {errors.type && <p className="text-error text-sm mt-1">{errors.type}</p>}
+          </div>
+
+          <div className="mb-4">
+            <label htmlFor="color" className="block text-sm font-medium mb-1">
+              Color
+            </label>
+            <div className="flex items-center gap-2">
+              <input
+                type="color"
+                id="color"
+                name="color"
+                value={values.color}
+                onChange={handleChange}
+                className="w-12 h-12 rounded cursor-pointer"
+              />
+              <input
+                type="text"
+                value={values.color}
+                onChange={handleChange}
+                name="color"
+                className="input input-bordered flex-1"
+                placeholder="#RRGGBB"
+              />
+            </div>
           </div>
 
           <div className="flex justify-end gap-2 mt-6">

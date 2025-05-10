@@ -59,7 +59,7 @@
       },
       "management": {
         "title": "Gestão",
-        "description": "Gerir utilizadores, sessões e alertas",
+        "description": "Gerir utilizadores e sessões",
         "links": {
           "users": "Utilizadores",
           "sessions": "Sessões",
@@ -569,5 +569,13 @@
   "instantiateHome": {
     "title": "Painel do Evento",
     "subtitle": "Monitorize e gerencie todos os aspetos do seu evento num só lugar"
+  },
+  "feedback": {
+    "title": "Avalia esta Sessão",
+    "description": "A tua opinião ajuda-nos a melhorar!",
+    "submit": "Enviar Feedback",
+    "ratingLabel": "Avaliação:",
+    "commentLabel": "Comentário:",
+    "commentPlaceholder": "Escreve o teu comentário aqui..."
   }
 } 

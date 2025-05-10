@@ -44,7 +44,7 @@
     "sections": {
       "home": {
         "title": "Início",
-        "description": "Gerenciar usuários, sessões e alertas",
+        "description": "Gerenciar usuários e sessões",
         "links": {
           "users": "Usuários",
           "sessions": "Sessões",
@@ -587,5 +587,13 @@
   "instantiateHome": {
     "title": "Painel do Evento",
     "subtitle": "Monitore e gerencie todos os aspectos do seu evento em um só lugar"
+  },
+  "feedback": {
+    "title": "Avalie esta Sessão",
+    "description": "Sua opinião nos ajuda a melhorar!",
+    "submit": "Enviar Feedback",
+    "ratingLabel": "Avaliação:",
+    "commentLabel": "Comentário:",
+    "commentPlaceholder": "Escreva seu comentário aqui..."
   }
 } 
