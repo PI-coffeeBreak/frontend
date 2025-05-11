@@ -1,5 +1,6 @@
 import { useSortable } from "@dnd-kit/sortable";
 import { CSS } from "@dnd-kit/utilities";
+import PropTypes from "prop-types";
 
 export default function SortableItem({ id, children, as: Component = "div" }) {
   const { attributes, listeners, setNodeRef, transform, transition, isDragging } = useSortable({ id });
@@ -17,3 +18,9 @@ export default function SortableItem({ id, children, as: Component = "div" }) {
     </Component>
   );
 }
+
+SortableItem.propTypes = {
+  id: PropTypes.string.isRequired,
+  children: PropTypes.node.isRequired,
+  as: PropTypes.elementType,
+};

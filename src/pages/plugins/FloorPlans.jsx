@@ -9,6 +9,7 @@ import { DndContext, closestCenter } from "@dnd-kit/core";
 import { arrayMove, SortableContext, rectSortingStrategy } from "@dnd-kit/sortable";
 import SortableItem from "../../components/floorplans/SortableItem.jsx";
 import { useTranslation } from "react-i18next";
+import PropTypes from "prop-types";
 
 const apiUrl = `${baseUrl}/floor-plan-plugin/floor_plan`;
 const ITEMS_PER_PAGE = 6;
@@ -41,6 +42,12 @@ function FloorPlanActions({ onEdit, onDelete, t }) {
     </div>
   );
 }
+
+FloorPlanActions.propTypes = {
+  onEdit: PropTypes.func.isRequired,
+  onDelete: PropTypes.func.isRequired,
+  t: PropTypes.func.isRequired,
+};
 
 function FloorPlanRowItem({ fp, isTable, onEdit, onDelete, t }) {
   if (isTable) {
@@ -88,6 +95,20 @@ function FloorPlanRowItem({ fp, isTable, onEdit, onDelete, t }) {
     </div>
   );
 }
+
+FloorPlanRowItem.propTypes = {
+  fp: PropTypes.shape({
+    id: PropTypes.string.isRequired,
+    order: PropTypes.number.isRequired,
+    image: PropTypes.string,
+    name: PropTypes.string.isRequired,
+    details: PropTypes.string,
+  }).isRequired,
+  isTable: PropTypes.bool.isRequired,
+  onEdit: PropTypes.func.isRequired,
+  onDelete: PropTypes.func.isRequired,
+  t: PropTypes.func.isRequired,
+};
 
 export function FloorPlans() {
   const { keycloak } = useKeycloak();

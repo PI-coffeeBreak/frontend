@@ -251,14 +251,25 @@ export default function FloorPlanModal({
                 {!imagePreview ? (
                   <div
                     className="w-full border-dashed border-2 rounded-xl p-4 text-center bg-transparent border-gray-400"
+                    role="button"
+                    tabIndex={0}
                     onClick={() => fileInputRef.current?.click()}
+                    onKeyDown={(e) => {
+                      if (e.key === "Enter" || e.key === " ") {
+                        e.preventDefault();
+                        fileInputRef.current?.click();
+                      }
+                    }}
                     onDrop={handleDrop}
                     onDragOver={(e) => e.preventDefault()}
                   >
                     <div className="rounded-full bg-base-content w-16 h-16 mx-auto my-4 flex items-center justify-center">
                       <FaUpload className="text-base-100 text-2xl" />
                     </div>
-                    <p>{t("floorPlanModal.dragAndDrop")} <span className="text-primary font-bold">{t("floorPlanModal.browse")}</span></p>
+                    <p>
+                      {t("floorPlanModal.dragAndDrop")}{" "}
+                      <span className="text-primary font-bold">{t("floorPlanModal.browse")}</span>
+                    </p>
                     <p className="text-sm text-gray-400">{t("floorPlanModal.maxFileSize")}</p>
                   </div>
                 ) : (
@@ -281,12 +292,19 @@ export default function FloorPlanModal({
                     </button>
                     <div className="flex items-center gap-3">
                       <div className="w-12 h-12 overflow-hidden rounded-md">
-                        <img src={imagePreview} alt={t("floorPlanModal.preview")} className="w-full h-full object-cover" />
+                        <img
+                          src={imagePreview}
+                          alt={t("floorPlanModal.preview")}
+                          className="w-full h-full object-cover"
+                        />
                       </div>
                       <div>
                         <p className="font-medium">{t("floorPlanModal.imageSelected")}</p>
                         <p className="text-sm text-gray-500">
-                          {t("floorPlanModal.clickTrashIcon")} {form.file ? t("floorPlanModal.removeUploadedFile") : t("floorPlanModal.removeExistingImage")}
+                          {t("floorPlanModal.clickTrashIcon")}{" "}
+                          {form.file
+                            ? t("floorPlanModal.removeUploadedFile")
+                            : t("floorPlanModal.removeExistingImage")}
                         </p>
                       </div>
                     </div>
