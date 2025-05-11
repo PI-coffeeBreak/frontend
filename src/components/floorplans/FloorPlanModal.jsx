@@ -221,8 +221,28 @@ export default function FloorPlanModal({
                   className="input input-bordered w-full"
                   placeholder="http(s)://…"
                   value={form.image && form.image.startsWith("http") ? form.image : ""}
-                  onChange={(e) => setForm((f) => ({ ...f, image: e.target.value }))}
+                  onChange={(e) => {
+                    const url = e.target.value;
+                    setForm((f) => ({ ...f, image: url }));
+                    if (url.startsWith("http")) {
+                      setImagePreview(url);
+                    } else {
+                      setImagePreview(null);
+                    }
+                  }}
                 />
+                {imagePreview && (
+                  <div className="mt-4">
+                    <p className="text-sm text-gray-500">{t("floorPlanModal.preview")}</p>
+                    <div className="w-full h-70 flex items-center justify-center overflow-hidden rounded-md border border-gray-300 bg-gray-100">
+                      <img
+                        src={imagePreview}
+                        alt={t("floorPlanModal.preview")}
+                        className="max-w-full max-h-full"
+                      />
+                    </div>
+                  </div>
+                )}
               </div>
             )}
 

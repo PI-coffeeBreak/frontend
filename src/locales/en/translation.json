@@ -632,7 +632,8 @@
     "clickTrashIcon": "Click the trash icon to",
     "removeExistingImage": "remove the existing image",
     "nameRequired": "Name is required",
-    "nameExists": "A floor plan with this name already exists"
+    "nameExists": "A floor plan with this name already exists",
+    "preview": "Preview"
   },
     "notifications": {
     "loadFailed": "Failed to load Floor Plans",

@@ -638,7 +638,8 @@
     "clickTrashIcon": "Clique no lixo para",
     "removeExistingImage": "remover a imagem existente",
     "nameRequired": "O nome é obrigatório",
-    "nameExists": "Já existe uma planta com este nome"
+    "nameExists": "Já existe uma planta com este nome",
+    "preview": "Pré-visualização"
   },
     "notifications": {
     "loadFailed": "Falha ao carregar as Plantas",
