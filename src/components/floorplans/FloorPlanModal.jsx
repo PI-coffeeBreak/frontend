@@ -1,6 +1,6 @@
 import { useEffect, useRef, useState } from "react";
 import PropTypes from "prop-types";
-import { FaTimes, FaImage, FaTrash, FaUpload } from "react-icons/fa";
+import { FaTimes, FaTrash, FaUpload } from "react-icons/fa";
 import { baseUrl } from "../../consts.js";
 
 export default function FloorPlanModal({
@@ -31,12 +31,12 @@ export default function FloorPlanModal({
 
     const handleDialogClose = () => {
       setHasInitialized(false);
-      onClose(); // Garante que o estado `open` seja atualizado
+      onClose();
     };
 
     const handleDialogCancel = (event) => {
-      event.preventDefault(); // Previne o fechamento automático pelo Escape
-      handleClose(); // Fecha o modal manualmente
+      event.preventDefault();
+      handleClose();
     };
 
     dialog.addEventListener("close", handleDialogClose);
@@ -119,7 +119,7 @@ export default function FloorPlanModal({
   
     if (Object.keys(newErrors).length === 0) {
       if (isImageMarkedForRemoval) {
-        await onRemoveImage(); // Remove a imagem apenas aqui
+        await onRemoveImage();
       }
       setPrevUrl("");
       onSubmit();
@@ -130,7 +130,7 @@ export default function FloorPlanModal({
     setErrors({});
     setPrevUrl("");
     setImagePreview(null);
-    setIsImageMarkedForRemoval(false); // Reseta a marcação de remoção de imagem
+    setIsImageMarkedForRemoval(false);
     onClose();
   };
 
@@ -162,9 +162,7 @@ export default function FloorPlanModal({
   const title = isEditing ? "Edit Floor Plan" : "Add Floor Plan";
   let removeTitle = "Remove image";
   if (!form.image) removeTitle = "No image to remove";
-  else if (!isImageMedia) removeTitle = "Only media‑service images can be removed";
-
-  const isUuid = form.image && !form.image.startsWith("http");
+  else if (!isImageMedia) removeTitle = "Only internal managed images can be removed";
 
   return (
     <dialog ref={dialogRef} id="floor_plan_modal" className="modal">
@@ -247,7 +245,7 @@ export default function FloorPlanModal({
                         if (form.file) {
                           handleClearFile();
                         } else if (isImageMedia) {
-                          setIsImageMarkedForRemoval(true); // Marca a imagem para remoção
+                          setIsImageMarkedForRemoval(true);
                           setImagePreview(null);
                           setForm((f) => ({ ...f, image: "" }));
                         }
