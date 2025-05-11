@@ -23,6 +23,7 @@ export default function FloorPlanModal({
   const [prevUrl, setPrevUrl] = useState("");
   const [hasInitialized, setHasInitialized] = useState(false);
   const [imagePreview, setImagePreview] = useState(null);
+  const [isImageMarkedForRemoval, setIsImageMarkedForRemoval] = useState(false);
 
   useEffect(() => {
     const dialog = dialogRef.current;
@@ -78,7 +79,7 @@ export default function FloorPlanModal({
     setImageInputType(newType);
   };
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
   
     const trimmedName = form.name.trim().toLowerCase();
@@ -99,6 +100,9 @@ export default function FloorPlanModal({
     setErrors(newErrors);
   
     if (Object.keys(newErrors).length === 0) {
+      if (isImageMarkedForRemoval) {
+        await onRemoveImage(); // Remove a imagem apenas aqui
+      }
       setPrevUrl("");
       onSubmit();
     }
@@ -224,8 +228,9 @@ export default function FloorPlanModal({
                         if (form.file) {
                           handleClearFile();
                         } else if (isImageMedia) {
-                          onRemoveImage();
+                          setIsImageMarkedForRemoval(true); // Marca a imagem para remoção
                           setImagePreview(null);
+                          setForm((f) => ({ ...f, image: "" }));
                         }
                       }}
                       className="text-primary hover:text-error absolute right-3 top-3"
