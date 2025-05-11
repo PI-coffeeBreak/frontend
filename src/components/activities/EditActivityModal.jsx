@@ -1,0 +1,598 @@
+import { useState, useEffect, useRef } from "react";
+import PropTypes from "prop-types";
+import { useTranslation } from "react-i18next";
+import { useActivities } from "../../contexts/ActivitiesContext";
+import { useMedia } from "../../contexts/MediaContext";
+import { useNotification } from "../../contexts/NotificationContext";
+import { Modal } from "../common/Modal";
+import { FiUpload } from "react-icons/fi";
+import { FaTrash, FaImage } from "react-icons/fa";
+
+const FormField = ({ label, id, type = "text", required = false, error, children }) => (
+  <div>
+    <label htmlFor={id} className="block text-sm font-medium mb-1">
+      {label} {required && <span className="text-error">*</span>}
+    </label>
+    {children}
+    {error && <p className="text-error text-sm mt-1">{error}</p>}
+  </div>
+);
+
+FormField.propTypes = {
+  label: PropTypes.string.isRequired,
+  id: PropTypes.string.isRequired,
+  type: PropTypes.string,
+  required: PropTypes.bool,
+  error: PropTypes.string,
+  children: PropTypes.node.isRequired
+};
+
+export function EditActivityModal({ isOpen, onClose, activity }) {
+  const { t } = useTranslation();
+  const { activityTypes, updateActivity } = useActivities();
+  const { uploadMedia, getMediaUrl } = useMedia();
+  const { showNotification } = useNotification();
+  const fileInputRef = useRef(null);
+  
+  const [formData, setFormData] = useState({
+    name: "",
+    description: "",
+    type_id: "",
+    topic: "",
+    speaker: "",
+    facilitator: "",
+    start_time: "",
+    duration: "",
+    image: null,
+    requires_registration: false,
+    max_participants: ""
+  });
+  
+  const [imagePreview, setImagePreview] = useState(null);
+  const [currentImageUrl, setCurrentImageUrl] = useState(null);
+  const [isSubmitting, setIsSubmitting] = useState(false);
+  const [errors, setErrors] = useState({});
+
+  const stopPropagation = (e) => {
+    e.stopPropagation();
+  };
+
+  const handleChangeWithStop = (e) => {
+    stopPropagation(e);
+    handleChange(e);
+  };
+
+  useEffect(() => {
+    if (activity) {
+      // Format the date for the input field
+      let formattedDate = "";
+      if (activity.start_time) {
+        const date = new Date(activity.start_time);
+        // Format to YYYY-MM-DDTHH:MM
+        formattedDate = date.toISOString().slice(0, 16);
+      }
+      
+      setFormData({
+        name: activity.name || "",
+        description: activity.description || "",
+        type_id: activity.type_id || "",
+        topic: activity.topic || "",
+        speaker: activity.speaker || "",
+        facilitator: activity.facilitator || "",
+        start_time: formattedDate,
+        duration: activity.duration || "",
+        image: null,
+        requires_registration: activity.requires_registration || false,
+        max_participants: activity.max_participants || ""
+      });
+      
+      // Reset image preview
+      setImagePreview(null);
+      
+      // Set current image URL if it exists
+      if (activity.image) {
+        const imageUrl = getMediaUrl(activity.image);
+        console.log("Setting current image URL:", imageUrl, "Image ID:", activity.image);
+        setCurrentImageUrl(imageUrl);
+      } else {
+        console.log("No image for activity:", activity.id);
+        setCurrentImageUrl(null);
+      }
+    }
+  }, [activity, getMediaUrl]);
+
+  const handleChange = (e) => {
+    const { name, value, type, checked } = e.target;
+    setFormData(prev => ({
+      ...prev,
+      [name]: type === 'checkbox' ? checked : value,
+    }));
+    
+    // Clear error for this field if any
+    if (errors[name]) {
+      setErrors(prev => ({ ...prev, [name]: undefined }));
+    }
+  };
+  
+  const validate = () => {
+    const newErrors = {};
+    
+    if (!formData.name.trim()) newErrors.name = t('validation.required');
+    if (!formData.description.trim()) newErrors.description = t('validation.required');
+    if (!formData.type_id) newErrors.type_id = t('validation.required');
+    
+    if (formData.start_time) {
+      try {
+        const sessionDate = new Date(formData.start_time);
+        if (sessionDate < new Date()) {
+          newErrors.start_time = t('validation.dateInPast');
+        }
+      } catch (e) {
+        newErrors.start_time = t('validation.invalidDate');
+      }
+    }
+    
+    if (formData.requires_registration) {
+      if (!formData.max_participants) {
+        newErrors.max_participants = t('validation.required');
+      } else {
+        const maxPart = parseInt(formData.max_participants, 10);
+        if (isNaN(maxPart) || maxPart <= 0) {
+          newErrors.max_participants = t('validation.positiveNumber');
+        }
+      }
+    }
+    
+    setErrors(newErrors);
+    return Object.keys(newErrors).length === 0;
+  };
+
+  const handleFileSelect = (e) => {
+    const file = e.target.files[0];
+    if (!file) return;
+
+    if (!validateFile(file)) return;
+    
+    setFormData(prev => ({
+      ...prev,
+      image: file,
+    }));
+    
+    setImagePreview(URL.createObjectURL(file));
+  };
+
+  const validateFile = (file) => {
+    if (file.size > 5 * 1024 * 1024) {
+      showNotification(t('common.media.sizeError'), "error");
+      return false;
+    }
+
+    const allowedTypes = ['image/jpeg', 'image/png', 'image/webp'];
+    if (!allowedTypes.includes(file.type)) {
+      showNotification(t('common.media.typeError'), "error");
+      return false;
+    }
+    
+    return true;
+  };
+
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+    
+    if (!validate()) return;
+    
+    setIsSubmitting(true);
+    
+    try {
+      const updatePayload = {
+        name: formData.name,
+        description: formData.description,
+        type_id: parseInt(formData.type_id, 10),
+        topic: formData.topic || "",
+        speaker: formData.speaker || "",
+        facilitator: formData.facilitator || "",
+        requires_registration: formData.requires_registration || false
+      };
+      
+      // Only include max_participants if requires_registration is true
+      if (formData.requires_registration && formData.max_participants) {
+        const parsedValue = parseInt(formData.max_participants, 10);
+        updatePayload.max_participants = !isNaN(parsedValue) ? parsedValue : 0;
+      }
+      
+      if (formData.start_time) {
+        updatePayload.start_time = formData.start_time;
+      }
+      
+      if (formData.duration) {
+        updatePayload.duration = parseInt(formData.duration, 10);
+      }
+      
+      console.log("Updating activity with payload:", updatePayload);
+      
+      // Update the activity basic info
+      const updatedActivity = await updateActivity(activity.id, updatePayload);
+      
+      // Handle image update
+      if (formData.image) {
+        if (activity.image) {
+          // Update existing image
+          console.log("Updating existing image for activity:", activity.id, "Image ID:", activity.image);
+          try {
+            await uploadMedia(activity.image, formData.image, true);
+            console.log("Image update successful");
+          } catch (imageError) {
+            console.error("Error updating image:", imageError);
+            showNotification(t('common.media.uploadError'), "warning");
+          }
+        } else {
+          // Activity didn't have an image before, register a new one
+          console.log("Activity had no image before, registering new image");
+          try {
+            // If the updated activity has an image field, use that
+            if (updatedActivity && updatedActivity.image) {
+              await uploadMedia(updatedActivity.image, formData.image, false);
+              console.log("New image upload successful");
+            } else {
+              console.error("Updated activity doesn't have an image field");
+              showNotification(t('common.media.noImageField'), "warning");
+            }
+          } catch (imageError) {
+            console.error("Error uploading new image:", imageError);
+            showNotification(t('common.media.uploadError'), "warning");
+          }
+        }
+      }
+      
+      showNotification(t('activities.updateSuccess'), "success");
+      
+      // Close the modal and refresh the page to ensure all data is fully updated
+      handleCloseModal();
+      
+      // Small delay before reload to ensure notification is seen
+      setTimeout(() => {
+        window.location.reload();
+      }, 800);
+    } catch (error) {
+      console.error("Error updating activity:", error);
+      showNotification(t('activities.updateError'), "error");
+    } finally {
+      setIsSubmitting(false);
+    }
+  };
+
+  const handleCloseModal = () => {
+    setFormData({
+      name: "",
+      description: "",
+      type_id: "",
+      topic: "",
+      speaker: "",
+      facilitator: "",
+      start_time: "",
+      duration: "",
+      image: null,
+      requires_registration: false,
+      max_participants: ""
+    });
+    setImagePreview(null);
+    setCurrentImageUrl(null);
+    setErrors({});
+    onClose();
+  };
+  
+  const handleBrowseClick = () => {
+    fileInputRef.current?.click();
+  };
+  
+  const handleClearFile = () => {
+    setFormData(prev => ({
+      ...prev,
+      image: null,
+    }));
+    setImagePreview(null);
+    if (fileInputRef.current) {
+      fileInputRef.current.value = '';
+    }
+  };
+  
+  const renderImageUploader = () => {
+    const handleImageError = (e) => {
+      console.error("Error loading image:", e.target.src);
+      e.target.onerror = null;
+      e.target.src = "https://placehold.co/600x400?text=Image+Not+Available";
+    };
+    
+    return (
+      <div className="mt-3">
+        <p className="text-sm font-medium mb-2">{t('activities.image')}</p>
+        
+        <div
+          className="border border-dashed border-gray-300 rounded-lg p-3 text-center cursor-pointer hover:bg-gray-50"
+          onClick={handleBrowseClick}
+        >
+          {imagePreview ? (
+            <div className="relative">
+              <img 
+                src={imagePreview} 
+                alt={t('activities.imageAlt')} 
+                className="max-h-36 mx-auto rounded"
+              />
+              <button
+                type="button"
+                onClick={(e) => {
+                  e.stopPropagation();
+                  handleClearFile();
+                }}
+                className="absolute top-2 right-2 bg-white rounded-full p-1 shadow-sm"
+              >
+                <FaTrash className="text-error h-3 w-3" />
+              </button>
+            </div>
+          ) : currentImageUrl ? (
+            <div className="relative">
+              <img 
+                src={currentImageUrl} 
+                alt={t('activities.imageAlt')} 
+                className="max-h-36 mx-auto rounded"
+                onError={handleImageError}
+              />
+              <div className="absolute inset-0 flex items-center justify-center bg-black bg-opacity-20 opacity-0 hover:opacity-100 transition-opacity">
+                <div className="text-white bg-black bg-opacity-50 rounded px-2 py-1 text-sm">
+                  {t('activities.currentImage')}
+                </div>
+              </div>
+            </div>
+          ) : (
+            <div className="text-gray-500 py-3">
+              <FaImage className="mx-auto h-10 w-10 mb-2" />
+              <p className="text-sm">{t('common.media.selectImage')}</p>
+            </div>
+          )}
+          
+          <input
+            ref={fileInputRef}
+            type="file"
+            accept="image/*"
+            onChange={handleFileSelect}
+            className="hidden"
+          />
+        </div>
+      </div>
+    );
+  };
+
+  return (
+    <Modal
+      isOpen={isOpen}
+      onClose={handleCloseModal}
+      title={t('activities.editTitle')}
+      size="compact"
+    >
+      <form onSubmit={handleSubmit} onClick={stopPropagation} className="text-sm">
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
+          <div className="md:col-span-2">
+            <FormField 
+              label={t('activities.name')} 
+              id="name" 
+              required 
+              error={errors.name}
+            >
+              <input
+                type="text"
+                id="name"
+                name="name"
+                value={formData.name}
+                onChange={handleChangeWithStop}
+                className="input input-sm input-bordered w-full"
+                required
+              />
+            </FormField>
+          </div>
+          
+          <div className="md:col-span-2">
+            <FormField 
+              label={t('activities.description')} 
+              id="description" 
+              required 
+              error={errors.description}
+            >
+              <textarea
+                id="description"
+                name="description"
+                value={formData.description}
+                onChange={handleChangeWithStop}
+                className="textarea textarea-bordered w-full"
+                rows="2"
+                required
+              />
+            </FormField>
+          </div>
+          
+          <div>
+            <FormField 
+              label={t('activities.type')} 
+              id="type_id" 
+              required 
+              error={errors.type_id}
+            >
+              <select
+                id="type_id"
+                name="type_id"
+                value={formData.type_id}
+                onChange={handleChangeWithStop}
+                className="select select-bordered select-sm w-full"
+                required
+              >
+                <option value="">{t('activities.selectType')}</option>
+                {activityTypes.map((type) => (
+                  <option key={type.id} value={type.id}>
+                    {type.type}
+                  </option>
+                ))}
+              </select>
+            </FormField>
+          </div>
+          
+          <div>
+            <FormField 
+              label={t('activities.topic')} 
+              id="topic"
+            >
+              <input
+                type="text"
+                id="topic"
+                name="topic"
+                value={formData.topic}
+                onChange={handleChangeWithStop}
+                className="input input-sm input-bordered w-full"
+              />
+            </FormField>
+          </div>
+          
+          <div>
+            <FormField 
+              label={t('activities.speaker')} 
+              id="speaker"
+            >
+              <input
+                type="text"
+                id="speaker"
+                name="speaker"
+                value={formData.speaker}
+                onChange={handleChangeWithStop}
+                className="input input-sm input-bordered w-full"
+              />
+            </FormField>
+          </div>
+          
+          <div>
+            <FormField 
+              label={t('activities.facilitator')} 
+              id="facilitator"
+            >
+              <input
+                type="text"
+                id="facilitator"
+                name="facilitator"
+                value={formData.facilitator}
+                onChange={handleChangeWithStop}
+                className="input input-sm input-bordered w-full"
+              />
+            </FormField>
+          </div>
+          
+          <div>
+            <FormField 
+              label={t('activities.startTime')} 
+              id="start_time"
+              error={errors.start_time}
+            >
+              <input
+                type="datetime-local"
+                id="start_time"
+                name="start_time"
+                value={formData.start_time}
+                onChange={handleChangeWithStop}
+                className="input input-sm input-bordered w-full"
+              />
+            </FormField>
+          </div>
+          
+          <div>
+            <FormField 
+              label={t('activities.duration') + ' (min)'} 
+              id="duration"
+            >
+              <input
+                type="number"
+                id="duration"
+                name="duration"
+                value={formData.duration}
+                onChange={handleChangeWithStop}
+                className="input input-sm input-bordered w-full"
+                min="1"
+              />
+            </FormField>
+          </div>
+          
+          <div className="md:col-span-2 mt-2">
+            <div className="border-t pt-3">
+              <h3 className="text-sm font-semibold mb-2">{t('activities.registration.title')}</h3>
+              
+              <div className="flex items-center mb-3">
+                <input
+                  type="checkbox"
+                  id="requires_registration"
+                  name="requires_registration"
+                  checked={formData.requires_registration}
+                  onChange={handleChangeWithStop}
+                  className="checkbox checkbox-primary checkbox-sm mr-2"
+                />
+                <label htmlFor="requires_registration" className="cursor-pointer text-sm">
+                  {t('activities.registration.limitParticipants')}
+                </label>
+              </div>
+              
+              {formData.requires_registration && (
+                <div className="ml-6">
+                  <FormField 
+                    label={t('activities.registration.maxParticipants')} 
+                    id="max_participants"
+                    error={errors.max_participants}
+                  >
+                    <input
+                      type="number"
+                      id="max_participants"
+                      name="max_participants"
+                      value={formData.max_participants}
+                      onChange={handleChangeWithStop}
+                      className="input input-sm input-bordered w-full"
+                      min="1"
+                      placeholder={t('activities.registration.maxParticipantsPlaceholder')}
+                    />
+                  </FormField>
+                </div>
+              )}
+            </div>
+          </div>
+          
+          <div className="md:col-span-2">
+            {renderImageUploader()}
+          </div>
+        </div>
+        
+        <div className="flex justify-end mt-5 gap-2">
+          <button
+            type="button"
+            onClick={handleCloseModal}
+            className="btn btn-ghost btn-sm"
+            disabled={isSubmitting}
+          >
+            {t('common.cancel')}
+          </button>
+          <button
+            type="submit"
+            className="btn btn-primary btn-sm"
+            disabled={isSubmitting}
+          >
+            {isSubmitting ? (
+              <>
+                <span className="loading loading-spinner loading-xs"></span>
+                {t('common.saving')}
+              </>
+            ) : (
+              t('common.save')
+            )}
+          </button>
+        </div>
+      </form>
+    </Modal>
+  );
+}
+
+EditActivityModal.propTypes = {
+  isOpen: PropTypes.bool.isRequired,
+  onClose: PropTypes.func.isRequired,
+  activity: PropTypes.object,
+}; 

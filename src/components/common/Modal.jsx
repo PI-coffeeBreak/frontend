@@ -1,7 +1,7 @@
 import { useEffect, useRef } from "react";
 import PropTypes from "prop-types";
 
-export function Modal({ isOpen, onClose, title, description, children }) {
+export function Modal({ isOpen, onClose, title, description, children, size = "default" }) {
   const modalRef = useRef(null);
   const closeButtonRef = useRef(null);
 
@@ -31,13 +31,36 @@ export function Modal({ isOpen, onClose, title, description, children }) {
   
     return () => {
       document.removeEventListener('keydown', handleEscapeKey);
-      // Só remove `modal-open` se ainda estiver presente
+      // Only remove 'modal-open' if it's still present
       if (document.body.classList.contains('modal-open')) {
         document.body.classList.remove('modal-open');
       }
     };
   }, [isOpen, onClose]);
   
+  // Determine modal styling based on size
+  const getModalStyles = () => {
+    switch (size) {
+      case 'compact':
+        return {
+          boxClass: "modal-box max-w-3xl p-5",
+          headerClass: "mb-4",
+          titleClass: "font-medium text-lg",
+          closeButtonClass: "btn btn-sm absolute right-3 top-3",
+          contentClass: "mt-3"
+        };
+      default:
+        return {
+          boxClass: "modal-box max-w-2xl",
+          headerClass: "mb-6",
+          titleClass: "font-bold text-lg",
+          closeButtonClass: "btn absolute right-2 top-2",
+          contentClass: "mt-4"
+        };
+    }
+  };
+
+  const styles = getModalStyles();
 
   return (
     <dialog
@@ -49,22 +72,22 @@ export function Modal({ isOpen, onClose, title, description, children }) {
         e.preventDefault(); 
       }}
     >
-      <div className="modal-box max-w-2xl">
-        <div className="mb-6">
-          <h3 className="font-bold text-lg">{title}</h3>
+      <div className={styles.boxClass}>
+        <div className={styles.headerClass}>
+          <h3 className={styles.titleClass}>{title}</h3>
           {description && <p className="text-sm text-gray-500 mt-1">{description}</p>}
         </div>
 
         <button
           ref={closeButtonRef}
-          className="btn absolute right-2 top-2"
+          className={styles.closeButtonClass}
           onClick={onClose}
           aria-label="Close"
         >
           ✕
         </button>
 
-        <div className="mt-4">{children}</div>
+        <div className={styles.contentClass}>{children}</div>
       </div>
 
       <button 
@@ -87,5 +110,6 @@ Modal.propTypes = {
   onClose: PropTypes.func.isRequired,
   title: PropTypes.string.isRequired,
   description: PropTypes.string,
-  children: PropTypes.node.isRequired
+  children: PropTypes.node.isRequired,
+  size: PropTypes.oneOf(['default', 'compact'])
 };

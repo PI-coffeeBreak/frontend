@@ -12,6 +12,7 @@
     "create": "Criar",
     "edit": "Editar",
     "save": "Guardar",
+    "saving": "A guardar...",
     "cancel": "Cancelar",
     "delete": "Eliminar",
     "loading": "A carregar...",
@@ -25,6 +26,8 @@
       "imageErrorDetails": "A imagem pode estar em falta ou indisponível",
       "sizeError": "O tamanho da imagem deve ser inferior a 50MB",
       "typeError": "Por favor, envie um ficheiro de imagem",
+      "uploadError": "Falha ao carregar imagem. Atividade atualizada, mas a imagem não foi alterada.",
+      "noImageField": "A atividade não tem um campo de imagem. Por favor, tente novamente.",
       "removeImage": "Remover Imagem",
       "imageAlt": "Imagem"
     }
@@ -179,7 +182,29 @@
       "searchPlaceholder": "Procurar atividades",
       "all": "Todas"
     },
+    "registration": {
+      "title": "Configurações de Registo",
+      "limitParticipants": "Limitar número de participantes",
+      "maxParticipants": "Número máximo de participantes",
+      "maxParticipantsPlaceholder": "ex., 50"
+    },
     "delete": "Eliminar atividade",
+    "edit": "Editar atividade",
+    "editTitle": "Editar Sessão",
+    "deleteConfirmTitle": "Eliminar Sessão",
+    "name": "Nome",
+    "description": "Descrição",
+    "type": "Tipo",
+    "selectType": "Selecione um tipo",
+    "topic": "Tópico",
+    "speaker": "Orador",
+    "facilitator": "Facilitador",
+    "startTime": "Hora de Início",
+    "duration": "Duração",
+    "image": "Imagem",
+    "currentImage": "Imagem Atual (clique em navegar para alterar)",
+    "updateSuccess": "Sessão atualizada com sucesso",
+    "updateError": "Falha ao atualizar sessão",
     "deleteConfirm": "Deseja eliminar esta atividade?",
     "deleteSuccess": "Atividade eliminada com sucesso",
     "deleteError": "Erro ao eliminar atividade",
@@ -587,5 +612,11 @@
     "ratingLabel": "Avaliação:",
     "commentLabel": "Comentário:",
     "commentPlaceholder": "Escreve o teu comentário aqui..."
+  },
+  "validation": {
+    "required": "Este campo é obrigatório",
+    "invalidDate": "Formato de data inválido",
+    "dateInPast": "A data não pode ser no passado",
+    "positiveNumber": "Deve ser um número positivo"
   }
 } 

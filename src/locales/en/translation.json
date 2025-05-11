@@ -12,6 +12,7 @@
     "create": "Create",
     "edit": "Edit",
     "save": "Save",
+    "saving": "Saving...",
     "cancel": "Cancel",
     "delete": "Delete",
     "loading": "Loading...",
@@ -25,6 +26,8 @@
       "imageErrorDetails": "The image may be missing or unavailable",
       "sizeError": "Image size must be less than 50MB",
       "typeError": "Please upload an image file",
+      "uploadError": "Failed to upload image. Activity updated, but image was not changed.",
+      "noImageField": "Activity doesn't have an image field. Please try again.",
       "removeImage": "Remove Image",
       "imageAlt": "Image"
     }
@@ -200,7 +203,29 @@
       "searchPlaceholder": "Search activities by name or description",
       "all": "All"
     },
+    "registration": {
+      "title": "Registration Settings",
+      "limitParticipants": "Limit number of participants",
+      "maxParticipants": "Maximum participants",
+      "maxParticipantsPlaceholder": "e.g., 50"
+    },
     "delete": "Delete activity",
+    "edit": "Edit activity",
+    "editTitle": "Edit Session",
+    "deleteConfirmTitle": "Delete Session",
+    "name": "Name",
+    "description": "Description",
+    "type": "Type",
+    "selectType": "Select a type",
+    "topic": "Topic",
+    "speaker": "Speaker",
+    "facilitator": "Facilitator",
+    "startTime": "Start Time",
+    "duration": "Duration",
+    "image": "Image",
+    "currentImage": "Current Image (click browse to change)",
+    "updateSuccess": "Session updated successfully",
+    "updateError": "Failed to update session",
     "deleteConfirm": "Are you sure you want to delete this activity?",
     "deleteSuccess": "Activity deleted successfully",
     "deleteError": "Failed to delete activity",
@@ -581,5 +606,11 @@
     "ratingLabel": "Rating:",
     "commentLabel": "Comment:",
     "commentPlaceholder": "Write your comment here..."
+  },
+  "validation": {
+    "required": "This field is required",
+    "invalidDate": "Invalid date format",
+    "dateInPast": "Date cannot be in the past",
+    "positiveNumber": "Must be a positive number"
   }
 } 
