@@ -5,7 +5,6 @@ import { useActivities } from "../../contexts/ActivitiesContext";
 import { useMedia } from "../../contexts/MediaContext";
 import { useNotification } from "../../contexts/NotificationContext";
 import { Modal } from "../common/Modal";
-import { FiUpload } from "react-icons/fi";
 import { FaTrash, FaImage } from "react-icons/fa";
 
 const FormField = ({ label, id, type = "text", required = false, error, children }) => (
@@ -122,13 +121,12 @@ export function EditActivityModal({ isOpen, onClose, activity }) {
     if (!formData.type_id) newErrors.type_id = t('validation.required');
     
     if (formData.start_time) {
-      try {
-        const sessionDate = new Date(formData.start_time);
-        if (sessionDate < new Date()) {
-          newErrors.start_time = t('validation.dateInPast');
-        }
-      } catch (e) {
+      const sessionDate = new Date(formData.start_time);
+
+      if (isNaN(sessionDate.getTime())) {
         newErrors.start_time = t('validation.invalidDate');
+      } else if (sessionDate < new Date()) {
+        newErrors.start_time = t('validation.dateInPast');
       }
     }
     
@@ -176,80 +174,64 @@ export function EditActivityModal({ isOpen, onClose, activity }) {
     return true;
   };
 
+  const buildUpdatePayload = () => {
+    const payload = {
+      name: formData.name,
+      description: formData.description,
+      type_id: parseInt(formData.type_id, 10),
+      topic: formData.topic || "",
+      speaker: formData.speaker || "",
+      facilitator: formData.facilitator || "",
+      requires_registration: formData.requires_registration || false,
+    };
+
+    if (formData.requires_registration && formData.max_participants) {
+      const parsedValue = parseInt(formData.max_participants, 10);
+      payload.max_participants = !isNaN(parsedValue) ? parsedValue : 0;
+    }
+
+    if (formData.start_time) payload.start_time = formData.start_time;
+    if (formData.duration) payload.duration = parseInt(formData.duration, 10);
+
+    return payload;
+  };
+
+  const updateImageIfNeeded = async (updatedActivity) => {
+    if (!formData.image) return;
+
+    try {
+      if (activity.image) {
+        // Update existing image
+        await uploadMedia(activity.image, formData.image, true);
+      } else if (updatedActivity?.image) {
+        // Upload new image
+        await uploadMedia(updatedActivity.image, formData.image, false);
+      } else {
+        console.error("Updated activity lacks image field");
+        showNotification(t('common.media.noImageField'), "warning");
+      }
+    } catch (imageError) {
+      console.error("Error uploading image:", imageError);
+      showNotification(t('common.media.uploadError'), "warning");
+    }
+  };
+
   const handleSubmit = async (e) => {
     e.preventDefault();
-    
+
     if (!validate()) return;
-    
+
     setIsSubmitting(true);
-    
+
     try {
-      const updatePayload = {
-        name: formData.name,
-        description: formData.description,
-        type_id: parseInt(formData.type_id, 10),
-        topic: formData.topic || "",
-        speaker: formData.speaker || "",
-        facilitator: formData.facilitator || "",
-        requires_registration: formData.requires_registration || false
-      };
-      
-      // Only include max_participants if requires_registration is true
-      if (formData.requires_registration && formData.max_participants) {
-        const parsedValue = parseInt(formData.max_participants, 10);
-        updatePayload.max_participants = !isNaN(parsedValue) ? parsedValue : 0;
-      }
-      
-      if (formData.start_time) {
-        updatePayload.start_time = formData.start_time;
-      }
-      
-      if (formData.duration) {
-        updatePayload.duration = parseInt(formData.duration, 10);
-      }
-      
-      console.log("Updating activity with payload:", updatePayload);
-      
-      // Update the activity basic info
+      const updatePayload = buildUpdatePayload();
       const updatedActivity = await updateActivity(activity.id, updatePayload);
-      
-      // Handle image update
-      if (formData.image) {
-        if (activity.image) {
-          // Update existing image
-          console.log("Updating existing image for activity:", activity.id, "Image ID:", activity.image);
-          try {
-            await uploadMedia(activity.image, formData.image, true);
-            console.log("Image update successful");
-          } catch (imageError) {
-            console.error("Error updating image:", imageError);
-            showNotification(t('common.media.uploadError'), "warning");
-          }
-        } else {
-          // Activity didn't have an image before, register a new one
-          console.log("Activity had no image before, registering new image");
-          try {
-            // If the updated activity has an image field, use that
-            if (updatedActivity && updatedActivity.image) {
-              await uploadMedia(updatedActivity.image, formData.image, false);
-              console.log("New image upload successful");
-            } else {
-              console.error("Updated activity doesn't have an image field");
-              showNotification(t('common.media.noImageField'), "warning");
-            }
-          } catch (imageError) {
-            console.error("Error uploading new image:", imageError);
-            showNotification(t('common.media.uploadError'), "warning");
-          }
-        }
-      }
-      
+
+      await updateImageIfNeeded(updatedActivity);
+
       showNotification(t('activities.updateSuccess'), "success");
-      
-      // Close the modal and refresh the page to ensure all data is fully updated
       handleCloseModal();
-      
-      // Small delay before reload to ensure notification is seen
+
       setTimeout(() => {
         window.location.reload();
       }, 800);
@@ -308,8 +290,17 @@ export function EditActivityModal({ isOpen, onClose, activity }) {
         <p className="text-sm font-medium mb-2">{t('activities.image')}</p>
         
         <div
-          className="border border-dashed border-gray-300 rounded-lg p-3 text-center cursor-pointer hover:bg-gray-50"
+          role="button"
+          tabIndex={0}
+          aria-label={t('common.media.selectImage')}
+          className="border border-dashed border-gray-300 rounded-lg p-3 text-center cursor-pointer "
           onClick={handleBrowseClick}
+          onKeyDown={(e) => {
+            if (e.key === 'Enter' || e.key === ' ') {
+              e.preventDefault();
+              handleBrowseClick(e);
+            }
+          }}
         >
           {imagePreview ? (
             <div className="relative">
@@ -337,8 +328,8 @@ export function EditActivityModal({ isOpen, onClose, activity }) {
                 className="max-h-36 mx-auto rounded"
                 onError={handleImageError}
               />
-              <div className="absolute inset-0 flex items-center justify-center bg-black bg-opacity-20 opacity-0 hover:opacity-100 transition-opacity">
-                <div className="text-white bg-black bg-opacity-50 rounded px-2 py-1 text-sm">
+              <div className="absolute inset-0 flex items-center justify-center bg-black opacity-0 hover:opacity-50 transition-opacity">
+                <div className="text-white bg-opacity-10 rounded px-2 py-1 text-sm">
                   {t('activities.currentImage')}
                 </div>
               </div>
