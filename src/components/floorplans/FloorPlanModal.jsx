@@ -42,37 +42,52 @@ export default function FloorPlanModal({
       handleClose();
     };
 
+    const initializeDialog = () => {
+      if (form.image) {
+        handleImageInitialization(form.image);
+      } else {
+        resetImageInput();
+      }
+      setHasInitialized(true);
+    };
+
+    const handleImageInitialization = (image) => {
+      if (image.startsWith("http")) {
+        setImageInputType("url");
+        setPrevUrl(image);
+        setImagePreview(image);
+      } else {
+        setImageInputType("file");
+        fetchImagePreview(image);
+      }
+    };
+
+    const fetchImagePreview = (image) => {
+      fetch(`${baseUrl}/media/${image}`, { method: "GET" })
+        .then((response) => {
+          if (response.ok) {
+            setImagePreview(`${baseUrl}/media/${image}`);
+          } else {
+            setImagePreview(null);
+          }
+        })
+        .catch(() => {
+          setImagePreview(null);
+        });
+    };
+
+    const resetImageInput = () => {
+      setImageInputType("file");
+      setImagePreview(null);
+    };
+
     dialog.addEventListener("close", handleDialogClose);
     dialog.addEventListener("cancel", handleDialogCancel);
 
     if (open && !dialog.open) {
       dialog.showModal();
-
       if (!hasInitialized) {
-        if (form.image) {
-          if (form.image.startsWith("http")) {
-            setImageInputType("url");
-            setPrevUrl(form.image);
-            setImagePreview(form.image);
-          } else {
-            setImageInputType("file");
-            fetch(`${baseUrl}/media/${form.image}`, { method: "GET" })
-              .then((response) => {
-                if (response.ok) {
-                  setImagePreview(`${baseUrl}/media/${form.image}`);
-                } else {
-                  setImagePreview(null);
-                }
-              })
-              .catch(() => {
-                setImagePreview(null);
-              });
-          }
-        } else {
-          setImageInputType("file");
-          setImagePreview(null);
-        }
-        setHasInitialized(true);
+        initializeDialog();
       }
     } else if (!open && dialog.open) {
       dialog.close();
@@ -88,7 +103,7 @@ export default function FloorPlanModal({
   const handleImageInputTypeChange = (e) => {
     const newType = e.target.value;
     if (newType === "file") {
-      if (form.image && form.image.startsWith("http")) {
+      if (form.image?.startsWith("http")) {
         setPrevUrl(form.image);
       }
       setForm((f) => ({ ...f, image: "", file: null }));
@@ -163,9 +178,6 @@ export default function FloorPlanModal({
   };  
 
   const title = isEditing ? t("floorPlanModal.editTitle") : t("floorPlanModal.addTitle");
-  let removeTitle = t("floorPlanModal.removeImage");
-  if (!form.image) removeTitle = t("floorPlanModal.noImageToRemove");
-  else if (!isImageMedia) removeTitle = t("floorPlanModal.onlyInternalImages");
 
   return (
     <dialog ref={dialogRef} id="floor_plan_modal" className="modal">
@@ -249,10 +261,9 @@ export default function FloorPlanModal({
             {imageInputType === "file" && (
               <div className="md:col-span-2">
                 {!imagePreview ? (
-                  <div
+                  <button
+                    type="button"
                     className="w-full border-dashed border-2 rounded-xl p-4 text-center bg-transparent border-gray-400"
-                    role="button"
-                    tabIndex={0}
                     onClick={() => fileInputRef.current?.click()}
                     onKeyDown={(e) => {
                       if (e.key === "Enter" || e.key === " ") {
@@ -271,7 +282,7 @@ export default function FloorPlanModal({
                       <span className="text-primary font-bold">{t("floorPlanModal.browse")}</span>
                     </p>
                     <p className="text-sm text-gray-400">{t("floorPlanModal.maxFileSize")}</p>
-                  </div>
+                  </button>
                 ) : (
                   <div className="bg-base-200 w-full p-4 rounded-lg relative">
                     <button
