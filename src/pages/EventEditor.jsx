@@ -5,7 +5,7 @@ import { useMedia } from "../contexts/MediaContext";
 import { useNotification } from "../contexts/NotificationContext";
 import { useTranslation } from "react-i18next";
 import axios from "axios";
-import { FaRegCalendarAlt, FaMapMarkerAlt, FaImage, FaInfoCircle } from "react-icons/fa";
+import { FaRegCalendarAlt, FaMapMarkerAlt, FaImage, FaInfoCircle, FaMobileAlt } from "react-icons/fa";
 import PropTypes from "prop-types";
 import { renderLocationSuggestions as renderLocationSuggestionsUtil } from '../utils/LocationUtils';
 import { ImagePlaceholder } from '../components/common/ImagePlaceholder.jsx';
@@ -38,7 +38,11 @@ export function EventEditor() {
         endDate: "",
         location: "",
         image: null,
-        removeImage: false
+        removeImage: false,
+        pwaIcon192: null,
+        pwaIcon512: null,
+        removePwaIcon192: false,
+        removePwaIcon512: false
     });
     
     const [errors, setErrors] = useState({});
@@ -53,7 +57,11 @@ export function EventEditor() {
             endDate: eventInfo.end_time ? formatDateForInput(eventInfo.end_time) : "",
             location: eventInfo.location || "",
             image: null,
-            removeImage: false
+            removeImage: false,
+            pwaIcon192: null,
+            pwaIcon512: null,
+            removePwaIcon192: false,
+            removePwaIcon512: false
         });
         
         // Set image preview if available
@@ -62,6 +70,19 @@ export function EventEditor() {
             setImageError(false); // Reset error state when changing image
         } else {
             setImagePreview(null);
+        }
+
+        // Set PWA icon previews if available
+        if (eventInfo.pwa_icon_192_id) {
+            setPwaIcon192Preview(getMediaUrl(eventInfo.pwa_icon_192_id));
+        } else {
+            setPwaIcon192Preview(null);
+        }
+        
+        if (eventInfo.pwa_icon_512_id) {
+            setPwaIcon512Preview(getMediaUrl(eventInfo.pwa_icon_512_id));
+        } else {
+            setPwaIcon512Preview(null);
         }
         }
     }, [eventInfo, getMediaUrl]);
@@ -228,6 +249,180 @@ export function EventEditor() {
         );
     };
   
+    // Add new state for PWA icons
+    const pwaIcon192InputRef = useRef(null);
+    const pwaIcon512InputRef = useRef(null);
+    const [pwaIcon192Preview, setPwaIcon192Preview] = useState(null);
+    const [pwaIcon512Preview, setPwaIcon512Preview] = useState(null);
+    const [pwaIcon192Error, setPwaIcon192Error] = useState(false);
+    const [pwaIcon512Error, setPwaIcon512Error] = useState(false);
+
+    const handlePwaIcon192Click = () => {
+        pwaIcon192InputRef.current?.click();
+    };
+
+    const handlePwaIcon512Click = () => {
+        pwaIcon512InputRef.current?.click();
+    };
+
+    const handlePwaIcon192Change = (e) => {
+        const file = e.target.files[0];
+        if (file) {
+            if (file.size > 2 * 1024 * 1024) { // 2MB limit
+                showNotification(t('common.media.sizeError'), "error");
+                return;
+            }
+            
+            if (!file.type.startsWith('image/')) {
+                showNotification(t('common.media.typeError'), "error");
+                return;
+            }
+            
+            setFormData(prev => ({
+                ...prev,
+                pwaIcon192: file,
+                removePwaIcon192: false
+            }));
+            
+            // Create preview
+            const reader = new FileReader();
+            reader.onloadend = () => {
+                setPwaIcon192Preview(reader.result);
+                setPwaIcon192Error(false);
+            };
+            reader.readAsDataURL(file);
+        }
+    };
+
+    const handlePwaIcon512Change = (e) => {
+        const file = e.target.files[0];
+        if (file) {
+            if (file.size > 2 * 1024 * 1024) { // 2MB limit
+                showNotification(t('common.media.sizeError'), "error");
+                return;
+            }
+            
+            if (!file.type.startsWith('image/')) {
+                showNotification(t('common.media.typeError'), "error");
+                return;
+            }
+            
+            setFormData(prev => ({
+                ...prev,
+                pwaIcon512: file,
+                removePwaIcon512: false
+            }));
+            
+            // Create preview
+            const reader = new FileReader();
+            reader.onloadend = () => {
+                setPwaIcon512Preview(reader.result);
+                setPwaIcon512Error(false);
+            };
+            reader.readAsDataURL(file);
+        }
+    };
+
+    const removePwaIcon192 = () => {
+        setFormData(prev => ({
+            ...prev,
+            pwaIcon192: null,
+            removePwaIcon192: true
+        }));
+        
+        // Clear image preview
+        setPwaIcon192Preview(null);
+        setPwaIcon192Error(false);
+        
+        if (pwaIcon192InputRef.current) {
+            pwaIcon192InputRef.current.value = '';
+        }
+    };
+
+    const removePwaIcon512 = () => {
+        setFormData(prev => ({
+            ...prev,
+            pwaIcon512: null,
+            removePwaIcon512: true
+        }));
+        
+        // Clear image preview
+        setPwaIcon512Preview(null);
+        setPwaIcon512Error(false);
+        
+        if (pwaIcon512InputRef.current) {
+            pwaIcon512InputRef.current.value = '';
+        }
+    };
+
+    const renderPwaIcon192Content = () => {
+        if (!pwaIcon192Preview) {
+            return <ImagePlaceholder />;
+        }
+        
+        if (pwaIcon192Error) {
+            return <ImageError />;
+        }
+        
+        return (
+            <>
+                <div className="absolute inset-0 flex items-center justify-center">
+                    <img
+                        src={pwaIcon192Preview}
+                        alt={t('common.media.pwaIcon192Alt') || "192x192 PWA Icon"}
+                        className="max-w-full max-h-full object-contain"
+                        onError={() => {
+                            console.error("Failed to load PWA 192x192 icon preview");
+                            setPwaIcon192Error(true);
+                        }}
+                    />
+                </div>
+                <button
+                    type="button"
+                    onClick={removePwaIcon192}
+                    className="absolute top-2 right-2 btn btn-circle btn-sm btn-error z-10"
+                    aria-label={t('common.media.removeImage')}
+                >
+                    ×
+                </button>
+            </>
+        );
+    };
+
+    const renderPwaIcon512Content = () => {
+        if (!pwaIcon512Preview) {
+            return <ImagePlaceholder />;
+        }
+        
+        if (pwaIcon512Error) {
+            return <ImageError />;
+        }
+        
+        return (
+            <>
+                <div className="absolute inset-0 flex items-center justify-center">
+                    <img
+                        src={pwaIcon512Preview}
+                        alt={t('common.media.pwaIcon512Alt') || "512x512 PWA Icon"}
+                        className="max-w-full max-h-full object-contain"
+                        onError={() => {
+                            console.error("Failed to load PWA 512x512 icon preview");
+                            setPwaIcon512Error(true);
+                        }}
+                    />
+                </div>
+                <button
+                    type="button"
+                    onClick={removePwaIcon512}
+                    className="absolute top-2 right-2 btn btn-circle btn-sm btn-error z-10"
+                    aria-label={t('common.media.removeImage')}
+                >
+                    ×
+                </button>
+            </>
+        );
+    };
+
     const handleSubmit = async (e) => {
         e.preventDefault();
         
@@ -250,6 +445,10 @@ export function EventEditor() {
             // Get current image ID and track if this is a first-time image upload
             let imageId = eventInfo?.image_id;
             let oldImageId = imageId;
+            let pwaIcon192Id = eventInfo?.pwa_icon_192_id;
+            let oldPwaIcon192Id = pwaIcon192Id;
+            let pwaIcon512Id = eventInfo?.pwa_icon_512_id;
+            let oldPwaIcon512Id = pwaIcon512Id;
             
             // Handle image changes
             if (formData.image) {
@@ -279,6 +478,104 @@ export function EventEditor() {
                 // Keep existing image ID if not changing
                 eventData.image_id = imageId;
             }
+
+            // Handle PWA icon 192x192 changes
+            if (formData.pwaIcon192) {
+                try {
+                    // Check if we're updating existing icon or adding new one
+                    const isUpdate = !!eventInfo?.pwa_icon_192_id;
+                    
+                    // If updating existing icon, use that ID, otherwise register new one
+                    if (!isUpdate) {
+                        const mediaData = await registerMedia();
+                        pwaIcon192Id = mediaData.uuid;
+                        await uploadMedia(pwaIcon192Id, formData.pwaIcon192, false);
+                    } else {
+                        await uploadMedia(pwaIcon192Id, formData.pwaIcon192, true);
+                    }
+                    
+                    // Update the event data with the icon ID
+                    eventData.pwa_icon_192_id = pwaIcon192Id;
+                    
+                    // Register icon with manifest
+                    try {
+                        const iconType = formData.pwaIcon192.type;
+                        const manifestPayload = {
+                            src: getMediaUrl(pwaIcon192Id),
+                            sizes: "192x192",
+                            type: iconType || "image/png"
+                        };
+                        
+                        await axios.post(`${import.meta.env.VITE_API_URL}/manifest/icon`, manifestPayload, {
+                            headers: {
+                                'Content-Type': 'application/json',
+                                'Authorization': `Bearer ${localStorage.getItem('token')}`
+                            }
+                        });
+                    } catch (manifestError) {
+                        console.error('Error registering PWA 192x192 icon with manifest:', manifestError);
+                        showNotification(t('eventEditor.pwaImage.manifestError') || 'Failed to register icon with manifest', "warning");
+                    }
+                } catch (iconError) {
+                    console.error('Error handling PWA 192x192 icon:', iconError);
+                    showNotification(t('eventEditor.pwaImage.updateError'), "warning");
+                }
+            } else if (formData.removePwaIcon192) {
+                // Set icon ID to null if removing
+                eventData.pwa_icon_192_id = null;
+            } else {
+                // Keep existing icon ID if not changing
+                eventData.pwa_icon_192_id = pwaIcon192Id;
+            }
+
+            // Handle PWA icon 512x512 changes
+            if (formData.pwaIcon512) {
+                try {
+                    // Check if we're updating existing icon or adding new one
+                    const isUpdate = !!eventInfo?.pwa_icon_512_id;
+                    
+                    // If updating existing icon, use that ID, otherwise register new one
+                    if (!isUpdate) {
+                        const mediaData = await registerMedia();
+                        pwaIcon512Id = mediaData.uuid;
+                        await uploadMedia(pwaIcon512Id, formData.pwaIcon512, false);
+                    } else {
+                        await uploadMedia(pwaIcon512Id, formData.pwaIcon512, true);
+                    }
+                    
+                    // Update the event data with the icon ID
+                    eventData.pwa_icon_512_id = pwaIcon512Id;
+                    
+                    // Register icon with manifest
+                    try {
+                        const iconType = formData.pwaIcon512.type;
+                        const manifestPayload = {
+                            src: getMediaUrl(pwaIcon512Id),
+                            sizes: "512x512",
+                            type: iconType || "image/png"
+                        };
+                        
+                        await axios.post(`${import.meta.env.VITE_API_URL}/manifest/icon`, manifestPayload, {
+                            headers: {
+                                'Content-Type': 'application/json',
+                                'Authorization': `Bearer ${localStorage.getItem('token')}`
+                            }
+                        });
+                    } catch (manifestError) {
+                        console.error('Error registering PWA 512x512 icon with manifest:', manifestError);
+                        showNotification(t('eventEditor.pwaImage.manifestError') || 'Failed to register icon with manifest', "warning");
+                    }
+                } catch (iconError) {
+                    console.error('Error handling PWA 512x512 icon:', iconError);
+                    showNotification(t('eventEditor.pwaImage.updateError'), "warning");
+                }
+            } else if (formData.removePwaIcon512) {
+                // Set icon ID to null if removing
+                eventData.pwa_icon_512_id = null;
+            } else {
+                // Keep existing icon ID if not changing
+                eventData.pwa_icon_512_id = pwaIcon512Id;
+            }
             
             // Update the event with possibly modified data
             await updateEventInfo(eventData);
@@ -291,6 +588,25 @@ export function EventEditor() {
                     console.error('Error deleting old image:', deleteError);
                 }
             }
+
+            // Delete the old PWA 192x192 icon if it was removed
+            if (formData.removePwaIcon192 && oldPwaIcon192Id) {
+                try {
+                    await deleteMedia(oldPwaIcon192Id);
+                } catch (deleteError) {
+                    console.error('Error deleting old PWA 192x192 icon:', deleteError);
+                }
+            }
+
+            // Delete the old PWA 512x512 icon if it was removed
+            if (formData.removePwaIcon512 && oldPwaIcon512Id) {
+                try {
+                    await deleteMedia(oldPwaIcon512Id);
+                } catch (deleteError) {
+                    console.error('Error deleting old PWA 512x512 icon:', deleteError);
+                }
+            }
+            
             navigate('/instantiate/eventmaker');
             
             // Refresh event info to get the latest data
@@ -443,43 +759,124 @@ export function EventEditor() {
                     </div>
                 </div>
                 
-                {/* Event Image */}
-                <div className="card bg-base-200 shadow-lg">
-                    <div className="card-body">
-                        <h2 className="card-title flex items-center gap-2">
-                            <FaImage className="text-primary" />
-                            {t('eventEditor.image.title')}
-                        </h2>
-                    
-                        <div className="mt-4">
-                            <label htmlFor="eventImage" className="block mb-2 font-medium">
-                                {t('eventEditor.image.label')}
-                            </label>
-                            
-                            {/* Hidden file input */}
-                            <input
-                            type="file"
-                            ref={fileInputRef}
-                            id="eventImage"
-                            name="eventImage"
-                            accept="image/*"
-                            className="hidden"
-                            onChange={handleImageChange}
-                            />
-                            
-                            {/* Accessible button to trigger file input */}
-                            <button
-                            type="button"
-                            onClick={handleImageClick}
-                            className="btn btn-outline w-full mb-3"
-                            aria-controls="eventImage"
-                            >
-                            {imagePreview ? t('common.media.changeImage') : t('common.media.selectImage')}
-                            </button>
-                            
-                            {/* Image container with extracted rendering logic */}
-                            <div className="relative w-full h-48 bg-base-100 rounded-lg overflow-hidden border border-base-300">
-                                {renderImageContent()}
+                {/* Event Image and PWA Images - grid layout */}
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    {/* Event Image */}
+                    <div className="card bg-base-200 shadow-lg">
+                        <div className="card-body">
+                            <h2 className="card-title flex items-center gap-2">
+                                <FaImage className="text-primary" />
+                                {t('eventEditor.image.title')}
+                            </h2>
+                        
+                            <div className="mt-4">
+                                <label htmlFor="eventImage" className="block mb-2 font-medium">
+                                    {t('eventEditor.image.label')}
+                                </label>
+                                
+                                {/* Hidden file input */}
+                                <input
+                                type="file"
+                                ref={fileInputRef}
+                                id="eventImage"
+                                name="eventImage"
+                                accept="image/*"
+                                className="hidden"
+                                onChange={handleImageChange}
+                                />
+                                
+                                {/* Accessible button to trigger file input */}
+                                <button
+                                type="button"
+                                onClick={handleImageClick}
+                                className="btn btn-outline w-full mb-3"
+                                aria-controls="eventImage"
+                                >
+                                {imagePreview ? t('common.media.changeImage') : t('common.media.selectImage')}
+                                </button>
+                                
+                                {/* Image container with extracted rendering logic */}
+                                <div className="relative w-full h-48 bg-base-100 rounded-lg overflow-hidden border border-base-300">
+                                    {renderImageContent()}
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    {/* PWA Image */}
+                    <div className="card bg-base-200 shadow-lg">
+                        <div className="card-body">
+                            <h2 className="card-title flex items-center gap-2">
+                                <FaMobileAlt className="text-primary" />
+                                {t('eventEditor.pwaImage.title') || "PWA Images"}
+                            </h2>
+                        
+                            <div className="mt-4 space-y-4">
+                                {/* PWA Icon 192x192 */}
+                                <div>
+                                    <label htmlFor="pwaIcon192" className="block mb-2 font-medium">
+                                        {t('eventEditor.pwaImage.icon192.label') || "Icon 192x192"}
+                                    </label>
+                                    
+                                    {/* Hidden file input */}
+                                    <input
+                                        type="file"
+                                        ref={pwaIcon192InputRef}
+                                        id="pwaIcon192"
+                                        name="pwaIcon192"
+                                        accept="image/*"
+                                        className="hidden"
+                                        onChange={handlePwaIcon192Change}
+                                    />
+                                    
+                                    {/* Accessible button to trigger file input */}
+                                    <button
+                                        type="button"
+                                        onClick={handlePwaIcon192Click}
+                                        className="btn btn-outline btn-sm w-full mb-2"
+                                        aria-controls="pwaIcon192"
+                                    >
+                                        {pwaIcon192Preview ? t('common.media.changeImage') : t('common.media.selectImage')}
+                                    </button>
+                                    
+                                    {/* Image container */}
+                                    <div className="relative w-full h-24 bg-base-100 rounded-lg overflow-hidden border border-base-300">
+                                        {renderPwaIcon192Content()}
+                                    </div>
+                                </div>
+                                
+                                {/* PWA Icon 512x512 */}
+                                <div>
+                                    <label htmlFor="pwaIcon512" className="block mb-2 font-medium">
+                                        {t('eventEditor.pwaImage.icon512.label') || "Icon 512x512"}
+                                    </label>
+                                    
+                                    {/* Hidden file input */}
+                                    <input
+                                        type="file"
+                                        ref={pwaIcon512InputRef}
+                                        id="pwaIcon512"
+                                        name="pwaIcon512"
+                                        accept="image/*"
+                                        className="hidden"
+                                        onChange={handlePwaIcon512Change}
+                                    />
+                                    
+                                    {/* Accessible button to trigger file input */}
+                                    <button
+                                        type="button"
+                                        onClick={handlePwaIcon512Click}
+                                        className="btn btn-outline btn-sm w-full mb-2"
+                                        aria-controls="pwaIcon512"
+                                    >
+                                        {pwaIcon512Preview ? t('common.media.changeImage') : t('common.media.selectImage')}
+                                    </button>
+                                    
+                                    {/* Image container */}
+                                    <div className="relative w-full h-24 bg-base-100 rounded-lg overflow-hidden border border-base-300">
+                                        {renderPwaIcon512Content()}
+                                    </div>
+                                </div>
                             </div>
                         </div>
                     </div>
@@ -525,6 +922,8 @@ EventEditor.propTypes = {
         start_time: PropTypes.string,
         end_time: PropTypes.string,
         location: PropTypes.string,
-        image_id: PropTypes.string
+        image_id: PropTypes.string,
+        pwa_icon_192_id: PropTypes.string,
+        pwa_icon_512_id: PropTypes.string
     }),
 };
