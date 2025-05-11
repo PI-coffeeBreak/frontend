@@ -150,17 +150,18 @@ export function FloorPlans() {
     }).post(`${baseUrl}/media/${uuid}`, fd);
   };
 
+  const resolveImageUrl = (image) => {
+    if (!image) return "";
+    return image.startsWith("http") ? image : `${baseUrl}/media/${image}`;
+  };
+
   const fetchFloorPlans = async () => {
     setLoading(true);
     try {
       const { data } = await axiosWithAuth(keycloak).get(apiUrl);
       const resolved = data.map((fp) => ({
         ...fp,
-        image: fp.image
-          ? fp.image.startsWith("http")
-            ? fp.image
-            : `${baseUrl}/media/${fp.image}`
-          : ""
+        image: resolveImageUrl(fp.image),
       }));
       setFloorPlans(resolved);
     } catch (err) {
@@ -170,6 +171,7 @@ export function FloorPlans() {
       setLoading(false);
     }
   };
+
   useEffect(fetchFloorPlans, []);
 
   const handleCreate = async () => {
@@ -314,6 +316,72 @@ export function FloorPlans() {
 
   const plansToRender = reorderMode ? floorPlans : currentSlice;
 
+  const renderContent = () => {
+    if (loading) {
+      return (
+        <div className="flex justify-center py-20">
+          <span className="loading loading-spinner loading-lg"></span>
+        </div>
+      );
+    }
+
+    if (floorPlans.length === 0) {
+      return <p className="text-center text-gray-500">{t("floorPlans.noPlans")}</p>;
+    }
+
+    if (reorderMode) {
+      return (
+        <DndContext collisionDetection={closestCenter} onDragEnd={handleDragEnd}>
+          <SortableContext items={floorPlans.map((fp) => fp.id)} strategy={rectSortingStrategy}>
+            <div className="overflow-x-auto mt-4">
+              <table className="table table-sm sm:table-md">
+                <thead>
+                  <tr>
+                    <th className="w-10 text-center">{t("table.order")}</th>
+                    <th className="w-10 text-center">{t("table.drag")}</th>
+                    <th className="w-20">{t("table.image")}</th>
+                    <th>{t("table.name")}</th>
+                    <th>{t("table.details")}</th>
+                    <th className="text-right">{t("table.actions")}</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {floorPlans.map((fp) => (
+                    <SortableItem key={fp.id} id={fp.id} as="tr">
+                      <FloorPlanRowItem
+                        fp={fp}
+                        isTable={true}
+                        onEdit={() => openEditModal(fp)}
+                        onDelete={() => handleDelete(fp.id)}
+                        t={t}
+                      />
+                    </SortableItem>
+                  ))}
+                </tbody>
+              </table>
+            </div>
+          </SortableContext>
+        </DndContext>
+      );
+    }
+
+    return (
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+        {plansToRender.map((fp) => (
+          <SortableItem key={fp.id} id={fp.id}>
+            <FloorPlanRowItem
+              fp={fp}
+              isTable={false}
+              onEdit={() => openEditModal(fp)}
+              onDelete={() => handleDelete(fp.id)}
+              t={t}
+            />
+          </SortableItem>
+        ))}
+      </div>
+    );
+  };
+
   return (
     <div className="p-8 space-y-6">
       <div className="flex justify-between items-center">
@@ -356,59 +424,7 @@ export function FloorPlans() {
         {t("floorPlans.dragHint")}
       </p>
 
-      {loading ? (
-        <div className="flex justify-center py-20">
-          <span className="loading loading-spinner loading-lg"></span>
-        </div>
-      ) : floorPlans.length === 0 ? (
-        <p className="text-center text-gray-500">{t("floorPlans.noPlans")}</p>
-      ) : reorderMode ? (
-        <DndContext collisionDetection={closestCenter} onDragEnd={handleDragEnd}>
-          <SortableContext items={floorPlans.map((fp) => fp.id)} strategy={rectSortingStrategy}>
-            <div className="overflow-x-auto mt-4">
-              <table className="table table-sm sm:table-md">
-                <thead>
-                  <tr>
-                    <th className="w-10 text-center">{t("table.order")}</th>
-                    <th className="w-10 text-center">{t("table.drag")}</th>
-                    <th className="w-20">{t("table.image")}</th>
-                    <th>{t("table.name")}</th>
-                    <th>{t("table.details")}</th>
-                    <th className="text-right">{t("table.actions")}</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  {floorPlans.map((fp) => (
-                    <SortableItem key={fp.id} id={fp.id} as="tr">
-                      <FloorPlanRowItem
-                        fp={fp}
-                        isTable={true}
-                        onEdit={() => openEditModal(fp)}
-                        onDelete={() => handleDelete(fp.id)}
-                        t={t}
-                      />
-                    </SortableItem>
-                  ))}
-                </tbody>
-              </table>
-            </div>
-          </SortableContext>
-        </DndContext>
-      ) : (
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
-          {plansToRender.map((fp) => (
-            <SortableItem key={fp.id} id={fp.id}>
-              <FloorPlanRowItem
-                fp={fp}
-                isTable={false}
-                onEdit={() => openEditModal(fp)}
-                onDelete={() => handleDelete(fp.id)}
-                t={t}
-              />
-            </SortableItem>
-          ))}
-        </div>
-      )}
+      {renderContent()}
 
       <FloorPlanModal
         open={modalOpen}

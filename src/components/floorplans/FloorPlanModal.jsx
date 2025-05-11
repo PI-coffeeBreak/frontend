@@ -232,7 +232,7 @@ export default function FloorPlanModal({
                   id="fp-image"
                   className="input input-bordered w-full"
                   placeholder="http(s)://…"
-                  value={form.image && form.image.startsWith("http") ? form.image : ""}
+                  value={form.image?.startsWith("http") ? form.image : ""}
                   onChange={(e) => {
                     const url = e.target.value;
                     setForm((f) => ({ ...f, image: url }));
