@@ -247,7 +247,7 @@ export function FloorPlans() {
       )}
 
       <p className="text-sm text-gray-500 italic">
-        Drag and drop cards to change order{reorderMode ? " (affects all pages)" : " on this page only"}.
+        Floor Plans order can be changed by dragging and dropping them.
       </p>
 
       {loading ? (
