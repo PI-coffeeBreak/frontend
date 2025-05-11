@@ -284,63 +284,71 @@ export function EditActivityModal({ isOpen, onClose, activity }) {
       e.target.onerror = null;
       e.target.src = "https://placehold.co/600x400?text=Image+Not+Available";
     };
-    
+    let imageSection;
+    if (imagePreview) {
+      imageSection = (
+        <div className="relative">
+          <img
+            src={imagePreview}
+            alt={t('activities.imageAlt')}
+            className="max-h-36 mx-auto rounded"
+          />
+          <span
+            role="button"
+            tabIndex={0}
+            aria-label={t('common.media.removeImage')}
+            onClick={(e) => {
+              e.stopPropagation();
+              handleClearFile();
+            }}
+            onKeyDown={(e) => {
+              if (e.key === 'Enter' || e.key === ' ') {
+                e.preventDefault();
+                e.stopPropagation();
+                handleClearFile();
+              }
+            }}
+            className="absolute top-2 right-2 bg-white rounded-full p-1 shadow-sm cursor-pointer"
+          >
+            <FaTrash className="text-error h-3 w-3" />
+          </span>
+        </div>
+      );
+    } else if (currentImageUrl) {
+      imageSection = (
+        <div className="relative">
+          <img
+            src={currentImageUrl}
+            alt={t('activities.imageAlt')}
+            className="max-h-36 mx-auto rounded"
+            onError={handleImageError}
+          />
+          <div className="absolute inset-0 flex items-center justify-center bg-black opacity-0 hover:opacity-50 transition-opacity">
+            <div className="text-white bg-opacity-10 rounded px-2 py-1 text-sm">
+              {t('activities.currentImage')}
+            </div>
+          </div>
+        </div>
+      );
+    } else {
+      imageSection = (
+        <div className="text-gray-500 py-3">
+          <FaImage className="mx-auto h-10 w-10 mb-2" />
+          <p className="text-sm">{t('common.media.selectImage')}</p>
+        </div>
+      );
+    }
     return (
       <div className="mt-3">
         <p className="text-sm font-medium mb-2">{t('activities.image')}</p>
-        
-        <div
-          role="button"
-          tabIndex={0}
+
+        <button
+          type="button"
           aria-label={t('common.media.selectImage')}
-          className="border border-dashed border-gray-300 rounded-lg p-3 text-center cursor-pointer "
+          className="border border-dashed border-gray-300 rounded-lg p-3 text-center cursor-pointer"
           onClick={handleBrowseClick}
-          onKeyDown={(e) => {
-            if (e.key === 'Enter' || e.key === ' ') {
-              e.preventDefault();
-              handleBrowseClick(e);
-            }
-          }}
         >
-          {imagePreview ? (
-            <div className="relative">
-              <img 
-                src={imagePreview} 
-                alt={t('activities.imageAlt')} 
-                className="max-h-36 mx-auto rounded"
-              />
-              <button
-                type="button"
-                onClick={(e) => {
-                  e.stopPropagation();
-                  handleClearFile();
-                }}
-                className="absolute top-2 right-2 bg-white rounded-full p-1 shadow-sm"
-              >
-                <FaTrash className="text-error h-3 w-3" />
-              </button>
-            </div>
-          ) : currentImageUrl ? (
-            <div className="relative">
-              <img 
-                src={currentImageUrl} 
-                alt={t('activities.imageAlt')} 
-                className="max-h-36 mx-auto rounded"
-                onError={handleImageError}
-              />
-              <div className="absolute inset-0 flex items-center justify-center bg-black opacity-0 hover:opacity-50 transition-opacity">
-                <div className="text-white bg-opacity-10 rounded px-2 py-1 text-sm">
-                  {t('activities.currentImage')}
-                </div>
-              </div>
-            </div>
-          ) : (
-            <div className="text-gray-500 py-3">
-              <FaImage className="mx-auto h-10 w-10 mb-2" />
-              <p className="text-sm">{t('common.media.selectImage')}</p>
-            </div>
-          )}
-          
+          {imageSection}
           <input
             ref={fileInputRef}
             type="file"
@@ -348,7 +356,7 @@ export function EditActivityModal({ isOpen, onClose, activity }) {
             onChange={handleFileSelect}
             className="hidden"
           />
-        </div>
+        </button>
       </div>
     );
   };
@@ -360,7 +368,7 @@ export function EditActivityModal({ isOpen, onClose, activity }) {
       title={t('activities.editTitle')}
       size="compact"
     >
-      <form onSubmit={handleSubmit} onClick={stopPropagation} className="text-sm">
+      <form onSubmit={handleSubmit} className="text-sm">
         <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
           <div className="md:col-span-2">
             <FormField 

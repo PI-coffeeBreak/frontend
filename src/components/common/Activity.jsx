@@ -8,7 +8,6 @@ export default function Activity({ id, title, description, image, category, type
   const { t } = useTranslation();
   const { getMediaUrl } = useMedia();
   const [imageUrl, setImageUrl] = useState(null);
-  const [imageLoaded, setImageLoaded] = useState(false);
   const [imageError, setImageError] = useState(false);
 
   // When image prop changes, update the image URL
@@ -23,26 +22,22 @@ export default function Activity({ id, title, description, image, category, type
         console.log(`Activity ${id}: Using direct image URL: ${image}`);
         setImageUrl(image);
       }
-      setImageLoaded(false);
       setImageError(false);
     } else {
       console.log(`Activity ${id}: No image available`);
       setImageUrl(null);
-      setImageLoaded(false);
       setImageError(false);
     }
   }, [id, image, getMediaUrl]);
 
   const handleImageLoad = () => {
     console.log(`Activity ${id}: Image loaded successfully`);
-    setImageLoaded(true);
     setImageError(false);
   };
 
   const handleImageError = () => {
     console.error(`Activity ${id}: Failed to load image from ${imageUrl}`);
     setImageError(true);
-    setImageLoaded(false);
   };
 
   return (
@@ -51,7 +46,6 @@ export default function Activity({ id, title, description, image, category, type
       data-id={id}
       data-title={title}
     >
-      {/* When mode is 'both', we need to position the buttons differently */}
       {mode === 'both' ? (
         <div className="absolute top-2 right-2 flex gap-2">
           {onEdit && (

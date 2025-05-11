@@ -37,28 +37,26 @@ export function Modal({ isOpen, onClose, title, description, children, size = "d
       }
     };
   }, [isOpen, onClose]);
-  
-  // Determine modal styling based on size
-  const getModalStyles = () => {
-    switch (size) {
-      case 'compact':
-        return {
-          boxClass: "modal-box max-w-3xl p-5",
-          headerClass: "mb-4",
-          titleClass: "font-medium text-lg",
-          closeButtonClass: "btn btn-sm absolute right-3 top-3",
-          contentClass: "mt-3"
-        };
-      default:
-        return {
-          boxClass: "modal-box max-w-2xl",
-          headerClass: "mb-6",
-          titleClass: "font-bold text-lg",
-          closeButtonClass: "btn absolute right-2 top-2",
-          contentClass: "mt-4"
-        };
-    }
+
+const getModalStyles = () => {
+  if (size === 'compact') {
+    return {
+      boxClass: "modal-box max-w-3xl p-5",
+      headerClass: "mb-4",
+      titleClass: "font-medium text-lg",
+      closeButtonClass: "btn btn-sm absolute right-3 top-3",
+      contentClass: "mt-3"
+    };
+  }
+
+  return {
+    boxClass: "modal-box max-w-2xl",
+    headerClass: "mb-6",
+    titleClass: "font-bold text-lg",
+    closeButtonClass: "btn absolute right-2 top-2",
+    contentClass: "mt-4"
   };
+};
 
   const styles = getModalStyles();
 
