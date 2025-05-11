@@ -595,5 +595,40 @@
     "ratingLabel": "Avaliação:",
     "commentLabel": "Comentário:",
     "commentPlaceholder": "Escreva seu comentário aqui..."
+  },
+  "floorPlans": {
+    "title": "Gerenciamento de Plantas",
+    "reorder": "Reordenar Tudo",
+    "exitReorder": "Sair do Modo de Reordenação",
+    "add": "Adicionar Planta",
+    "dragHint": "A ordem das plantas pode ser alterada arrastando e soltando.",
+    "noPlans": "Nenhuma planta ainda.",
+    "noDetails": "Nenhum detalhe disponível ainda"
+  },
+  "pagination": {
+    "previous": "Anterior",
+    "next": "Próximo",
+    "page": "Página {{page}} de {{totalPages}}"
+  },
+  "table": {
+    "order": "Ordem",
+    "drag": "Arrastar",
+    "image": "Imagem",
+    "name": "Nome",
+    "details": "Detalhes",
+    "actions": "Ações"
+  },
+  "actions": {
+    "edit": "Editar",
+    "delete": "Excluir",
+    "close": "Fechar"
+  },
+  "floorPlanModal": {
+    "editTitle": "Editar Planta",
+    "addTitle": "Adicionar Planta",
+    "removeImage": "Remover imagem",
+    "noImageToRemove": "Nenhuma imagem para remover",
+    "onlyInternalImages": "Apenas imagens gerenciadas internamente podem ser removidas",
+    "name": "Nome"
   }
-} 
+}

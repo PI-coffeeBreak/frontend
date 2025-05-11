@@ -8,6 +8,7 @@ import FloorPlanModal from "../../components/floorplans/FloorPlanModal";
 import { DndContext, closestCenter } from "@dnd-kit/core";
 import { arrayMove, SortableContext, rectSortingStrategy } from "@dnd-kit/sortable";
 import SortableItem from "../../components/floorplans/SortableItem.jsx";
+import { useTranslation } from "react-i18next";
 
 const apiUrl = `${baseUrl}/floor-plan-plugin/floor_plan`;
 const ITEMS_PER_PAGE = 6;
@@ -15,6 +16,7 @@ const ITEMS_PER_PAGE = 6;
 export function FloorPlans() {
   const { keycloak } = useKeycloak();
   const { showNotification } = useNotification();
+  const { t } = useTranslation();
 
   const [floorPlans, setFloorPlans] = useState([]);
   const [loading, setLoading] = useState(false);
@@ -218,13 +220,13 @@ export function FloorPlans() {
   return (
     <div className="p-8 space-y-6">
       <div className="flex justify-between items-center">
-        <h1 className="text-3xl font-bold text-primary">Floor Plan Management</h1>
+        <h1 className="text-3xl font-bold text-primary">{t("floorPlans.title")}</h1>
         <div className="flex gap-2">
           <button className="btn btn-sm" onClick={() => setReorderMode((v) => !v)}>
-            <FaSort className="mr-1" /> {reorderMode ? "Exit Order Mode" : "Reorder All"}
+            <FaSort className="mr-1" /> {reorderMode ? t("floorPlans.exitReorder") : t("floorPlans.reorder")}
           </button>
           <button className="btn btn-primary btn-sm" onClick={openCreateModal}>
-            <FaPlus className="mr-1" /> Add Floor Plan
+            <FaPlus className="mr-1" /> {t("floorPlans.add")}
           </button>
         </div>
       </div>
@@ -237,24 +239,24 @@ export function FloorPlans() {
               onClick={() => setPage((p) => Math.max(p - 1, 1))}
               disabled={page === 1}
             >
-              Previous
+              {t("pagination.previous")}
             </button>
             <span>
-              Page {page} of {totalPages}
+              {t("pagination.page", { page, totalPages })}
             </span>
             <button
               className="btn btn-sm"
               onClick={() => setPage((p) => Math.min(p + 1, totalPages))}
               disabled={page === totalPages}
             >
-              Next
+              {t("pagination.next")}
             </button>
           </div>
         </div>
       )}
 
       <p className="text-sm text-gray-500 italic">
-        Floor Plans order can be changed by dragging and dropping them.
+        {t("floorPlans.dragHint")}
       </p>
 
       {loading ? (
@@ -262,7 +264,7 @@ export function FloorPlans() {
           <span className="loading loading-spinner loading-lg"></span>
         </div>
       ) : floorPlans.length === 0 ? (
-        <p className="text-center text-gray-500">No Floor Plans yet.</p>
+        <p className="text-center text-gray-500">{t("floorPlans.noPlans")}</p>
       ) : reorderMode ? (
         <DndContext collisionDetection={closestCenter} onDragEnd={handleDragEnd}>
           <SortableContext items={floorPlans.map((fp) => fp.id)} strategy={rectSortingStrategy}>
@@ -270,12 +272,12 @@ export function FloorPlans() {
               <table className="table table-sm sm:table-md">
                 <thead>
                   <tr>
-                    <th className="w-10 text-center">Order</th>
-                    <th className="w-10 text-center">Drag</th>
-                    <th className="w-20">Image</th>
-                    <th>Name</th>
-                    <th>Details</th>
-                    <th className="text-right">Actions</th>
+                    <th className="w-10 text-center">{t("table.order")}</th>
+                    <th className="w-10 text-center">{t("table.drag")}</th>
+                    <th className="w-20">{t("table.image")}</th>
+                    <th>{t("table.name")}</th>
+                    <th>{t("table.details")}</th>
+                    <th className="text-right">{t("table.actions")}</th>
                   </tr>
                 </thead>
                 <tbody>
@@ -293,7 +295,7 @@ export function FloorPlans() {
                         </div>
                       </td>
                       <td className="font-medium text-sm sm:text-base">{fp.name}</td>
-                      <td className="text-sm sm:text-base whitespace-pre-wrap">{fp.details || "No details avaliable yet"}</td>
+                      <td className="text-sm sm:text-base whitespace-pre-wrap">{fp.details || t("floorPlans.noDetails")}</td>
                       <td className="text-right">
                         <div className="flex gap-2 justify-end">
                           <button
@@ -303,7 +305,7 @@ export function FloorPlans() {
                               e.stopPropagation();
                               openEditModal(fp);
                             }}
-                            title="Edit"
+                            title={t("actions.edit")}
                           >
                             <FaEdit />
                           </button>
@@ -314,7 +316,7 @@ export function FloorPlans() {
                               e.stopPropagation();
                               handleDelete(fp.id);
                             }}
-                            title="Delete"
+                            title={t("actions.delete")}
                           >
                             <FaTrash />
                           </button>
@@ -347,7 +349,7 @@ export function FloorPlans() {
                         <span className="text-sm text-gray-400">#{fp.order}</span>
                       </div>
                       <p className="text-sm text-gray-600 flex-1 truncate whitespace-pre-wrap">
-                        {fp.details || "No details available yet"}
+                        {fp.details || t("floorPlans.noDetails")}
                       </p>
                       <div className="mt-4 flex gap-2 justify-end">
                         <button
@@ -357,7 +359,7 @@ export function FloorPlans() {
                             e.stopPropagation();
                             openEditModal(fp);
                           }}
-                          title="Edit"
+                          title={t("actions.edit")}
                         >
                           <FaEdit />
                         </button>
@@ -368,7 +370,7 @@ export function FloorPlans() {
                             e.stopPropagation();
                             handleDelete(fp.id);
                           }}
-                          title="Delete"
+                          title={t("actions.delete")}
                         >
                           <FaTrash />
                         </button>

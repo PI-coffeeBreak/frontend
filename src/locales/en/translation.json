@@ -570,5 +570,40 @@
     "ratingLabel": "Rating:",
     "commentLabel": "Comment:",
     "commentPlaceholder": "Write your comment here..."
+  },
+  "floorPlans": {
+    "title": "Floor Plan Management",
+    "reorder": "Reorder All",
+    "exitReorder": "Exit Order Mode",
+    "add": "Add Floor Plan",
+    "dragHint": "Floor Plans order can be changed by dragging and dropping them.",
+    "noPlans": "No Floor Plans yet.",
+    "noDetails": "No details available yet"
+  },
+  "pagination": {
+    "previous": "Previous",
+    "next": "Next",
+    "page": "Page {{page}} of {{totalPages}}"
+  },
+  "table": {
+    "order": "Order",
+    "drag": "Drag",
+    "image": "Image",
+    "name": "Name",
+    "details": "Details",
+    "actions": "Actions"
+  },
+  "actions": {
+    "edit": "Edit",
+    "delete": "Delete",
+    "close": "Close"
+  },
+  "floorPlanModal": {
+    "editTitle": "Edit Floor Plan",
+    "addTitle": "Add Floor Plan",
+    "removeImage": "Remove image",
+    "noImageToRemove": "No image to remove",
+    "onlyInternalImages": "Only internal managed images can be removed",
+    "name": "Name"
   }
-} 
+}
