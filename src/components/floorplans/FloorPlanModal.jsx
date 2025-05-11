@@ -135,6 +135,10 @@ export default function FloorPlanModal({
       newErrors.name = t("floorPlanModal.nameExists");
     }
   
+    if (isEditing && imageInputType === "url" && !form.image?.startsWith("http")) {
+      newErrors.image = t("floorPlanModal.imageUrlRequired");
+    }
+  
     setErrors(newErrors);
   
     if (Object.keys(newErrors).length === 0) {
@@ -233,11 +237,11 @@ export default function FloorPlanModal({
             {imageInputType === "url" && (
               <div className="md:col-span-2">
                 <label className="label" htmlFor="fp-image">
-                  {t("floorPlanModal.imageUrl")} <span className="text-xs text-base-content/60">({t("floorPlanModal.optional")})</span>
+                  {t("floorPlanModal.imageUrl")} <span className="text-xs text-base-content/60">({t("floorPlanModal.required")})</span>
                 </label>
                 <input
                   id="fp-image"
-                  className="input input-bordered w-full"
+                  className={`input input-bordered w-full ${errors.image ? "input-error" : ""}`}
                   placeholder="http(s)://…"
                   value={form.image?.startsWith("http") ? form.image : ""}
                   onChange={(e) => {
@@ -246,6 +250,7 @@ export default function FloorPlanModal({
                     setUrlPreview(url.startsWith("http") ? url : null);
                   }}
                 />
+                {errors.image && <p className="text-error text-sm mt-1">{errors.image}</p>}
                 {urlPreview && (
                   <div className="mt-4">
                     <p className="text-sm text-gray-500">{t("floorPlanModal.preview")}</p>

@@ -633,7 +633,8 @@
     "removeExistingImage": "remove the existing image",
     "nameRequired": "Name is required",
     "nameExists": "A floor plan with this name already exists",
-    "preview": "Preview"
+    "preview": "Preview",
+    "imageUrlRequired": "Image URL is required"
   },
     "notifications": {
     "loadFailed": "Failed to load Floor Plans",
