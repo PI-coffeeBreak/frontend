@@ -14,11 +14,10 @@ const formatExcelData = (rawData) => {
     name: row.name || "",
     description: row.description || "",
     image: row.image || "",
-    date: row.start_time || null,
+    date: row.date || null,
     duration: isNaN(parseInt(row.duration)) ? 0 : parseInt(row.duration),
     type_id: isNaN(parseInt(row.type_id)) ? 0 : parseInt(row.type_id),
     topic: row.topic || "",
-    speaker: row.speaker || "",
     facilitator: row.facilitator || ""
   }));
 };
@@ -163,11 +162,10 @@ export function ExcelImportModal({ isOpen, onClose, onImport }) {
         {
           name: "Example Activity",
           description: "Description of the activity",
-          start_time: "2025-04-20T10:00:00",
+          date: "2025-04-20T10:00:00",
           duration: 60,
           type_id: 1,
           topic: "Example Topic",
-          speaker: "Example Speaker",
           facilitator: "Example Facilitator"
 
         }

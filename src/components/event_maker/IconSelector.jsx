@@ -17,7 +17,7 @@ export function IconSelector({ value, onChange, maxDisplayIcons = 200, onSelecto
   }, [isOpen, onSelectorToggle]);
 
   // Get icons and helper functions from context
-  const { commonIcons, getAllAvailableIcons, getIconComponent } = useMenus();
+  const { commonIcons, getAllAvailableIcons, getIconComponent, libraryName } = useMenus();
   
   // All available icon libraries - memoized for performance
   const allIconLibraries = useMemo(() => getAllAvailableIcons(), [getAllAvailableIcons]);
@@ -49,7 +49,9 @@ export function IconSelector({ value, onChange, maxDisplayIcons = 200, onSelecto
     
     // If a specific library is selected, use those icons
     if (selectedLibrary !== "all" && allIconLibraries[selectedLibrary]) {
-      iconsToFilter = allIconLibraries[selectedLibrary];
+      iconsToFilter = allIconLibraries[selectedLibrary].map(iconName => {
+        return selectedLibrary + '/' + iconName;
+      });
     } 
     // If search is empty, use common icons
     else if (!searchIconTerm.trim()) {
@@ -65,7 +67,7 @@ export function IconSelector({ value, onChange, maxDisplayIcons = 200, onSelecto
         const maxResults = 500; // Limit search results for performance
         
         // Search through each library
-        for (const [, icons] of Object.entries(allIconLibraries)) {
+        for (const [library, icons] of Object.entries(allIconLibraries)) {
           // Early exit if we've reached our limit
           if (searchResults.length >= maxResults) break;
           
@@ -74,6 +76,8 @@ export function IconSelector({ value, onChange, maxDisplayIcons = 200, onSelecto
             const lowerIconName = iconName.toLowerCase();
             return lowerIconName.startsWith(lowerSearchTerm) || 
                    lowerIconName.includes(lowerSearchTerm);
+          }).map(iconName => {
+            return library + '/' + iconName;
           });
           
           // Sort matches to prioritize "startsWith" over "includes"
@@ -173,10 +177,10 @@ export function IconSelector({ value, onChange, maxDisplayIcons = 200, onSelecto
                   onChange={(e) => setSelectedLibrary(e.target.value)}
                   className="w-full p-2 border border-gray-300 rounded-md"
                 >
-                  <option value="all">All Libraries ({totalIconCount} icons)</option>
+                  <option value="all">All Icons ({totalIconCount} icons)</option>
                   {Object.entries(allIconLibraries).map(([library, icons]) => (
                     <option key={library} value={library}>
-                      {library} ({icons.length} icons)
+                      {libraryName(library)} ({icons.length} icons)
                     </option>
                   ))}
                 </select>
@@ -206,7 +210,7 @@ export function IconSelector({ value, onChange, maxDisplayIcons = 200, onSelecto
                   <div className="grid grid-cols-4 gap-2">
                     {filteredIcons.slice(0, maxIcons).map((iconName) => {
                       const IconComp = getIconComponent(iconName);
-                      const isIconMissing = IconComp === FaQuestion && iconName !== "FaQuestion";
+                      const isIconMissing = IconComp === FaQuestion && iconName !== "fa/FaQuestion";
                       
                       return (
                         <button
@@ -229,7 +233,7 @@ export function IconSelector({ value, onChange, maxDisplayIcons = 200, onSelecto
                             )}
                           </span>
                           <span className={`text-xs ${isIconMissing ? 'text-red-600' : 'text-gray-600'} truncate w-full text-center`}>
-                            {iconName}
+                            {iconName.split('/')[1]}
                           </span>
                         </button>
                       );

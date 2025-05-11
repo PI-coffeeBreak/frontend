@@ -88,13 +88,12 @@ export default function Activities() {
       const payload = {
         name: sessionData.name,
         description: sessionData.description,
-        start_time: sessionData.date,
+        date: sessionData.date,
         duration: parseInt(sessionData.duration, 10),
         type_id: typeof sessionData.type_id === 'string' 
           ? parseInt(sessionData.type_id, 10) 
           : sessionData.type_id,
         topic: sessionData.topic || "",
-        speaker: sessionData.speaker || "",
         facilitator: sessionData.facilitator || ""
       };
 
@@ -131,7 +130,7 @@ export default function Activities() {
 
   return (
     <div className="w-full min-h-svh p-2 lg:p-8">
-      <h1 className="text-3xl font-bold">{t('activities.title')}</h1>
+      <h1 className="text-3xl font-bold my-8">{t('activities.title')}</h1>
 
       <CreateActivityCards 
         onOpenExcelModal={openExcelModal}

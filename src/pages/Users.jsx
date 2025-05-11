@@ -513,8 +513,7 @@ export default function Users() {
     return (
         <div className="w-full min-h-screen p-4 sm:p-6 lg:p-8">
             <div className="max-w-7xl mx-auto">
-                <h1 className="text-3xl sm:text-4xl font-bold mb-4 text-primary">{t('users.title')}</h1>
-                <p className="text-lg text-base-content/70 mb-8">{t('users.subtitle')}</p>
+                <h1 className="text-3xl font-bold my-8">{t('users.title')}</h1>
                 
                 <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
                     <CreateCard

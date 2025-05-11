@@ -47,11 +47,8 @@ export function NewSessionModal({ isOpen, onClose, onSubmit }) {
     duration: 30,
     type_id: "",
     topic: "",
-    speaker: "",
     facilitator: "",
     image: null,
-    requires_registration: false,
-    max_participants: ""
   };
 
   const { 
@@ -135,12 +132,6 @@ export function NewSessionModal({ isOpen, onClose, onSubmit }) {
   };
 
   const formatDataForSubmission = () => {
-    let maxParticipants = 0;
-    if (values.requires_registration && values.max_participants) {
-      const parsedValue = parseInt(values.max_participants, 10);
-      maxParticipants = !isNaN(parsedValue) ? parsedValue : 0;
-    }
-
     return {
       name: values.name,
       description: values.description,
@@ -148,10 +139,7 @@ export function NewSessionModal({ isOpen, onClose, onSubmit }) {
       duration: parseInt(values.duration, 10),
       type_id: typeof values.type_id === 'string' ? parseInt(values.type_id, 10) : values.type_id,
       topic: values.topic || "",
-      speaker: values.speaker || "",
       facilitator: values.facilitator || "",
-      requires_registration: values.requires_registration || false,
-      max_participants: maxParticipants,
       ...(imagePreview && { image: values.image })
     };
   };
@@ -426,50 +414,7 @@ export function NewSessionModal({ isOpen, onClose, onSubmit }) {
               </FormField>
             </div>
             
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-              <FormField label="Registration" id="requires_registration">
-                <div className="flex items-center">
-                  <input
-                    type="checkbox"
-                    id="requires_registration"
-                    name="requires_registration"
-                    checked={values.requires_registration}
-                    onChange={handleChangeWithStop}
-                    className="checkbox checkbox-primary mr-2"
-                  />
-                  <label htmlFor="requires_registration" className="block font-medium">
-                    Require registration
-                  </label>
-                </div>
-              </FormField>
-              
-              <FormField label="Maximum participants" id="max_participants">
-                <input
-                  type="number"
-                  id="max_participants"
-                  name="max_participants"
-                  value={values.max_participants === 0 ? "" : values.max_participants}
-                  onChange={handleChangeWithStop}
-                  min="0"
-                  disabled={!values.requires_registration}
-                  className="input input-bordered w-full"
-                  placeholder="Enter the maximum number of participants"
-                />
-              </FormField>
-            </div>
-            
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-              <FormField label="Activity Owner" id="activity_owner">
-                <input
-                  type="text"
-                  id="activity_owner"
-                  name="activity_owner"
-                  value={values.speaker}
-                  onChange={handleChangeWithStop}
-                  placeholder="Enter the activity owner name"
-                  className="input input-bordered w-full"
-                />
-              </FormField>
+            <div className="grid grid-cols-1 gap-4">
               <FormField label="Topic" id="topic">
                 <input
                     type="text"
@@ -478,6 +423,17 @@ export function NewSessionModal({ isOpen, onClose, onSubmit }) {
                     value={values.topic}
                     onChange={handleChangeWithStop}
                     placeholder="Enter the session topic"
+                    className="input input-bordered w-full"
+                />
+              </FormField>
+              <FormField label="Facilitator" id="facilitator">
+                <input
+                    type="text"
+                    id="facilitator"
+                    name="facilitator"
+                    value={values.facilitator}
+                    onChange={handleChangeWithStop}
+                    placeholder="Enter the facilitator's name"
                     className="input input-bordered w-full"
                 />
               </FormField>

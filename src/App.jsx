@@ -26,6 +26,7 @@ import { EventEditor } from "./pages/EventEditor.jsx";
 import Provider from "./contexts/Provider.jsx";
 import Management from "./pages/Management.jsx";
 import SpeakerManagement from "./pages/plugins/SpeakerManagement.jsx";
+import ActivitySlotsPage from "./pages/plugins/ActivitiesSlotsPage.jsx";
 
 export default function App() {
   return (
@@ -61,6 +62,7 @@ export default function App() {
             <Route path="sponsors-promotion-plugin" element={<Sponsors />} />
             <Route path="floor-plan-plugin" element={<FloorPlans />} />
             <Route path="speaker-presentation-plugin" element={<SpeakerManagement />} />
+            <Route path="registration-system-plugin" element={<ActivitySlotsPage />} />
           </Route>
         </Route>
         <Route path="/auth-redirect" element={<AuthRedirect />} />

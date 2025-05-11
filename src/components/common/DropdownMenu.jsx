@@ -47,7 +47,7 @@ export default function DropdownMenu({
                 {hasHomepage ? (
                     <Link 
                         to={basePath || links[0]?.path || "#"} 
-                        className={`join-item flex-1 btn btn-sm ${sectionActive ? 'btn-primary' : 'btn-ghost'} ${
+                        className={`join-item flex-1 btn btn-sm rounded-l-xl ${sectionActive ? 'btn-primary' : 'btn-ghost'} ${
                             isVisible 
                                 ? "flex items-center gap-2 justify-start px-3" 
                                 : "flex items-center justify-center px-1"
@@ -62,7 +62,7 @@ export default function DropdownMenu({
                         onKeyDown={handleKeyDown}
                         aria-expanded={open}
                         tabIndex={0}
-                        className={`join-item flex-1 btn btn-sm ${sectionActive ? 'btn-primary' : 'btn-ghost'} ${
+                        className={`join-item flex-1 btn btn-sm rounded-r-xl ${sectionActive ? 'btn-primary' : 'btn-ghost'} ${
                             isVisible 
                                 ? "flex items-center gap-2 justify-between px-3"
                                 : "flex items-center justify-center px-1"
@@ -90,7 +90,7 @@ export default function DropdownMenu({
                         onKeyDown={handleKeyDown}
                         aria-expanded={open}
                         tabIndex={0}
-                        className={`join-item btn btn-sm ${sectionActive ? 'btn-primary' : 'btn-ghost'} px-2`}
+                        className={`join-item btn btn-sm rounded-r-xl ${sectionActive ? 'btn-primary' : 'btn-ghost'} px-2`}
                         aria-label={`Toggle ${title} dropdown`}
                     >
                         <IoIosArrowDown className={`text-lg transition-transform duration-300 ${open ? 'rotate-180' : ''}`} />
@@ -101,9 +101,9 @@ export default function DropdownMenu({
             {/* Dropdown content */}
             {isVisible && (
                 <div className={`overflow-hidden transition-all duration-300 ${
-                    open ? "max-h-96 opacity-100" : "max-h-0 opacity-0"
+                    open ? "max-h-[calc(100vh-400px)] opacity-100" : "max-h-0 opacity-0"
                 }`}>
-                    <ul className="ml-6 mt-2 space-y-2 py-1">
+                    <ul className="ml-6 mt-2 space-y-2 py-1 overflow-y-auto">
                         {links.map((link) => {
                             const isLinkActive = isActive(link.path);
                             const LinkIcon = link.icon;
@@ -112,7 +112,7 @@ export default function DropdownMenu({
                                 <li key={`${title}-${link.path}`}>
                                     <Link 
                                         to={link.path} 
-                                        className={`flex items-center gap-2 px-4 py-2 text-sm rounded-md transition-all relative overflow-hidden group ${
+                                        className={`flex items-center gap-2 px-4 py-2 text-sm rounded-xl transition-all relative overflow-hidden  ${
                                             isLinkActive 
                                                 ? "bg-primary/20 font-medium shadow-sm" 
                                                 : "hover:bg-primary/10"
