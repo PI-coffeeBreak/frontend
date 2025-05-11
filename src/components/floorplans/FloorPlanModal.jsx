@@ -106,10 +106,10 @@ export default function FloorPlanModal({
   
     if (newType === "file") {
       setForm((f) => ({ ...f, image: "", file: null }));
-      setFilePreview(filePreview || null); // Mostra o preview do arquivo
+      setFilePreview(filePreview || null);
     } else if (newType === "url") {
       setForm((f) => ({ ...f, image: prevUrl || "", file: null }));
-      setUrlPreview(urlPreview || null); // Mostra o preview da URL
+      setUrlPreview(urlPreview || null);
     }
   
     setImageInputType(newType);
@@ -165,7 +165,7 @@ export default function FloorPlanModal({
   
     setForm((f) => ({ ...f, file }));
     const previewUrl = URL.createObjectURL(file);
-    setFilePreview(previewUrl); // Atualiza o preview do arquivo
+    setFilePreview(previewUrl);
   };
 
   const handleDrop = (event) => {
@@ -175,13 +175,13 @@ export default function FloorPlanModal({
     const file = event.dataTransfer.files[0];
     if (file) {
       setForm((f) => ({ ...f, file }));
-      setFilePreview(URL.createObjectURL(file)); // Atualiza o preview do arquivo
+      setFilePreview(URL.createObjectURL(file));
     }
   };
 
   const handleClearFile = () => {
     setForm((f) => ({ ...f, file: null }));
-    setFilePreview(null); // Limpa o preview do arquivo
+    setFilePreview(null);
     if (fileInputRef.current) fileInputRef.current.value = "";
   };  
 
