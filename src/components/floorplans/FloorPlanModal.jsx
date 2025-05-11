@@ -23,7 +23,6 @@ export default function FloorPlanModal({
   const [imageInputType, setImageInputType] = useState("file");
   const [prevUrl, setPrevUrl] = useState("");
   const [hasInitialized, setHasInitialized] = useState(false);
-  const [imagePreview, setImagePreview] = useState(null);
   const [isImageMarkedForRemoval, setIsImageMarkedForRemoval] = useState(false);
   const [urlPreview, setUrlPreview] = useState(null);
   const [filePreview, setFilePreview] = useState(null);
@@ -81,7 +80,6 @@ export default function FloorPlanModal({
 
     const resetImageInput = () => {
       setImageInputType("file");
-      setImagePreview(null);
     };
 
     dialog.addEventListener("close", handleDialogClose);
@@ -108,10 +106,10 @@ export default function FloorPlanModal({
   
     if (newType === "file") {
       setForm((f) => ({ ...f, image: "", file: null }));
-      setImagePreview(filePreview || null);
+      setFilePreview(filePreview || null); // Mostra o preview do arquivo
     } else if (newType === "url") {
       setForm((f) => ({ ...f, image: prevUrl || "", file: null }));
-      setImagePreview(urlPreview || null);
+      setUrlPreview(urlPreview || null); // Mostra o preview da URL
     }
   
     setImageInputType(newType);
@@ -155,7 +153,6 @@ export default function FloorPlanModal({
   const handleClose = () => {
     setErrors({});
     setPrevUrl("");
-    setImagePreview(null);
     setUrlPreview(null);
     setFilePreview(null);
     setIsImageMarkedForRemoval(false);
@@ -168,7 +165,7 @@ export default function FloorPlanModal({
   
     setForm((f) => ({ ...f, file }));
     const previewUrl = URL.createObjectURL(file);
-    setFilePreview(previewUrl);
+    setFilePreview(previewUrl); // Atualiza o preview do arquivo
   };
 
   const handleDrop = (event) => {
@@ -178,13 +175,13 @@ export default function FloorPlanModal({
     const file = event.dataTransfer.files[0];
     if (file) {
       setForm((f) => ({ ...f, file }));
-      setImagePreview(URL.createObjectURL(file));
+      setFilePreview(URL.createObjectURL(file)); // Atualiza o preview do arquivo
     }
   };
 
   const handleClearFile = () => {
     setForm((f) => ({ ...f, file: null }));
-    setImagePreview(null);
+    setFilePreview(null); // Limpa o preview do arquivo
     if (fileInputRef.current) fileInputRef.current.value = "";
   };  
 
