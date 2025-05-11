@@ -433,7 +433,6 @@ export function FloorPlans() {
         form={form}
         setForm={setForm}
         isEditing={modalMode === "edit"}
-        isImageMedia={isImageMedia}
         onRemoveImage={handleRemoveImage}
         floorPlans={floorPlans}
         selectedId={selected?.id}
