@@ -13,6 +13,82 @@ import { useTranslation } from "react-i18next";
 const apiUrl = `${baseUrl}/floor-plan-plugin/floor_plan`;
 const ITEMS_PER_PAGE = 6;
 
+function FloorPlanActions({ onEdit, onDelete, t }) {
+  return (
+    <div className="flex gap-2 justify-end">
+      <button
+        className="btn btn-ghost btn-xs"
+        onPointerDown={(e) => e.stopPropagation()}
+        onClick={(e) => {
+          e.stopPropagation();
+          onEdit();
+        }}
+        title={t("floorPlan.actions.edit")}
+      >
+        <FaEdit />
+      </button>
+      <button
+        className="btn btn-ghost btn-xs text-error"
+        onPointerDown={(e) => e.stopPropagation()}
+        onClick={(e) => {
+          e.stopPropagation();
+          onDelete();
+        }}
+        title={t("floorPlans.actions.delete")}
+      >
+        <FaTrash />
+      </button>
+    </div>
+  );
+}
+
+function FloorPlanRowItem({ fp, isTable, onEdit, onDelete, t }) {
+  if (isTable) {
+    return (
+      <>
+        <td className="w-10 text-center text-sm text-gray-400">#{fp.order}</td>
+        <td className="w-10 text-center cursor-move text-gray-500">
+          <FaSort className="mx-auto" />
+        </td>
+        <td className="w-20">
+          <div className="avatar">
+            <div className="mask mask-squircle w-12 h-12">
+              <img src={fp.image} alt={fp.name} className="object-cover" />
+            </div>
+          </div>
+        </td>
+        <td className="font-medium text-sm sm:text-base">{fp.name}</td>
+        <td className="text-sm sm:text-base whitespace-pre-wrap">
+          {fp.details || t("floorPlans.noDetails")}
+        </td>
+        <td className="text-right">
+          <FloorPlanActions onEdit={onEdit} onDelete={onDelete} t={t} />
+        </td>
+      </>
+    );
+  }
+
+  return (
+    <div className="bg-base-100 rounded-lg shadow-lg overflow-hidden flex flex-col hover:shadow-xl hover:scale-105 transition-transform duration-200">
+      <div className="relative h-48 bg-gray-100">
+        <img src={fp.image} alt={fp.name} className="object-cover w-full h-full" />
+      </div>
+      <div className="p-4 flex-1 flex flex-col">
+        <div className="flex justify-between items-center">
+          <h2 className="text-lg font-semibold mb-2">{fp.name}</h2>
+          <span className="text-sm text-gray-400">#{fp.order}</span>
+        </div>
+        <p className="text-sm text-gray-600 flex-1 truncate whitespace-pre-wrap">
+          {fp.details || t("floorPlans.noDetails")}
+        </p>
+        <div className="mt-4">
+          <FloorPlanActions onEdit={onEdit} onDelete={onDelete} t={t} />
+        </div>
+      </div>
+    </div>
+  );
+}
+
 export function FloorPlans() {
   const { keycloak } = useKeycloak();
   const { showNotification } = useNotification();
@@ -283,45 +359,13 @@ export function FloorPlans() {
                 <tbody>
                   {floorPlans.map((fp) => (
                     <SortableItem key={fp.id} id={fp.id} as="tr">
-                      <td className="w-10 text-center text-sm text-gray-400">#{fp.order}</td>
-                      <td className="w-10 text-center cursor-move text-gray-500">
-                        <FaSort className="mx-auto" />
-                      </td>
-                      <td className="w-20">
-                        <div className="avatar">
-                          <div className="mask mask-squircle w-12 h-12">
-                            <img src={fp.image} alt={fp.name} className="object-cover" />
-                          </div>
-                        </div>
-                      </td>
-                      <td className="font-medium text-sm sm:text-base">{fp.name}</td>
-                      <td className="text-sm sm:text-base whitespace-pre-wrap">{fp.details || t("floorPlans.noDetails")}</td>
-                      <td className="text-right">
-                        <div className="flex gap-2 justify-end">
-                          <button
-                            className="btn btn-ghost btn-xs"
-                            onPointerDown={(e) => e.stopPropagation()}
-                            onClick={(e) => {
-                              e.stopPropagation();
-                              openEditModal(fp);
-                            }}
-                            title={t("floorPlan.actions.edit")}
-                          >
-                            <FaEdit />
-                          </button>
-                          <button
-                            className="btn btn-ghost btn-xs text-error"
-                            onPointerDown={(e) => e.stopPropagation()}
-                            onClick={(e) => {
-                              e.stopPropagation();
-                              handleDelete(fp.id);
-                            }}
-                            title={t("floorPlans.actions.delete")}
-                          >
-                            <FaTrash />
-                          </button>
-                        </div>
-                      </td>
+                      <FloorPlanRowItem
+                        fp={fp}
+                        isTable={true}
+                        onEdit={() => openEditModal(fp)}
+                        onDelete={() => handleDelete(fp.id)}
+                        t={t}
+                      />
                     </SortableItem>
                   ))}
                 </tbody>
@@ -330,58 +374,19 @@ export function FloorPlans() {
           </SortableContext>
         </DndContext>
       ) : (
-        <DndContext collisionDetection={closestCenter} onDragEnd={handleDragEnd}>
-          <SortableContext items={plansToRender.map((fp) => fp.id)} strategy={rectSortingStrategy}>
-            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
-              {plansToRender.map((fp) => (
-                <SortableItem key={fp.id} id={fp.id}>
-                  <div className="bg-base-100 rounded-lg shadow-lg overflow-hidden flex flex-col hover:shadow-xl hover:scale-105 transition-transform duration-200">
-                    <div className="relative h-48 bg-gray-100">
-                      <img
-                        src={fp.image}
-                        alt={fp.name}
-                        className="object-cover w-full h-full"
-                      />
-                    </div>
-                    <div className="p-4 flex-1 flex flex-col">
-                      <div className="flex justify-between items-center">
-                        <h2 className="text-lg font-semibold mb-2">{fp.name}</h2>
-                        <span className="text-sm text-gray-400">#{fp.order}</span>
-                      </div>
-                      <p className="text-sm text-gray-600 flex-1 truncate whitespace-pre-wrap">
-                        {fp.details || t("floorPlans.noDetails")}
-                      </p>
-                      <div className="mt-4 flex gap-2 justify-end">
-                        <button
-                          className="btn btn-ghost btn-xs"
-                          onPointerDown={(e) => e.stopPropagation()}
-                          onClick={(e) => {
-                            e.stopPropagation();
-                            openEditModal(fp);
-                          }}
-                          title={t("floorPlan.actions.edit")}
-                        >
-                          <FaEdit />
-                        </button>
-                        <button
-                          className="btn btn-ghost btn-xs text-error"
-                          onPointerDown={(e) => e.stopPropagation()}
-                          onClick={(e) => {
-                            e.stopPropagation();
-                            handleDelete(fp.id);
-                          }}
-                          title={t("floorPlan.actions.delete")}
-                        >
-                          <FaTrash />
-                        </button>
-                      </div>
-                    </div>
-                  </div>
-                </SortableItem>
-              ))}
-            </div>
-          </SortableContext>
-        </DndContext>
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+          {plansToRender.map((fp) => (
+            <SortableItem key={fp.id} id={fp.id}>
+              <FloorPlanRowItem
+                fp={fp}
+                isTable={false}
+                onEdit={() => openEditModal(fp)}
+                onDelete={() => handleDelete(fp.id)}
+                t={t}
+              />
+            </SortableItem>
+          ))}
+        </div>
       )}
 
       <FloorPlanModal
