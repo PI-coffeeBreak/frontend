@@ -1,6 +1,7 @@
 import { useEffect, useRef, useState } from "react";
 import PropTypes from "prop-types";
 import { FaTimes, FaImage, FaTrash, FaUpload } from "react-icons/fa";
+import { baseUrl } from "../../consts.js";
 
 export default function FloorPlanModal({
   open,
@@ -26,17 +27,33 @@ export default function FloorPlanModal({
   useEffect(() => {
     const dialog = dialogRef.current;
     if (!dialog) return;
-
+  
     if (open && !dialog.open) {
       dialog.showModal();
-
+  
       if (!hasInitialized) {
-        if (form.image && !form.image.startsWith("http")) {
-          setImageInputType("file");
-          setImagePreview(form.file ? URL.createObjectURL(form.file) : null);
+        if (form.image) {
+          if (form.image.startsWith("http")) {
+            setImageInputType("url");
+            setPrevUrl(form.image);
+            setImagePreview(form.image);
+          } else {
+            setImageInputType("file");
+            fetch(`${baseUrl}/media/${form.image}`, { method: "GET" })
+              .then((response) => {
+              if (response.ok) {
+                setImagePreview(`${baseUrl}/media/${form.image}`);
+              } else {
+                setImagePreview(null);
+              }
+              })
+              .catch(() => {
+              setImagePreview(null);
+              });
+          }
         } else {
           setImageInputType("url");
-          setPrevUrl(form.image || "");
+          setImagePreview(null);
         }
         setHasInitialized(true);
       }
@@ -44,7 +61,7 @@ export default function FloorPlanModal({
       dialog.close();
       setHasInitialized(false);
     }
-  }, [open]);
+  }, [open]);  
 
   const handleImageInputTypeChange = (e) => {
     const newType = e.target.value;
@@ -117,7 +134,7 @@ export default function FloorPlanModal({
     setForm((f) => ({ ...f, file: null }));
     setImagePreview(null);
     if (fileInputRef.current) fileInputRef.current.value = "";
-  };
+  };  
 
   const title = isEditing ? "Edit Floor Plan" : "Add Floor Plan";
   let removeTitle = "Remove image";
@@ -203,7 +220,14 @@ export default function FloorPlanModal({
                 ) : (
                   <div className="bg-base-200 w-full p-4 rounded-lg relative">
                     <button
-                      onClick={handleClearFile}
+                      onClick={() => {
+                        if (form.file) {
+                          handleClearFile();
+                        } else if (isImageMedia) {
+                          onRemoveImage();
+                          setImagePreview(null);
+                        }
+                      }}
                       className="text-primary hover:text-error absolute right-3 top-3"
                       type="button"
                       aria-label="Remove image"
@@ -216,7 +240,9 @@ export default function FloorPlanModal({
                       </div>
                       <div>
                         <p className="font-medium">Image selected</p>
-                        <p className="text-sm text-gray-500">Click to remove and upload a different image</p>
+                        <p className="text-sm text-gray-500">
+                          Click the trash icon to {form.file ? "remove the uploaded file" : "remove existing image"}
+                        </p>
                       </div>
                     </div>
                   </div>
