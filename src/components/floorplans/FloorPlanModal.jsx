@@ -276,6 +276,11 @@ export default function FloorPlanModal({
                   onChange={handleFileSelect}
                   className="hidden"
                 />
+                {form.image && !form.image.startsWith("http") && (
+                  <p className="text-xs text-gray-500 mt-2">
+                    UUID: <span className="font-mono">{form.image}</span>
+                  </p>
+                )}
               </div>
             )}
 
