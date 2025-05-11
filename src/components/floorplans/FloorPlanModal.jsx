@@ -107,7 +107,7 @@ export default function FloorPlanModal({
     const newErrors = {};
   
     if (!trimmedName) {
-      newErrors.name = "Name is required";
+      newErrors.name = t("floorPlanModal.nameRequired");
     } else if (
       floorPlans.some(
         (fp) =>
@@ -115,7 +115,7 @@ export default function FloorPlanModal({
           (!isEditing || fp.id !== selectedId)
       )
     ) {
-      newErrors.name = "A floor plan with this name already exists";
+      newErrors.name = t("floorPlanModal.nameExists");
     }
   
     setErrors(newErrors);
@@ -174,7 +174,7 @@ export default function FloorPlanModal({
           type="button"
           onClick={handleClose}
           className="btn btn-sm btn-circle btn-ghost absolute right-2 top-2"
-          aria-label={t("actions.close")}
+          aria-label={t("floorPlanModal.cancel")}
         >
           <FaTimes />
         </button>
@@ -302,12 +302,12 @@ export default function FloorPlanModal({
           </div>
 
           <div className="modal-action mt-0">
-            <button type="button" className="btn" onClick={handleClose}>{t("actions.cancel")}</button>
-            <button type="submit" className="btn btn-primary">{isEditing ? t("actions.update") : t("actions.save")}</button>
+            <button type="button" className="btn" onClick={handleClose}>{t("floorPlanModal.cancel")}</button>
+            <button type="submit" className="btn btn-primary">{isEditing ? t("floorPlanModal.update") : t("floorPlanModal.add")}</button>
           </div>
         </form>
       </div>
-      <button className="modal-backdrop" onClick={handleClose} aria-label={t("actions.closeModal")} />
+      <button className="modal-backdrop" onClick={handleClose} aria-label={t("floorPlanModal.cancelModal")} />
     </dialog>
   );
 }

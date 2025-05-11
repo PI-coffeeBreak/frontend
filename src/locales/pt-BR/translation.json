@@ -629,6 +629,22 @@
     "removeImage": "Remover imagem",
     "noImageToRemove": "Nenhuma imagem para remover",
     "onlyInternalImages": "Apenas imagens gerenciadas internamente podem ser removidas",
-    "name": "Nome"
+    "name": "Nome",
+    "dragAndDrop": "Arraste e solte sua imagem aqui ou",
+    "browse": "Procurar",
+    "maxFileSize": "Tamanho máximo do arquivo: 5MB",
+    "selectImageInputType": "Selecione o Tipo de Imagem",
+    "details": "Detalhes",
+    "cancel": "Cancelar",
+    "update": "Atualizar",
+    "add": "Adicionar",
+    "imageUrl": "URL da Imagem",
+    "uploadFile": "Carregar Arquivo",
+    "optional": "Opcional",
+    "imageSelected": "Imagem selecionada",
+    "clickTrashIcon": "Clique na lixeira para",
+    "removeExistingImage": "remover a imagem existente",
+    "nameRequired": "O nome é obrigatório",
+    "nameExists": "Já existe uma planta com este nome"
   }
 }

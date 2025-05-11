@@ -604,6 +604,22 @@
     "removeImage": "Remove image",
     "noImageToRemove": "No image to remove",
     "onlyInternalImages": "Only internal managed images can be removed",
-    "name": "Name"
+    "name": "Name",
+    "dragAndDrop": "Drag and drop your image here or",
+    "browse": "Browse",
+    "maxFileSize": "Maximum file size: 5MB",
+    "selectImageInputType": "Select Image Input Type",
+    "details": "Details",
+    "cancel": "Cancel",
+    "update": "Update",
+    "add": "Add",
+    "imageUrl": "Image URL",
+    "uploadFile": "Upload File",
+    "optional": "Optional",
+    "imageSelected": "Image selected",
+    "clickTrashIcon": "Click the trash icon to",
+    "removeExistingImage": "remove the existing image",
+    "nameRequired": "Name is required",
+    "nameExists": "A floor plan with this name already exists"
   }
 }
