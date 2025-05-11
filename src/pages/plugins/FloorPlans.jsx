@@ -24,7 +24,7 @@ function FloorPlanActions({ onEdit, onDelete, t }) {
           e.stopPropagation();
           onEdit();
         }}
-        title={t("floorPlan.actions.edit")}
+        title={t("actions.edit")}
       >
         <FaEdit />
       </button>
@@ -35,7 +35,7 @@ function FloorPlanActions({ onEdit, onDelete, t }) {
           e.stopPropagation();
           onDelete();
         }}
-        title={t("floorPlans.actions.delete")}
+        title={t("actions.delete")}
       >
         <FaTrash />
       </button>

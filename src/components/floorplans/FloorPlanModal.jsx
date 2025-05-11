@@ -182,6 +182,7 @@ export default function FloorPlanModal({
   const handleClearFile = () => {
     setForm((f) => ({ ...f, file: null }));
     setFilePreview(null);
+    setIsImageMarkedForRemoval(true);
     if (fileInputRef.current) fileInputRef.current.value = "";
   };  
 
@@ -234,7 +235,7 @@ export default function FloorPlanModal({
             {imageInputType === "url" && (
               <div className="md:col-span-2">
                 <label className="label" htmlFor="fp-image">
-                  {t("floorPlanModal.imageUrl")} <span className="text-xs text-base-content/60">({t("floorPlanModal.required")})</span>
+                  {t("floorPlanModal.imageUrl")} <span className="text-xs text-base-content/60">({t("floorPlanModal.imageUrlRequired")})</span>
                 </label>
                 <input
                   id="fp-image"
@@ -296,7 +297,7 @@ export default function FloorPlanModal({
                       }}
                       className="text-primary hover:text-error absolute right-3 top-3"
                       type="button"
-                      aria-label={t("actions.removeImage")}
+                      aria-label={t("floorPlanModal.removeImage")}
                     >
                       <FaTrash />
                     </button>
@@ -350,7 +351,7 @@ export default function FloorPlanModal({
           </div>
         </form>
       </div>
-      <button className="modal-backdrop" onClick={handleClose} aria-label={t("floorPlanModal.cancelModal")} />
+      <button className="modal-backdrop" onClick={handleClose} aria-label={t("floorPlanModal.cancel")} />
     </dialog>
   );
 }
