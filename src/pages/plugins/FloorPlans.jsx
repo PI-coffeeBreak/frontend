@@ -1,22 +1,12 @@
-// FloorPlans.jsx
 import { useState, useEffect } from "react";
-import {
-  FaPlus,
-  FaTrash,
-  FaEdit,
-  FaSort,
-} from "react-icons/fa";
+import { FaPlus, FaTrash, FaEdit, FaSort } from "react-icons/fa";
 import { useKeycloak } from "@react-keycloak/web";
 import { axiosWithAuth } from "../../utils/axiosWithAuth.js";
 import { baseUrl } from "../../consts.js";
 import { useNotification } from "../../contexts/NotificationContext.jsx";
 import FloorPlanModal from "../../components/floorplans/FloorPlanModal";
 import { DndContext, closestCenter } from "@dnd-kit/core";
-import {
-  arrayMove,
-  SortableContext,
-  rectSortingStrategy
-} from "@dnd-kit/sortable";
+import { arrayMove, SortableContext, rectSortingStrategy } from "@dnd-kit/sortable";
 import SortableItem from "../../components/floorplans/SortableItem.jsx";
 
 const apiUrl = `${baseUrl}/floor-plan-plugin/floor_plan`;
@@ -76,7 +66,7 @@ export function FloorPlans() {
       setFloorPlans(resolved);
     } catch (err) {
       console.error(err);
-      showNotification("Failed to load floor‑plans", "error");
+      showNotification("Failed to load Floor Plans", "error");
     } finally {
       setLoading(false);
     }
