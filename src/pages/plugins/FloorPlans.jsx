@@ -191,9 +191,16 @@ export function FloorPlans() {
       const oldIndex = floorPlans.findIndex((fp) => fp.id === active.id);
       const newIndex = floorPlans.findIndex((fp) => fp.id === over.id);
       const reordered = arrayMove(floorPlans, oldIndex, newIndex);
-      setFloorPlans(reordered);
+
+      const updatedFloorPlans = reordered.map((fp, index) => ({
+        ...fp,
+        order: index + 1,
+      }));
+
+      setFloorPlans(updatedFloorPlans);
+
       try {
-        const orders = reordered.map((fp, index) => ({ id: fp.id, order: index + 1 }));
+        const orders = updatedFloorPlans.map((fp) => ({ id: fp.id, order: fp.order }));
         await axiosWithAuth(keycloak).patch(`${apiUrl}/order`, orders);
         showNotification("Order updated successfully", "success");
       } catch (err) {
@@ -263,6 +270,7 @@ export function FloorPlans() {
               <table className="table table-sm sm:table-md">
                 <thead>
                   <tr>
+                    <th className="w-10 text-center">Order</th>
                     <th className="w-10 text-center">Drag</th>
                     <th className="w-20">Image</th>
                     <th>Name</th>
@@ -273,6 +281,7 @@ export function FloorPlans() {
                 <tbody>
                   {floorPlans.map((fp) => (
                     <SortableItem key={fp.id} id={fp.id} as="tr">
+                      <td className="w-10 text-center text-sm text-gray-400">#{fp.order}</td>
                       <td className="w-10 text-center cursor-move text-gray-500">
                         <FaSort className="mx-auto" />
                       </td>
@@ -284,7 +293,7 @@ export function FloorPlans() {
                         </div>
                       </td>
                       <td className="font-medium text-sm sm:text-base">{fp.name}</td>
-                      <td className="text-sm sm:text-base whitespace-pre-wrap">{fp.details || "—"}</td>
+                      <td className="text-sm sm:text-base whitespace-pre-wrap">{fp.details || "No details avaliable yet"}</td>
                       <td className="text-right">
                         <div className="flex gap-2 justify-end">
                           <button
@@ -333,9 +342,12 @@ export function FloorPlans() {
                       />
                     </div>
                     <div className="p-4 flex-1 flex flex-col">
-                      <h2 className="text-lg font-semibold mb-2">{fp.name}</h2>
+                      <div className="flex justify-between items-center">
+                        <h2 className="text-lg font-semibold mb-2">{fp.name}</h2>
+                        <span className="text-sm text-gray-400">#{fp.order}</span>
+                      </div>
                       <p className="text-sm text-gray-600 flex-1 truncate whitespace-pre-wrap">
-                        {fp.details || "—"}
+                        {fp.details || "No details available yet"}
                       </p>
                       <div className="mt-4 flex gap-2 justify-end">
                         <button
