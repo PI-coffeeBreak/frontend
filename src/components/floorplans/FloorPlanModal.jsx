@@ -12,6 +12,7 @@ export default function FloorPlanModal({
   isImageMedia,
   onRemoveImage,
   floorPlans,
+  selectedId,
 }) {
   const dialogRef = useRef(null);
   const fileInputRef = useRef(null);
@@ -62,22 +63,24 @@ export default function FloorPlanModal({
 
   const handleSubmit = (e) => {
     e.preventDefault();
-
+  
+    const trimmedName = form.name.trim().toLowerCase();
     const newErrors = {};
-    if (!form.name.trim()) {
+  
+    if (!trimmedName) {
       newErrors.name = "Name is required";
     } else if (
       floorPlans.some(
         (fp) =>
-          fp.name.trim().toLowerCase() === form.name.trim().toLowerCase() &&
-          fp.id !== form.id
+          fp.name.trim().toLowerCase() === trimmedName &&
+          (!isEditing || fp.id !== selectedId)
       )
     ) {
       newErrors.name = "A floor plan with this name already exists";
     }
-
+  
     setErrors(newErrors);
-
+  
     if (Object.keys(newErrors).length === 0) {
       setPrevUrl("");
       onSubmit();
@@ -263,4 +266,5 @@ FloorPlanModal.propTypes = {
   isImageMedia: PropTypes.bool.isRequired,
   onRemoveImage: PropTypes.func.isRequired,
   floorPlans: PropTypes.array.isRequired,
+  selectedId: PropTypes.oneOfType([PropTypes.string, PropTypes.number]),
 };

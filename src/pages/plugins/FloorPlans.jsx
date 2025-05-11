@@ -5,7 +5,6 @@ import {
   FaTrash,
   FaEdit,
   FaSort,
-  FaGripVertical,
 } from "react-icons/fa";
 import { useKeycloak } from "@react-keycloak/web";
 import { axiosWithAuth } from "../../utils/axiosWithAuth.js";
@@ -391,6 +390,7 @@ export function FloorPlans() {
         isImageMedia={isImageMedia}
         onRemoveImage={handleRemoveImage}
         floorPlans={floorPlans}
+        selectedId={selected?.id}
       />
     </div>
   );
