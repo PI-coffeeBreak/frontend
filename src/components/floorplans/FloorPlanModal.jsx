@@ -20,7 +20,7 @@ export default function FloorPlanModal({
   const fileInputRef = useRef(null);
 
   const [errors, setErrors] = useState({});
-  const [imageInputType, setImageInputType] = useState("url");
+  const [imageInputType, setImageInputType] = useState("file");
   const [prevUrl, setPrevUrl] = useState("");
   const [hasInitialized, setHasInitialized] = useState(false);
   const [imagePreview, setImagePreview] = useState(null);
@@ -69,7 +69,7 @@ export default function FloorPlanModal({
               });
           }
         } else {
-          setImageInputType("url");
+          setImageInputType("file");
           setImagePreview(null);
         }
         setHasInitialized(true);
@@ -206,8 +206,8 @@ export default function FloorPlanModal({
                 value={imageInputType}
                 onChange={handleImageInputTypeChange}
               >
-                <option value="url">{t("floorPlanModal.imageUrl")}</option>
                 <option value="file">{t("floorPlanModal.uploadFile")}</option>
+                <option value="url">{t("floorPlanModal.imageUrl")}</option>
               </select>
             </div>
 
