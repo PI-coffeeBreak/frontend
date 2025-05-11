@@ -293,25 +293,17 @@ export function EditActivityModal({ isOpen, onClose, activity }) {
             alt={t('activities.imageAlt')}
             className="max-h-36 mx-auto rounded"
           />
-          <span
-            role="button"
-            tabIndex={0}
+          <button
+            type="button"
             aria-label={t('common.media.removeImage')}
             onClick={(e) => {
               e.stopPropagation();
               handleClearFile();
             }}
-            onKeyDown={(e) => {
-              if (e.key === 'Enter' || e.key === ' ') {
-                e.preventDefault();
-                e.stopPropagation();
-                handleClearFile();
-              }
-            }}
             className="absolute top-2 right-2 bg-white rounded-full p-1 shadow-sm cursor-pointer"
           >
             <FaTrash className="text-error h-3 w-3" />
-          </span>
+          </button>
         </div>
       );
     } else if (currentImageUrl) {
