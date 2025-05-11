@@ -28,10 +28,23 @@ export default function FloorPlanModal({
   useEffect(() => {
     const dialog = dialogRef.current;
     if (!dialog) return;
-  
+
+    const handleDialogClose = () => {
+      setHasInitialized(false);
+      onClose(); // Garante que o estado `open` seja atualizado
+    };
+
+    const handleDialogCancel = (event) => {
+      event.preventDefault(); // Previne o fechamento automático pelo Escape
+      handleClose(); // Fecha o modal manualmente
+    };
+
+    dialog.addEventListener("close", handleDialogClose);
+    dialog.addEventListener("cancel", handleDialogCancel);
+
     if (open && !dialog.open) {
       dialog.showModal();
-  
+
       if (!hasInitialized) {
         if (form.image) {
           if (form.image.startsWith("http")) {
@@ -42,14 +55,14 @@ export default function FloorPlanModal({
             setImageInputType("file");
             fetch(`${baseUrl}/media/${form.image}`, { method: "GET" })
               .then((response) => {
-              if (response.ok) {
-                setImagePreview(`${baseUrl}/media/${form.image}`);
-              } else {
-                setImagePreview(null);
-              }
+                if (response.ok) {
+                  setImagePreview(`${baseUrl}/media/${form.image}`);
+                } else {
+                  setImagePreview(null);
+                }
               })
               .catch(() => {
-              setImagePreview(null);
+                setImagePreview(null);
               });
           }
         } else {
@@ -62,7 +75,12 @@ export default function FloorPlanModal({
       dialog.close();
       setHasInitialized(false);
     }
-  }, [open]);  
+
+    return () => {
+      dialog.removeEventListener("close", handleDialogClose);
+      dialog.removeEventListener("cancel", handleDialogCancel);
+    };
+  }, [open, form.image, hasInitialized, onClose]);
 
   const handleImageInputTypeChange = (e) => {
     const newType = e.target.value;
@@ -112,6 +130,7 @@ export default function FloorPlanModal({
     setErrors({});
     setPrevUrl("");
     setImagePreview(null);
+    setIsImageMarkedForRemoval(false); // Reseta a marcação de remoção de imagem
     onClose();
   };
 
