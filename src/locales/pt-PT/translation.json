@@ -585,7 +585,8 @@
     "add": "Adicionar Planta",
     "dragHint": "A ordem das plantas pode ser alterada arrastando e largando.",
     "noPlans": "Ainda não existem plantas.",
-    "noDetails": "Ainda não existem detalhes disponíveis"
+    "noDetails": "Ainda não existem detalhes disponíveis",
+    "confirmDelete": "Eliminar esta planta?"
   },
   "pagination": {
     "previous": "Anterior",
@@ -628,5 +629,18 @@
     "removeExistingImage": "remover a imagem existente",
     "nameRequired": "O nome é obrigatório",
     "nameExists": "Já existe uma planta com este nome"
+  },
+    "notifications": {
+    "loadFailed": "Falha ao carregar as Plantas",
+    "createSuccess": "Planta criada com sucesso",
+    "createFailed": "Falha na criação",
+    "updateSuccess": "Planta atualizada com sucesso",
+    "updateFailed": "Falha na atualização",
+    "deleteSuccess": "Planta eliminada com sucesso",
+    "deleteFailed": "Falha na eliminação",
+    "removeImageSuccess": "Imagem removida com sucesso",
+    "removeImageFailed": "Falha ao remover a imagem",
+    "orderUpdateSuccess": "Ordem atualizada com sucesso",
+    "orderUpdateFailed": "Falha ao atualizar a ordem"
   }
 }

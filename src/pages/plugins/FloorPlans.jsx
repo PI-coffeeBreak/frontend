@@ -68,7 +68,7 @@ export function FloorPlans() {
       setFloorPlans(resolved);
     } catch (err) {
       console.error(err);
-      showNotification("Failed to load Floor Plans", "error");
+      showNotification(t("notifications.loadFailed"), "error");
     } finally {
       setLoading(false);
     }
@@ -93,12 +93,12 @@ export function FloorPlans() {
           image: data.image && !data.image.startsWith("http") ? `${baseUrl}/media/${data.image}` : data.image
         }
       ]);
-      showNotification("Floor Plan Created", "success");
+      showNotification(t("notifications.createSuccess"), "success");
       closeModal();
       setPage(Math.ceil((floorPlans.length + 1) / ITEMS_PER_PAGE) || 1);
     } catch (err) {
       console.error(err);
-      showNotification("Creation failed", "error");
+      showNotification(t("notifications.createFailed"), "error");
     }
   };
 
@@ -124,25 +124,25 @@ export function FloorPlans() {
             : fp
         )
       );
-      showNotification("Floor Plan Updated", "success");
+      showNotification(t("notifications.updateSuccess"), "success");
       closeModal();
     } catch (err) {
       console.error(err);
-      showNotification("Update failed", "error");
+      showNotification(t("notifications.updateFailed"), "error");
     }
   };
 
   const handleDelete = async (id) => {
-    if (!confirm("Delete this floor‑plan?")) return;
+    if (!confirm(t("floorPlans.confirmDelete"))) return;
     try {
       await axiosWithAuth(keycloak).delete(`${apiUrl}/${id}`);
       setFloorPlans((prev) => prev.filter((fp) => fp.id !== id));
-      showNotification("Floor Plan Deleted", "success");
+      showNotification(t("notifications.deleteSuccess"), "success");
       const maxPage = Math.ceil((floorPlans.length - 1) / ITEMS_PER_PAGE) || 1;
       setPage((p) => Math.min(p, maxPage));
     } catch (e) {
       console.error(e);
-      showNotification("Deletion failed", "error");
+      showNotification(t("notifications.deleteFailed"), "error");
     }
   };
 
@@ -152,7 +152,7 @@ export function FloorPlans() {
     if (!uuid || uuid.startsWith("http")) return;
     try {
       await axiosWithAuth(keycloak).delete(`${baseUrl}/media/${uuid}`);
-      showNotification("Image removed", "success");
+      showNotification(t("notifications.removeImageSuccess"), "success");
       setForm((f) => ({ ...f, file: null }));
       setIsImageMedia(false);
       setFloorPlans((prev) =>
@@ -160,7 +160,7 @@ export function FloorPlans() {
       );
     } catch (err) {
       console.error(err);
-      showNotification("Failed to remove image", "error");
+      showNotification(t("notifications.removeImageFailed"), "error");
     }
   };
 
@@ -204,10 +204,10 @@ export function FloorPlans() {
       try {
         const orders = updatedFloorPlans.map((fp) => ({ id: fp.id, order: fp.order }));
         await axiosWithAuth(keycloak).patch(`${apiUrl}/order`, orders);
-        showNotification("Order updated successfully", "success");
+        showNotification(t("notifications.orderUpdateSuccess"), "success");
       } catch (err) {
         console.error(err);
-        showNotification("Failed to update order", "error");
+        showNotification(t("notifications.orderUpdateFailed"), "error");
       }
     }
   };
@@ -305,7 +305,7 @@ export function FloorPlans() {
                               e.stopPropagation();
                               openEditModal(fp);
                             }}
-                            title={t("actions.edit")}
+                            title={t("floorPlan.actions.edit")}
                           >
                             <FaEdit />
                           </button>
@@ -316,7 +316,7 @@ export function FloorPlans() {
                               e.stopPropagation();
                               handleDelete(fp.id);
                             }}
-                            title={t("actions.delete")}
+                            title={t("floorPlans.actions.delete")}
                           >
                             <FaTrash />
                           </button>
@@ -359,7 +359,7 @@ export function FloorPlans() {
                             e.stopPropagation();
                             openEditModal(fp);
                           }}
-                          title={t("actions.edit")}
+                          title={t("floorPlan.actions.edit")}
                         >
                           <FaEdit />
                         </button>
@@ -370,7 +370,7 @@ export function FloorPlans() {
                             e.stopPropagation();
                             handleDelete(fp.id);
                           }}
-                          title={t("actions.delete")}
+                          title={t("floorPlan.actions.delete")}
                         >
                           <FaTrash />
                         </button>

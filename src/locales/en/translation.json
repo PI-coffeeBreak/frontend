@@ -578,7 +578,8 @@
     "add": "Add Floor Plan",
     "dragHint": "Floor Plans order can be changed by dragging and dropping them.",
     "noPlans": "No Floor Plans yet.",
-    "noDetails": "No details available yet"
+    "noDetails": "No details available yet",
+    "confirmDelete": "Delete this floor plan?"
   },
   "pagination": {
     "previous": "Previous",
@@ -621,5 +622,18 @@
     "removeExistingImage": "remove the existing image",
     "nameRequired": "Name is required",
     "nameExists": "A floor plan with this name already exists"
+  },
+    "notifications": {
+    "loadFailed": "Failed to load Floor Plans",
+    "createSuccess": "Floor Plan Created",
+    "createFailed": "Creation failed",
+    "updateSuccess": "Floor Plan Updated",
+    "updateFailed": "Update failed",
+    "deleteSuccess": "Floor Plan Deleted",
+    "deleteFailed": "Deletion failed",
+    "removeImageSuccess": "Image removed",
+    "removeImageFailed": "Failed to remove image",
+    "orderUpdateSuccess": "Order updated successfully",
+    "orderUpdateFailed": "Failed to update order"
   }
 }
