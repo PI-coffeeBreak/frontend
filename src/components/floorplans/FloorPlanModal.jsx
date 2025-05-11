@@ -25,6 +25,8 @@ export default function FloorPlanModal({
   const [hasInitialized, setHasInitialized] = useState(false);
   const [imagePreview, setImagePreview] = useState(null);
   const [isImageMarkedForRemoval, setIsImageMarkedForRemoval] = useState(false);
+  const [urlPreview, setUrlPreview] = useState(null);
+  const [filePreview, setFilePreview] = useState(null);
 
   const { t } = useTranslation();
 
@@ -55,7 +57,7 @@ export default function FloorPlanModal({
       if (image.startsWith("http")) {
         setImageInputType("url");
         setPrevUrl(image);
-        setImagePreview(image);
+        setUrlPreview(image);
       } else {
         setImageInputType("file");
         fetchImagePreview(image);
@@ -63,16 +65,17 @@ export default function FloorPlanModal({
     };
 
     const fetchImagePreview = (image) => {
-      fetch(`${baseUrl}/media/${image}`, { method: "GET" })
+      const url = `${baseUrl}/media/${image}`;
+      fetch(url, { method: "GET" })
         .then((response) => {
           if (response.ok) {
-            setImagePreview(`${baseUrl}/media/${image}`);
+            setFilePreview(url);
           } else {
-            setImagePreview(null);
+            setFilePreview(null);
           }
         })
         .catch(() => {
-          setImagePreview(null);
+          setFilePreview(null);
         });
     };
 
@@ -102,16 +105,15 @@ export default function FloorPlanModal({
 
   const handleImageInputTypeChange = (e) => {
     const newType = e.target.value;
+  
     if (newType === "file") {
-      if (form.image?.startsWith("http")) {
-        setPrevUrl(form.image);
-      }
       setForm((f) => ({ ...f, image: "", file: null }));
-      setImagePreview(null);
+      setImagePreview(filePreview || null);
     } else if (newType === "url") {
       setForm((f) => ({ ...f, image: prevUrl || "", file: null }));
-      setImagePreview(null);
+      setImagePreview(urlPreview || null);
     }
+  
     setImageInputType(newType);
   };
 
@@ -140,6 +142,8 @@ export default function FloorPlanModal({
         await onRemoveImage();
       }
       setPrevUrl("");
+      setUrlPreview(null);
+      setFilePreview(null);
       onSubmit();
     }
   };
@@ -148,6 +152,8 @@ export default function FloorPlanModal({
     setErrors({});
     setPrevUrl("");
     setImagePreview(null);
+    setUrlPreview(null);
+    setFilePreview(null);
     setIsImageMarkedForRemoval(false);
     onClose();
   };
@@ -155,9 +161,10 @@ export default function FloorPlanModal({
   const handleFileSelect = (e) => {
     const file = e.target.files[0];
     if (!file) return;
-
+  
     setForm((f) => ({ ...f, file }));
-    setImagePreview(URL.createObjectURL(file));
+    const previewUrl = URL.createObjectURL(file);
+    setFilePreview(previewUrl);
   };
 
   const handleDrop = (event) => {
@@ -236,19 +243,15 @@ export default function FloorPlanModal({
                   onChange={(e) => {
                     const url = e.target.value;
                     setForm((f) => ({ ...f, image: url }));
-                    if (url.startsWith("http")) {
-                      setImagePreview(url);
-                    } else {
-                      setImagePreview(null);
-                    }
+                    setUrlPreview(url.startsWith("http") ? url : null);
                   }}
                 />
-                {imagePreview && (
+                {urlPreview && (
                   <div className="mt-4">
                     <p className="text-sm text-gray-500">{t("floorPlanModal.preview")}</p>
                     <div className="w-full h-70 flex items-center justify-center overflow-hidden rounded-md border border-gray-300 bg-gray-100">
                       <img
-                        src={imagePreview}
+                        src={urlPreview}
                         alt={t("floorPlanModal.preview")}
                         className="max-w-full max-h-full"
                       />
@@ -260,7 +263,7 @@ export default function FloorPlanModal({
 
             {imageInputType === "file" && (
               <div className="md:col-span-2">
-                {!imagePreview ? (
+                {!filePreview ? (
                   <button
                     type="button"
                     className="w-full border-dashed border-2 rounded-xl p-4 text-center bg-transparent border-gray-400"
@@ -287,13 +290,7 @@ export default function FloorPlanModal({
                   <div className="bg-base-200 w-full p-4 rounded-lg relative">
                     <button
                       onClick={() => {
-                        if (form.file) {
-                          handleClearFile();
-                        } else if (isImageMedia) {
-                          setIsImageMarkedForRemoval(true);
-                          setImagePreview(null);
-                          setForm((f) => ({ ...f, image: "" }));
-                        }
+                        handleClearFile();
                       }}
                       className="text-primary hover:text-error absolute right-3 top-3"
                       type="button"
@@ -304,7 +301,7 @@ export default function FloorPlanModal({
                     <div className="flex items-center gap-3">
                       <div className="w-12 h-12 overflow-hidden rounded-md">
                         <img
-                          src={imagePreview}
+                          src={filePreview}
                           alt={t("floorPlanModal.preview")}
                           className="w-full h-full object-cover"
                         />
@@ -328,11 +325,6 @@ export default function FloorPlanModal({
                   onChange={handleFileSelect}
                   className="hidden"
                 />
-                {form.image && !form.image.startsWith("http") && (
-                  <p className="text-xs text-gray-500 mt-2">
-                    UUID: <span className="font-mono">{form.image}</span>
-                  </p>
-                )}
               </div>
             )}
 
