@@ -11,6 +11,27 @@ const fallbackData = {
   fetchIfEmpty: true
 };
 
+const dummyFloorPlans = [
+  {
+    id: 1,
+    name: "Main Hall",
+    image: "https://placehold.co/600x400?text=Main+Hall",
+    details: "This is the main area with booths, stage, and seating."
+  },
+  {
+    id: 2,
+    name: "Workshop Room",
+    image: "https://placehold.co/600x400?text=Workshop+Room",
+    details: "This room hosts all technical workshops."
+  },
+  {
+    id: 3,
+    name: "Exhibition Zone",
+    image: "https://placehold.co/600x400?text=Exhibition+Zone",
+    details: "Dedicated area for exhibitors and networking."
+  }
+];
+
 export function FloorPlanComponent({
   title = fallbackData.title,
   description = fallbackData.description,
@@ -38,7 +59,9 @@ export function FloorPlanComponent({
         setPlans(resolved);
       } catch (err) {
         console.error("Failed to fetch floor plans:", err);
-        setError("Failed to load floor plans.");
+        // Use dummy data if fetch fails
+        setPlans(dummyFloorPlans);
+        setError("Unable to load floor plans from server. Showing example data.");
       } finally {
         setLoading(false);
       }
@@ -55,11 +78,11 @@ export function FloorPlanComponent({
     );
   }
 
-  if (error || plans.length === 0) {
+  if (plans.length === 0) {
     return (
       <div className={`bg-base-100 p-8 rounded shadow text-center ${className}`}>
         <h1 style={{ fontSize: "24px", fontWeight: "bold" }}>{title}</h1>
-        <p style={{ fontSize: "16px", color: "gray" }}>{error || "No floor plans available."}</p>
+        <p style={{ fontSize: "16px", color: "gray" }}>No floor plans available.</p>
       </div>
     );
   }
@@ -76,6 +99,9 @@ export function FloorPlanComponent({
             <p style={{ fontSize: "16px", color: "gray", marginTop: "4px" }}>
               {description}
             </p>
+          )}
+          {error && (
+            <p className="text-sm text-warning mt-2">{error}</p>
           )}
         </div>
 
