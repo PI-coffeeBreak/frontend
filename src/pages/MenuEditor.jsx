@@ -33,7 +33,7 @@ function SortableMenuItem({ option, onEdit, onDelete }) {
     <div 
       ref={setNodeRef} 
       style={style} 
-      className="bg-white p-4 mb-2 rounded-lg shadow-sm border border-gray-200 flex justify-between items-center"
+      className="p-4 rounded-xl border border-gray-300 flex justify-between items-center"
     >
       <div className="flex items-center gap-3">
         <div {...listeners} {...attributes} className="cursor-grab text-gray-400 hover:text-gray-600">
@@ -44,22 +44,22 @@ function SortableMenuItem({ option, onEdit, onDelete }) {
             <IconComponent />
           </span>
           <div>
-            <p className="font-medium">{option.label}</p>
-            <p className="text-xs text-gray-500">{option.href}</p>
+            <p className="font-medium text-xl">{option.label}</p>
+            <p className="text-gray-500">{option.href}</p>
           </div>
         </div>
       </div>
       <div className="flex items-center gap-2">
         <button 
           onClick={() => onEdit(option)}
-          className="p-2 text-blue-500 hover:bg-blue-50 rounded-full"
+          className="p-2 text-primary hover:text-primary/85 rounded-full"
           title={t('menuEditor.actions.edit')}
         >
           <FaEdit />
         </button>
         <button 
           onClick={() => onDelete(option.id)}
-          className="p-2 text-red-500 hover:bg-red-50 rounded-full"
+          className="p-2 text-primary hover:text-primary/85 rounded-full"
           title={t('menuEditor.actions.delete')}
         >
           <FaTrash />
@@ -436,36 +436,29 @@ export function MenuEditor() {
   };
 
   return (
-    <div className="container mx-auto p-6 max-w-4xl">
-      <div className="flex justify-between items-center mb-6">
-        <h1 className="text-3xl font-bold">{t('menuEditor.title')}</h1>
+    <div className="w-full min-h-svh p-2 lg:p-8">
+      <h1 className="text-3xl font-bold my-8">{t('menuEditor.title')}</h1>
+
+      <div className="mb-4">
         <button
-          onClick={() => setIsAddModalOpen(true)}
-          className="btn btn-primary gap-2"
+            onClick={() => setIsAddModalOpen(true)}
+            className="btn btn-primary flex items-center gap-2 px-4 py-2 text-white rounded-xl"
         >
           <FaPlus /> {t('menuEditor.addButton')}
         </button>
       </div>
 
-      <div className="bg-base-200 p-4 rounded-lg mb-6">
-        <p className="text-base-content/70">
-          {t('menuEditor.description')}
-        </p>
-      </div>
-
-      <div className="mb-6">
-        <div className="relative">
-          <label htmlFor="menuSearchInput" className="sr-only">{t('menuEditor.searchPlaceholder')}</label>
+      <div className="flex flex-col sm:flex-row gap-4 mb-6">
+        <label className="input input-bordered rounded-xl flex items-center gap-2">
+          <FaSearch className="text-gray-400"/>
           <input
-            id="menuSearchInput"
-            type="text"
-            placeholder={t('menuEditor.searchPlaceholder')}
-            value={searchTerm}
-            onChange={(e) => setSearchTerm(e.target.value)}
-            className="w-full p-2 pl-10 border border-gray-300 rounded-md"
+              type="text"
+              placeholder={t('menuEditor.searchPlaceholder')}
+              value={searchTerm}
+              onChange={(e) => setSearchTerm(e.target.value)}
+              className="grow"
           />
-          <FaSearch className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400" />
-        </div>
+        </label>
       </div>
 
       {renderContent()}

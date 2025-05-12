@@ -339,7 +339,7 @@
   "menuEditor": {
     "title": "Editor de Menu",
     "description": "Gerir os itens do menu de navegação. Arrastar e soltar para reordenar os itens. As alterações serão refletidas na navegação do seu evento.",
-    "searchPlaceholder": "Procurar itens do menu...",
+    "searchPlaceholder": "Procurar itens do menu",
     "addButton": "Adicionar Item do Menu",
     "modal": {
       "add": {

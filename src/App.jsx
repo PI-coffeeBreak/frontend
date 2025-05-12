@@ -55,11 +55,14 @@ export default function App() {
           {/* Application section */}
           <Route path="application">
             <Route index element={<EventMaker />} />
-            <Route path="pages" element={<PagesList />} />
+            <Route path="pages">
+              <Route index element={<PagesList />} />
+              <Route path="edit-page/:pageTitle" element={<EditPage />} />
+              <Route path="create-page" element={<CreatePage />} />
+            </Route>
             <Route path="menus" element={<MenuEditor />} />
             <Route path="colors" element={<Colors />} />
-            <Route path="edit-page/:pageTitle" element={<EditPage />} />
-            <Route path="create-page" element={<CreatePage />} />
+
           </Route>
           
           {/* Plugins section */}

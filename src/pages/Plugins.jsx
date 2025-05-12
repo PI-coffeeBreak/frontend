@@ -1,4 +1,4 @@
-import { useState } from "react";
+import React, { useState } from "react";
 import {FaCog, FaSearch} from "react-icons/fa";
 import { AiOutlineLoading3Quarters } from "react-icons/ai";
 import Pagination from "../components/common/Pagination.jsx";
@@ -11,7 +11,7 @@ export default function Plugins() {
     const [selectedPlugin, setSelectedPlugin] = useState(null);
     const [searchTerm, setSearchTerm] = useState("");
     const [currentPage, setCurrentPage] = useState(1);
-    const pluginsPerPage = 6;
+    const pluginsPerPage = 12;
     const [loadingPlugin, setLoadingPlugin] = useState(null);
 
     const filteredPlugins = plugins.filter((plugin) =>
@@ -39,6 +39,12 @@ export default function Plugins() {
         setSelectedPlugin(null);
     };
 
+    const handlePageChange = (pageNumber) => {
+        if (pageNumber >= 1 && pageNumber <= totalPages) {
+            setCurrentPage(pageNumber);
+        }
+    };
+
     const handleTogglePlugin = async (plugin) => {
         setLoadingPlugin(plugin.name);
         try {
@@ -57,7 +63,7 @@ export default function Plugins() {
                     <input
                         type="text"
                         className="grow "
-                        placeholder="Search Plugins"
+                        placeholder="Search plugins"
                         value={searchTerm}
                         onChange={(e) => {
                             setSearchTerm(e.target.value);
@@ -128,13 +134,20 @@ export default function Plugins() {
                 />
             )}
 
-            {filteredPlugins.length > pluginsPerPage && (
-                <Pagination
-                    className="align-start"
-                    currentPage={currentPage}
-                    totalPages={totalPages}
-                    onPageChange={setCurrentPage}
-                />
+            {totalPages > 1 && (
+                <div className="flex justify-center mt-4">
+                    <div className="join">
+                        {Array.from({ length: totalPages }).map((_, i) => (
+                            <button
+                                key={`page-${i + 1}`}
+                                className={`join-item btn btn-xs sm:btn-sm ${currentPage === i + 1 ? "btn-active" : ""}`}
+                                onClick={() => handlePageChange(i + 1)}
+                            >
+                                {i + 1}
+                            </button>
+                        ))}
+                    </div>
+                </div>
             )}
         </div>
     );

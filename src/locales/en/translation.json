@@ -360,7 +360,7 @@
   "menuEditor": {
     "title": "Menu Editor",
     "description": "Manage navigation menu items. Drag and drop to reorder items. Changes will be reflected in your event's navigation.",
-    "searchPlaceholder": "Search menu items...",
+    "searchPlaceholder": "Search menu items",
     "addButton": "Add Item",
     "modal": {
       "add": {
@@ -409,7 +409,7 @@
   "pagesList": {
     "title": "Pages",
     "createButton": "Create Page",
-    "searchPlaceholder": "Search pages...",
+    "searchPlaceholder": "Search pages",
     "filters": {
       "all": "All Pages",
       "enabled": "Enabled",
