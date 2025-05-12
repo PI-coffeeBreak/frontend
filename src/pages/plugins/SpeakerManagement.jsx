@@ -438,6 +438,18 @@ const SpeakerManagement = () => {
     );
   };
 
+  const handleRemoveImage = async () => {
+    if (formData.image_uuid) {
+      try {
+        await axiosWithAuth(keycloak).delete(`${baseUrl}/media/${formData.image_uuid}/`);
+      } catch (err) {
+        console.error('Error removing image:', err);
+      }
+    } else {
+      showNotification('No image to remove', 'info');
+    }
+  };
+
   const getInitials = (name) => {
     return name
       .split(' ')
@@ -704,6 +716,7 @@ const SpeakerManagement = () => {
                         setImagePreview(null);
                         document.getElementById('speaker-image').value = '';
                         if (editMode) {
+                          handleRemoveImage();
                           setFormData(prev => ({ ...prev, image_uuid: null }));
                         }
                       }}
