@@ -328,9 +328,12 @@ export function EventEditor() {
                 <form onSubmit={handleSubmit} className="space-y-16">
 
                     <div className="grid grid-cols-2">
-                        <h2>
-                            {t('eventEditor.basicInfo.title')}
-                        </h2>
+                        <div>
+                            <h2>
+                                {t('eventEditor.basicInfo.title')}
+                            </h2>
+                            <p className="text-sm text-base-content/70 mt-1">Enter the event name, description, start date, and end date</p>
+                        </div>
                         <div className="grid grid-cols-1 gap-4">
                             <div>
                                 <label htmlFor="eventName" className="block mb-2 font-medium">
@@ -393,11 +396,15 @@ export function EventEditor() {
                             </div>
                         </div>
                     </div>
+                    <div className="divider"></div>
 
                     <div className="grid grid-cols-2">
-                        <h2>
-                            {t('eventEditor.location.title')}
-                        </h2>
+                        <div>
+                            <h2>
+                                {t('eventEditor.location.title')}
+                            </h2>
+                            <p className="text-sm text-base-content/70 mt-1">Specify where the event will take place, with location suggestions</p>
+                        </div>
                         <div className="grid grid-cols-1 gap-4">
                             <div>
                                 <label htmlFor="location" className="block mb-2 font-medium">
@@ -418,11 +425,15 @@ export function EventEditor() {
                             </div>
                         </div>
                     </div>
+                    <div className="divider"></div>
 
                     <div className="grid grid-cols-2">
-                        <h2>
-                            {t('eventEditor.image.title')}
-                        </h2>
+                        <div>
+                            <h2>
+                                {t('eventEditor.image.title')}
+                            </h2>
+                            <p className="text-sm text-base-content/70 mt-1">Upload or change an image for your event</p>
+                        </div>
                         <div className="grid grid-cols-1 gap-4">
                             <label htmlFor="eventImage" className="block mb-2 font-medium">
                                 {t('eventEditor.image.label')}
@@ -449,6 +460,7 @@ export function EventEditor() {
                             </div>
                         </div>
                     </div>
+                    <div className="divider"></div>
 
                     <div className="flex justify-end gap-4">
                         <button
