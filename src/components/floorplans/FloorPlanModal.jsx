@@ -8,16 +8,16 @@ export default function FloorPlanModal({
   open,
   onClose,
   onSubmit,
-  form,
-  setForm,
   isEditing,
   onRemoveImage,
   floorPlans,
   selectedId,
 }) {
+  console.log("🟢 FloorPlanModal render");
   const dialogRef = useRef(null);
   const fileInputRef = useRef(null);
 
+  const [form, setForm] = useState({ name: "", details: "", image: "", file: null });
   const [errors, setErrors] = useState({});
   const [imageInputType, setImageInputType] = useState("file");
   const [prevUrl, setPrevUrl] = useState("");
@@ -27,6 +27,22 @@ export default function FloorPlanModal({
   const [filePreview, setFilePreview] = useState(null);
 
   const { t } = useTranslation();
+
+  useEffect(() => {
+    if (isEditing && selectedId) {
+      const selected = floorPlans.find((fp) => fp.id === selectedId);
+      if (selected) {
+        setForm({
+          name: selected.name || "",
+          details: selected.details || "",
+          image: selected.image || "",
+          file: null,
+        });
+      }
+    } else {
+      setForm({ name: "", details: "", image: "", file: null });
+    }
+  }, [isEditing, selectedId, floorPlans]);
 
   useEffect(() => {
     const dialog = dialogRef.current;
@@ -43,38 +59,47 @@ export default function FloorPlanModal({
     };
 
     const initializeDialog = () => {
-      if (form.image) {
-        handleImageInitialization(form.image);
+      const selected = floorPlans.find((fp) => fp.id === selectedId);
+    
+      if (selected?.image) {
+        handleImageInitialization(selected.image);
       } else {
         resetImageInput();
       }
+    
       setHasInitialized(true);
     };
 
-    const handleImageInitialization = (image) => {
-      if (image.startsWith("http")) {
+    const handleImageInitialization = async (image) => {
+      if (image.startsWith(baseUrl)) {
+        const isAvailable = await fetchImagePreview(image);
+        if (!isAvailable) {
+          resetImageInput();
+        }
+      } else if (image.startsWith("http")) {
         setImageInputType("url");
         setPrevUrl(image);
         setUrlPreview(image);
       } else {
-        setImageInputType("file");
-        fetchImagePreview(image);
+        resetImageInput();
       }
     };
 
-    const fetchImagePreview = (image) => {
-      const url = `${baseUrl}/media/${image}`;
-      fetch(url, { method: "GET" })
-        .then((response) => {
-          if (response.ok) {
-            setFilePreview(url);
-          } else {
-            setFilePreview(null);
-          }
-        })
-        .catch(() => {
+    const fetchImagePreview = async (image) => {
+      try {
+        const response = await fetch(image, { method: "GET" });
+        if (response.ok) {
+          setFilePreview(image);
+          return true;
+        } else {
           setFilePreview(null);
-        });
+          return false;
+        }
+      } catch (error) {
+        console.error("Error fetching image:", error);
+        setFilePreview(null);
+        return false;
+      }
     };
 
     const resetImageInput = () => {
@@ -98,11 +123,11 @@ export default function FloorPlanModal({
       dialog.removeEventListener("close", handleDialogClose);
       dialog.removeEventListener("cancel", handleDialogCancel);
     };
-  }, [open, form.image, hasInitialized, onClose]);
+  }, [open, selectedId, floorPlans, hasInitialized, onClose]);
 
   const handleImageInputTypeChange = (e) => {
     const newType = e.target.value;
-  
+
     if (newType === "file") {
       setForm((f) => ({ ...f, image: "", file: null }));
       setFilePreview(filePreview || null);
@@ -110,16 +135,16 @@ export default function FloorPlanModal({
       setForm((f) => ({ ...f, image: prevUrl || "", file: null }));
       setUrlPreview(urlPreview || null);
     }
-  
+
     setImageInputType(newType);
   };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-  
+
     const trimmedName = form.name.trim().toLowerCase();
     const newErrors = {};
-  
+
     if (!trimmedName) {
       newErrors.name = t("floorPlanModal.nameRequired");
     } else if (
@@ -131,13 +156,13 @@ export default function FloorPlanModal({
     ) {
       newErrors.name = t("floorPlanModal.nameExists");
     }
-  
+
     if (isEditing && imageInputType === "url" && !form.image?.startsWith("http")) {
       newErrors.image = t("floorPlanModal.imageUrlRequired");
     }
-  
+
     setErrors(newErrors);
-  
+
     if (Object.keys(newErrors).length === 0) {
       if (isImageMarkedForRemoval) {
         await onRemoveImage();
@@ -145,7 +170,7 @@ export default function FloorPlanModal({
       setPrevUrl("");
       setUrlPreview(null);
       setFilePreview(null);
-      onSubmit();
+      onSubmit(form);
     }
   };
 
@@ -161,7 +186,7 @@ export default function FloorPlanModal({
   const handleFileSelect = (e) => {
     const file = e.target.files[0];
     if (!file) return;
-  
+
     setForm((f) => ({ ...f, file }));
     const previewUrl = URL.createObjectURL(file);
     setFilePreview(previewUrl);
@@ -183,7 +208,7 @@ export default function FloorPlanModal({
     setFilePreview(null);
     setIsImageMarkedForRemoval(true);
     if (fileInputRef.current) fileInputRef.current.value = "";
-  };  
+  };
 
   const title = isEditing ? t("floorPlanModal.editTitle") : t("floorPlanModal.addTitle");
 
@@ -359,8 +384,6 @@ FloorPlanModal.propTypes = {
   open: PropTypes.bool.isRequired,
   onClose: PropTypes.func.isRequired,
   onSubmit: PropTypes.func.isRequired,
-  form: PropTypes.object.isRequired,
-  setForm: PropTypes.func.isRequired,
   isEditing: PropTypes.bool.isRequired,
   onRemoveImage: PropTypes.func.isRequired,
   floorPlans: PropTypes.array.isRequired,

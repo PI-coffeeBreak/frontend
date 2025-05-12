@@ -15,6 +15,7 @@ const apiUrl = `${baseUrl}/floor-plan-plugin/floor_plan`;
 const ITEMS_PER_PAGE = 6;
 
 function FloorPlanActions({ onEdit, onDelete, t }) {
+  console.log("🟠 FloorPlanActions render");
   return (
     <div className="flex gap-2 justify-end">
       <button
@@ -50,6 +51,7 @@ FloorPlanActions.propTypes = {
 };
 
 function FloorPlanRowItem({ fp, isTable, onEdit, onDelete, t }) {
+  console.log("🟡 FloorPlanRowItem render", fp.name);
   if (isTable) {
     return (
       <>
@@ -111,6 +113,7 @@ FloorPlanRowItem.propTypes = {
 };
 
 export function FloorPlans() {
+  console.log("🔵 FloorPlans render");
   const { keycloak } = useKeycloak();
   const { showNotification } = useNotification();
   const { t } = useTranslation();
@@ -174,12 +177,12 @@ export function FloorPlans() {
 
   useEffect(fetchFloorPlans, []);
 
-  const handleCreate = async () => {
+  const handleCreate = async (form) => {
     try {
       const body = {
         name: form.name,
         details: form.details,
-        image: form.file ? "" : form.image.trim()
+        image: form.file ? "" : form.image.trim(),
       };
       const { data } = await axiosWithAuth(keycloak).post(apiUrl, body);
       if (form.file && data.image && !data.image.startsWith("http")) {
@@ -189,8 +192,8 @@ export function FloorPlans() {
         ...prev,
         {
           ...data,
-          image: data.image && !data.image.startsWith("http") ? `${baseUrl}/media/${data.image}` : data.image
-        }
+          image: data.image && !data.image.startsWith("http") ? `${baseUrl}/media/${data.image}` : data.image,
+        },
       ]);
       showNotification(t("notifications.createSuccess"), "success");
       closeModal();
@@ -201,14 +204,14 @@ export function FloorPlans() {
     }
   };
 
-  const handleUpdate = async () => {
+  const handleUpdate = async (form) => {
     try {
       const hasFile = !!form.file;
       const imagePayload = hasFile ? "" : form.image?.trim() || " ";
       const { data } = await axiosWithAuth(keycloak).put(`${apiUrl}/${selected.id}`, {
         name: form.name,
         details: form.details,
-        image: imagePayload || " "
+        image: imagePayload || " ",
       });
       if (hasFile && data.image && !data.image.startsWith("http")) {
         await uploadToMediaService(data.image, form.file);
@@ -218,7 +221,7 @@ export function FloorPlans() {
           fp.id === selected.id
             ? {
                 ...data,
-                image: data.image && !data.image.startsWith("http") ? `${baseUrl}/media/${data.image}?t=${Date.now()}` : data.image
+                image: data.image && !data.image.startsWith("http") ? `${baseUrl}/media/${data.image}?t=${Date.now()}` : data.image,
               }
             : fp
         )
@@ -247,16 +250,23 @@ export function FloorPlans() {
 
   const handleRemoveImage = async () => {
     if (!selected) return;
+  
     const uuid = extractUuid(selected.image);
     if (!uuid || uuid.startsWith("http")) return;
+  
     try {
       await axiosWithAuth(keycloak).delete(`${baseUrl}/media/${uuid}`);
       showNotification(t("notifications.removeImageSuccess"), "success");
-      setForm((f) => ({ ...f, file: null }));
-      setIsImageMedia(false);
+
       setFloorPlans((prev) =>
-        prev.map((fp) => (fp.id === selected.id ? { ...fp, image: `${uuid}` } : fp))
+        prev.map((fp) =>
+          fp.id === selected.id
+            ? { ...fp, image: "" }
+            : fp
+        )
       );
+  
+      setIsImageMedia(false);
     } catch (err) {
       console.error(err);
       showNotification(t("notifications.removeImageFailed"), "error");
@@ -264,7 +274,6 @@ export function FloorPlans() {
   };
 
   const openCreateModal = () => {
-    resetForm();
     setSelected(null);
     setModalMode("create");
     setModalOpen(true);
@@ -273,7 +282,6 @@ export function FloorPlans() {
   const openEditModal = (fp) => {
     const uuidOrUrl = extractUuid(fp.image);
     setSelected(fp);
-    setForm({ name: fp.name, details: fp.details ?? "", image: uuidOrUrl, file: null });
     checkIfImageIsMedia(uuidOrUrl);
     setModalMode("edit");
     setModalOpen(true);
@@ -430,8 +438,6 @@ export function FloorPlans() {
         open={modalOpen}
         onClose={closeModal}
         onSubmit={modalMode === "edit" ? handleUpdate : handleCreate}
-        form={form}
-        setForm={setForm}
         isEditing={modalMode === "edit"}
         onRemoveImage={handleRemoveImage}
         floorPlans={floorPlans}
