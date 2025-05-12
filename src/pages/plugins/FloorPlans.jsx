@@ -293,26 +293,26 @@ export function FloorPlans() {
 
   const handleDragEnd = async (event) => {
     const { active, over } = event;
-    if (active.id !== over.id) {
-      const oldIndex = floorPlans.findIndex((fp) => fp.id === active.id);
-      const newIndex = floorPlans.findIndex((fp) => fp.id === over.id);
-      const reordered = arrayMove(floorPlans, oldIndex, newIndex);
-
-      const updatedFloorPlans = reordered.map((fp, index) => ({
-        ...fp,
-        order: index + 1,
-      }));
-
-      setFloorPlans(updatedFloorPlans);
-
-      try {
-        const orders = updatedFloorPlans.map((fp) => ({ id: fp.id, order: fp.order }));
-        await axiosWithAuth(keycloak).patch(`${apiUrl}/order`, orders);
-        showNotification(t("notifications.orderUpdateSuccess"), "success");
-      } catch (err) {
-        console.error(err);
-        showNotification(t("notifications.orderUpdateFailed"), "error");
-      }
+    if (!over || active.id === over.id) return;
+  
+    const oldIndex = floorPlans.findIndex((fp) => fp.id === active.id);
+    const newIndex = floorPlans.findIndex((fp) => fp.id === over.id);
+    const reordered = arrayMove(floorPlans, oldIndex, newIndex);
+  
+    const updatedFloorPlans = reordered.map((fp, index) => ({
+      ...fp,
+      order: index + 1,
+    }));
+  
+    setFloorPlans(updatedFloorPlans);
+  
+    try {
+      const orders = updatedFloorPlans.map((fp) => ({ id: fp.id, order: fp.order }));
+      await axiosWithAuth(keycloak).patch(`${apiUrl}/order`, orders);
+      showNotification(t("notifications.orderUpdateSuccess"), "success");
+    } catch (err) {
+      console.error(err);
+      showNotification(t("notifications.orderUpdateFailed"), "error");
     }
   };
 
@@ -371,19 +371,23 @@ export function FloorPlans() {
     }
 
     return (
-      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
-        {plansToRender.map((fp) => (
-          <SortableItem key={fp.id} id={fp.id}>
-            <FloorPlanRowItem
-              fp={fp}
-              isTable={false}
-              onEdit={() => openEditModal(fp)}
-              onDelete={() => handleDelete(fp.id)}
-              t={t}
-            />
-          </SortableItem>
-        ))}
-      </div>
+      <DndContext collisionDetection={closestCenter} onDragEnd={handleDragEnd}>
+        <SortableContext items={plansToRender.map((fp) => fp.id)} strategy={rectSortingStrategy}>
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+            {plansToRender.map((fp) => (
+              <SortableItem key={fp.id} id={fp.id}>
+                <FloorPlanRowItem
+                  fp={fp}
+                  isTable={false}
+                  onEdit={() => openEditModal(fp)}
+                  onDelete={() => handleDelete(fp.id)}
+                  t={t}
+                />
+              </SortableItem>
+            ))}
+          </div>
+        </SortableContext>
+      </DndContext>
     );
   };
 
