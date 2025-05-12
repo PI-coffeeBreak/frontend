@@ -1,13 +1,23 @@
-import React from 'react';
-import { Link } from 'react-router-dom';
+import React, { useEffect } from 'react';
+import {Link, useNavigate} from 'react-router-dom';
 import { FaPalette, FaCogs, FaCalendarAlt, FaPuzzlePiece, FaUsers, FaBars, FaArrowRight, FaFile } from 'react-icons/fa';
 import { useEvent } from '../contexts/EventContext';
 import { useTranslation } from 'react-i18next';
 
 export default function Instantiate() {
     const { t } = useTranslation();
-    const { eventInfo, isLoading } = useEvent();
+    const { eventInfo ,isLoading } = useEvent();
+    const navigate = useNavigate();
 
+    console.log("Event Info:", eventInfo);
+
+    useEffect(() => {
+        console.log("isLoassidkelm:", isLoading)
+        console.log("Event Info2123:", eventInfo);
+        if (!isLoading && eventInfo === null) {
+            navigate('/setup');
+        }
+    }, [isLoading, eventInfo, navigate]);
     
 
     // Add section cards with direct homepage links
