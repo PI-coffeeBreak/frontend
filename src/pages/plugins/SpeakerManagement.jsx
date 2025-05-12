@@ -20,18 +20,10 @@ const truncateText = (text, maxLength = 80) => {
   return `${truncated}...`;
 };
 
-const prepareImageUpload = (formData, editMode) => {
+const prepareImageUpload = (formData) => {
   if (formData.image instanceof File) {
-    console.log('New image selected for upload:', formData.image.name);
     return formData.image;
   } 
-  
-  if (editMode && formData.image_uuid) {
-    console.log('Keeping existing image by omitting field, UUID:', formData.image_uuid);
-  } else {
-    console.log('No image for this speaker');
-  }
-  
   return null;
 };
 
@@ -94,8 +86,6 @@ const SpeakerManagement = () => {
     setLoading(true);
     setError(null);
     try {
-      console.log(`Fetching speakers from: ${API_ENDPOINTS.SPEAKERS}`);
-      
       const response = await axiosWithAuth(keycloak).get(API_ENDPOINTS.SPEAKERS);
       
       if (Array.isArray(response.data)) {
@@ -108,7 +98,6 @@ const SpeakerManagement = () => {
           activity_id: speaker.activity_id
         }));
         setSpeakers(normalizedSpeakers);
-        console.log(`Successfully loaded ${normalizedSpeakers.length} speakers`);
       } else if (response.data && typeof response.data === 'object') {
         const dataArray = response.data.results || response.data.items || [];
         const normalizedSpeakers = dataArray.map(speaker => ({
@@ -120,7 +109,6 @@ const SpeakerManagement = () => {
           activity_id: speaker.activity_id
         }));
         setSpeakers(normalizedSpeakers);
-        console.log(`Successfully loaded ${normalizedSpeakers.length} speakers from nested data`);
       } else {
         console.error('Unexpected API response structure:', response.data);
         setSpeakers([]);
@@ -188,8 +176,6 @@ const SpeakerManagement = () => {
         payload.image = speakerData.image;
       }
       
-      console.log(`Updating speaker ${id} with data:`, payload);
-      
       const response = await axiosWithAuth(keycloak).patch(
         `${API_ENDPOINTS.SPEAKERS}${id}/`, 
         payload,
@@ -245,11 +231,8 @@ const SpeakerManagement = () => {
 
   useEffect(() => {
     if (keycloak?.authenticated) {
-      console.log('Authenticated, fetching speakers');
       fetchSpeakers();
       fetchActivities();
-    } else {
-      console.log('Not authenticated yet, waiting...');
     }
   }, [keycloak?.authenticated]);
   
@@ -353,7 +336,7 @@ const SpeakerManagement = () => {
     showNotification(`${editMode ? 'Updating' : 'Adding'} speaker...`, 'info');
 
     try {
-      const imageToUpload = prepareImageUpload(formData, editMode);
+      const imageToUpload = prepareImageUpload(formData);
       const speakerData = prepareSpeakerData(formData, imageToUpload);
       
       const result = editMode
@@ -383,14 +366,12 @@ const SpeakerManagement = () => {
   const uploadSpeakerImage = async (imageUuid, imageFile) => {
     try {
       await uploadMedia(imageUuid, imageFile, true);
-      console.log('Image upload successful using PUT');
       showNotification('Image uploaded successfully', 'success');
     } catch (putError) {
       console.error('PUT failed, trying with POST:', putError);
       
       try {
         await uploadMedia(imageUuid, imageFile, false);
-        console.log('Image upload successful using POST');
         showNotification('Image uploaded successfully', 'success');
       } catch (postError) {
         console.error('Both PUT and POST failed:', postError);
@@ -606,6 +587,21 @@ const SpeakerManagement = () => {
               </div>
 
               <div className="form-control w-full mb-4">
+                <label htmlFor="speaker-role" className="label">
+                  <span className="label-text">Role</span>
+                </label>
+                <input
+                  id="speaker-role"
+                  type="text"
+                  name="role"
+                  value={formData.role}
+                  onChange={handleInputChange}
+                  placeholder="Enter speaker role"
+                  className="input input-bordered w-full"
+                />
+              </div>
+
+              <div className="form-control w-full mb-4">
                 <label htmlFor="speaker-description" className="label">
                   <span className="label-text">Description</span>
                 </label>
@@ -620,21 +616,6 @@ const SpeakerManagement = () => {
                 />
               </div>
 
-              <div className="form-control w-full mb-4">
-                <label htmlFor="speaker-role" className="label">
-                  <span className="label-text">Role</span>
-                </label>
-                <input
-                  id="speaker-role"
-                  type="text"
-                  name="role"
-                  value={formData.role}
-                  onChange={handleInputChange}
-                  placeholder="Enter speaker role"
-                  className="input input-bordered w-full"
-                />
-              </div>
-              
               <div className="form-control w-full mb-4">
                 <label htmlFor="activity-search" className="label">
                   <span className="label-text">Associated Activity (optional)</span>
@@ -880,7 +861,6 @@ const SpeakerManagement = () => {
                                 alt={speaker.name}
                                 className="w-full h-full object-cover rounded-full"
                                 onError={(e) => {
-                                  console.log('Image load error for:', speaker.name, speaker.image_uuid);
                                   e.target.onerror = null;
                                   e.target.style.display = 'none';
                                   e.target.parentElement.innerHTML = `<span class="flex h-full w-full items-center justify-center text-lg font-medium">${getInitials(speaker.name)}</span>`;
