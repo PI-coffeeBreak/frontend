@@ -34,15 +34,21 @@ export function PagesList() {
             try {
                 await deletePage(pageId);
                 showNotification(t('pagesList.actions.deleteSuccess'), "success");
+    
+                // Refresh the pages list
+                await getPages();
+    
+                // Check if the current page is empty after deletion
+                const totalPagesAfterDeletion = Math.ceil((pages.length - 1) / itemsPerPage);
+                if (currentPage > totalPagesAfterDeletion) {
+                    setCurrentPage(totalPagesAfterDeletion); // Redirect to the previous page
+                }
             } catch (error) {
-                // Properly handle the error by logging it
                 console.error("Error deleting page:", error);
-
+    
                 // Show a more specific error message if possible
                 const errorMessage = error?.message || t('pagesList.actions.deleteError');
                 showNotification(errorMessage, "error");
-
-                getPages();
             }
         }
     };
