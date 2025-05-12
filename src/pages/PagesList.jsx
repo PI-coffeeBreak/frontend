@@ -31,7 +31,7 @@ export function PagesList() {
 
     const handleEdit = (page) => {
         const pageTitleSlug = encodeURIComponent(page.title);
-        navigate(`edit-page/${pageTitleSlug}`);
+        navigate(`/instantiate/application/pages/edit-page/${pageTitleSlug}`);
     };
 
     const handleDelete = (pageId) => {

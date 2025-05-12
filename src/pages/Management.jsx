@@ -1,5 +1,5 @@
 import React, { useMemo } from 'react';
-import { FaUsers, FaCalendarAlt, FaBell } from 'react-icons/fa';
+import {FaUsers, FaCalendarAlt, FaBell, FaEdit, FaPuzzlePiece} from 'react-icons/fa';
 import DashboardCard from '../components/common/DashboardCard.jsx';
 import { useTranslation } from 'react-i18next';
 
@@ -12,7 +12,7 @@ export default function Management() {
             title: t('management.cards.users.title'),
             description: t('management.cards.users.description'),
             icon: FaUsers,
-            path: "users",
+            path: "/instantiate/event/users",
             color: "blue",
             buttonText: t('management.cards.users.buttonText')
         },
@@ -21,10 +21,29 @@ export default function Management() {
             title: t('management.cards.sessions.title'),
             description: t('management.cards.sessions.description'),
             icon: FaCalendarAlt,
-            path: "sessions",
+            path: "/instantiate/event/sessions",
             color: "purple",
             buttonText: t('management.cards.sessions.buttonText')
         },
+        {
+            id: 'event-info',
+            title: t('eventMaker.cards.eventInfo.title'),
+            description: t('eventMaker.cards.eventInfo.description'),
+            icon: FaEdit,
+            path: "/instantiate/event/info",
+            color: "indigo",
+            buttonText: t('eventMaker.cards.eventInfo.buttonText')
+        },
+        {
+            id: 'choose-plugins',
+            title: t('eventMaker.cards.choosePlugins.title'),
+            description: t('eventMaker.cards.choosePlugins.description'),
+            icon: FaPuzzlePiece,
+            path: "/instantiate/event/plugins",
+            color: "amber",
+            buttonText: t('eventMaker.cards.choosePlugins.buttonText')
+        }
+
     ], [t]);
 
     return (

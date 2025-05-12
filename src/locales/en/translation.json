@@ -117,12 +117,12 @@
     "quickAccess": "Quick Access",
     "cards": {
       "management": {
-        "title": "Management",
-        "description": "Access tools to manage users and sessions for your event."
+        "title": "Event",
+        "description": "Access tools to manage users, sessions and plugins for your event."
       },
       "eventMaker": {
-        "title": "Event Maker",
-        "description": "Customize the appearance, content and functionality of your event."
+        "title": "Application",
+        "description": "Customize the appearance, content and functionality of your application."
       }
     }
   },
@@ -547,7 +547,7 @@
     }
   },
   "management": {
-    "title": "Management",
+    "title": "Event",
     "subtitle": "Manage all aspects of your event through these administrative tools",
     "cards": {
       "users": {
@@ -568,8 +568,8 @@
     }
   },
   "eventMaker": {
-    "title": "Event Maker",
-    "subtitle": "Customize and configure your event with these powerful tools",
+    "title": "Application",
+    "subtitle": "Customize and configure your application with these powerful tools",
     "cards": {
       "eventInfo": {
         "title": "Event Info",

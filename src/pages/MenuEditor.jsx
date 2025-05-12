@@ -250,7 +250,7 @@ function EditOptionModal({ isOpen, onClose, editingOption, setEditingOption, onU
                   type="text"
                   value={editingOption.label}
                   onChange={(e) => setEditingOption({...editingOption, label: e.target.value})}
-                  className="w-full p-2 border border-gray-300 rounded-md"
+                  className="w-full p-2 rounded-xl border border-gray-300 rounded-md"
                 />
               </div>
               
@@ -266,7 +266,7 @@ function EditOptionModal({ isOpen, onClose, editingOption, setEditingOption, onU
                   type="text"
                   value={editingOption.href}
                   onChange={(e) => setEditingOption({...editingOption, href: e.target.value})}
-                  className="w-full p-2 border border-gray-300 rounded-md"
+                  className="w-full p-2 rounded-xl border border-gray-300 rounded-md"
                 />
               </div>
             </div>
@@ -276,14 +276,14 @@ function EditOptionModal({ isOpen, onClose, editingOption, setEditingOption, onU
         <div className="modal-action mt-4">
           <button
             type="button"
-            className="btn btn-outline"
+            className="btn btn-secondary rounded-xl"
             onClick={onClose}
           >
             {t('menuEditor.modal.edit.cancel')}
           </button>
           <button
             type="button"
-            className="btn btn-primary"
+            className="btn btn-primary rounded-xl"
             onClick={onUpdate}
           >
             {t('menuEditor.modal.edit.update')}

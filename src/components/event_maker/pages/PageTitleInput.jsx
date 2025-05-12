@@ -15,7 +15,7 @@ export function PageTitleInput({ title, onChange }) {
                 type="text"
                 value={title}
                 onChange={(e) => onChange(e.target.value)}
-                className="input mt-1 block w-full p-2 border border-gray-300 rounded-md shadow-sm"
+                className="input mt-1 block w-full p-2 border border-gray-300 rounded-xl"
                 placeholder={t('pageEditor.common.titlePlaceholder')}
             />
         </div>
