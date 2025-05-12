@@ -301,6 +301,10 @@
   "themeCustomizer": {
     "title": "Personalizador de Tema do Evento",
     "subtitle": "Personalize as cores do seu evento e veja como ficam em tempo real",
+    "pageHeader": {
+      "title": "Personalização do Tema",
+      "subtitle": "Personalize seu evento com cores personalizadas para combinar com a identidade da sua marca"
+    },
     "tabs": {
       "colors": "Escolher Cores",
       "preview": "Visualizar Evento"
@@ -309,7 +313,8 @@
     "colorGroups": {
       "brandColors": "Cores da Marca",
       "backgroundText": "Fundo e Texto",
-      "statusColors": "Cores de Status"
+      "statusColors": "Cores de Status",
+      "neutrals": "Cores Neutras"
     },
     "colorNames": {
       "primary": "Cor Principal da Marca",

@@ -39,12 +39,12 @@ function SortableMenuItem({ option, onEdit, onDelete }) {
         <div {...listeners} {...attributes} className="cursor-grab text-gray-400 hover:text-gray-600">
           <FaBars />
         </div>
-        <div className="flex items-center gap-2">
-          <span className="p-2 rounded-full bg-primary/10 text-primary">
-            <IconComponent />
+        <div className="flex gap-2">
+          <span className="p-2 rounded-xl flex items-center w-12 bg-primary/10 text-primary">
+            <IconComponent className="mx-auto" />
           </span>
           <div>
-            <p className="font-medium text-xl">{option.label}</p>
+            <p className="font-semibold text-xl">{option.label}</p>
             <p className="text-gray-500">{option.href}</p>
           </div>
         </div>

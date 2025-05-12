@@ -304,6 +304,10 @@
   "themeCustomizer": {
     "title": "Event Theme Designer",
     "subtitle": "Customize your event's colors and see how they look in real-time",
+    "pageHeader": {
+      "title": "Theme Customization",
+      "subtitle": "Personalize your event with custom colors to match your brand identity"
+    },
     "tabs": {
       "colors": "Choose Colors",
       "preview": "Preview Your Event"
@@ -312,7 +316,8 @@
     "colorGroups": {
       "brandColors": "Brand Colors",
       "backgroundText": "Background & Text",
-      "statusColors": "Status Colors"
+      "statusColors": "Status Colors",
+      "neutrals": "Neutral Colors"
     },
     "colorNames": {
       "primary": "Main Brand Color",
@@ -353,7 +358,7 @@
     "actions": {
       "reset": "Reset",
       "resetTitle": "Reset to original theme",
-      "save": "Save",
+      "save": "Save Changes",
       "text": "Text"
     }
   },
