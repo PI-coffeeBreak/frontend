@@ -13,9 +13,10 @@ export const axiosWithAuth = (keycloak) => {
           config.headers.Authorization = `Bearer ${keycloak.token}`;
         } catch (err) {
           console.error("Token refresh failed", err);
+          return Promise.reject(err);
         }
       } else {
-        console.warn("No token available");
+        return Promise.reject(new Error("No token available"));
       }
       return config;
     },
@@ -24,6 +25,22 @@ export const axiosWithAuth = (keycloak) => {
     }
   );
 
+  // Add response interceptor to handle 401 errors
+  instance.interceptors.response.use(
+    (response) => response,
+    async (error) => {
+      // Handle both HTTP 401 and our custom "No token available" error
+      if (error.response?.status === 401 || error.message === "No token available") {
+        // Don't redirect if we're already on the auth-redirect page or root path
+        if (!window.location.pathname.includes('auth-redirect') && window.location.pathname !== '/') {
+          keycloak.login({
+            redirectUri: window.location.origin + '/auth-redirect'
+          });
+        }
+      }
+      return Promise.reject(error);
+    }
+  );
   return instance;
 };
 
