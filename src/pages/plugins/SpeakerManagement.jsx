@@ -38,7 +38,8 @@ const prepareImageUpload = (formData, editMode) => {
 const prepareSpeakerData = (formData, imageToUpload) => {
   const speakerData = {
     name: formData.name,
-    title: formData.title,
+    role: formData.role,
+    description: formData.description,
     activity_id: formData.activity_id || null,
   };
 
@@ -61,7 +62,8 @@ const SpeakerManagement = () => {
 
   const [formData, setFormData] = useState({
     name: '',
-    title: '',
+    role: '',
+    description: '',
     image: null,
     activity_id: null,
   });
@@ -100,6 +102,7 @@ const SpeakerManagement = () => {
         const normalizedSpeakers = response.data.map(speaker => ({
           id: speaker.id,
           name: speaker.name || 'Unnamed Speaker',
+          role: speaker.role || '',
           description: speaker.description || '',
           image_uuid: speaker.image,
           activity_id: speaker.activity_id
@@ -111,6 +114,7 @@ const SpeakerManagement = () => {
         const normalizedSpeakers = dataArray.map(speaker => ({
           id: speaker.id,
           name: speaker.name || 'Unnamed Speaker',
+          role: speaker.role || '',
           description: speaker.description || '',
           image_uuid: speaker.image,
           activity_id: speaker.activity_id
@@ -143,15 +147,12 @@ const SpeakerManagement = () => {
     try {
       const payload = {
         name: speakerData.name,
-        description: speakerData.title || '',
+        role: speakerData.role || '',
+        description: speakerData.description || '',
         activity_id: speakerData.activity_id || null
       };
       
-      console.log('API Payload for creating speaker:', payload);
-      console.log('API URL:', API_ENDPOINTS.SPEAKERS);
-      
       const response = await axiosWithAuth(keycloak).post(API_ENDPOINTS.SPEAKERS, payload);
-      console.log('API Response from creating speaker:', response.data);
       
       return { success: true, data: response.data };
     } catch (err) {
@@ -176,7 +177,8 @@ const SpeakerManagement = () => {
     try {
       const payload = {
         name: speakerData.name,
-        description: speakerData.title || '',
+        role: speakerData.role || '',
+        description: speakerData.description || '',
         activity_id: speakerData.activity_id || null,
       };
       
@@ -197,8 +199,6 @@ const SpeakerManagement = () => {
           }
         }
       );
-      
-      console.log('API Response from updating speaker:', response.data);
       
       return { success: true, data: response.data };
     } catch (err) {
@@ -223,11 +223,7 @@ const SpeakerManagement = () => {
   const deleteSpeaker = async (id) => {
     setLoading(true);
     try {
-      console.log(`Deleting speaker ${id}...`);
-      
       await axiosWithAuth(keycloak).delete(`${API_ENDPOINTS.SPEAKERS}${id}/`);
-      
-      console.log('Speaker deleted, refreshing list');
       return { success: true };
     } catch (err) {
       const errorMessage = err.response?.data?.detail || 'Failed to delete speaker';
@@ -296,7 +292,8 @@ const SpeakerManagement = () => {
   const resetForm = () => {
     setFormData({
       name: '',
-      title: '',
+      role: '',
+      description: '',
       image: null,
       activity_id: null,
     });
@@ -324,7 +321,8 @@ const SpeakerManagement = () => {
 
     setFormData({
       name: speaker.name || '',
-      title: speaker.description || '',
+      role: speaker.role || '',
+      description: speaker.description || '',
       image: null,
       image_uuid: speaker.image_uuid,
       activity_id: speaker.activity_id || null,
@@ -613,8 +611,8 @@ const SpeakerManagement = () => {
                 </label>
                 <textarea
                   id="speaker-description"
-                  name="title"
-                  value={formData.title}
+                  name="description"
+                  value={formData.description}
                   onChange={handleInputChange}
                   placeholder="Enter speaker description"
                   className="textarea textarea-bordered w-full h-24"
@@ -622,6 +620,21 @@ const SpeakerManagement = () => {
                 />
               </div>
 
+              <div className="form-control w-full mb-4">
+                <label htmlFor="speaker-role" className="label">
+                  <span className="label-text">Role</span>
+                </label>
+                <input
+                  id="speaker-role"
+                  type="text"
+                  name="role"
+                  value={formData.role}
+                  onChange={handleInputChange}
+                  placeholder="Enter speaker role"
+                  className="input input-bordered w-full"
+                />
+              </div>
+              
               <div className="form-control w-full mb-4">
                 <label htmlFor="activity-search" className="label">
                   <span className="label-text">Associated Activity (optional)</span>
@@ -836,6 +849,12 @@ const SpeakerManagement = () => {
                     </th>
                     <th 
                       className="uppercase text-xs font-semibold text-base-content/60 cursor-pointer"
+                      onClick={() => handleSort('role')}
+                    >
+                      Role {getSortIndicator('role')}
+                    </th>
+                    <th 
+                      className="uppercase text-xs font-semibold text-base-content/60 cursor-pointer"
                       onClick={() => handleSort('description')}
                     >
                       Description {getSortIndicator('description')}
@@ -876,6 +895,7 @@ const SpeakerManagement = () => {
                         </div>
                       </td>
                       <td className="font-medium">{speaker.name}</td>
+                      <td className="text-base-content/70">{speaker.role}</td>
                       <td className="text-base-content/70">{truncateText(speaker.description)}</td>
                       <td className="text-base-content/70">
                         {speaker.activity_id
