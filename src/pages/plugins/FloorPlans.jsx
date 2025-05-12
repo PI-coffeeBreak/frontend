@@ -117,8 +117,6 @@ export function FloorPlans() {
 
   const [floorPlans, setFloorPlans] = useState([]);
   const [loading, setLoading] = useState(false);
-  const [form, setForm] = useState({ name: "", details: "", image: "", file: null });
-  const resetForm = () => setForm({ name: "", details: "", image: "", file: null });
 
   const [selected, setSelected] = useState(null);
   const [isImageMedia, setIsImageMedia] = useState(false);
@@ -286,7 +284,6 @@ export function FloorPlans() {
 
   const closeModal = () => {
     setModalOpen(false);
-    resetForm();
     setSelected(null);
     setIsImageMedia(false);
   };

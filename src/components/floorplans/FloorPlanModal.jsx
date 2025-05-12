@@ -179,6 +179,7 @@ export default function FloorPlanModal({
     setUrlPreview(null);
     setFilePreview(null);
     setIsImageMarkedForRemoval(false);
+    setForm({ name: "", details: "", image: "", file: null });
     onClose();
   };
 
