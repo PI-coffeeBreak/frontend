@@ -61,6 +61,25 @@
           "alerts": "Gerenciar Alertas"
         }
       },
+      "event": {
+        "title": "Evento",
+        "description": "Gerencie as configurações e componentes do evento",
+        "links": {
+          "users": "Usuários",
+          "sessions": "Sessões",
+          "eventInfo": "Informações do Evento",
+          "plugins": "Gerenciar Plugins"
+        }
+      },
+      "application": {
+        "title": "Aplicação",
+        "description": "Personalize e configure sua aplicação",
+        "links": {
+          "pages": "Páginas",
+          "menus": "Menus",
+          "colors": "Cores"
+        }
+      },
       "eventMaker": {
         "title": "Meu evento",
         "description": "Personalize e configure seu evento",
@@ -220,7 +239,7 @@
     }
   },
   "eventEditor": {
-    "title": "Configurações do Evento",
+    "title": "Informações do Evento",
     "basicInfo": {
       "title": "Informações Básicas",
       "eventName": {

@@ -61,6 +61,25 @@
           "alerts": "Manage Alerts"
         }
       },
+      "event": {
+        "title": "Event",
+        "description": "Manage your event settings and components",
+        "links": {
+          "users": "Users",
+          "sessions": "Sessions",
+          "eventInfo": "Event Info",
+          "plugins": "Manage Plugins"
+        }
+      },
+      "application": {
+        "title": "Application",
+        "description": "Customize and configure your application",
+        "links": {
+          "pages": "Pages",
+          "menus": "Menus",
+          "colors": "Colors"
+        }
+      },
       "eventMaker": {
         "title": "My Event",
         "description": "Customize and configure your event",
@@ -223,7 +242,7 @@
     }
   },
   "eventEditor": {
-    "title": "Event Settings",
+    "title": "Event Information",
     "basicInfo": {
       "title": "Basic Information",
       "eventName": {
@@ -240,11 +259,11 @@
     "dateTime": {
       "title": "Date and Time",
       "startDate": {
-        "label": "Start Date & Time",
+        "label": "Begins",
         "required": "Start date is required"
       },
       "endDate": {
-        "label": "End Date & Time",
+        "label": "Ends",
         "required": "End date is required",
         "invalid": "End date must be after start date"
       }

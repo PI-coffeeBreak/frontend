@@ -42,6 +42,25 @@
   },
   "menu": {
     "sections": {
+      "event": {
+        "title": "Evento",
+        "description": "Gerir as configurações e componentes do evento",
+        "links": {
+          "users": "Utilizadores",
+          "sessions": "Sessões",
+          "eventInfo": "Informação do Evento",
+          "plugins": "Gerir Extensões"
+        }
+      },
+      "application": {
+        "title": "Aplicação",
+        "description": "Personalizar e configurar a aplicação",
+        "links": {
+          "pages": "Páginas",
+          "menus": "Menus",
+          "colors": "Cores"
+        }
+      },
       "eventMaker": {
         "title": "Meu evento",
         "description": "Personalize e configure o seu evento",
@@ -202,7 +221,7 @@
     }
   },
   "eventEditor": {
-    "title": "Configurações do Evento",
+    "title": "Informações do Evento",
     "basicInfo": {
       "title": "Informação Básica",
       "eventName": {

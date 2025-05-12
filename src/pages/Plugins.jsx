@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { FaCog } from "react-icons/fa";
+import {FaCog, FaSearch} from "react-icons/fa";
 import { AiOutlineLoading3Quarters } from "react-icons/ai";
 import Pagination from "../components/common/Pagination.jsx";
 import PluginSettingsModal from "../components/plugins/PluginSettingsModal.jsx";
@@ -49,19 +49,22 @@ export default function Plugins() {
     };
 
     return (
-        <div className="w-full min-h-svh p-8">
-            <h1 className="text-3xl font-bold mb-6">Plugins</h1>
+        <div className="w-full min-h-svh p-2 lg:p-8">
+            <h1 className="text-3xl font-bold my-8">Plugins</h1>
             <div className="mb-6 flex flex-wrap gap-4 items-center">
-                <input
-                    type="text"
-                    placeholder="Search..."
-                    value={searchTerm}
-                    onChange={(e) => {
-                        setSearchTerm(e.target.value);
-                        setCurrentPage(1);
-                    }}
-                    className="p-2 border rounded-lg shadow-sm w-full md:w-1/3"
-                />
+                <label className="input input-bordered flex items-center gap-2">
+                    <FaSearch className="text-gray-400"/>
+                    <input
+                        type="text"
+                        className="grow"
+                        placeholder="Search Plugins"
+                        value={searchTerm}
+                        onChange={(e) => {
+                            setSearchTerm(e.target.value);
+                            setCurrentPage(1);
+                        }}
+                    />
+                </label>
             </div>
 
             <div className="overflow-x-auto">
