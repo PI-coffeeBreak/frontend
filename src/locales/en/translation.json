@@ -61,6 +61,25 @@
           "alerts": "Manage Alerts"
         }
       },
+      "event": {
+        "title": "Event",
+        "description": "Manage your event settings and components",
+        "links": {
+          "users": "Users",
+          "sessions": "Sessions",
+          "eventInfo": "Event Info",
+          "plugins": "Manage Plugins"
+        }
+      },
+      "application": {
+        "title": "Application",
+        "description": "Customize and configure your application",
+        "links": {
+          "pages": "Pages",
+          "menus": "Menus",
+          "colors": "Colors"
+        }
+      },
       "eventMaker": {
         "title": "My Event",
         "description": "Customize and configure your event",
@@ -98,12 +117,12 @@
     "quickAccess": "Quick Access",
     "cards": {
       "management": {
-        "title": "Management",
-        "description": "Access tools to manage users and sessions for your event."
+        "title": "Event",
+        "description": "Access tools to manage users, sessions and plugins for your event."
       },
       "eventMaker": {
-        "title": "Event Maker",
-        "description": "Customize the appearance, content and functionality of your event."
+        "title": "Application",
+        "description": "Customize the appearance, content and functionality of your application."
       }
     }
   },
@@ -197,7 +216,7 @@
       "description": "Upload an Excel file to quickly add multiple sessions at once"
     },
     "filters": {
-      "searchPlaceholder": "Search activities by name or description",
+      "searchPlaceholder": "Search activities",
       "all": "All"
     },
     "delete": "Delete activity",
@@ -223,7 +242,7 @@
     }
   },
   "eventEditor": {
-    "title": "Event Settings",
+    "title": "Event Information",
     "basicInfo": {
       "title": "Basic Information",
       "eventName": {
@@ -240,11 +259,11 @@
     "dateTime": {
       "title": "Date and Time",
       "startDate": {
-        "label": "Start Date & Time",
+        "label": "Begins",
         "required": "Start date is required"
       },
       "endDate": {
-        "label": "End Date & Time",
+        "label": "Ends",
         "required": "End date is required",
         "invalid": "End date must be after start date"
       }
@@ -285,6 +304,10 @@
   "themeCustomizer": {
     "title": "Event Theme Designer",
     "subtitle": "Customize your event's colors and see how they look in real-time",
+    "pageHeader": {
+      "title": "Theme Customization",
+      "subtitle": "Personalize your event with custom colors to match your brand identity"
+    },
     "tabs": {
       "colors": "Choose Colors",
       "preview": "Preview Your Event"
@@ -293,7 +316,8 @@
     "colorGroups": {
       "brandColors": "Brand Colors",
       "backgroundText": "Background & Text",
-      "statusColors": "Status Colors"
+      "statusColors": "Status Colors",
+      "neutrals": "Neutral Colors"
     },
     "colorNames": {
       "primary": "Main Brand Color",
@@ -334,14 +358,14 @@
     "actions": {
       "reset": "Reset",
       "resetTitle": "Reset to original theme",
-      "save": "Save",
+      "save": "Save Changes",
       "text": "Text"
     }
   },
   "menuEditor": {
     "title": "Menu Editor",
     "description": "Manage navigation menu items. Drag and drop to reorder items. Changes will be reflected in your event's navigation.",
-    "searchPlaceholder": "Search menu items...",
+    "searchPlaceholder": "Search menu items",
     "addButton": "Add Item",
     "modal": {
       "add": {
@@ -390,7 +414,7 @@
   "pagesList": {
     "title": "Pages",
     "createButton": "Create Page",
-    "searchPlaceholder": "Search pages...",
+    "searchPlaceholder": "Search pages",
     "filters": {
       "all": "All Pages",
       "enabled": "Enabled",
@@ -523,7 +547,7 @@
     }
   },
   "management": {
-    "title": "Management",
+    "title": "Event",
     "subtitle": "Manage all aspects of your event through these administrative tools",
     "cards": {
       "users": {
@@ -544,8 +568,8 @@
     }
   },
   "eventMaker": {
-    "title": "Event Maker",
-    "subtitle": "Customize and configure your event with these powerful tools",
+    "title": "Application",
+    "subtitle": "Customize and configure your application with these powerful tools",
     "cards": {
       "eventInfo": {
         "title": "Event Info",

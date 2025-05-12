@@ -169,7 +169,7 @@ export default function EventSetup() {
                     }
                 }
                 
-                navigate('/instantiate/eventmaker');
+                navigate('/instantiate/application');
                 getEventInfo();
             } catch (error) {
                 console.error('Error creating event:', error);

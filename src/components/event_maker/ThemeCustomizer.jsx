@@ -101,11 +101,12 @@ export function ThemeCustomizer() {
   const colorGroups = {
     [t('themeCustomizer.colorGroups.brandColors')]: ["primary", "primary-content", "secondary", "secondary-content", "accent", "accent-content"],
     [t('themeCustomizer.colorGroups.backgroundText')]: ["base-100", "base-200", "base-300", "base-content"],
-    [t('themeCustomizer.colorGroups.statusColors')]: ["info", "success", "warning", "error"],
+    [t('themeCustomizer.colorGroups.statusColors')]: ["info", "info-content", "success", "success-content", "warning", "warning-content", "error", "error-content"],
+    [t('themeCustomizer.colorGroups.neutrals')]: ["neutral", "neutral-content"],
   }
 
   const renderPreview = () => (
-    <div className="bg-base-100 p-6 rounded-xl shadow-md">
+    <div className="">
       <h3 className="text-xl font-bold text-center mb-6" style={{ color: hexValues["base-content"] }}>{t('themeCustomizer.preview.title')}</h3>
 
       {/* Event Header */}
@@ -169,15 +170,15 @@ export function ThemeCustomizer() {
       <h4 className="font-semibold mb-3">{t('themeCustomizer.preview.eventUpdates')}</h4>
       <div className="space-y-2 mb-6">
         <div className="flex items-center gap-2 p-2 rounded" style={{ backgroundColor: hexValues["info"], color: hexValues["info-content"] }}>
-          <Bell className="w-4 h-4" style={{ color: hexValues["info"]}}/>
+          <Bell className="w-4 h-4" style={{ color: hexValues["info-content"]}}/>
           <p className="text-sm">{t('themeCustomizer.preview.eventStart')}</p>
         </div>
         <div className="flex items-center gap-2 p-2 rounded" style={{ backgroundColor: hexValues["success"], color: hexValues["success-content"] }}>
-          <Clock className="w-4 h-4" style={{ color: hexValues["success"] }}/>
+          <Clock className="w-4 h-4" style={{ color: hexValues["success-content"] }}/>
           <p className="text-sm">{t('themeCustomizer.preview.coffeeBreak')}</p>
         </div>
         <div className="flex items-center gap-2 p-2 rounded" style={{ backgroundColor: hexValues["warning"], color: hexValues["warning-content"] }}>
-          <Gift className="w-4 h-4" style={{ color: hexValues["warning"] }}/>
+          <Gift className="w-4 h-4" style={{ color: hexValues["warning-content"] }}/>
           <p className="text-sm">{t('themeCustomizer.preview.talkDelay')}</p>
         </div>
       </div>
@@ -191,86 +192,62 @@ export function ThemeCustomizer() {
   );
 
   return (
-    <div className="bg-base-100 rounded-xl shadow-xl overflow-hidden">
-      {/* Header */}
-      <div className="bg-gradient-to-r from-primary to-secondary p-6 text-primary-content">
-        <div className="flex justify-between items-center">
-          <div>
-            <h2 className="text-2xl font-bold">{t('themeCustomizer.title')}</h2>
-            <p className="mt-2 text-sm opacity-90">{t('themeCustomizer.subtitle')}</p>
-          </div>
-          <div className="flex gap-2">
-            <button
-              className="btn btn-sm btn-outline text-primary-content"
-              onClick={resetTheme}
-              title={t('themeCustomizer.actions.resetTitle')}
-            >
-              <Undo className="w-4 h-4 mr-1" /> {t('themeCustomizer.actions.reset')}
-            </button>
-            <button 
-              className="btn btn-sm btn-primary text-primary-content" 
-              onClick={saveTheme}
-            >
-              <Save className="w-4 h-4 mr-1" /> {t('themeCustomizer.actions.save')}
-            </button>
-          </div>
-        </div>
-      </div>
-
-      {/* Tabs */}
-      <div className="bg-base-200 px-6 pt-4">
-        <div className="tabs tabs-boxed bg-base-300 inline-flex" role="tablist">
-          <button 
-            className={`tab ${activeTab === "colors" ? "tab-active" : ""}`}
-            onClick={() => setActiveTab("colors")}
-            role="tab"
-            aria-selected={activeTab === "colors"}
-            aria-controls="colors-panel"
-            id="colors-tab"
-          >
-            {t('themeCustomizer.tabs.colors')}
-          </button>
-          <button 
-            className={`tab ${activeTab === "preview" ? "tab-active" : ""}`}
-            onClick={() => setActiveTab("preview")}
-            role="tab"
-            aria-selected={activeTab === "preview"}
-            aria-controls="preview-panel"
-            id="preview-tab"
-          >
-            {t('themeCustomizer.tabs.preview')}
-          </button>
-        </div>
-      </div>
-
-      {/* Content */}
-      <div className="p-6 bg-base-200 min-h-[500px]">
-        <div 
-          id="colors-panel" 
-          role="tabpanel" 
-          aria-labelledby="colors-tab"
-          className={activeTab === "colors" ? "" : "hidden"}
+    <>
+      <div className="flex border-b border-base-300 mb-6">
+        <button
+          className={`px-4 py-2 font-semibold text-sm border-b-2 ${
+            activeTab === "colors"
+              ? "border-primary text-primary"
+              : "border-transparent hover:border-base-300"
+          }`}
+          onClick={() => setActiveTab("colors")}
+          role="tab"
+          aria-selected={activeTab === "colors"}
+          aria-controls="colors-panel"
+          id="colors-tab"
         >
-          <div className="space-y-8">
-            <div className="bg-base-100 p-4 rounded-lg shadow-sm">
-              <p className="text-sm mb-4">
-                {t('themeCustomizer.instructions')}
-              </p>
-            </div>
-            
-            {Object.entries(colorGroups).map(([groupName, colorKeys]) => (
-              <div key={groupName} className="space-y-4">
-                <h3 className="font-semibold text-lg">{groupName}</h3>
-                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+          {t('themeCustomizer.tabs.colors')}
+        </button>
+
+        <button
+          className={`px-4 py-2 font-semibold text-sm border-b-2 ${
+            activeTab === "preview"
+              ? "border-primary text-primary"
+              : "border-transparent hover:border-base-300"
+          }`}
+          onClick={() => setActiveTab("preview")}
+          role="tab"
+          aria-selected={activeTab === "preview"}
+          aria-controls="preview-panel"
+          id="preview-tab"
+        >
+          {t('themeCustomizer.tabs.preview')}
+        </button>
+      </div>
+
+      {/* Colors Panel */}
+      <div
+        id="colors-panel"
+        role="tabpanel"
+        aria-labelledby="colors-tab"
+        className={activeTab === "colors" ? "" : "hidden"}
+      >
+        <div className="space-y-8">
+          {Object.entries(colorGroups).map(([groupName, colorKeys]) => (
+            <div key={groupName} className="">
+              <div className="">
+                <h3 className="text-lg">{groupName}</h3>
+                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 mt-2">
                   {colorKeys.map((key) => (
-                    <div key={key} className="bg-base-100 p-4 rounded-lg shadow-sm hover:shadow-md transition-shadow border border-base-300">
+                    <div key={key} className="bg-base-200/70 p-4 rounded-xl">
                       <div className="flex items-center gap-3">
                         <div
-                          className="w-12 h-12 rounded-lg shadow-inner border border-base-300 flex items-center justify-center"
+                          className="w-12 h-12 rounded-xl shadow-inner flex items-center justify-center"
                           style={{ backgroundColor: hexValues[key] }}
                         >
-                          {/* Show contrast text for accessibility */}
-                          {key.includes('content') && <span className="text-xs opacity-75">{t('themeCustomizer.actions.text')}</span>}
+                          {key.includes('content') && (
+                            <span className="text-xs font-medium">{t('themeCustomizer.actions.text')}</span>
+                          )}
                         </div>
                         <div className="flex-1">
                           <label className="font-medium block mb-1">{colorMapping[key] || key}</label>
@@ -279,9 +256,9 @@ export function ThemeCustomizer() {
                               type="color"
                               value={hexValues[key] || "#000000"}
                               onChange={(e) => handleColorChange(key, e.target.value)}
-                              className="w-full h-8 cursor-pointer"
+                              className="w-full h-8 cursor-pointer rounded-xl border-none"
                             />
-                            <span className="text-xs font-mono">{hexValues[key]}</span>
+                            <span className="text-xs font-mono bg-base-300 px-2 py-1 rounded">{hexValues[key]}</span>
                           </div>
                         </div>
                       </div>
@@ -289,19 +266,41 @@ export function ThemeCustomizer() {
                   ))}
                 </div>
               </div>
-            ))}
-          </div>
-        </div>
-        
-        <div 
-          id="preview-panel" 
-          role="tabpanel" 
-          aria-labelledby="preview-tab"
-          className={activeTab === "preview" ? "" : "hidden"}
-        >
-          {renderPreview()}
+            </div>
+          ))}
         </div>
       </div>
-    </div>
+
+      {/* Preview Panel */}
+      <div
+        id="preview-panel"
+        role="tabpanel"
+        aria-labelledby="preview-tab"
+        className={activeTab === "preview" ? "" : "hidden"}
+      >
+        <div className="">
+          <div className="">
+            {renderPreview()}
+          </div>
+        </div>
+      </div>
+
+      {/* Action buttons */}
+      <div className="mt-6 flex justify-end gap-4">
+        <button
+          className="btn btn-secondary rounded-xl"
+          onClick={resetTheme}
+          title={t('themeCustomizer.actions.resetTitle')}
+        >
+          {t('themeCustomizer.actions.reset')}
+        </button>
+        <button
+          className="btn btn-primary rounded-xl"
+          onClick={saveTheme}
+        >
+          {t('themeCustomizer.actions.save')}
+        </button>
+      </div>
+    </>
   );
 }

@@ -42,6 +42,25 @@
   },
   "menu": {
     "sections": {
+      "event": {
+        "title": "Evento",
+        "description": "Gerir as configurações e componentes do evento",
+        "links": {
+          "users": "Utilizadores",
+          "sessions": "Sessões",
+          "eventInfo": "Informação do Evento",
+          "plugins": "Gerir Extensões"
+        }
+      },
+      "application": {
+        "title": "Aplicação",
+        "description": "Personalizar e configurar a aplicação",
+        "links": {
+          "pages": "Páginas",
+          "menus": "Menus",
+          "colors": "Cores"
+        }
+      },
       "eventMaker": {
         "title": "Meu evento",
         "description": "Personalize e configure o seu evento",
@@ -202,7 +221,7 @@
     }
   },
   "eventEditor": {
-    "title": "Configurações do Evento",
+    "title": "Informações do Evento",
     "basicInfo": {
       "title": "Informação Básica",
       "eventName": {
@@ -264,6 +283,10 @@
   "themeCustomizer": {
     "title": "Personalizador de Tema do Evento",
     "subtitle": "Personalize as cores do seu evento e veja como ficam em tempo real",
+    "pageHeader": {
+      "title": "Personalização do Tema",
+      "subtitle": "Personalize o seu evento com cores à medida para combinar com a identidade da sua marca"
+    },
     "tabs": {
       "colors": "Escolher Cores",
       "preview": "Pré-visualizar Evento"
@@ -272,7 +295,8 @@
     "colorGroups": {
       "brandColors": "Cores da Marca",
       "backgroundText": "Fundo e Texto",
-      "statusColors": "Cores de Estado"
+      "statusColors": "Cores de Estado",
+      "neutrals": "Cores Neutras"
     },
     "colorNames": {
       "primary": "Cor Principal da Marca",
@@ -320,7 +344,7 @@
   "menuEditor": {
     "title": "Editor de Menu",
     "description": "Gerir os itens do menu de navegação. Arrastar e soltar para reordenar os itens. As alterações serão refletidas na navegação do seu evento.",
-    "searchPlaceholder": "Procurar itens do menu...",
+    "searchPlaceholder": "Procurar itens do menu",
     "addButton": "Adicionar Item do Menu",
     "modal": {
       "add": {

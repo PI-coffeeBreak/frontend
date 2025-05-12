@@ -18,7 +18,7 @@ export function ActivityFilters({
   return (
       <div className="flex mt-4 gap-4">
         <div>
-          <label className="input input-bordered flex items-center gap-2">
+          <label className="input input-bordered rounded-xl flex items-center gap-2">
             <FaSearch className="text-gray-400"/>
             <input
                 type="text"
@@ -31,7 +31,7 @@ export function ActivityFilters({
         </div>
         <div className="filter">
           <input 
-            className="btn filter-reset" 
+            className="btn rounded-xl mr-2 filter-reset"
             type="radio" 
             onClick={handleResetFilters} 
             name="metaframeworks" 
@@ -40,7 +40,7 @@ export function ActivityFilters({
           {activityTypes.map((type) => (
             <input 
               key={type.id}
-              className="btn" 
+              className="btn rounded-xl"
               type="radio" 
               name="metaframeworks" 
               onClick={() => onTypeChange(type.id.toString())} 

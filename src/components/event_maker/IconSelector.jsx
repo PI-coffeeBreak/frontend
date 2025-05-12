@@ -137,7 +137,7 @@ export function IconSelector({ value, onChange, maxDisplayIcons = 200, onSelecto
           id={iconSelectorId}
           type="button"
           onClick={handleToggle}
-          className="flex items-center justify-between w-full p-2 border border-gray-300 rounded-md"
+          className="flex items-center justify-between w-full p-2 border border-gray-300 rounded-xl"
           aria-expanded={isOpen}
         >
           <div className="flex items-center gap-2">
