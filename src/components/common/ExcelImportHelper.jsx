@@ -298,20 +298,22 @@ export function ExcelImportHelper({
       />
     ),
     renderSubmitButton: () => (
-      <button
-        type="submit"
-        className="btn btn-primary rounded-xl"
-        disabled={!values.file || isLoading || (parsedData && parsedData.length === 0)}
-      >
-        {isLoading ? (
-          <div className="flex items-center gap-2">
-            <span className="loading loading-spinner loading-sm"></span>
-            <span>Processing...</span>
-          </div>
-        ) : (
-          importButtonText + (parsedData && parsedData.length > 0 ? ` (${parsedData.length})` : '')
-        )}
-      </button>
+        <button
+            type="submit"
+            className="btn btn-primary rounded-xl"
+            disabled={!values.file || isLoading || (parsedData && parsedData.length === 0)}
+        >
+          {isLoading ? (
+              <div className="flex items-center gap-2">
+                <span className="loading loading-spinner loading-sm"></span>
+                <span>Processing...</span>
+              </div>
+          ) : (
+              <div className="flex items-center gap-2">
+                <span>{importButtonText}{parsedData && parsedData.length > 0 ? ` (${parsedData.length})` : ''}</span>
+              </div>
+          )}
+        </button>
     )
   };
 }

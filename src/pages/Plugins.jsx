@@ -1,4 +1,5 @@
 import React, { useState } from "react";
+import PropTypes from 'prop-types';
 import {FaCog, FaSearch} from "react-icons/fa";
 import { AiOutlineLoading3Quarters } from "react-icons/ai";
 import Pagination from "../components/common/Pagination.jsx";
@@ -30,6 +31,12 @@ const ToggleSwitch = ({ isChecked, isLoading, onToggle }) => (
     </label>
 );
 
+ToggleSwitch.propTypes = {
+  isChecked: PropTypes.bool.isRequired,
+  isLoading: PropTypes.bool.isRequired,
+  onToggle: PropTypes.func.isRequired,
+};
+
 // Table row component for plugins
 const PluginRow = ({ plugin, loadingPlugin, onToggle, openSettings, hasSettings }) => (
     <tr className="hover:bg-gray-50">
@@ -54,6 +61,18 @@ const PluginRow = ({ plugin, loadingPlugin, onToggle, openSettings, hasSettings 
         </td>
     </tr>
 );
+
+PluginRow.propTypes = {
+  plugin: PropTypes.shape({
+    name: PropTypes.string.isRequired,
+    description: PropTypes.string.isRequired,
+    is_loaded: PropTypes.bool.isRequired,
+  }).isRequired,
+  loadingPlugin: PropTypes.string,
+  onToggle: PropTypes.func.isRequired,
+  openSettings: PropTypes.func.isRequired,
+  hasSettings: PropTypes.bool.isRequired,
+};
 
 export default function Plugins() {
     const { plugins, pluginsConfig, togglePlugin } = usePlugins();
@@ -137,7 +156,7 @@ export default function Plugins() {
                     <tbody>
                         {currentPlugins.map((plugin, index) => (
                             <PluginRow
-                                key={index}
+                                key={plugin.name}
                                 plugin={plugin}
                                 loadingPlugin={loadingPlugin}
                                 onToggle={handleTogglePlugin}

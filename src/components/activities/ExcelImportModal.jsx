@@ -78,7 +78,7 @@ const generateTemplate = () => {
 };
 
 export function ExcelImportModal({ isOpen, onClose, onImport }) {
-  const [isLoading, setIsLoading] = useState(false);
+
   const { showNotification } = useNotification();
 
   const excelHelper = ExcelImportHelper({
@@ -96,14 +96,12 @@ export function ExcelImportModal({ isOpen, onClose, onImport }) {
       excelHelper.setErrors({ file: "Please select a file to import" });
       return;
     }
-    
-    setIsLoading(true);
-    excelHelper.setIsLoading(true);
+
     
     try {
       const activitiesData = excelHelper.parsedData;
       
-      if (!activitiesData || !activitiesData.length) {
+      if (!activitiesData?.length) {
         throw new Error("No valid activities found in the Excel file");
       }
 
@@ -122,9 +120,6 @@ export function ExcelImportModal({ isOpen, onClose, onImport }) {
         submit: error.message || "Failed to process file" 
       });
       showNotification(error.message || "Failed to process file", "error");
-    } finally {
-      setIsLoading(false);
-      excelHelper.setIsLoading(false);
     }
   };
 

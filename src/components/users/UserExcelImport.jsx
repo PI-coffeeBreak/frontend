@@ -103,7 +103,6 @@ const generateTemplate = () => {
  * Modal for importing users from Excel file
  */
 export function UserExcelImport({ isOpen, onClose, onImport }) {
-  const [isLoading, setIsLoading] = useState(false);
   const { showNotification } = useNotification();
 
   const excelHelper = ExcelImportHelper({
@@ -128,8 +127,6 @@ export function UserExcelImport({ isOpen, onClose, onImport }) {
       return;
     }
 
-    setIsLoading(true);
-    excelHelper.setIsLoading(true);
 
     try {
       // Add UPDATE_PASSWORD required action for Keycloak
@@ -156,9 +153,6 @@ export function UserExcelImport({ isOpen, onClose, onImport }) {
         submit: error.message || "Failed to import users"
       });
       showNotification(error.message || "Failed to import users", "error");
-    } finally {
-      setIsLoading(false);
-      excelHelper.setIsLoading(false);
     }
   };
 
