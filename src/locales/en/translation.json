@@ -216,7 +216,7 @@
       "description": "Upload an Excel file to quickly add multiple sessions at once"
     },
     "filters": {
-      "searchPlaceholder": "Search activities by name or description",
+      "searchPlaceholder": "Search activities",
       "all": "All"
     },
     "delete": "Delete activity",

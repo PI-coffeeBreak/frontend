@@ -231,7 +231,7 @@ export function ExcelImportModal({ isOpen, onClose, onImport }) {
       <form onSubmit={handleSubmit}>
         <button 
           type="button"
-          className="btn btn-secondary w-full"
+          className="btn btn-secondary rounded-xl w-full"
           onClick={handleDownloadTemplate}
           disabled={isTemplateLoading}
         >
@@ -330,7 +330,7 @@ export function ExcelImportModal({ isOpen, onClose, onImport }) {
         <div className="mt-6 flex justify-end gap-2">
           <button
             type="submit"
-            className="btn btn-primary"
+            className="btn btn-primary rounded-xl"
             disabled={!values.file || isLoading}
           >
             {isLoading ? (

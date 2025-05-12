@@ -213,7 +213,7 @@
       "description": "Importe várias sessões de uma vez através de um arquivo Excel"
     },
     "filters": {
-      "searchPlaceholder": "Pesquisar sessões por nome ou descrição",
+      "searchPlaceholder": "Pesquisar sessões",
       "all": "Todas"
     },
     "delete": "Excluir sessão",

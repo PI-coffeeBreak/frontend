@@ -3,13 +3,11 @@ import PropTypes from 'prop-types';
 import { FiUpload } from "react-icons/fi";
 import { FaFile, FaTrash, FaDownload, FaSpinner } from "react-icons/fa";
 import * as XLSX from 'xlsx';
+import { Modal } from "../common/Modal";
 import { useNotification } from "../../contexts/NotificationContext";
 import { useForm } from "../../hooks/useForm";
 import { generateRandomPassword } from "../../utils/passwordUtils";
-
-// Constants
-const MAX_FILE_SIZE = 1024 * 1024; // 1MB
-const ALLOWED_FILE_TYPE = "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet";
+import { MAX_FILE_SIZE, ALLOWED_FILE_TYPE } from "../../consts.js";
 
 // Helper function to validate email
 const isValidEmail = (email) => {
@@ -289,141 +287,144 @@ export function UserExcelImport({ isOpen, onClose, onImport }) {
     }
   };
 
-  const preventDefaults = (e) => {
-    e.preventDefault();
-    e.stopPropagation();
-  };
-
-  // Define event handlers for drag and drop
-  const dragEvents = {
-    onDragEnter: preventDefaults,
-    onDragOver: preventDefaults,
-    onDragLeave: preventDefaults,
-    onDrop: handleDrop
-  };
-
-  // Don't render if not open
-  if (!isOpen) return null;
-
   return (
-    <div className="modal modal-open">
-      <div className="modal-box max-w-4xl">
-        <h3 className="font-bold text-xl mb-6">Import Users from Excel</h3>
+    <Modal
+      isOpen={isOpen}
+      onClose={handleClose}
+      title="Import Users from Excel"
+      description="Select an Excel file to upload multiple users at once."
+    >
+      {/* Error message for submission */}
+      {errors.submit && (
+        <div className="alert alert-error mb-4">
+          <span>{errors.submit}</span>
+        </div>
+      )}
 
-        {/* Error message for submission */}
-        {errors.submit && (
-          <div className="alert alert-error mb-4">
-            <span>{errors.submit}</span>
+      <form onSubmit={handleSubmit}>
+        <button 
+          type="button"
+          className="btn btn-secondary rounded-xl w-full"
+          onClick={handleDownloadTemplate}
+          disabled={isTemplateLoading}
+        >
+          {isTemplateLoading ? (
+            <div className="flex items-center gap-2">
+              <FaSpinner className="animate-spin" />
+              <span>Generating Template...</span>
+            </div>
+          ) : (
+            <div className="flex items-center gap-2">
+              <FaDownload />
+              <span>Download Excel Template</span>
+            </div>
+          )}
+        </button>
+
+        <button
+          type="button"
+          className={`w-full border-dashed border-2 rounded-xl p-4 mt-4 text-center bg-transparent ${
+            errors.file ? 'border-error' : 'border-gray-400'
+          }`}
+          onClick={handleBrowseClick}
+          onDrop={handleDrop}
+          onDragOver={(e) => e.preventDefault()}
+        >
+          <div className="rounded-full bg-base-content w-16 h-16 mx-auto my-4 flex items-center justify-center">
+            <FiUpload className="text-base-100 text-2xl" aria-hidden="true" />
+          </div>
+          
+          <p>
+            Drag and drop your Excel file here or
+            {' '}
+            <span className="text-primary font-bold">Browse</span>
+          </p>
+          
+          <p className="text-sm text-gray-400">
+            Maximum file size: 1MB
+          </p>
+        </button>
+
+        {errors.file && (
+          <div className="mt-2 text-sm text-error">
+            {errors.file}
           </div>
         )}
 
-        <form onSubmit={handleSubmit}>
-          {/* File upload area */}
-          <div
-            className={`border-2 border-dashed rounded-lg p-6 text-center mb-6 ${errors.file ? 'border-error' : 'border-gray-300'}`}
-            {...dragEvents}
-          >
-            <input
-              type="file"
-              ref={fileInputRef}
-              onChange={handleFileInputChange}
-              className="hidden"
-              accept=".xlsx"
-            />
+        {values.file && (
+          <div className="bg-base-200 w-full p-4 mt-4 rounded-lg relative">
+            <button
+              onClick={handleClearFile}
+              className="text-primary hover:text-error absolute right-3 top-3"
+              type="button"
+              aria-label="Remove file"
+            >
+              <FaTrash aria-hidden="true" />
+              <span className="sr-only">Remove file</span>
+            </button>
+            
+            <div className="flex items-center gap-3">
+              <FaFile className="text-2xl text-primary" />
+              <div>
+                <p className="font-medium">{values.file.name}</p>
+                <p className="text-sm text-gray-500">
+                  {(values.file.size / 1024).toFixed(2)} KB
+                </p>
+              </div>
+            </div>
+            
+            <div className="mt-2">
+              <progress 
+                className="progress progress-primary w-full" 
+                value={uploadProgress} 
+                max="100"
+              />
+              <p className="text-xs text-right mt-1">{uploadProgress}%</p>
+            </div>
 
-            {!values.file ? (
-              <div className="py-8">
-                <FiUpload className="mx-auto text-4xl mb-4 text-gray-400" />
-                <p className="text-lg mb-3">Drag and drop an Excel file, or</p>
-                <button
-                  type="button"
-                  className="btn btn-primary"
-                  onClick={handleBrowseClick}
-                >
-                  Browse Files
-                </button>
-                <p className="text-sm mt-4 text-gray-500">Supports .xlsx files up to 1MB</p>
+            {fileStats && (
+              <div className="mt-2 text-sm">
+                {fileStats.valid > 0 ? (
+                  <span className="text-success">Found {fileStats.valid} valid users ready to import</span>
+                ) : null}
+                {fileStats.invalid > 0 && (
+                  <span className="text-warning block mt-1">
+                    {fileStats.invalid} entries with invalid emails will be skipped
+                  </span>
+                )}
+              </div>
+            )}
+          </div>
+        )}
+
+        <input
+          type="file"
+          ref={fileInputRef}
+          name="file"
+          className="hidden"
+          accept=".xlsx"
+          onChange={handleFileInputChange}
+          aria-label="Upload Excel file"
+        />
+
+        <div className="mt-6 flex justify-end gap-2">
+          <button
+            type="submit"
+            className="btn btn-primary rounded-xl"
+            disabled={!values.file || isLoading || userData.length === 0}
+          >
+            {isLoading ? (
+              <div className="flex items-center gap-2">
+                <span className="loading loading-spinner loading-sm"></span>
+                <span>Processing...</span>
               </div>
             ) : (
-              <div className="py-4">
-                <div className="flex items-center justify-center gap-3 mb-3">
-                  <FaFile className="text-2xl text-primary" />
-                  <span className="font-medium">{values.file.name}</span>
-                  <button
-                    type="button"
-                    className="btn btn-circle btn-xs btn-error"
-                    onClick={handleClearFile}
-                  >
-                    <FaTrash />
-                  </button>
-                </div>
-
-                {/* Progress bar */}
-                <div className="w-full bg-gray-200 rounded-full h-2.5 mb-4">
-                  <div
-                    className="bg-primary h-2.5 rounded-full"
-                    style={{ width: `${uploadProgress}%` }}
-                  ></div>
-                </div>
-
-                <div className="text-sm">
-                  <span className="text-success">File processed</span>
-                  {fileStats && (
-                    <div className="mt-1">
-                      {fileStats.valid > 0 ? (
-                        <span className="text-success">Found {fileStats.valid} valid users ready to import</span>
-                      ) : null}
-                      {fileStats.invalid > 0 && (
-                        <span className="text-warning block mt-1">
-                          {fileStats.invalid} entries with invalid emails will be skipped
-                        </span>
-                      )}
-                    </div>
-                  )}
-                </div>
-              </div>
+              `Import ${userData.length > 0 ? userData.length : ''} Users`
             )}
-
-            {errors.file && (
-              <div className="mt-2 text-error text-sm">{errors.file}</div>
-            )}
-          </div>
-
-          {/* Template download and import buttons */}
-          <div className="flex flex-col sm:flex-row justify-between gap-4 mt-6">
-            <button
-              type="button"
-              className="btn btn-outline"
-              onClick={handleDownloadTemplate}
-              disabled={isTemplateLoading}
-            >
-              {isTemplateLoading ? <FaSpinner className="animate-spin mr-2" /> : <FaDownload className="mr-2" />}
-              Download Template
-            </button>
-
-            <div className="flex gap-4">
-              <button
-                type="button"
-                className="btn btn-ghost"
-                onClick={handleClose}
-                disabled={isLoading}
-              >
-                Cancel
-              </button>
-
-              <button
-                type="submit"
-                className="btn btn-primary"
-                disabled={isLoading || !values.file || userData.length === 0}
-              >
-                {isLoading ? <FaSpinner className="animate-spin mr-2" /> : null}
-                Import {userData.length} Users
-              </button>
-            </div>
-          </div>
-        </form>
-      </div>
-    </div>
+          </button>
+        </div>
+      </form>
+    </Modal>
   );
 }
 

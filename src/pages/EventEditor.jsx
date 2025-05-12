@@ -242,8 +242,8 @@ export function EventEditor() {
             const eventData = {
                 name: formData.eventName,
                 description: formData.description,
-                start_time: formData.startDate,
-                end_time: formData.endDate,
+                start_time: formData.startDate + "Z",
+                end_time: formData.endDate + "Z",
                 location: formData.location,
             };
 
@@ -291,7 +291,7 @@ export function EventEditor() {
                     console.error('Error deleting old image:', deleteError);
                 }
             }
-            navigate('/instantiate/eventmaker');
+            navigate('/instantiate/event/info');
             
             // Refresh event info to get the latest data
             await getEventInfo();
@@ -346,7 +346,7 @@ export function EventEditor() {
                                     value={formData.eventName}
                                     onChange={handleInputChange}
                                     placeholder={t('eventEditor.basicInfo.eventName.placeholder')}
-                                    className={`input input-bordered w-full ${errors.eventName ? 'input-error' : ''}`}
+                                    className={`input input-bordered rounded-xl w-full ${errors.eventName ? 'input-error' : ''}`}
                                 />
                                 {errors.eventName && <p className="text-error text-sm mt-1">{errors.eventName}</p>}
                             </div>
@@ -360,7 +360,7 @@ export function EventEditor() {
                                     value={formData.description}
                                     onChange={handleInputChange}
                                     placeholder={t('eventEditor.basicInfo.description.placeholder')}
-                                    className={`textarea textarea-bordered w-full h-32 ${errors.description ? 'textarea-error' : ''}`}
+                                    className={`textarea textarea-bordered rounded-xl w-full h-32 ${errors.description ? 'textarea-error' : ''}`}
                                 />
                                 {errors.description && <p className="text-error text-sm mt-1">{errors.description}</p>}
                             </div>
@@ -375,7 +375,7 @@ export function EventEditor() {
                                         name="startDate"
                                         value={formData.startDate}
                                         onChange={handleInputChange}
-                                        className={`input input-bordered w-full ${errors.startDate ? 'input-error' : ''}`}
+                                        className={`input input-bordered rounded-xl w-full ${errors.startDate ? 'input-error' : ''}`}
                                     />
                                     {errors.startDate && <p className="text-error text-sm mt-1">{errors.startDate}</p>}
                                 </div>
@@ -389,7 +389,7 @@ export function EventEditor() {
                                         name="endDate"
                                         value={formData.endDate}
                                         onChange={handleInputChange}
-                                        className={`input input-bordered w-full ${errors.endDate ? 'input-error' : ''}`}
+                                        className={`input input-bordered rounded-xl w-full ${errors.endDate ? 'input-error' : ''}`}
                                     />
                                     {errors.endDate && <p className="text-error text-sm mt-1">{errors.endDate}</p>}
                                 </div>
@@ -417,7 +417,7 @@ export function EventEditor() {
                                     value={formData.location}
                                     onChange={handleLocationChange}
                                     placeholder={t('eventEditor.location.placeholder')}
-                                    className={`input input-bordered w-full ${errors.location ? 'input-error' : ''}`}
+                                    className={`input input-bordered rounded-xl w-full ${errors.location ? 'input-error' : ''}`}
                                     autoComplete="off"
                                 />
                                 {errors.location && <p className="text-error text-sm mt-1">{errors.location}</p>}
@@ -455,7 +455,7 @@ export function EventEditor() {
                             >
                                 {imagePreview ? t('common.media.changeImage') : t('common.media.selectImage')}
                             </button>
-                            <div className="relative w-full h-48 bg-base-100 rounded-lg overflow-hidden border border-base-300">
+                            <div className="relative w-full h-48 bg-base-100 rounded-xl overflow-hidden border border-base-300">
                                 {renderImageContent()}
                             </div>
                         </div>
@@ -465,7 +465,7 @@ export function EventEditor() {
                     <div className="flex justify-end gap-4">
                         <button
                             type="button"
-                            onClick={() => navigate('/instantiate/eventmaker')}
+                            onClick={() => navigate('/instantiate/event/info')}
                             className="btn btn-secondary rounded-xl"
                             disabled={isSubmitting}
                         >

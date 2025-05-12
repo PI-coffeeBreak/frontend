@@ -52,11 +52,11 @@ export default function Plugins() {
         <div className="w-full min-h-svh p-2 lg:p-8">
             <h1 className="text-3xl font-bold my-8">Plugins</h1>
             <div className="mb-6 flex flex-wrap gap-4 items-center">
-                <label className="input input-bordered flex items-center gap-2">
+                <label className="input input-bordered rounded-xl flex items-center gap-2">
                     <FaSearch className="text-gray-400"/>
                     <input
                         type="text"
-                        className="grow"
+                        className="grow "
                         placeholder="Search Plugins"
                         value={searchTerm}
                         onChange={(e) => {
