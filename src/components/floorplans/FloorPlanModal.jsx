@@ -13,7 +13,6 @@ export default function FloorPlanModal({
   floorPlans,
   selectedId,
 }) {
-  console.log("🟢 FloorPlanModal render");
   const dialogRef = useRef(null);
   const fileInputRef = useRef(null);
 

@@ -15,7 +15,6 @@ const apiUrl = `${baseUrl}/floor-plan-plugin/floor_plan`;
 const ITEMS_PER_PAGE = 6;
 
 function FloorPlanActions({ onEdit, onDelete, t }) {
-  console.log("🟠 FloorPlanActions render");
   return (
     <div className="flex gap-2 justify-end">
       <button
@@ -51,7 +50,6 @@ FloorPlanActions.propTypes = {
 };
 
 function FloorPlanRowItem({ fp, isTable, onEdit, onDelete, t }) {
-  console.log("🟡 FloorPlanRowItem render", fp.name);
   if (isTable) {
     return (
       <>
@@ -113,7 +111,6 @@ FloorPlanRowItem.propTypes = {
 };
 
 export function FloorPlans() {
-  console.log("🔵 FloorPlans render");
   const { keycloak } = useKeycloak();
   const { showNotification } = useNotification();
   const { t } = useTranslation();
