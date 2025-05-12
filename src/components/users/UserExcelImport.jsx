@@ -287,6 +287,7 @@ export function UserExcelImport({ isOpen, onClose, onImport }) {
     }
   };
 
+  const buttonLabel = `Import ${userData.length > 0 ? userData.length : ''} Users`;
   return (
     <Modal
       isOpen={isOpen}
@@ -302,7 +303,7 @@ export function UserExcelImport({ isOpen, onClose, onImport }) {
       )}
 
       <form onSubmit={handleSubmit}>
-        <button 
+        <button
           type="button"
           className="btn btn-secondary rounded-xl w-full"
           onClick={handleDownloadTemplate}
@@ -333,13 +334,13 @@ export function UserExcelImport({ isOpen, onClose, onImport }) {
           <div className="rounded-full bg-base-content w-16 h-16 mx-auto my-4 flex items-center justify-center">
             <FiUpload className="text-base-100 text-2xl" aria-hidden="true" />
           </div>
-          
+
           <p>
             Drag and drop your Excel file here or
             {' '}
             <span className="text-primary font-bold">Browse</span>
           </p>
-          
+
           <p className="text-sm text-gray-400">
             Maximum file size: 1MB
           </p>
@@ -362,7 +363,7 @@ export function UserExcelImport({ isOpen, onClose, onImport }) {
               <FaTrash aria-hidden="true" />
               <span className="sr-only">Remove file</span>
             </button>
-            
+
             <div className="flex items-center gap-3">
               <FaFile className="text-2xl text-primary" />
               <div>
@@ -372,11 +373,11 @@ export function UserExcelImport({ isOpen, onClose, onImport }) {
                 </p>
               </div>
             </div>
-            
+
             <div className="mt-2">
-              <progress 
-                className="progress progress-primary w-full" 
-                value={uploadProgress} 
+              <progress
+                className="progress progress-primary w-full"
+                value={uploadProgress}
                 max="100"
               />
               <p className="text-xs text-right mt-1">{uploadProgress}%</p>
@@ -419,7 +420,7 @@ export function UserExcelImport({ isOpen, onClose, onImport }) {
                 <span>Processing...</span>
               </div>
             ) : (
-              `Import ${userData.length > 0 ? userData.length : ''} Users`
+              buttonLabel
             )}
           </button>
         </div>

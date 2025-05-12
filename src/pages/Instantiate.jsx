@@ -1,14 +1,7 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
 import {
-    FaPalette,
-    FaCogs,
-    FaCalendarAlt,
-    FaPuzzlePiece,
-    FaUsers,
-    FaBars,
     FaArrowRight,
-    FaFile,
     FaRocket, FaCog
 } from 'react-icons/fa';
 import { useEvent } from '../contexts/EventContext';

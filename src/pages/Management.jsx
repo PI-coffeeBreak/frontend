@@ -1,5 +1,5 @@
 import React, { useMemo } from 'react';
-import {FaUsers, FaCalendarAlt, FaBell, FaEdit, FaPuzzlePiece} from 'react-icons/fa';
+import {FaUsers, FaCalendarAlt, FaEdit, FaPuzzlePiece} from 'react-icons/fa';
 import DashboardCard from '../components/common/DashboardCard.jsx';
 import { useTranslation } from 'react-i18next';
 
