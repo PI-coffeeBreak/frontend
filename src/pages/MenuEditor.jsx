@@ -9,6 +9,7 @@ import { CSS } from "@dnd-kit/utilities";
 import { FaPlus, FaEdit, FaTrash, FaBars, FaSearch } from "react-icons/fa";
 import { IconSelector } from "../components/event_maker/IconSelector.jsx";
 import { useTranslation } from "react-i18next";
+import DeleteConfirmationModal from '../components/common/DeleteConfirmationModal.jsx';
 
 function SortableMenuItem({ option, onEdit, onDelete }) {
   const { t } = useTranslation();
@@ -333,6 +334,10 @@ export function MenuEditor() {
   const [isEditModalOpen, setIsEditModalOpen] = useState(false);
   const [searchTerm, setSearchTerm] = useState("");
   const [filteredOptions, setFilteredOptions] = useState([]);
+  
+  const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
+  const [deletingItemId, setDeletingItemId] = useState(null);
+  const [isDeleting, setIsDeleting] = useState(false);
 
   const sensors = useSensors(
     useSensor(PointerSensor),
@@ -395,17 +400,30 @@ export function MenuEditor() {
     }
   };
 
-  const handleDeleteOption = async (id) => {
-    if (window.confirm(t('menuEditor.actions.deleteConfirm'))) {
-      try {
-        await deleteMenuOption(id);
-        showNotification(t('menuEditor.actions.deleteSuccess'), "success");
-        
-        await getMenuOptions();
-      } catch (error) {
-        console.error("Error deleting menu option:", error);
-        showNotification(t('menuEditor.actions.deleteError'), "error");
-      }
+  const handleDeleteOption = (id) => {
+    setDeletingItemId(id);
+    setIsDeleteModalOpen(true);
+  };
+
+  const closeDeleteModal = () => {
+    setIsDeleteModalOpen(false);
+    setDeletingItemId(null);
+  };
+
+  const confirmDelete = async () => {
+    if (!deletingItemId) return;
+
+    setIsDeleting(true);
+    try {
+      await deleteMenuOption(deletingItemId);
+      showNotification(t('menuEditor.actions.deleteSuccess'), "success");
+      await getMenuOptions();
+    } catch (error) {
+      console.error("Error deleting menu option:", error);
+      showNotification(t('menuEditor.actions.deleteError'), "error");
+    } finally {
+      setIsDeleting(false);
+      closeDeleteModal();
     }
   };
 
@@ -477,6 +495,15 @@ export function MenuEditor() {
         editingOption={editingOption}
         setEditingOption={setEditingOption}
         onUpdate={handleUpdateOption}
+      />
+
+      <DeleteConfirmationModal
+        isOpen={isDeleteModalOpen}
+        onClose={closeDeleteModal}
+        onConfirm={confirmDelete}
+        title={t('menuEditor.actions.delete')}
+        message={t('menuEditor.actions.deleteConfirm')}
+        isLoading={isDeleting}
       />
     </div>
   );

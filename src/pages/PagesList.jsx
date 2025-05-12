@@ -6,6 +6,7 @@ import { useNotification } from "../contexts/NotificationContext";
 import { axiosWithAuth } from "../utils/axiosWithAuth";
 import { useKeycloak } from "@react-keycloak/web";
 import { useTranslation } from "react-i18next";
+import DeleteConfirmationModal from '../components/common/DeleteConfirmationModal.jsx';
 
 export function PagesList() {
     const { t } = useTranslation();
@@ -18,6 +19,11 @@ export function PagesList() {
     const [filterEnabled, setFilterEnabled] = useState("all"); // "all", "enabled", "disabled"
     const [currentPage, setCurrentPage] = useState(1);
     const itemsPerPage = 5;
+    
+    // Add these states for delete confirmation modal
+    const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
+    const [deletingPageId, setDeletingPageId] = useState(null);
+    const [isDeleting, setIsDeleting] = useState(false);
 
     useEffect(() => {
         getPages();
@@ -28,22 +34,35 @@ export function PagesList() {
         navigate(`edit-page/${pageTitleSlug}`);
     };
 
-    const handleDelete = async (pageId) => {
+    const handleDelete = (pageId) => {
         console.log("Deleting page with ID:", pageId);
-        if (window.confirm(t('pagesList.actions.deleteConfirm'))) {
-            try {
-                await deletePage(pageId);
-                showNotification(t('pagesList.actions.deleteSuccess'), "success");
-            } catch (error) {
-                // Properly handle the error by logging it
-                console.error("Error deleting page:", error);
+        setDeletingPageId(pageId);
+        setIsDeleteModalOpen(true);
+    };
+    
+    const closeDeleteModal = () => {
+        setIsDeleteModalOpen(false);
+        setDeletingPageId(null);
+    };
+    
+    const confirmDelete = async () => {
+        if (!deletingPageId) return;
+        
+        setIsDeleting(true);
+        try {
+            await deletePage(deletingPageId);
+            showNotification(t('pagesList.actions.deleteSuccess'), "success");
+        } catch (error) {
+            // Properly handle the error by logging it
+            console.error("Error deleting page:", error);
 
-                // Show a more specific error message if possible
-                const errorMessage = error?.message || t('pagesList.actions.deleteError');
-                showNotification(errorMessage, "error");
-
-                getPages();
-            }
+            // Show a more specific error message if possible
+            const errorMessage = error?.message || t('pagesList.actions.deleteError');
+            showNotification(errorMessage, "error");
+        } finally {
+            setIsDeleting(false);
+            closeDeleteModal();
+            getPages();
         }
     };
 
@@ -282,6 +301,16 @@ export function PagesList() {
                     </div>
                 </div>
             )}
+
+            {/* Add the DeleteConfirmationModal */}
+            <DeleteConfirmationModal
+                isOpen={isDeleteModalOpen}
+                onClose={closeDeleteModal}
+                onConfirm={confirmDelete}
+                title={t('pagesList.actions.delete')}
+                message={t('pagesList.actions.deleteConfirm')}
+                isLoading={isDeleting}
+            />
         </div>
     );
 }
