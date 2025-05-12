@@ -2,13 +2,22 @@ import React, { useEffect, useState } from "react";
 import PropTypes from "prop-types";
 import { baseUrl } from "../../../../consts";
 
+const fallbackData = {
+  title: "Floor Plans",
+  description: "",
+  className: "",
+  floorPlans: [],
+  show_selector: true,
+  fetchIfEmpty: true
+};
+
 export function FloorPlanComponent({
-  title = "Floor Plans",
-  description = "",
-  className = "",
-  floorPlans = [],
-  showSelector = true,
-  fetchIfEmpty = true
+  title = fallbackData.title,
+  description = fallbackData.description,
+  className = fallbackData.className,
+  floorPlans = fallbackData.floorPlans,
+  show_selector = fallbackData.show_selector,
+  fetchIfEmpty = fallbackData.fetchIfEmpty
 }) {
   const [plans, setPlans] = useState(floorPlans || []);
   const [selectedIndex, setSelectedIndex] = useState(0);
@@ -59,9 +68,7 @@ export function FloorPlanComponent({
 
   return (
     <div className={`pt-16 px-4 lg:pt-0`}>
-      <div
-        className={`bg-base-100 rounded-lg shadow-md overflow-hidden ${className}`}
-      >
+      <div className={`bg-base-100 rounded-lg shadow-md overflow-hidden ${className}`}>
         {/* Header */}
         <div className="p-4 border-b border-base-300">
           <h1 style={{ fontSize: "24px", fontWeight: "bold" }}>{title}</h1>
@@ -72,68 +79,73 @@ export function FloorPlanComponent({
           )}
         </div>
 
-        {/* Selector */}
-        <div className="w-full px-4 mt-2">
-          <div
-            className="flex gap-4 overflow-x-auto rounded-lg shadow-sm py-4 px-6 mx-auto"
-            style={{
-              backgroundColor: "var(--color-secondary)",
-              maxWidth: "1024px"
-            }}
-          >
-            {plans.map((fp, i) => (
-              <button
-                key={fp.id}
-                onClick={() => setSelectedIndex(i)}
-                className={`flex flex-col items-center justify-between rounded-lg transition-all duration-200 min-w-[120px] p-2 ${
-                  i === selectedIndex
-                    ? "outline outline-2 outline-[var(--color-accent)]"
-                    : "outline outline-1 outline-transparent hover:outline-[var(--color-primary)]"
-                }`}
-                style={{
-                  backgroundColor: "transparent"
-                }}
-              >
-                <img
-                  src={fp.image}
-                  alt={`Preview of ${fp.name}`}
-                  className="w-28 h-20 object-cover rounded mb-2 bg-gray-200"
-                />
-                <span className="text-base font-semibold text-neutral-800 text-center">
-                  {fp.name}
-                </span>
-              </button>
-            ))}
+        {/* Selector (optional) */}
+        {show_selector && (
+          <div className="w-full px-4 mt-2">
+            <div
+              className="flex gap-4 overflow-x-auto rounded-lg shadow-sm py-4 px-6 mx-auto"
+              style={{
+                backgroundColor: "var(--color-secondary)",
+                maxWidth: "1024px"
+              }}
+            >
+              {plans.map((fp, i) => (
+                <button
+                  key={fp.id}
+                  onClick={() => setSelectedIndex(i)}
+                  className={`flex flex-col items-center justify-between rounded-lg transition-all duration-200 min-w-[120px] p-2 ${
+                    i === selectedIndex
+                      ? "outline outline-2 outline-[var(--color-accent)]"
+                      : "outline outline-1 outline-transparent hover:outline-[var(--color-primary)]"
+                  }`}
+                  style={{
+                    backgroundColor: "transparent"
+                  }}
+                >
+                  <img
+                    src={fp.image}
+                    alt={`Preview of ${fp.name}`}
+                    className="w-28 h-20 object-cover rounded mb-2 bg-gray-200"
+                  />
+                  <span className="text-base font-semibold text-neutral-800 text-center">
+                    {fp.name}
+                  </span>
+                </button>
+              ))}
+            </div>
           </div>
-        </div>
+        )}
 
-        {/* Selected Floor Plan Display */}
-        <div className="p-4 flex justify-center">
-          <div className="bg-base-100 rounded-lg border border-base-300 w-full max-w-4xl overflow-hidden">
-            <div className="p-4 border-b border-base-200">
-              <h2 style={{ fontSize: "20px", fontWeight: "bold" }}>
-                {selected.name}
-              </h2>
+        {/* Floor Plan Display */}
+        <div className="p-4 flex flex-col items-center gap-8">
+          {(show_selector ? [selected] : plans).map((plan) => (
+            <div
+              key={plan.id}
+              className="bg-base-100 rounded-lg border border-base-300 w-full max-w-4xl overflow-hidden"
+            >
+              <div className="p-4 border-b border-base-200">
+                <h2 style={{ fontSize: "20px", fontWeight: "bold" }}>{plan.name}</h2>
+              </div>
+              <div className="p-4">
+                <img
+                  src={plan.image}
+                  alt={`Floor plan image: ${plan.name}`}
+                  className="w-full max-h-[500px] object-contain rounded"
+                />
+                <p
+                  style={{
+                    fontSize: "16px",
+                    marginTop: "16px",
+                    color: "var(--color-content)",
+                    whiteSpace: "pre-wrap",
+                    lineHeight: "1.5"
+                  }}
+                >
+                  {plan.details}
+                </p>
+              </div>
             </div>
-            <div className="p-4">
-              <img
-                src={selected.image}
-                alt={`Floor plan image: ${selected.name}`}
-                className="w-full max-h-[500px] object-contain rounded"
-              />
-              <p
-                style={{
-                  fontSize: "16px",
-                  marginTop: "16px",
-                  color: "var(--color-content)",
-                  whiteSpace: "pre-wrap",
-                  lineHeight: "1.5"
-                }}
-              >
-                {selected.details}
-              </p>
-            </div>
-          </div>
+          ))}
         </div>
       </div>
     </div>
@@ -152,6 +164,8 @@ FloorPlanComponent.propTypes = {
       details: PropTypes.string
     })
   ),
-  showSelector: PropTypes.bool,
+  show_selector: PropTypes.bool,
   fetchIfEmpty: PropTypes.bool
 };
+
+export { FloorPlanComponent as FloorPlan };
