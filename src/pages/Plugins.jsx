@@ -1,9 +1,78 @@
-import { useState } from "react";
-import { FaCog } from "react-icons/fa";
+import React, { useState } from "react";
+import PropTypes from 'prop-types';
+import {FaCog, FaSearch} from "react-icons/fa";
 import { AiOutlineLoading3Quarters } from "react-icons/ai";
 import Pagination from "../components/common/Pagination.jsx";
 import PluginSettingsModal from "../components/plugins/PluginSettingsModal.jsx";
 import { usePlugins } from "../contexts/PluginsContext";
+
+// Helper component for the toggle switch
+const ToggleSwitch = ({ isChecked, isLoading, onToggle }) => (
+    <label className="flex items-center justify-center cursor-pointer">
+        {isLoading ? (
+            <AiOutlineLoading3Quarters className="animate-spin text-primary text-xl" />
+        ) : (
+            <>
+                <input
+                    type="checkbox"
+                    className="hidden"
+                    checked={isChecked}
+                    onChange={onToggle}
+                />
+                <div
+                    className={`w-10 h-5 flex items-center bg-gray-300 rounded-full p-1 transition duration-300 ${isChecked ? "bg-primary" : "bg-gray-400"}`}
+                >
+                    <div
+                        className={`bg-white w-4 h-4 rounded-full shadow-md transform transition duration-300 ${isChecked ? "translate-x-4" : "translate-x-0"}`}
+                    ></div>
+                </div>
+            </>
+        )}
+    </label>
+);
+
+ToggleSwitch.propTypes = {
+  isChecked: PropTypes.bool.isRequired,
+  isLoading: PropTypes.bool.isRequired,
+  onToggle: PropTypes.func.isRequired,
+};
+
+// Table row component for plugins
+const PluginRow = ({ plugin, loadingPlugin, onToggle, openSettings, hasSettings }) => (
+    <tr className="hover:bg-gray-50">
+        <td className="p-3">{plugin.name}</td>
+        <td className="p-3">{plugin.description}</td>
+        <td className="p-3 text-center">
+            <ToggleSwitch
+                isChecked={plugin.is_loaded}
+                isLoading={loadingPlugin === plugin.name}
+                onToggle={() => onToggle(plugin)}
+            />
+        </td>
+        <td className="p-3 text-center">
+            {hasSettings && (
+                <button
+                    onClick={() => openSettings(plugin)}
+                    className="text-gray-700 hover:text-black"
+                >
+                    <FaCog className="text-lg" />
+                </button>
+            )}
+        </td>
+    </tr>
+);
+
+PluginRow.propTypes = {
+  plugin: PropTypes.shape({
+    name: PropTypes.string.isRequired,
+    description: PropTypes.string.isRequired,
+    is_loaded: PropTypes.bool.isRequired,
+  }).isRequired,
+  loadingPlugin: PropTypes.string,
+  onToggle: PropTypes.func.isRequired,
+  openSettings: PropTypes.func.isRequired,
+  hasSettings: PropTypes.bool.isRequired,
+};
 
 export default function Plugins() {
     const { plugins, pluginsConfig, togglePlugin } = usePlugins();
@@ -11,7 +80,7 @@ export default function Plugins() {
     const [selectedPlugin, setSelectedPlugin] = useState(null);
     const [searchTerm, setSearchTerm] = useState("");
     const [currentPage, setCurrentPage] = useState(1);
-    const pluginsPerPage = 6;
+    const pluginsPerPage = 12;
     const [loadingPlugin, setLoadingPlugin] = useState(null);
 
     const filteredPlugins = plugins.filter((plugin) =>
@@ -24,7 +93,6 @@ export default function Plugins() {
 
     const openModal = (plugin) => {
         const pluginConfig = pluginsConfig.find((config) => config.title === plugin.title);
-        console.log("Plugin config:", pluginConfig);
         if (pluginConfig) {
             setSelectedPlugin({
                 ...plugin,
@@ -39,6 +107,12 @@ export default function Plugins() {
         setSelectedPlugin(null);
     };
 
+    const handlePageChange = (pageNumber) => {
+        if (pageNumber >= 1 && pageNumber <= totalPages) {
+            setCurrentPage(pageNumber);
+        }
+    };
+
     const handleTogglePlugin = async (plugin) => {
         setLoadingPlugin(plugin.name);
         try {
@@ -49,19 +123,22 @@ export default function Plugins() {
     };
 
     return (
-        <div className="w-full min-h-svh p-8">
-            <h1 className="text-3xl font-bold mb-6">Plugins</h1>
+        <div className="w-full min-h-svh p-2 lg:p-8">
+            <h1 className="text-3xl font-bold my-8">Plugins</h1>
             <div className="mb-6 flex flex-wrap gap-4 items-center">
-                <input
-                    type="text"
-                    placeholder="Search..."
-                    value={searchTerm}
-                    onChange={(e) => {
-                        setSearchTerm(e.target.value);
-                        setCurrentPage(1);
-                    }}
-                    className="p-2 border rounded-lg shadow-sm w-full md:w-1/3"
-                />
+                <label className="input input-bordered rounded-xl flex items-center gap-2">
+                    <FaSearch className="text-gray-400"/>
+                    <input
+                        type="text"
+                        className="grow "
+                        placeholder="Search plugins"
+                        value={searchTerm}
+                        onChange={(e) => {
+                            setSearchTerm(e.target.value);
+                            setCurrentPage(1);
+                        }}
+                    />
+                </label>
             </div>
 
             <div className="overflow-x-auto">
@@ -77,43 +154,14 @@ export default function Plugins() {
 
                     <tbody>
                         {currentPlugins.map((plugin, index) => (
-                            <tr key={index} className="hover:bg-gray-50">
-                                <td className="p-3">{plugin.name}</td>
-                                <td className="p-3">{plugin.description}</td>
-                                <td className="p-3 text-center">
-                                    <label className="flex items-center justify-center cursor-pointer">
-                                        {loadingPlugin === plugin.name ? (
-                                            <AiOutlineLoading3Quarters className="animate-spin text-primary text-xl" />
-                                        ) : (
-                                            <>
-                                                <input
-                                                    type="checkbox"
-                                                    className="hidden"
-                                                    checked={plugin.is_loaded}
-                                                    onChange={() => handleTogglePlugin(plugin)}
-                                                />
-                                                <div
-                                                    className={`w-10 h-5 flex items-center bg-gray-300 rounded-full p-1 transition duration-300 ${plugin.is_loaded ? "bg-primary" : "bg-gray-400"}`}
-                                                >
-                                                    <div
-                                                        className={`bg-white w-4 h-4 rounded-full shadow-md transform transition duration-300 ${plugin.is_loaded ? "translate-x-4" : "translate-x-0"}`}
-                                                    ></div>
-                                                </div>
-                                            </>
-                                        )}
-                                    </label>
-                                </td>
-                                <td className="p-3 text-center">
-                                    {pluginsConfig.some((config) => config.title === plugin.title) && (
-                                        <button
-                                            onClick={() => openModal(plugin)}
-                                            className="text-gray-700 hover:text-black"
-                                        >
-                                            <FaCog className="text-lg" />
-                                        </button>
-                                    )}
-                                </td>
-                            </tr>
+                            <PluginRow
+                                key={plugin.name}
+                                plugin={plugin}
+                                loadingPlugin={loadingPlugin}
+                                onToggle={handleTogglePlugin}
+                                openSettings={openModal}
+                                hasSettings={pluginsConfig.some((config) => config.title === plugin.title)}
+                            />
                         ))}
                     </tbody>
                 </table>
@@ -125,13 +173,20 @@ export default function Plugins() {
                 />
             )}
 
-            {filteredPlugins.length > pluginsPerPage && (
-                <Pagination
-                    className="align-start"
-                    currentPage={currentPage}
-                    totalPages={totalPages}
-                    onPageChange={setCurrentPage}
-                />
+            {totalPages > 1 && (
+                <div className="flex justify-center mt-4">
+                    <div className="join">
+                        {Array.from({ length: totalPages }).map((_, i) => (
+                            <button
+                                key={`page-${i + 1}`}
+                                className={`join-item btn btn-xs sm:btn-sm ${currentPage === i + 1 ? "btn-active" : ""}`}
+                                onClick={() => handlePageChange(i + 1)}
+                            >
+                                {i + 1}
+                            </button>
+                        ))}
+                    </div>
+                </div>
             )}
         </div>
     );

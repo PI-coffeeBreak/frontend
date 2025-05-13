@@ -20,11 +20,9 @@ export const AlertsProvider = ({ children }) => {
         setError(null);
         try {
             const response = await axiosWithAuth(keycloak).get(`${alertsBaseUrl}/template`);
-            console.log("Alert templates fetched successfully:", response.data);
             setTemplates(response.data);
             return response.data;
         } catch (err) {
-            console.error("Error fetching alert templates:", err);
             setError("Failed to fetch alert templates. Please try again.");
             throw err;
         } finally {
@@ -38,7 +36,6 @@ export const AlertsProvider = ({ children }) => {
         setError(null);
         try {
             const response = await axiosWithAuth(keycloak).get(`${alertsBaseUrl}/template/${templateId}`);
-            console.log("Alert template fetched successfully:", response.data);
             return response.data;
         } catch (err) {
             console.error(`Error fetching alert template with ID ${templateId}:`, err);
@@ -55,7 +52,6 @@ export const AlertsProvider = ({ children }) => {
         setError(null);
         try {
             const response = await axiosWithAuth(keycloak).post(`${alertsBaseUrl}/template`, templateData);
-            console.log("Alert template created successfully:", response.data);
             setTemplates(prevTemplates => [...prevTemplates, response.data]);
             return response.data;
         } catch (err) {
@@ -78,10 +74,8 @@ export const AlertsProvider = ({ children }) => {
                 high_priority: alertData.priority === "High"
             };
 
-            console.log("Sending alert data:", formattedData);
             const response = await axiosWithAuth(keycloak).post(`${alertsBaseUrl}/alert`, formattedData);
-            
-            console.log("Alert created successfully:", response.data);
+
             return response.data;
         } catch (err) {
             console.error("Error creating alert:", err);
@@ -98,7 +92,6 @@ export const AlertsProvider = ({ children }) => {
         setError(null);
         try {
             const response = await axiosWithAuth(keycloak).put(`${alertsBaseUrl}/template/${templateId}`, templateData);
-            console.log("Alert template updated successfully:", response.data);
             
             setTemplates(prevTemplates => 
                 prevTemplates.map(template => 
@@ -122,7 +115,6 @@ export const AlertsProvider = ({ children }) => {
         setError(null);
         try {
             await axiosWithAuth(keycloak).delete(`${alertsBaseUrl}/template/${templateId}`);
-            console.log(`Alert template with ID ${templateId} deleted successfully`);
             
             setTemplates(prevTemplates => 
                 prevTemplates.filter(template => template.id !== templateId)

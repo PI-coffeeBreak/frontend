@@ -4,9 +4,9 @@ import { FaFileExcel, FaPlus, FaTags } from 'react-icons/fa';
 import CreateCard from "../common/CreateCard.jsx";
 
 export function CreateActivityCards({
-  onOpenNewSessionTypeModal,
+  onOpenCreateActivityTypeModal,
   onOpenExcelModal, 
-  onOpenNewSessionModal, 
+  onOpenCreateActivityModal,
   canCreateActivities = true 
 }) {
   const { t } = useTranslation();
@@ -25,7 +25,7 @@ export function CreateActivityCards({
         icon={FaPlus}
         title={t('activities.create.title')}
         description={t('activities.create.description')}
-        onClick={onOpenNewSessionModal}
+        onClick={onOpenCreateActivityModal}
         disabled={!canCreateActivities}
         disabledMessage={t('activities.permissions.disabled')}
       />
@@ -33,7 +33,7 @@ export function CreateActivityCards({
         icon={FaTags}
         title={t('activities.types.title')}
         description={t('activities.types.description')}
-        onClick={onOpenNewSessionTypeModal}
+        onClick={onOpenCreateActivityTypeModal}
         disabled={!canCreateActivities}
         disabledMessage={t('activities.permissions.disabled')}
       />
@@ -43,7 +43,7 @@ export function CreateActivityCards({
 
 CreateActivityCards.propTypes = {
   onOpenExcelModal: PropTypes.func.isRequired,
-  onOpenNewSessionModal: PropTypes.func.isRequired,
-  onOpenNewSessionTypeModal: PropTypes.func.isRequired,
+  onOpenCreateActivityModal: PropTypes.func.isRequired,
+  onOpenCreateActivityTypeModal: PropTypes.func.isRequired,
   canCreateActivities: PropTypes.bool
 };

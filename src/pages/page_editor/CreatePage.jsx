@@ -68,8 +68,6 @@ export function CreatePage() {
                 components: componentsWithFullProps,
             };
 
-            console.log("Saving page with components:", pageData.components);
-
             // Save the page first
             await savePage(pageData);
 
@@ -87,7 +85,7 @@ export function CreatePage() {
             );
 
             showNotification(t('pageEditor.create.createSuccess'), "success");
-            navigate("/instantiate/eventmaker/pages");
+            navigate("/instantiate/application/pages");
         } catch (error) {
             console.error("Failed to create the page or menu option.", error);
             showNotification(t('pageEditor.create.createError'), "error");
@@ -132,7 +130,7 @@ export function CreatePage() {
             />
 
             <PageActions
-                onBack={() => navigate("/instantiate/eventmaker/pages")}
+                onBack={() => navigate("/instantiate/application/pages")}
                 onSave={handleSavePage}
                 isLoading={isPagesLoading}
                 hasUnsavedChanges={hasUnsavedChanges}

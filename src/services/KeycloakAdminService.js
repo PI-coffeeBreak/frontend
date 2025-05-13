@@ -18,11 +18,9 @@ class KeycloakAdminService {
   // Get all realm roles
   async getAllRoles() {
     try {
-      console.log(`Fetching roles from ${this.baseUrl}/roles`);
       
       // First try to get realm roles
       const response = await this.client.get(`${this.baseUrl}/roles`);
-      console.log("Roles retrieved:", response.data.length);
       
       // If we got roles, process them
       if (response.data && Array.isArray(response.data)) {
@@ -46,13 +44,9 @@ class KeycloakAdminService {
   // Get all realm roles for a specific user
   async getUserRoles(userId) {
     try {
-      console.log(`Fetching user roles from ${this.baseUrl}/users/${userId}/role-mappings/realm`);
-      
       const response = await this.client.get(
         `${this.baseUrl}/users/${userId}/role-mappings/realm`
       );
-      
-      console.log("User roles retrieved:", response.data.length);
       
       if (response.data && Array.isArray(response.data)) {
         return response.data.map(role => ({
@@ -98,8 +92,6 @@ class KeycloakAdminService {
         clientRole: role.clientRole,
         containerId: role.containerId
       };
-
-      console.log("Assigning role to user:", cleanRole);
       
       await this.client.post(
         `${this.baseUrl}/users/${userId}/role-mappings/realm`,
@@ -126,8 +118,6 @@ class KeycloakAdminService {
         containerId: role.containerId
       };
 
-      console.log("Removing role from user:", cleanRole);
-      
       await this.client.delete(
         `${this.baseUrl}/users/${userId}/role-mappings/realm`,
         { data: [cleanRole] }
@@ -188,8 +178,6 @@ class KeycloakAdminService {
       // Ensure the role name follows the cb- convention
       const formattedRoleName = roleName.startsWith("cb-") ? roleName : `cb-${roleName}`;
       
-      console.log(`Creating new role: ${formattedRoleName}`);
-      
       try {
         // First try with user's token
         const response = await this.client.post(`${this.baseUrl}/roles`, {
@@ -203,9 +191,7 @@ class KeycloakAdminService {
         };
       } catch (error) {
         // If user's token doesn't have permission, try with admin token
-        if (error.response?.status === 403) {
-          console.log("User token doesn't have permission, trying with admin token");
-          
+        if (error.response?.status === 403) {          
           try {
             // Get admin token and create admin service instance
             const adminInstance = await KeycloakAdminService.getAdminInstance();
@@ -240,9 +226,7 @@ class KeycloakAdminService {
 
   // Get role by name
   async getRoleByName(roleName) {
-    try {
-      console.log(`Getting role by name: ${roleName}`);
-      
+    try {      
       const response = await this.client.get(`${this.baseUrl}/roles/${roleName}`);
       return {
         ...response.data,
@@ -258,8 +242,6 @@ class KeycloakAdminService {
   // Get role permissions (composite roles)
   async getRolePermissions(roleName) {
     try {
-      console.log(`Getting permissions for role: ${roleName}`);
-      
       const response = await this.client.get(`${this.baseUrl}/roles/${roleName}/composites`);
       
       if (response.data && Array.isArray(response.data)) {
@@ -289,10 +271,7 @@ class KeycloakAdminService {
         composite: permission.composite,
         clientRole: permission.clientRole,
         containerId: permission.containerId
-      };
-      
-      console.log(`Adding permission ${permission.name} to role ${roleName}`);
-      
+      };      
       await this.client.post(
         `${this.baseUrl}/roles/${roleName}/composites`,
         [cleanPermission]
@@ -318,9 +297,6 @@ class KeycloakAdminService {
         clientRole: permission.clientRole,
         containerId: permission.containerId
       };
-      
-      console.log(`Removing permission ${permission.name} from role ${roleName}`);
-      
       await this.client.delete(
         `${this.baseUrl}/roles/${roleName}/composites`,
         { data: [cleanPermission] }

@@ -21,7 +21,6 @@ export const PluginsProvider = ({ children }) => {
     const fetchPlugins = async () => {
         try {
             const response = await axiosWithAuth(keycloak).get(pluginsBaseUrl);
-            console.log("plugins", response.data);
             setPlugins(response.data);
         } catch (error) {
             console.error("Error fetching plugins:", error);
@@ -53,8 +52,6 @@ export const PluginsProvider = ({ children }) => {
                     } : p
                 )
             );
-
-            console.log(`Plugin ${plugin.name} ${plugin.is_loaded ? "unloaded" : "loaded"} successfully.`);
         } catch (error) {
             console.error(`Error ${plugin.is_loaded ? "unloading" : "loading"} plugin ${plugin.name}:`, error);
         }

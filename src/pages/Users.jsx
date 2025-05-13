@@ -4,7 +4,19 @@ import { useKeycloak } from "@react-keycloak/web";
 import { useTranslation } from "react-i18next";
 import Pagination from "../components/common/Pagination.jsx";
 import CreateCard from "../components/common/CreateCard.jsx";
-import { FaUsers, FaUser, FaUsersCog, FaPlus, FaTrash, FaCheck, FaLock, FaShieldAlt, FaKey, FaExclamationTriangle } from "react-icons/fa";
+import {
+    FaUsers,
+    FaUser,
+    FaUsersCog,
+    FaPlus,
+    FaTrash,
+    FaCheck,
+    FaLock,
+    FaShieldAlt,
+    FaKey,
+    FaExclamationTriangle,
+    FaSearch
+} from "react-icons/fa";
 import KeycloakAdminService from "../services/KeycloakAdminService";
 import { UserExcelImport } from "../components/users/UserExcelImport";
 import { generateRandomPassword } from "../utils/passwordUtils";
@@ -14,12 +26,6 @@ export default function Users() {
     const { keycloak } = useKeycloak();
     const hasAdminPermissions = KeycloakAdminService.hasAdminPermissions(keycloak);
     const hasRoleManagementPermissions = KeycloakAdminService.hasRoleManagementPermissions(keycloak);
-
-    // Debug code
-    console.log("Token parsed:", keycloak?.tokenParsed);
-    console.log("Realm access:", keycloak?.tokenParsed?.realm_access);
-    console.log("Roles:", keycloak?.tokenParsed?.realm_access?.roles);
-    console.log("Has admin permissions:", hasAdminPermissions);
 
     // Get users data and functions from context
     const {
@@ -348,11 +354,6 @@ export default function Users() {
     const handleInputChange = (e) => {
         const { name, value } = e.target;
 
-        // Debug log for role selection
-        if (name === 'role') {
-            console.log(`Role selected: ${value}`);
-        }
-
         setNewUserData(prev => ({
             ...prev,
             [name]: value
@@ -410,8 +411,6 @@ export default function Users() {
             setFormErrors(errors);
             return;
         }
-
-        console.log("Submitting user data:", newUserData);
 
         try {
             const result = await createUser(newUserData);
@@ -562,15 +561,10 @@ export default function Users() {
                 {!hasAdminPermissions && <AdminPermissionsWarning />}
 
                 <div className="flex flex-col sm:flex-row gap-4 mt-4">
-                    <div className="w-full sm:w-auto">
+                    <div className="w-full sm:w-auto ">
                         <label htmlFor="searchUsers" className="sr-only">{t('users.searchLabel')}</label>
-                        <div className="input w-full">
-                            <svg className="h-[1em] opacity-50" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
-                                <g strokeLinejoin="round" strokeLinecap="round" strokeWidth="2.5" fill="none" stroke="currentColor">
-                                    <circle cx="11" cy="11" r="8"></circle>
-                                    <path d="m21 21-4.3-4.3"></path>
-                                </g>
-                            </svg>
+                        <div className="input w-full rounded-xl">
+                            <FaSearch className="text-gray-400"/>
                             <input
                                 id="searchUsers"
                                 type="text"

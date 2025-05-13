@@ -135,14 +135,11 @@ export default function EventSetup() {
                 };
 
                 const response = await axiosWithAuth(keycloak).post(`${baseUrl}/event-info/event`, eventData);
-                console.log('Event created successfully:', response.data);
                 
                 // Get the event ID from the response
                 const eventId = response.data.id;
                 
                 const event = await axiosWithAuth(keycloak).get(`${baseUrl}/event-info/event/`);
-
-                console.log('Event:', event.data.image_id);
 
                 // Upload image if one is selected
                 if (formData.image) {
@@ -161,15 +158,12 @@ export default function EventSetup() {
                                 }
                             }
                         );
-                        
-                        console.log('Image uploaded successfully:', imageResponse.data);
                     } catch (imageError) {
                         console.error('Error uploading image:', imageError);
                         // We'll continue even if image upload fails
                     }
                 }
-                
-                navigate('/instantiate/eventmaker');
+                navigate('/instantiate/application');
                 getEventInfo();
             } catch (error) {
                 console.error('Error creating event:', error);
@@ -182,7 +176,6 @@ export default function EventSetup() {
 
     const handleLocationChange = async (e) => {
         const { value } = e.target;
-        console.log('Location input changed:', value);
         setFormData(prev => ({ ...prev, location: value }));
 
         if (locationTimeoutRef.current) {
@@ -198,7 +191,6 @@ export default function EventSetup() {
 
         locationTimeoutRef.current = setTimeout(async () => {
             try {
-                console.log('Fetching locations for:', value);
                 const response = await axios.get(`https://api.geoapify.com/v1/geocode/autocomplete`, {
                     params: {
                         text: value,
@@ -206,16 +198,11 @@ export default function EventSetup() {
                         format: 'json'
                     }
                 });
-
-                console.log('API Response:', response.data);
-
                 const suggestions = response.data.results.map(result => ({
                     name: result.formatted,
                     lat: result.lat,
                     lon: result.lon
                 }));
-
-                console.log('Processed suggestions:', suggestions);
                 setLocationSuggestions(suggestions);
             } catch (error) {
                 console.error('Error fetching location suggestions:', error);

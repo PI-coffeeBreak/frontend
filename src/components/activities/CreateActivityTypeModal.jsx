@@ -4,7 +4,7 @@ import { Modal } from "../common/Modal";
 import { useForm } from "../../hooks/useForm";
 import { useNotification } from "../../contexts/NotificationContext";
 
-export function NewSessionTypeModal({ isOpen, onClose, onSubmit }) {
+export function CreateActivityTypeModal({ isOpen, onClose, onSubmit }) {
   const initialValues = {
     type: "",
     color: "#3788d8", // Default color
@@ -18,7 +18,7 @@ export function NewSessionTypeModal({ isOpen, onClose, onSubmit }) {
     const newErrors = {};
     
     if (!values.type.trim()) {
-      newErrors.type = "Session type is required";
+      newErrors.type = "Activity type is required";
     }
     
     setErrors(newErrors);
@@ -35,11 +35,11 @@ export function NewSessionTypeModal({ isOpen, onClose, onSubmit }) {
     try {
       await onSubmit({ type: values.type.trim(), color: values.color });
       resetForm();
-      showNotification("Session type created successfully", "success");
+      showNotification("Activity type created successfully", "success");
     } catch (error) {
-      console.error("Error creating session type:", error);
+      console.error("Error creating activity type:", error);
       showNotification(
-        error.response?.data?.message || "Failed to create session type",
+        error.response?.data?.message || "Failed to create activity type",
         "error"
       );
     } finally {
@@ -57,13 +57,13 @@ export function NewSessionTypeModal({ isOpen, onClose, onSubmit }) {
     <Modal
       isOpen={isOpen}
       onClose={handleCloseModal}
-      title="Create New Session Type"
+      title="Create New Activity Type"
     >
       <div className="">
         <form onSubmit={handleSubmitForm}>
           <div className="mb-4">
             <label htmlFor="type" className="block text-sm font-medium mb-1">
-              Session Type <span className="text-error">*</span>
+              Activity Type <span className="text-error">*</span>
             </label>
             <input
               type="text"
@@ -72,7 +72,7 @@ export function NewSessionTypeModal({ isOpen, onClose, onSubmit }) {
               value={values.type}
               onChange={handleChange}
               className={`input input-bordered w-full ${errors.type ? 'input-error' : ''}`}
-              placeholder="Enter session type name"
+              placeholder="Enter activity type name"
             />
             {errors.type && <p className="text-error text-sm mt-1">{errors.type}</p>}
           </div>
@@ -123,7 +123,7 @@ export function NewSessionTypeModal({ isOpen, onClose, onSubmit }) {
   );
 }
 
-NewSessionTypeModal.propTypes = {
+CreateActivityTypeModal.propTypes = {
   isOpen: PropTypes.bool.isRequired,
   onClose: PropTypes.func.isRequired,
   onSubmit: PropTypes.func.isRequired,

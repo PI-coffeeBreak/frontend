@@ -2,7 +2,7 @@
   "common": {
     "home": "Início",
     "users": "Usuários",
-    "sessions": "Sessões",
+    "activities": "Atividades",
     "alerts": "Alertas",
     "schedule": "Agenda",
     "plugins": "Plugins",
@@ -44,21 +44,40 @@
     "sections": {
       "home": {
         "title": "Início",
-        "description": "Gerenciar usuários e sessões",
+        "description": "Gerenciar usuários e atividades",
         "links": {
           "users": "Usuários",
-          "sessions": "Sessões",
+          "activities": "Atividades",
           "alerts": "Alertas"
         },
         "descriptions": {
           "users": "Gerencie contas de usuários, funções e permissões",
-          "sessions": "Agende e organize sessões e atividades",
+          "activities": "Agende e organize atividades do evento",
           "alerts": "Crie e envie notificações para participantes"
         },
         "buttons": {
           "users": "Gerenciar Usuários",
-          "sessions": "Ver Sessões",
+          "activities": "Ver Atividades",
           "alerts": "Gerenciar Alertas"
+        }
+      },
+      "event": {
+        "title": "Evento",
+        "description": "Gerencie as configurações e componentes do evento",
+        "links": {
+          "users": "Usuários",
+          "activities": "Atividades",
+          "eventInfo": "Informações do Evento",
+          "plugins": "Gerenciar Plugins"
+        }
+      },
+      "application": {
+        "title": "Aplicação",
+        "description": "Personalize e configure sua aplicação",
+        "links": {
+          "pages": "Páginas",
+          "menus": "Menus",
+          "colors": "Cores"
         }
       },
       "eventMaker": {
@@ -78,10 +97,10 @@
       },
       "management": {
         "title": "Gestão",
-        "description": "Gerencie usuários, sessões e alertas",
+        "description": "Gerencie usuários, atividades e alertas",
         "links": {
           "users": "Usuários",
-          "sessions": "Sessões",
+          "activities": "Atividades",
           "alerts": "Alertas"
         }
       }
@@ -99,7 +118,7 @@
     "cards": {
       "management": {
         "title": "Gestão",
-        "description": "Acesse ferramentas para gerenciar usuários, sessões e alertas do seu evento."
+        "description": "Acesse ferramentas para gerenciar usuários, atividades e alertas do seu evento."
       },
       "eventMaker": {
         "title": "Event Maker",
@@ -171,11 +190,11 @@
     }
   },
   "activities": {
-    "title": "Gerenciar Sessões",
-    "sessions": "Sessões",
+    "title": "Gerenciar Atividades",
+    "activities": "Atividades",
     "create": {
-      "title": "Criar Nova Sessão",
-      "description": "Adicionar uma nova sessão ao evento",
+      "title": "Criar Nova Atividade",
+      "description": "Adicionar uma nova atividade ao evento",
       "name": "Nome",
       "date": "Data",
       "duration": "Duração",
@@ -186,27 +205,27 @@
       "image": "Imagem"
     },
     "types": {
-      "title": "Criar Novo Tipo de Sessão",
-      "description": "Crie um novo tipo de sessão manualmente"
+      "title": "Criar Novo Tipo de Atividade",
+      "description": "Crie um novo tipo de atividade manualmente"
     },
     "import": {
       "title": "Adicionar com arquivo Excel",
-      "description": "Importe várias sessões de uma vez através de um arquivo Excel"
+      "description": "Importe várias atividades de uma vez através de um arquivo Excel"
     },
     "filters": {
-      "searchPlaceholder": "Pesquisar sessões por nome ou descrição",
+      "searchPlaceholder": "Pesquisar atividades",
       "all": "Todas"
     },
-    "delete": "Excluir sessão",
-    "deleteConfirm": "Tem certeza que deseja excluir esta sessão?",
-    "deleteSuccess": "Sessão excluída com sucesso",
-    "deleteError": "Falha ao excluir sessão",
-    "noActivities": "Nenhuma sessão encontrada",
+    "delete": "Excluir atividade",
+    "deleteConfirm": "Tem certeza que deseja excluir esta atividade?",
+    "deleteSuccess": "Atividade excluída com sucesso",
+    "deleteError": "Falha ao excluir atividade",
+    "noActivities": "Nenhuma atividade encontrada",
     "trySearch": "Tente alterar sua pesquisa ou filtros",
-    "imageAlt": "Imagem da sessão",
+    "imageAlt": "Imagem da atividade",
     "noImage": "Sem imagem",
     "permissions": {
-      "disabled": "Você não tem permissão para criar sessões"
+      "disabled": "Você não tem permissão para criar atividades"
     },
     "editSlotsTitle": "Gestão de Vagas",
     "slots": {
@@ -220,7 +239,7 @@
     }
   },
   "eventEditor": {
-    "title": "Configurações do Evento",
+    "title": "Informações do Evento",
     "basicInfo": {
       "title": "Informações Básicas",
       "eventName": {
@@ -282,6 +301,10 @@
   "themeCustomizer": {
     "title": "Personalizador de Tema do Evento",
     "subtitle": "Personalize as cores do seu evento e veja como ficam em tempo real",
+    "pageHeader": {
+      "title": "Personalização do Tema",
+      "subtitle": "Personalize seu evento com cores personalizadas para combinar com a identidade da sua marca"
+    },
     "tabs": {
       "colors": "Escolher Cores",
       "preview": "Visualizar Evento"
@@ -290,7 +313,8 @@
     "colorGroups": {
       "brandColors": "Cores da Marca",
       "backgroundText": "Fundo e Texto",
-      "statusColors": "Cores de Status"
+      "statusColors": "Cores de Status",
+      "neutrals": "Cores Neutras"
     },
     "colorNames": {
       "primary": "Cor Principal da Marca",
@@ -338,7 +362,7 @@
   "menuEditor": {
     "title": "Editor de Menu",
     "description": "Gerencie os itens do menu de navegação. Arraste e solte para reordenar os itens. As alterações serão refletidas na navegação do seu evento.",
-    "searchPlaceholder": "Pesquisar itens do menu...",
+    "searchPlaceholder": "Pesquisar itens do menu",
     "addButton": "Adicionar Item do Menu",
     "modal": {
       "add": {
@@ -490,10 +514,10 @@
         "description": "Gerencie contas de usuários, funções e permissões. Adicione novos usuários, edite os existentes ou controle o acesso a diferentes recursos do seu evento.",
         "buttonText": "Gerenciar Usuários"
       },
-      "sessions": {
-        "title": "Sessões",
-        "description": "Agende e organize sessões, workshops e atividades do evento. Controle horários, locais e registro de participantes para todas as atividades do evento.",
-        "buttonText": "Ver Sessões"
+      "activities": {
+        "title": "Atividades",
+        "description": "Agende e organize atividades, workshops e atividades do evento. Controle horários, locais e registro de participantes para todas as atividades do evento.",
+        "buttonText": "Ver Atividades"
       },
       "alerts": {
         "title": "Alertas",
@@ -599,7 +623,7 @@
     "subtitle": "Monitore e gerencie todos os aspectos do seu evento em um só lugar"
   },
   "feedback": {
-    "title": "Avalie esta Sessão",
+    "title": "Avalie esta Atividade",
     "description": "Sua opinião nos ajuda a melhorar!",
     "submit": "Enviar Feedback",
     "ratingLabel": "Avaliação:",

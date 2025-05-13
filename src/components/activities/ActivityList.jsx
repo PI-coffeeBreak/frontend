@@ -16,8 +16,14 @@ export function ActivityList({ activities, onDelete, onEdit, mode = 'delete' }) 
   const [isDeleting, setIsDeleting] = useState(false);
 
   const handleDeleteClick = (id) => {
-    setDeletingActivityId(id);
-    setIsDeleteModalOpen(true);
+    if (onDelete) {
+      // Use the parent component's delete handler if provided
+      onDelete(id);
+    } else {
+      // Otherwise use the internal delete handler
+      setDeletingActivityId(id);
+      setIsDeleteModalOpen(true);
+    }
   };
 
   const closeDeleteModal = () => {
@@ -53,7 +59,7 @@ export function ActivityList({ activities, onDelete, onEdit, mode = 'delete' }) 
 
   return (
     <>
-      <div className="w-full grid grid-cols-1 gap-4 overflow-hidden mt-6 md:grid-cols-2 lg:grid-cols-3">
+      <div className="w-full grid grid-cols-1 gap-4 max-h-screen overflow-hidden mt-6 md:grid-cols-2 lg:grid-cols-3">
         {activities.map((activity) => (
           <Activity
             key={activity.id}
@@ -63,20 +69,22 @@ export function ActivityList({ activities, onDelete, onEdit, mode = 'delete' }) 
             image={activity.image}
             category={activity.topic}
             type={activity.type}
-            onDelete={mode === 'delete' ? handleDeleteClick : undefined}
-            onEdit={mode === 'edit' ? onEdit : undefined}
+            onDelete={mode === 'delete' || mode === 'both' ? handleDeleteClick : undefined}
+            onEdit={mode === 'edit' || mode === 'both' ? onEdit : undefined}
             mode={mode}
             metadata={activity.metadata}
           />
         ))}
       </div>
 
-      {mode === 'delete' && (
+      {(mode === 'delete' || (mode === 'both' && !onDelete)) && (
         <DeleteConfirmationModal
           isOpen={isDeleteModalOpen}
           onClose={closeDeleteModal}
           onConfirm={confirmDelete}
           isLoading={isDeleting}
+          title={t('activities.deleteConfirmTitle')}
+          message={t('activities.deleteConfirm')}
         />
       )}
     </>
@@ -87,5 +95,5 @@ ActivityList.propTypes = {
   activities: PropTypes.array.isRequired,
   onDelete: PropTypes.func,
   onEdit: PropTypes.func,
-  mode: PropTypes.oneOf(['edit', 'delete'])
+  mode: PropTypes.oneOf(['edit', 'delete', 'both'])
 };
