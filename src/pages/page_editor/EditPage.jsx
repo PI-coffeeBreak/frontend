@@ -6,7 +6,7 @@ import { usePages } from "../../contexts/PagesContext";
 import { useNotification } from "../../contexts/NotificationContext";
 import { PageHeader } from "../../components/event_maker/pages/PageHeader";
 import { PageTitleInput } from "../../components/event_maker/pages/PageTitleInput";
-import { PageDescriptionInput } from "../../components/event_maker/pages/inputs/PageDescriptionInput";
+//import { PageDescriptionInput } from "../../components/event_maker/pages/inputs/PageDescriptionInput";
 import { PageContent } from "../../components/event_maker/pages/PageContent";
 import { PageActions } from "../../components/event_maker/pages/PageActions";
 import { useSections } from "../../hooks/useSections";
