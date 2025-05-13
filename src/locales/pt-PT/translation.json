@@ -633,6 +633,73 @@
     "commentLabel": "Comentário:",
     "commentPlaceholder": "Escreve o teu comentário aqui..."
   },
+  "floorPlans": {
+    "title": "Gestão de Plantas",
+    "reorder": "Reordenar Tudo",
+    "exitReorder": "Sair do Modo de Reordenação",
+    "add": "Adicionar Planta",
+    "dragHint": "A ordem das plantas pode ser alterada arrastando e largando.",
+    "noPlans": "Ainda não existem plantas.",
+    "noDetails": "Ainda não existem detalhes disponíveis",
+    "confirmDelete": "Eliminar esta planta?"
+  },
+  "pagination": {
+    "previous": "Anterior",
+    "next": "Seguinte",
+    "page": "Página {{page}} de {{totalPages}}"
+  },
+  "table": {
+    "order": "Ordem",
+    "drag": "Arrastar",
+    "image": "Imagem",
+    "name": "Nome",
+    "details": "Detalhes",
+    "actions": "Ações"
+  },
+  "actions": {
+    "edit": "Editar",
+    "delete": "Eliminar",
+    "close": "Fechar"
+  },
+  "floorPlanModal": {
+    "editTitle": "Editar Planta",
+    "addTitle": "Adicionar Planta",
+    "removeImage": "Remover imagem",
+    "noImageToRemove": "Nenhuma imagem para remover",
+    "onlyInternalImages": "Apenas imagens geridas internamente podem ser removidas",
+    "name": "Nome",
+    "dragAndDrop": "Arraste e largue a sua imagem aqui ou",
+    "browse": "Procurar",
+    "maxFileSize": "Tamanho máximo do ficheiro: 5MB",
+    "selectImageInputType": "Selecione o Tipo de Imagem a Usar",
+    "details": "Detalhes",
+    "cancel": "Cancelar",
+    "update": "Atualizar",
+    "add": "Adicionar",
+    "imageUrl": "URL da Imagem",
+    "uploadFile": "Carregar Ficheiro",
+    "optional": "Opcional",
+    "imageSelected": "Imagem selecionada",
+    "clickTrashIcon": "Clique no lixo para",
+    "removeExistingImage": "remover a imagem existente",
+    "nameRequired": "O nome é obrigatório",
+    "nameExists": "Já existe uma planta com este nome",
+    "preview": "Pré-visualização",
+    "imageUrlRequired": "A URL da imagem é obrigatória"
+  },
+    "notifications": {
+    "loadFailed": "Falha ao carregar as Plantas",
+    "createSuccess": "Planta criada com sucesso",
+    "createFailed": "Falha na criação",
+    "updateSuccess": "Planta atualizada com sucesso",
+    "updateFailed": "Falha na atualização",
+    "deleteSuccess": "Planta eliminada com sucesso",
+    "deleteFailed": "Falha na eliminação",
+    "removeImageSuccess": "Imagem removida com sucesso",
+    "removeImageFailed": "Falha ao remover a imagem",
+    "orderUpdateSuccess": "Ordem atualizada com sucesso",
+    "orderUpdateFailed": "Falha ao atualizar a ordem"
+  },
   "validation": {
     "required": "Este campo é obrigatório",
     "invalidDate": "Formato de data inválido",
@@ -687,4 +754,4 @@
       "saving": "A guardar..."
     }
   }
-} 
+}

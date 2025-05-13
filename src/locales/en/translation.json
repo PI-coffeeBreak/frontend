@@ -636,6 +636,73 @@
     "commentLabel": "Comment:",
     "commentPlaceholder": "Write your comment here..."
   },
+  "floorPlans": {
+    "title": "Floor Plan Management",
+    "reorder": "Reorder All",
+    "exitReorder": "Exit Order Mode",
+    "add": "Add Floor Plan",
+    "dragHint": "Floor Plans order can be changed by dragging and dropping them.",
+    "noPlans": "No Floor Plans yet.",
+    "noDetails": "No details available yet",
+    "confirmDelete": "Delete this floor plan?"
+  },
+  "pagination": {
+    "previous": "Previous",
+    "next": "Next",
+    "page": "Page {{page}} of {{totalPages}}"
+  },
+  "table": {
+    "order": "Order",
+    "drag": "Drag",
+    "image": "Image",
+    "name": "Name",
+    "details": "Details",
+    "actions": "Actions"
+  },
+  "actions": {
+    "edit": "Edit",
+    "delete": "Delete",
+    "close": "Close"
+  },
+  "floorPlanModal": {
+    "editTitle": "Edit Floor Plan",
+    "addTitle": "Add Floor Plan",
+    "removeImage": "Remove image",
+    "noImageToRemove": "No image to remove",
+    "onlyInternalImages": "Only internal managed images can be removed",
+    "name": "Name",
+    "dragAndDrop": "Drag and drop your image here or",
+    "browse": "Browse",
+    "maxFileSize": "Maximum file size: 5MB",
+    "selectImageInputType": "Select Image Input Type",
+    "details": "Details",
+    "cancel": "Cancel",
+    "update": "Update",
+    "add": "Add",
+    "imageUrl": "Image URL",
+    "uploadFile": "Upload File",
+    "optional": "Optional",
+    "imageSelected": "Image selected",
+    "clickTrashIcon": "Click the trash icon to",
+    "removeExistingImage": "remove the existing image",
+    "nameRequired": "Name is required",
+    "nameExists": "A floor plan with this name already exists",
+    "preview": "Preview",
+    "imageUrlRequired": "Image URL is required"
+  },
+    "notifications": {
+    "loadFailed": "Failed to load Floor Plans",
+    "createSuccess": "Floor Plan Created",
+    "createFailed": "Creation failed",
+    "updateSuccess": "Floor Plan Updated",
+    "updateFailed": "Update failed",
+    "deleteSuccess": "Floor Plan Deleted",
+    "deleteFailed": "Deletion failed",
+    "removeImageSuccess": "Image removed",
+    "removeImageFailed": "Failed to remove image",
+    "orderUpdateSuccess": "Order updated successfully",
+    "orderUpdateFailed": "Failed to update order"
+  },
   "validation": {
     "required": "This field is required",
     "invalidDate": "Invalid date format",
@@ -690,4 +757,4 @@
       "saving": "Saving..."
     }
   }
-} 
+}
