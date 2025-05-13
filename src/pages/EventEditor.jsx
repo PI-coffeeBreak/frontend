@@ -10,6 +10,7 @@ import PropTypes from "prop-types";
 import { renderLocationSuggestions as renderLocationSuggestionsUtil } from '../utils/LocationUtils';
 import { ImagePlaceholder } from '../components/common/ImagePlaceholder.jsx';
 import { ImageError } from '../components/event_maker/ImageError.jsx';
+import {baseUrl} from "../consts.js";
 
 export function EventEditor() {
     const { t } = useTranslation();
@@ -20,9 +21,9 @@ export function EventEditor() {
         getEventInfo,
     } = useEvent();
     const { getMediaUrl, registerMedia, uploadMedia, deleteMedia } = useMedia();
+    const { uploadApplicationIcon } = useEvent();
     const { showNotification } = useNotification();
     const navigate = useNavigate();
-    
     const fileInputRef = useRef(null);
     const locationTimeoutRef = useRef(null);
     const [isSubmitting, setIsSubmitting] = useState(false);
@@ -38,9 +39,14 @@ export function EventEditor() {
         endDate: "",
         location: "",
         image: null,
-        removeImage: false
+        removeImage: false,
+        // --- PWA icons ---
+        pwaIcon192: null,
+        removePwaIcon192: false,
+        pwaIcon512: null,
+        removePwaIcon512: false
     });
-    
+
     const [errors, setErrors] = useState({});
 
     // Initialize form with event data
@@ -55,7 +61,7 @@ export function EventEditor() {
             image: null,
             removeImage: false
         });
-        
+
         // Set image preview if available
         if (eventInfo.image_id) {
             setImagePreview(getMediaUrl(eventInfo.image_id));
@@ -65,7 +71,7 @@ export function EventEditor() {
         }
         }
     }, [eventInfo, getMediaUrl]);
-    
+
     // Helper function to format date for datetime-local input
     const formatDateForInput = (isoString) => {
         const date = new Date(isoString);
@@ -75,7 +81,7 @@ export function EventEditor() {
     // Validate form
     const validateForm = () => {
         const newErrors = {};
-        
+
         if (!formData.eventName) newErrors.eventName = t('eventEditor.basicInfo.eventName.required');
         if (!formData.description) newErrors.description = t('eventEditor.basicInfo.description.required');
         if (!formData.startDate) newErrors.startDate = t('eventEditor.dateTime.startDate.required');
@@ -84,7 +90,7 @@ export function EventEditor() {
             newErrors.endDate = t('eventEditor.dateTime.endDate.invalid');
         }
         if (!formData.location) newErrors.location = t('eventEditor.location.required');
-        
+
         setErrors(newErrors);
         return Object.keys(newErrors).length === 0;
     };
@@ -96,22 +102,22 @@ export function EventEditor() {
         [name]: value
         }));
     };
-    
+
     const handleLocationChange = (e) => {
         const { value } = e.target;
         setFormData(prev => ({ ...prev, location: value }));
-        
+
         if (locationTimeoutRef.current) {
         clearTimeout(locationTimeoutRef.current);
         }
-        
+
         if (value.length < 3) {
         setLocationSuggestions([]);
         return;
         }
-        
+
         setIsLoadingLocations(true);
-        
+
         locationTimeoutRef.current = setTimeout(async () => {
         try {
             const response = await axios.get(`https://api.geoapify.com/v1/geocode/autocomplete`, {
@@ -121,13 +127,13 @@ export function EventEditor() {
                 format: 'json'
             }
             });
-            
+
             const suggestions = response.data.results.map(result => ({
             name: result.formatted,
             lat: result.lat,
             lon: result.lon
             }));
-            
+
             setLocationSuggestions(suggestions);
         } catch (error) {
             console.error('Error fetching location suggestions:', error);
@@ -136,7 +142,7 @@ export function EventEditor() {
         }
         }, 300);
     };
-    
+
     const handleLocationSelect = (suggestion) => {
         setFormData(prev => ({
         ...prev,
@@ -144,11 +150,11 @@ export function EventEditor() {
         }));
         setLocationSuggestions([]);
     };
-    
+
     const handleImageClick = () => {
         fileInputRef.current?.click();
     };
-    
+
     const handleImageChange = (e) => {
         const file = e.target.files[0];
         if (file) {
@@ -156,18 +162,18 @@ export function EventEditor() {
                 showNotification(t('common.media.sizeError'), "error");
                 return;
             }
-            
+
             if (!file.type.startsWith('image/')) {
                 showNotification(t('common.media.typeError'), "error");
                 return;
             }
-            
+
             setFormData(prev => ({
                 ...prev,
                 image: file,
                 removeImage: false
             }));
-            
+
             // Create preview
             const reader = new FileReader();
             reader.onloadend = () => {
@@ -177,32 +183,278 @@ export function EventEditor() {
             reader.readAsDataURL(file);
         }
     };
-  
+
     const removeImage = () => {
         setFormData(prev => ({
         ...prev,
         image: null,
         removeImage: true
         }));
-        
+
         // Clear image preview
         setImagePreview(null);
         setImageError(false);
-        
+
         if (fileInputRef.current) {
         fileInputRef.current.value = '';
         }
+    };
+
+    const pwaIcon192InputRef = useRef(null);
+    const pwaIcon512InputRef = useRef(null);
+
+    const [pwaIcon192Id, setPwaIcon192Id ] = useState(null)
+    const [pwaIcon512Id, setPwaIcon512Id ] = useState(null)
+
+    const [pwaIcon192Type, setPwaIcon192Type ] = useState(null)
+    const [pwaIcon512Type, setPwaIcon512Type ] = useState(null)
+
+    const [pwaIcon192Preview, setPwaIcon192Preview] = useState(null);
+    const [pwaIcon512Preview, setPwaIcon512Preview] = useState(null);
+    const [pwaIcon192Error, setPwaIcon192Error] = useState(false);
+    const [pwaIcon512Error, setPwaIcon512Error] = useState(false);
+
+    const handlePwaIcon192Click = () => {
+        pwaIcon192InputRef.current?.click();
+    };
+
+    const handlePwaIcon512Click = () => {
+        pwaIcon512InputRef.current?.click();
+    };
+
+    const handlePwaIcon192Change = (e) => {
+        const file = e.target.files[0];
+        if (!file) return
+
+        if (file.size > 2 * 1024 * 1024) {
+            showNotification(t('common.media.sizeError'), "error");
+            return;
+        }
+
+
+        if (!file.type.startsWith('image/')) {
+            showNotification(t('common.media.typeError'), "error");
+            return;
+        }
+
+
+        const objectUrl = URL.createObjectURL(file);
+        const img = new Image();
+        img.onload = () => {
+            if (img.width !== 192 || img.height !== 192) {
+                showNotification(
+                    t('common.media.dimensionError', { width: 192, height: 192 }) ||
+                    "Image must be exactly 192×192 pixels",
+                    "error"
+                );
+                setPwaIcon192Error(true);
+                if (pwaIcon192InputRef.current) {
+                    pwaIcon192InputRef.current.value = '';
+                }
+                URL.revokeObjectURL(objectUrl);
+                return;
+            }
+
+            // ✔ All validations passed
+            setFormData(prev => ({
+                ...prev,
+                pwaIcon192: file,
+                removePwaIcon192: false
+            }));
+            setPwaIcon192Preview(objectUrl);
+            setPwaIcon192Error(false);
+
+            registerMedia().then((response) => {
+                setPwaIcon192Id(response.uuid.toString())
+                setPwaIcon192Type(file.type.toString())
+                uploadMedia(pwaIcon192Id, file, false);
+            })
+
+            setPwaIcon192Preview(baseUrl + "/media/" + pwaIcon192Id);
+
+        };
+        img.onerror = () => {
+            showNotification(t('common.media.imageLoadError') || "Unable to load the image", "error");
+            URL.revokeObjectURL(objectUrl);
+        };
+        img.src = objectUrl;
+    };
+
+    const handlePwaIcon512Change = (e) => {
+        const file = e.target.files[0];
+        if (!file){
+            return;
+        }
+
+        if (file.size > 5 * 1024 * 1024) {
+            showNotification(t('common.media.sizeError'), "error");
+            return;
+        }
+
+        // MIME‑type validation
+        if (!file.type.startsWith('image/')) {
+            showNotification(t('common.media.typeError'), "error");
+            return;
+        }
+
+
+        // Pixel‑dimension validation (must be exactly 512×512)
+        const objectUrl = URL.createObjectURL(file);
+        const img = new Image();
+        img.onload = () => {
+            if (img.width !== 512 || img.height !== 512) {
+                showNotification(
+                    t('common.media.dimensionError', { width: 512, height: 512 }) ||
+                    "Image must be exactly 512×512 pixels",
+                    "error"
+                );
+                setPwaIcon512Error(true);
+                if (pwaIcon512InputRef.current) {
+                    pwaIcon512InputRef.current.value = '';
+                }
+                URL.revokeObjectURL(objectUrl);
+                return;
+            }
+
+            // ✔ All validations passed
+            setFormData(prev => ({
+                ...prev,
+                pwaIcon512: file,
+                removePwaIcon512: false
+            }));
+
+            setPwaIcon512Error(false);
+
+            registerMedia().then((response) => {
+                setPwaIcon512Id(response.uuid.toString())
+                setPwaIcon512Type(file.type.toString())
+                uploadMedia(pwaIcon512Id, file, false);
+            })
+
+            setPwaIcon512Preview(baseUrl + "/media/" + pwaIcon512Id);
+
+            console.log(pwaIcon192Preview)
+
+        };
+
+
+
+        img.onerror = () => {
+            showNotification(t('common.media.imageLoadError') || "Unable to load the image", "error");
+            URL.revokeObjectURL(objectUrl);
+        };
+        img.src = objectUrl;
+    };
+
+    const removePwaIcon192 = () => {
+        setFormData(prev => ({
+            ...prev,
+            pwaIcon192: null,
+            removePwaIcon192: true
+        }));
+
+        // Clear image preview
+        setPwaIcon192Preview(null);
+        setPwaIcon192Error(false);
+
+        if (pwaIcon192InputRef.current) {
+            pwaIcon192InputRef.current.value = '';
+        }
+    };
+
+    const removePwaIcon512 = () => {
+        setFormData(prev => ({
+            ...prev,
+            pwaIcon512: null,
+            removePwaIcon512: true
+        }));
+
+        // Clear image preview
+        setPwaIcon512Preview(null);
+        setPwaIcon512Error(false);
+
+        if (pwaIcon512InputRef.current) {
+            pwaIcon512InputRef.current.value = '';
+        }
+    };
+
+    const renderPwaIcon192Content = () => {
+        if (!pwaIcon192Preview) {
+            return <ImagePlaceholder />;
+        }
+
+        if (pwaIcon192Error) {
+            return <ImageError />;
+        }
+
+        return (
+            <>
+                <div className="absolute inset-0 flex items-center justify-center">
+                    <img
+                        src={pwaIcon192Preview}
+                        alt={t('common.media.pwaIcon192Alt') || "192x192 PWA Icon"}
+                        className="max-w-full max-h-full object-contain"
+                        onError={() => {
+                            console.error("Failed to load PWA 192x192 icon preview");
+                            setPwaIcon192Error(true);
+                        }}
+                    />
+                </div>
+                <button
+                    type="button"
+                    onClick={removePwaIcon192}
+                    className="absolute top-2 right-2 btn btn-circle btn-sm btn-error z-10"
+                    aria-label={t('common.media.removeImage')}
+                >
+                    ×
+                </button>
+            </>
+        );
+    };
+
+    const renderPwaIcon512Content = () => {
+        if (!pwaIcon512Preview) {
+            return <ImagePlaceholder />;
+        }
+
+        if (pwaIcon512Error) {
+            return <ImageError />;
+        }
+
+        return (
+            <>
+                <div className="absolute inset-0 flex items-center justify-center">
+                    <img
+                        src={pwaIcon512Preview}
+                        alt={t('common.media.pwaIcon512Alt') || "512x512 PWA Icon"}
+                        className="max-w-full max-h-full object-contain"
+                        onError={() => {
+                            console.error("Failed to load PWA 512x512 icon preview");
+                            setPwaIcon512Error(true);
+                        }}
+                    />
+                </div>
+                <button
+                    type="button"
+                    onClick={removePwaIcon512}
+                    className="absolute top-2 right-2 btn btn-circle btn-sm btn-error z-10"
+                    aria-label={t('common.media.removeImage')}
+                >
+                    ×
+                </button>
+            </>
+        );
     };
 
     const renderImageContent = () => {
         if (!imagePreview) {
             return <ImagePlaceholder />;
         }
-        
+
         if (imageError) {
             return <ImageError />;
         }
-        
+
         return (
             <>
                 <div className="absolute inset-0 flex items-center justify-center">
@@ -227,17 +479,17 @@ export function EventEditor() {
             </>
         );
     };
-  
+
     const handleSubmit = async (e) => {
         e.preventDefault();
-        
+
         if (!validateForm()) {
             showNotification(t('eventEditor.validation.requiredFields'), "error");
             return;
         }
-        
+
         setIsSubmitting(true);
-        
+
         try {
             const eventData = {
                 name: formData.eventName,
@@ -250,13 +502,13 @@ export function EventEditor() {
             // Get current image ID and track if this is a first-time image upload
             let imageId = eventInfo?.image_id;
             let oldImageId = imageId;
-            
+
             // Handle image changes
             if (formData.image) {
                 try {
                     // Check if we're updating existing image or adding new one
                     const isUpdate = !!eventInfo?.image_id;
-                    
+
                     // If updating existing image, use that ID, otherwise register new one
                     if (!isUpdate) {
                         const mediaData = await registerMedia();
@@ -265,7 +517,7 @@ export function EventEditor() {
                     } else {
                         await uploadMedia(imageId, formData.image, true);
                     }
-                    
+
                     // Update the event data with the image ID
                     eventData.image_id = imageId;
                 } catch (imageError) {
@@ -279,10 +531,13 @@ export function EventEditor() {
                 // Keep existing image ID if not changing
                 eventData.image_id = imageId;
             }
-            
+
             // Update the event with possibly modified data
             await updateEventInfo(eventData);
-            
+
+            await uploadApplicationIcon(pwaIcon512Id, "512x512", pwaIcon512Type);
+            await uploadApplicationIcon(pwaIcon192Id, "192x192", pwaIcon192Type);
+
             // Delete the old image if it was removed
             if (formData.removeImage && oldImageId) {
                 try {
@@ -292,10 +547,12 @@ export function EventEditor() {
                 }
             }
             navigate('/instantiate/event/info');
-            
+
             // Refresh event info to get the latest data
             await getEventInfo();
-            
+
+
+
             // Show success message
             showNotification(t('eventEditor.success.update'), "success");
         } catch (error) {
@@ -305,7 +562,7 @@ export function EventEditor() {
             setIsSubmitting(false);
         }
     };
-    
+
     const renderLocationSuggestions = () => {
         return renderLocationSuggestionsUtil(
             locationSuggestions,
@@ -313,7 +570,7 @@ export function EventEditor() {
             handleLocationSelect
         );
     };
-  
+
     if (isEventLoading) {
         return (
         <div className="flex justify-center items-center min-h-svh">
@@ -321,7 +578,7 @@ export function EventEditor() {
         </div>
         );
     }
-  
+
     return (
         <div className="w-full min-h-svh p-2 lg:p-8">
             <h1 className="text-3xl font-bold my-8">{t('eventEditor.title')}</h1>
@@ -460,7 +717,107 @@ export function EventEditor() {
                             </div>
                         </div>
                     </div>
+
                     <div className="divider"></div>
+
+                    <div className="grid grid-cols-2">
+                        <div>
+                            <h2>
+                                Application Image
+                            </h2>
+                            <p className="text-sm text-base-content/70 mt-1">Upload or change the application images</p>
+                        </div>
+                        <div className="grid grid-cols-2 gap-2">
+                            <div>
+                                <label htmlFor="pwaIcon512" className="block mb-2 font-medium">
+                                    512x512 Image
+                                </label>
+                                <input
+                                    type="file"
+                                    ref={pwaIcon512InputRef}
+                                    id="pwaIcon512"
+                                    name="pwaIcon512"
+                                    accept="image/*"
+                                    className="hidden"
+                                    onChange={handlePwaIcon512Change}
+                                />
+                                <button
+                                    type="button"
+                                    onClick={handlePwaIcon512Click}
+                                    className="btn btn-secondary mb-2 rounded-xl w-full"
+                                    aria-controls="pwaIcon512"
+                                >
+                                    {pwaIcon512Preview ? t('common.media.changeImage') : t('common.media.selectImage')}
+                                </button>
+                                <div className="relative w-full h-48 bg-base-100 rounded-xl overflow-hidden border border-base-300">
+                                    {renderPwaIcon512Content()}
+                                </div>
+                            </div>
+                            <div>
+                                <label htmlFor="pwaIcon192" className="block mb-2 font-medium">
+                                    192x192 Image
+                                </label>
+                                <input
+                                    type="file"
+                                    ref={pwaIcon192InputRef}
+                                    id="pwaIcon192"
+                                    name="pwaIcon192"
+                                    accept="image/*"
+                                    className="hidden"
+                                    onChange={handlePwaIcon192Change}
+                                />
+                                <button
+                                    type="button"
+                                    onClick={handlePwaIcon192Click}
+                                    className="btn btn-secondary mb-2 rounded-xl w-full"
+                                    aria-controls="pwaIcon192"
+                                >
+                                    {pwaIcon192Preview ? t('common.media.changeImage') : t('common.media.selectImage')}
+                                </button>
+                                <div className="relative w-full h-48 bg-base-100 rounded-xl overflow-hidden border border-base-300">
+                                    {renderPwaIcon192Content()}
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div className="divider"></div>
+
+                    <div className="grid grid-cols-2">
+                        <div>
+                            <h2>
+                                Favicon
+                            </h2>
+                            <p className="text-sm text-base-content/70 mt-1">Upload or change the favicon</p>
+                        </div>
+                        <div className="grid grid-cols-1 gap-4">
+                            <div>
+                                <label htmlFor="image512" className="block mb-2 font-medium">
+                                    Favicon Image
+                                </label>
+                                <input
+                                    type="file"
+                                    id="image512"
+                                    name="image512"
+                                    accept="image/*"
+                                    className="hidden"
+
+                                />
+                                <button
+                                    type="button"
+                                    className="btn btn-secondary mb-2 rounded-xl w-full"
+                                    aria-controls="image512"
+                                >
+                                    Select Image
+                                </button>
+                                <div className="relative w-full h-48 bg-base-100 rounded-xl overflow-hidden border border-base-300">
+
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+
 
                     <div className="flex justify-end gap-4">
                         <button
