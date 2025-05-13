@@ -644,6 +644,10 @@
   },
   "iconsEditor": {
     "title": "Icons Editor",
+    "description": "Manage your PWA and favicon icons. Supported sizes and formats are listed below.",
+    "pwa512Description": "Used for PWA install. Must be exactly 512x512 pixels. PNG recommended.",
+    "pwa192Description": "Used for PWA install. Must be exactly 192x192 pixels. PNG recommended.",
+    "faviconDescription": "Used as browser tab icon. Must be (16x16, 32x32, 48x48) pixels. PNG, SVG, or ICO supported. For best results, upload a .ico file with all standard sizes.",
     "validation": {
       "requiredIcons": "All icons are required"
     },
