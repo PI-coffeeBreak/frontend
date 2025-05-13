@@ -7,10 +7,12 @@ import { axiosWithAuth } from "../utils/axiosWithAuth";
 import { useKeycloak } from "@react-keycloak/web";
 import { useTranslation } from "react-i18next";
 import DeleteConfirmationModal from '../components/common/DeleteConfirmationModal.jsx';
+import { useMenus } from "../contexts/MenuContext.jsx";
 
 export function PagesList() {
     const { t } = useTranslation();
     const { pages, isLoading, error, getPages, deletePage, togglePageEnabled, savePage } = usePages();
+    const { deleteMenuOption, getMenuOptions } = useMenus();
     const { showNotification } = useNotification();
     const navigate = useNavigate();
     const { keycloak } = useKeycloak();
@@ -49,7 +51,20 @@ export function PagesList() {
     
         setIsDeleting(true);
         try {
+            const pageToDelete = pages.find(page => page.page_id === deletingPageId);
+            if (!pageToDelete) {
+                showNotification(t('pagesList.actions.deleteError'), "error");
+                return;
+            }
             await deletePage(deletingPageId);
+
+            const menuOptions = await getMenuOptions();
+            const menuOption = menuOptions.find(opt => opt.label === pageToDelete.title);
+            
+            if (menuOption) {
+                await deleteMenuOption(menuOption.id);
+            }
+
             showNotification(t('pagesList.actions.deleteSuccess'), "success");
     
             // Refresh the pages list
