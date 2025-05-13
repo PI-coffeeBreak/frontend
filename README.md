@@ -1,12 +1,66 @@
-# React + Vite
+# CoffeeBreak Frontend
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+CoffeeBreak Frontend is a modern React-based frontend application built with Vite, featuring a rich set of UI components and functionality in order for the organizers to manage their event-app.
 
-Currently, two official plugins are available:
+---
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react/README.md) uses [Babel](https://babeljs.io/) for Fast Refresh
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react-swc) uses [SWC](https://swc.rs/) for Fast Refresh
+## Features
 
-## Expanding the ESLint configuration
+- Color customization
+- Page customization
+- Plugins management
+- User management
+- Event information management
+- Event calendar management
+- Multi-language support
 
-If you are developing a production application, we recommend using TypeScript and enable type-aware lint rules. Check out the [TS template](https://github.com/vitejs/vite/tree/main/packages/create-vite/template-react-ts) to integrate TypeScript and [`typescript-eslint`](https://typescript-eslint.io) in your project.
+---
+## Project structure
+
+- `src/components` - Contains the reusable components
+- `src/contexts` - Contains the contexts
+- `src/hooks` - Contains the hooks
+- `src/pages` - Contains the pages of the application
+- `src/utils` - Contains the utility functions
+- `src/locales` - Contains the translations
+- `src/types` - Contains the types
+
+---
+
+## Installation
+
+1. Clone the repository:
+```bash
+git clone git@github.com:PI-coffeeBreak/frontend.git
+cd frontend
+```
+
+2. Install dependencies:
+```bash
+npm install
+```
+
+3. Start the development server:
+```bash
+npm run dev
+```
+
+---
+
+## 🌐 Internationalization
+
+The application supports multiple languages using i18next. Language files are managed in the `src/locales` directory.
+
+---
+
+## 🔐 Authentication
+
+Authentication is handled through Keycloak. Make sure to configure your Keycloak instance and update the configuration accordingly.
+
+---
+
+## 🤝 Contributing
+
+1. Fork the repository
+2. Create a feature branch (`git checkout -b feature/amazing-feature`)
+5. Open a Pull Request
