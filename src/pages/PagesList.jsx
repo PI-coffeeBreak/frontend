@@ -35,27 +35,40 @@ export function PagesList() {
     };
 
     const handleDelete = (pageId) => {
-        console.log("Deleting page with ID:", pageId);
-        if (window.confirm(t('pagesList.actions.deleteConfirm'))) {
-            try {
-                await deletePage(pageId);
-                showNotification(t('pagesList.actions.deleteSuccess'), "success");
+        setDeletingPageId(pageId);
+        setIsDeleteModalOpen(true);
+    };
     
-                // Refresh the pages list
-                await getPages();
+    const closeDeleteModal = () => {
+        setIsDeleteModalOpen(false);
+        setDeletingPageId(null);
+    };
     
-                // Check if the current page is empty after deletion
-                const totalPagesAfterDeletion = Math.ceil((pages.length - 1) / itemsPerPage);
-                if (currentPage > totalPagesAfterDeletion) {
-                    setCurrentPage(totalPagesAfterDeletion); // Redirect to the previous page
-                }
-            } catch (error) {
-                console.error("Error deleting page:", error);
+    const confirmDelete = async () => {
+        if (!deletingPageId) return;
     
-                // Show a more specific error message if possible
-                const errorMessage = error?.message || t('pagesList.actions.deleteError');
-                showNotification(errorMessage, "error");
+        setIsDeleting(true);
+        try {
+            await deletePage(deletingPageId);
+            showNotification(t('pagesList.actions.deleteSuccess'), "success");
+    
+            // Refresh the pages list
+            await getPages();
+    
+            // Check if the current page is empty after deletion
+            const totalPagesAfterDeletion = Math.ceil((pages.length - 1) / itemsPerPage);
+            if (currentPage > totalPagesAfterDeletion) {
+                setCurrentPage(totalPagesAfterDeletion); // Redirect to the previous page
             }
+        } catch (error) {
+            console.error("Error deleting page:", error);
+    
+            // Show a more specific error message if possible
+            const errorMessage = error?.message || t('pagesList.actions.deleteError');
+            showNotification(errorMessage, "error");
+        } finally {
+            setIsDeleting(false);
+            closeDeleteModal();
         }
     };
 
