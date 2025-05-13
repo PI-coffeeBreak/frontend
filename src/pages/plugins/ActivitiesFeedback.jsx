@@ -1,10 +1,12 @@
 import React, { useState, useEffect } from 'react';
+import { useTranslation } from 'react-i18next';
 import { useActivities } from '../../contexts/ActivitiesContext';
 import { useUsers } from '../../contexts/UsersContext';
 import axios from 'axios';
 import { baseUrl } from '../../consts';
 
 const ActivitiesFeedback = () => {
+    const { t } = useTranslation();
     const { activities, isLoading, error } = useActivities();
     const { fetchUserById } = useUsers();
     const [feedback, setFeedback] = useState([]);
@@ -26,8 +28,8 @@ const ActivitiesFeedback = () => {
             setFeedbackError(null);
             setCurrentPage(1);
         } catch (err) {
-            console.error("Error fetching feedback:", err);
-            setFeedbackError("Failed to fetch feedback.");
+            console.error(t('activitiesFeedback.error'), err);
+            setFeedbackError(t('activitiesFeedback.error'));
         }
     };
 
@@ -46,11 +48,11 @@ const ActivitiesFeedback = () => {
             } else {
                 setActivityRatings((prev) => ({
                     ...prev,
-                    [activityId]: "N/A",
+                    [activityId]: t('activitiesFeedback.noFeedback'),
                 }));
             }
         } catch (err) {
-            console.error(`Error fetching ratings for activity ID ${activityId}:`, err);
+            console.error(t('activitiesFeedback.error'), err);
         }
     };
 
@@ -71,7 +73,7 @@ const ActivitiesFeedback = () => {
             return userName;
         } catch (err) {
             console.error(`Error fetching user with ID ${userId}:`, err);
-            return `User ID: ${userId}`;
+            return t('activitiesFeedback.anonymousUser');
         }
     };
 
@@ -103,20 +105,22 @@ const ActivitiesFeedback = () => {
 
     return (
         <div className="w-full min-h-svh p-4 sm:p-8">
-            <h1 className="text-2xl sm:text-3xl font-bold mb-4 sm:mb-6 text-primary">Activities Feedback</h1>
+            <h1 className="text-2xl sm:text-3xl font-bold mb-4 sm:mb-6 text-primary">
+                {t('activitiesFeedback.title')}
+            </h1>
 
             <div className="mb-6">
                 <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 sm:gap-0 mb-4">
-                    <h2 className="text-xl sm:text-2xl font-semibold">Activities</h2>
+                    <h2 className="text-xl sm:text-2xl font-semibold">{t('activitiesFeedback.title')}</h2>
                 </div>
 
                 {isLoading ? (
                     <div className="flex justify-center my-8">
-                        <span className="loading loading-spinner loading-lg"></span>
+                        <span className="loading loading-spinner loading-lg">{t('activitiesFeedback.loading')}</span>
                     </div>
                 ) : error ? (
                     <div className="text-center py-8 bg-base-200 rounded-lg">
-                        <p className="text-lg text-gray-500">{error}</p>
+                        <p className="text-lg text-gray-500">{t('activitiesFeedback.error')}</p>
                     </div>
                 ) : (
                     <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
@@ -132,8 +136,8 @@ const ActivitiesFeedback = () => {
                                     <h4 className="font-bold text-primary mb-2">{activity.name}</h4>
                                     <p className="text-sm text-gray-600 line-clamp-2">{activity.description}</p>
                                     <p className="text-sm text-gray-500 mt-2">
-                                        <strong>Average Rating:</strong>{' '}
-                                        {activityRatings[activity.id] || 'Loading...'}
+                                        <strong>{t('activitiesFeedback.averageRating')}:</strong>{' '}
+                                        {activityRatings[activity.id] || t('activitiesFeedback.loading')}
                                     </p>
                                 </div>
                             </div>
@@ -145,42 +149,46 @@ const ActivitiesFeedback = () => {
             {selectedActivity && (
                 <div className="mt-8">
                     <h2 className="text-xl sm:text-2xl font-semibold mb-4">
-                        Feedback for: {selectedActivity}
+                        {t('activitiesFeedback.feedbackFor')}: {selectedActivity}
                     </h2>
 
                     <div className="flex flex-wrap gap-4 mb-6">
                         <div>
-                            <label className="block text-sm font-medium mb-1">Filter by Rating:</label>
+                            <label className="block text-sm font-medium mb-1">
+                                {t('activitiesFeedback.filterByRating')}:
+                            </label>
                             <select
                                 className="select select-bordered mb-2"
                                 value={ratingFilterType}
                                 onChange={(e) => setRatingFilterType(e.target.value)}
                             >
-                                <option value="all">All Ratings</option>
-                                <option value="above">Above</option>
-                                <option value="below">Below</option>
-                                <option value="exact">Exact</option>
+                                <option value="all">{t('activitiesFeedback.allRatings')}</option>
+                                <option value="above">{t('activitiesFeedback.above')}</option>
+                                <option value="below">{t('activitiesFeedback.below')}</option>
+                                <option value="exact">{t('activitiesFeedback.exact')}</option>
                             </select>
                             {ratingFilterType !== 'all' && (
                                 <input
                                     type="number"
                                     className="input input-bordered"
-                                    placeholder="Enter rating"
+                                    placeholder={t('activitiesFeedback.enterFeedback')}
                                     value={ratingFilterValue || ''}
                                     onChange={(e) => setRatingFilterValue(Number(e.target.value))}
                                 />
                             )}
                         </div>
                         <div>
-                            <label className="block text-sm font-medium mb-1">Filter by User Type:</label>
+                            <label className="block text-sm font-medium mb-1">
+                                {t('activitiesFeedback.filterByUserType')}:
+                            </label>
                             <select
                                 className="select select-bordered"
                                 value={userTypeFilter}
                                 onChange={(e) => setUserTypeFilter(e.target.value)}
                             >
-                                <option value="all">All Users</option>
-                                <option value="anonymous">Anonymous Users</option>
-                                <option value="named">Named Users</option>
+                                <option value="all">{t('activitiesFeedback.allUsers')}</option>
+                                <option value="anonymous">{t('activitiesFeedback.anonymousUsers')}</option>
+                                <option value="named">{t('activitiesFeedback.namedUsers')}</option>
                             </select>
                         </div>
                     </div>
@@ -188,7 +196,7 @@ const ActivitiesFeedback = () => {
                     {feedbackError && <p className="text-red-500">{feedbackError}</p>}
                     {filteredFeedback.length === 0 ? (
                         <div className="text-center py-8 bg-base-200 rounded-lg">
-                            <p className="text-lg text-gray-500">No feedback available for this activity.</p>
+                            <p className="text-lg text-gray-500">{t('activitiesFeedback.noFeedback')}</p>
                         </div>
                     ) : (
                         <div>
@@ -199,9 +207,9 @@ const ActivitiesFeedback = () => {
                                         className="bg-base-100 rounded-lg shadow-sm p-4"
                                     >
                                         <p>
-                                            <strong>User:</strong>{' '}
+                                            <strong>{t('activitiesFeedback.user')}:</strong>{' '}
                                             {item.user_id.startsWith('anon')
-                                                ? 'Usuário Anônimo'
+                                                ? t('activitiesFeedback.anonymousUser')
                                                 : userCache[item.user_id] || (
                                                       <span>
                                                           {getUserName(item.user_id).then((userName) => {
@@ -209,15 +217,15 @@ const ActivitiesFeedback = () => {
                                                                   ...prev,
                                                                   [item.user_id]: userName,
                                                               }));
-                                                          }) || 'Loading...'}
+                                                          }) || t('activitiesFeedback.loading')}
                                                       </span>
                                                   )}
                                         </p>
                                         <p>
-                                            <strong>Rating:</strong> {item.rating}
+                                            <strong>{t('activitiesFeedback.rating')}:</strong> {item.rating}
                                         </p>
                                         <p>
-                                            <strong>Comment:</strong> {item.comment}
+                                            <strong>{t('activitiesFeedback.comment')}:</strong> {item.comment}
                                         </p>
                                     </div>
                                 ))}
@@ -229,17 +237,17 @@ const ActivitiesFeedback = () => {
                                     onClick={() => setCurrentPage((prev) => Math.max(prev - 1, 1))}
                                     disabled={currentPage === 1}
                                 >
-                                    Previous
+                                    {t('activitiesFeedback.previous')}
                                 </button>
                                 <p>
-                                    Page {currentPage} of {totalPages}
+                                    {t('activitiesFeedback.page')} {currentPage} {t('activitiesFeedback.of')} {totalPages}
                                 </p>
                                 <button
                                     className="btn btn-outline"
                                     onClick={() => setCurrentPage((prev) => Math.min(prev + 1, totalPages))}
                                     disabled={currentPage === totalPages}
                                 >
-                                    Next
+                                    {t('activitiesFeedback.next')}
                                 </button>
                             </div>
                         </div>
