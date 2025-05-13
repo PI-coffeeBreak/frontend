@@ -29,7 +29,10 @@
       "uploadError": "Falha ao fazer upload da imagem. A atividade foi atualizada, mas a imagem não foi alterada.",
       "noImageField": "A atividade não tem um campo de imagem. Por favor, tente novamente.",
       "removeImage": "Remover Imagem",
-      "imageAlt": "Imagem"
+      "imageAlt": "Imagem",
+      "pwaIcon192Alt": "Ícone PWA 192x192",
+      "pwaIcon512Alt": "Ícone PWA 512x512",
+      "faviconAlt": "Favicon 32x32"
     }
   },
   "auth": {
@@ -80,7 +83,8 @@
         "links": {
           "pages": "Páginas",
           "menus": "Menus",
-          "colors": "Cores"
+          "colors": "Cores",
+          "icons": "Ícones"
         }
       },
       "eventMaker": {
@@ -660,5 +664,23 @@
     "invalidDate": "Formato de data inválido",
     "dateInPast": "A data não pode ser no passado",
     "positiveNumber": "Deve ser um número positivo"
+  },
+  "iconsEditor": {
+    "title": "Editor de Ícones",
+    "validation": {
+      "requiredIcons": "Todos os ícones são obrigatórios"
+    },
+    "success": {
+      "save": "Ícones salvos com sucesso"
+    },
+    "error": {
+      "save": "Falha ao salvar ícones",
+      "upload": "Falha ao fazer upload do ícone",
+      "fetchData": "Falha ao buscar dados dos ícones"
+    },
+    "actions": {
+      "save": "Salvar Ícones",
+      "saving": "Salvando..."
+    }
   }
 } 

@@ -29,7 +29,10 @@
       "uploadError": "Failed to upload image. Activity updated, but image was not changed.",
       "noImageField": "Activity doesn't have an image field. Please try again.",
       "removeImage": "Remove Image",
-      "imageAlt": "Image"
+      "imageAlt": "Image",
+      "pwaIcon192Alt": "192x192 PWA Icon",
+      "pwaIcon512Alt": "512x512 PWA Icon",
+      "faviconAlt": "32x32 Favicon"
     }
   },
   "auth": {
@@ -80,7 +83,8 @@
         "links": {
           "pages": "Pages",
           "menus": "Menus",
-          "colors": "Colors"
+          "colors": "Colors",
+          "icons": "Icons"
         }
       },
       "eventMaker": {
@@ -637,5 +641,23 @@
     "invalidDate": "Invalid date format",
     "dateInPast": "Date cannot be in the past",
     "positiveNumber": "Must be a positive number"
+  },
+  "iconsEditor": {
+    "title": "Icons Editor",
+    "validation": {
+      "requiredIcons": "All icons are required"
+    },
+    "success": {
+      "save": "Icons saved successfully"
+    },
+    "error": {
+      "save": "Failed to save icons",
+      "upload": "Failed to upload icon",
+      "fetchData": "Failed to fetch icons data"
+    },
+    "actions": {
+      "save": "Save Icons",
+      "saving": "Saving..."
+    }
   }
 } 

@@ -27,6 +27,7 @@ import Provider from "./contexts/Provider.jsx";
 import Management from "./pages/Management.jsx";
 import SpeakerManagement from "./pages/plugins/SpeakerManagement.jsx";
 import ActivitySlotsPage from "./pages/plugins/ActivitiesSlotsPage.jsx";
+import { IconsEditor } from "./pages/IconsEditor.jsx";
 
 export default function App() {
   return (
@@ -62,7 +63,7 @@ export default function App() {
             </Route>
             <Route path="menus" element={<MenuEditor />} />
             <Route path="colors" element={<Colors />} />
-
+            <Route path="icons" element={<IconsEditor />} />
           </Route>
           
           {/* Plugins section */}

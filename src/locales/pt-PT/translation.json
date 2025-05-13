@@ -61,7 +61,8 @@
         "links": {
           "pages": "Páginas",
           "menus": "Menus",
-          "colors": "Cores"
+          "colors": "Cores",
+          "icons": "Ícones"
         }
       },
       "eventMaker": {
