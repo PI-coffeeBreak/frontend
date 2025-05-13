@@ -32,7 +32,7 @@ export function CreatePage() {
     const { t } = useTranslation();
     const navigate = useNavigate();
     const { keycloak } = useKeycloak();
-    const { savePage, isLoading: isPagesLoading } = usePages();
+    const { savePage, getPageNames, isLoading: isPagesLoading } = usePages();
     const { getDefaultPropsForComponent, getComponentSchema, isLoading: isComponentsLoading } = useComponents();
     const { showNotification } = useNotification();
 
@@ -58,13 +58,35 @@ export function CreatePage() {
         }
     };
 
+    const generateUniqueTitle = (baseTitle, existingTitles) => {
+        let uniqueTitle = baseTitle;
+        let counter = 1;
+
+        while (existingTitles.includes(uniqueTitle)) {
+            uniqueTitle = `${baseTitle} (${counter})`;
+            counter++;
+        }
+
+        return uniqueTitle;
+    };
+
     const handleSavePage = async () => {
         try {
+            const existingTitles = getPageNames();
+            let title = page.title.trim();
+
+            if (!title) {
+                title = "New Page";
+            }
+
+            // Ensure the title is unique
+            const uniqueTitle = generateUniqueTitle(title, existingTitles);
+
             // Use the shared utility function to prepare components
             const componentsWithFullProps = prepareComponentsWithDefaults(sections, getComponentSchema);
 
             const pageData = {
-                title: page.title || "New Page",
+                title: uniqueTitle,
                 components: componentsWithFullProps,
             };
 
@@ -75,7 +97,7 @@ export function CreatePage() {
             const menuOption = {
                 icon: "FaFile", // Default icon for pages
                 label: pageData.title,
-                href: pageData.title.toLowerCase().replace(/\s+/g, '-') // Convert title to URL-friendly format
+                href: pageData.title.toLowerCase().replace(/\s+/g, '-'), // Convert title to URL-friendly format
             };
 
             const axiosInstance = axiosWithAuth(keycloak);
