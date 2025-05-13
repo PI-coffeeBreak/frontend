@@ -6,20 +6,19 @@ import { usePages } from "../../contexts/PagesContext";
 import { useNotification } from "../../contexts/NotificationContext";
 import { PageHeader } from "../../components/event_maker/pages/PageHeader";
 import { PageTitleInput } from "../../components/event_maker/pages/PageTitleInput";
+import { PageDescriptionInput } from "../../components/event_maker/pages/inputs/PageDescriptionInput";
 import { PageContent } from "../../components/event_maker/pages/PageContent";
 import { PageActions } from "../../components/event_maker/pages/PageActions";
 import { useSections } from "../../hooks/useSections";
 import { restrictToVerticalAxis } from '@dnd-kit/modifiers';
 import { prepareComponentsWithDefaults } from "../../utils/pageUtils";
 import { useTranslation } from "react-i18next";
-import { useMenus } from "../../contexts/MenuContext";
 
 export function EditPage() {
     const { t } = useTranslation();
     const { pageTitle } = useParams();
     const navigate = useNavigate();
     const { pages, getPages, updatePage, isLoading: isPagesLoading } = usePages();
-    const { getMenuOptions, updateMenuOption } = useMenus();
     const { getDefaultPropsForComponent, getComponentSchema, isLoading: isComponentsLoading } = useComponents();
     const { showNotification } = useNotification();
 
@@ -41,6 +40,7 @@ export function EditPage() {
 
         const currentData = {
             title: page.title,
+            description: page.description,
             components: sections.map((section) => ({
                 ...section.componentData.props,
                 name: section.componentData.name,
@@ -48,9 +48,10 @@ export function EditPage() {
         };
 
         const titleChanged = originalData.title !== currentData.title;
+        const descriptionChanged = originalData.description !== currentData.description;
         const componentsChanged = !compareComponents(originalData.components, currentData.components);
 
-        return titleChanged || componentsChanged;
+        return titleChanged || descriptionChanged || componentsChanged;
     }, [originalData, page, sections]);
 
     // Efeito para detectar mudanças não salvas
@@ -95,6 +96,7 @@ export function EditPage() {
             // Salvar dados originais para comparação
             setOriginalData({
                 title: foundPage.title,
+                description: foundPage.description || "",
                 components: foundPage.components || [],
             });
         } else if (pages.length > 0) {
@@ -123,7 +125,7 @@ export function EditPage() {
         }
     };
 
-    const handleUpdatePage = async () => {
+    const handleUpdatePage = () => {
         if (!page.title.trim()) {
             showNotification(t('pageEditor.edit.emptyTitleError'), "error");
             return;
@@ -143,42 +145,33 @@ export function EditPage() {
 
         const pageData = {
             title: page.title,
+            description: page.description, // Adiciona a descrição
             components: componentsWithFullProps,
         };
 
         const originalComponents = page.components || [];
         const componentsEqual = compareComponents(originalComponents, pageData.components);
         const originalTitle = pages.find((p) => p.page_id === page.page_id)?.title || "";
+        const originalDescription = pages.find((p) => p.page_id === page.page_id)?.description || "";
         const titleEqual = originalTitle === pageData.title;
+        const descriptionEqual = originalDescription === pageData.description;
 
-        if (titleEqual && componentsEqual) {
+        if (titleEqual && descriptionEqual && componentsEqual) {
             showNotification(t('pageEditor.edit.noChanges'), "info");
             return;
         }
 
         const dataToSave = { ...pageData, page_id: page.page_id };
 
-        try {
-            await updatePage(page.page_id, dataToSave);
-
-            const menuOptions = await getMenuOptions();
-            const menuOption = menuOptions.find((opt) => opt.label === originalTitle);
-
-            if (menuOption) {
-                const updatedMenuOption = {
-                    ...menuOption,
-                    label: pageData.title,
-                    href: pageData.title.toLowerCase().replace(/\s+/g, '-'),
-                };
-                await updateMenuOption(menuOption.id, updatedMenuOption);
-            }
-
-            showNotification(t('pageEditor.edit.updateSuccess'), "success");
-            navigate("/instantiate/application/pages");
-        } catch (error) {
-            console.error("Failed to update the page or menu.", error);
-            showNotification(t('pageEditor.edit.updateError'), "error");
-        }
+        updatePage(page.page_id, dataToSave)
+            .then(() => {
+                showNotification(t('pageEditor.edit.updateSuccess'), "success");
+                navigate("/instantiate/application/pages");
+            })
+            .catch((error) => {
+                console.error("Failed to update the page.", error);
+                showNotification(t('pageEditor.edit.updateError'), "error");
+            });
     };
 
     const compareComponents = (originalComponents, newComponents) => {
@@ -240,6 +233,14 @@ export function EditPage() {
                 onChange={(newTitle) => setPage({ ...page, title: newTitle })}
                 placeholder={t('pageEditor.common.titlePlaceholder')}
             />
+
+            {/*
+            <PageDescriptionInput
+                description={page.description || ""}
+                onChange={(newDescription) => setPage({ ...page, description: newDescription })}
+                placeholder={t('pageEditor.common.descriptionPlaceholder')}
+            />
+            */}
 
             <PageContent
                 sections={sections}
