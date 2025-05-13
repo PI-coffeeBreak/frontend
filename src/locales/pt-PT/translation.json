@@ -486,7 +486,9 @@
       "updateSuccess": "Página atualizada com sucesso!",
       "updateError": "Falha ao atualizar a página",
       "unsavedChanges": "Tem alterações não guardadas. Deseja realmente sair desta página? Todas as alterações serão perdidas.",
-      "saveButton": "Atualizar Página"
+      "saveButton": "Atualizar Página",
+      "emptyTitleError": "O título da página não pode estar vazio",
+      "duplicateTitleError": "Já existe uma página com este título. Por favor, escolha outro título."
     },
     "create": {
       "title": "Criar Nova Página",

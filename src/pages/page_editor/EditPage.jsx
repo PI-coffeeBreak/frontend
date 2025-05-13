@@ -122,6 +122,20 @@ export function EditPage() {
     };
 
     const handleUpdatePage = () => {
+        if (!page.title.trim()) {
+            showNotification(t('pageEditor.edit.emptyTitleError'), "error");
+            return;
+        }
+
+        const duplicatePage = pages.find(
+            (p) => p.title === page.title && p.page_id !== page.page_id
+        );
+
+        if (duplicatePage) {
+            showNotification(t('pageEditor.edit.duplicateTitleError'), "error");
+            return;
+        }
+
         // Use the shared utility function to prepare components
         const componentsWithFullProps = prepareComponentsWithDefaults(sections, getComponentSchema);
 

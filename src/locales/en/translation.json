@@ -486,7 +486,9 @@
       "updateSuccess": "Page updated successfully!",
       "updateError": "Failed to update the page",
       "unsavedChanges": "You have unsaved changes. Do you really want to leave this page? All changes will be lost.",
-      "saveButton": "Update Page"
+      "saveButton": "Update Page",
+      "emptyTitleError": "Page title is required",
+      "duplicateTitleError": "Page title already exists. Please choose a different title."
     },
     "create": {
       "title": "Create New Page",
