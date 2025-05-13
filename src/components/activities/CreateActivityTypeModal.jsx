@@ -3,8 +3,9 @@ import PropTypes from "prop-types";
 import { Modal } from "../common/Modal";
 import { useForm } from "../../hooks/useForm";
 import { useNotification } from "../../contexts/NotificationContext";
-
+import { useTranslation } from "react-i18next";
 export function CreateActivityTypeModal({ isOpen, onClose, onSubmit }) {
+  const { t } = useTranslation();
   const initialValues = {
     type: "",
     color: "#3788d8", // Default color
@@ -35,11 +36,11 @@ export function CreateActivityTypeModal({ isOpen, onClose, onSubmit }) {
     try {
       await onSubmit({ type: values.type.trim(), color: values.color });
       resetForm();
-      showNotification("Activity type created successfully", "success");
+      showNotification(t("activities.types.createSuccess"), "success");
     } catch (error) {
       console.error("Error creating activity type:", error);
       showNotification(
-        error.response?.data?.message || "Failed to create activity type",
+        error.response?.data?.message || t("activities.types.createError"),
         "error"
       );
     } finally {
@@ -57,13 +58,13 @@ export function CreateActivityTypeModal({ isOpen, onClose, onSubmit }) {
     <Modal
       isOpen={isOpen}
       onClose={handleCloseModal}
-      title="Create New Activity Type"
+      title={t("activities.types.title")}
     >
       <div className="">
         <form onSubmit={handleSubmitForm}>
           <div className="mb-4">
             <label htmlFor="type" className="block text-sm font-medium mb-1">
-              Activity Type <span className="text-error">*</span>
+              {t("activities.types.name")} <span className="text-error">*</span>
             </label>
             <input
               type="text"
@@ -72,14 +73,14 @@ export function CreateActivityTypeModal({ isOpen, onClose, onSubmit }) {
               value={values.type}
               onChange={handleChange}
               className={`input input-bordered w-full ${errors.type ? 'input-error' : ''}`}
-              placeholder="Enter activity type name"
+              placeholder={t("activities.types.namePlaceholder")}
             />
             {errors.type && <p className="text-error text-sm mt-1">{errors.type}</p>}
           </div>
 
           <div className="mb-4">
             <label htmlFor="color" className="block text-sm font-medium mb-1">
-              Color
+              {t("activities.types.color")}
             </label>
             <div className="flex items-center gap-2">
               <input
@@ -110,10 +111,10 @@ export function CreateActivityTypeModal({ isOpen, onClose, onSubmit }) {
               {isSubmitting ? (
                 <>
                   <span className="loading loading-spinner loading-sm mr-2"></span>
-                  Creating...
+                  {t("activities.types.creating")}
                 </>
               ) : (
-                "Create Type"
+                t("activities.types.createButton")
               )}
             </button>
           </div>

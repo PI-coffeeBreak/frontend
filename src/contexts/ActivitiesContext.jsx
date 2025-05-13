@@ -37,7 +37,6 @@ export const ActivitiesProvider = ({ children }) => {
                 (activity) => !activity.date || new Date(activity.date).getTime() <= 0
             );
 
-            console.log("Activities:", data);
             setActivities(data);
             setCalendarActivities(calendarEvents);
             setOutsideActivities(outsideEvents);

@@ -16,27 +16,22 @@ export default function Activity({ id, title, description, image, category, type
       const isImageLink = image.startsWith('http');
       if (!isImageLink) {
         const mediaUrl = getMediaUrl(image);
-        console.log(`Activity ${id}: Setting image URL from ${image} to ${mediaUrl}`);
         setImageUrl(mediaUrl);
       } else {
-        console.log(`Activity ${id}: Using direct image URL: ${image}`);
         setImageUrl(image);
       }
       setImageError(false);
     } else {
-      console.log(`Activity ${id}: No image available`);
       setImageUrl(null);
       setImageError(false);
     }
   }, [id, image, getMediaUrl]);
 
   const handleImageLoad = () => {
-    console.log(`Activity ${id}: Image loaded successfully`);
     setImageError(false);
   };
 
   const handleImageError = () => {
-    console.error(`Activity ${id}: Failed to load image from ${imageUrl}`);
     setImageError(true);
   };
 
