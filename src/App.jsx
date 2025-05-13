@@ -27,6 +27,7 @@ import Provider from "./contexts/Provider.jsx";
 import Management from "./pages/Management.jsx";
 import SpeakerManagement from "./pages/plugins/SpeakerManagement.jsx";
 import ActivitySlotsPage from "./pages/plugins/ActivitiesSlotsPage.jsx";
+import ActivitiesFeedback from "./pages/plugins/ActivitiesFeedback.jsx";
 import { IconsEditor } from "./pages/IconsEditor.jsx";
 
 export default function App() {
@@ -74,6 +75,7 @@ export default function App() {
             <Route path="floor-plan-plugin" element={<FloorPlans />} />
             <Route path="speaker-presentation-plugin" element={<SpeakerManagement />} />
             <Route path="registration-system-plugin" element={<ActivitySlotsPage />} />
+            <Route path="activities-feedback-plugin" element={<ActivitiesFeedback />} />
           </Route>
         </Route>
         <Route path="/auth-redirect" element={<AuthRedirect />} />
