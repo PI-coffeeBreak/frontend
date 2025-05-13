@@ -73,7 +73,6 @@ export const ThemeProvider = ({ children }) => {
             Object.keys(transformedTheme).forEach((key) => {
                 document.documentElement.style.setProperty(`--color-${key}`, transformedTheme[key]);
             });
-            console.log("CSS variables updated with theme colors.");
         } catch (error) {
             console.error("Error fetching theme colors:", error);
             setError("Failed to fetch theme colors. Please try again later.");
@@ -98,7 +97,6 @@ export const ThemeProvider = ({ children }) => {
         setIsLoading(true);
         setError(null);
         try {
-            console.log("Updating theme colors on the server:", newTheme);
 
             const transformedTheme = Object.keys(newTheme).reduce((acc, key) => {
                 const newKey = key.replace(/-/g, "_"); // Convert hyphens to underscores
@@ -107,14 +105,12 @@ export const ThemeProvider = ({ children }) => {
             }, {});
 
             const response = await axiosWithAuth(keycloak).put(colorThemeBaseUrl, transformedTheme);
-            console.log("Server response after updating theme colors:", response.data);
 
             const updatedTheme = Object.keys(response.data).reduce((acc, key) => {
                 const newKey = key.replace(/_/g, "-"); // Convert underscores to hyphens
                 acc[newKey] = response.data[key];
                 return acc;
             }, {});
-            console.log("Updated theme colors from server:", updatedTheme);
 
             setTheme(updatedTheme);
 
@@ -122,7 +118,6 @@ export const ThemeProvider = ({ children }) => {
             Object.keys(updatedTheme).forEach((key) => {
                 document.documentElement.style.setProperty(`--color-${key}`, updatedTheme[key]);
             });
-            console.log("CSS variables updated with new theme colors.");
         } catch (error) {
             console.error("Error updating theme colors:", error);
             setError("Failed to update theme colors. Please try again later.");

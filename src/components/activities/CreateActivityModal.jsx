@@ -147,9 +147,6 @@ export function CreateActivityModal({ isOpen, onClose, onSubmit }) {
     
     try {
       const formattedData = formatDataForSubmission();
-
-      console.log("Submitting activity data:", formattedData);
-      
       await onSubmit(formattedData);
       resetForm();
       setImagePreview(null);

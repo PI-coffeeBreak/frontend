@@ -35,7 +35,6 @@ export const ComponentsProvider = ({ children }) => {
         try {
             const response = await axiosWithAuth(keycloak).get(`${baseUrl}/components`);
             const componentsData = response.data.components;
-            console.log("Components fetched successfully:", componentsData);
             setComponents(componentsData);
         } catch (err) {
             console.error("Error fetching components:", err);
@@ -83,7 +82,6 @@ export const ComponentsProvider = ({ children }) => {
                     })),
             };
         });
-        console.log("Component list:", componentList);
         return componentList;
     };
 

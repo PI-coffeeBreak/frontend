@@ -68,7 +68,6 @@ export default function Sidebar() {
       keycloak
         .loadUserProfile()
         .then((profile) => {
-          console.log("User profile loaded:", profile);
           setUserProfile(profile);
         })
         .catch((error) => {
@@ -79,7 +78,6 @@ export default function Sidebar() {
 
   useEffect(() => {
     setImageError(false);
-    console.log("Event info changed:", eventInfo);
   }, [eventInfo]);
 
   // Extract plugin-related logic

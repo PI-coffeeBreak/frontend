@@ -68,8 +68,6 @@ export function CreatePage() {
                 components: componentsWithFullProps,
             };
 
-            console.log("Saving page with components:", pageData.components);
-
             // Save the page first
             await savePage(pageData);
 

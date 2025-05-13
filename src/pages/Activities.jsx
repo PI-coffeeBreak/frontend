@@ -147,10 +147,7 @@ export default function Activities() {
           : activityData.type_id,
         topic: activityData.topic || "",
       };
-
-      console.log("Sending activity data:", payload);
       
-
       const formData = new FormData();
       Object.entries(payload).forEach(([key, value]) => {
         if (value !== null && value !== undefined) {

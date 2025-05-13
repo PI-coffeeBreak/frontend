@@ -93,7 +93,6 @@ export default function Plugins() {
 
     const openModal = (plugin) => {
         const pluginConfig = pluginsConfig.find((config) => config.title === plugin.title);
-        console.log("Plugin config:", pluginConfig);
         if (pluginConfig) {
             setSelectedPlugin({
                 ...plugin,

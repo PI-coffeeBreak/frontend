@@ -135,25 +135,20 @@ export const MenuProvider = ({ children }) => {
 
         setIsLoading(true);
         setError(null);
-        console.log("Starting to fetch menu options...");
         try {
             const response = await axiosWithAuth(keycloak).get(`${menuBaseUrl}/`);
-            console.log("Menu API response:", response.data);
 
             // Handle different response structures
             let options = [];
             if (response.data.options && Array.isArray(response.data.options)) {
                 options = response.data.options;
-                console.log("Extracted options from response.data.options:", options);
             } else if (Array.isArray(response.data)) {
                 options = response.data;
-                console.log("Using direct array from response.data:", options);
             } else {
                 console.warn("Unexpected menu data format:", response.data);
                 options = []; // Fallback to empty array
             }
 
-            console.log("Setting menuOptions state to:", options);
             setMenuOptions(options);
             return options;
         } catch (err) {
@@ -182,7 +177,6 @@ export const MenuProvider = ({ children }) => {
         setError(null);
         try {
             const response = await axiosWithAuth(keycloak).post(`${menuBaseUrl}/option`, optionData);
-            console.log("Menu option added successfully:", response.data);
 
             const newOption = response.data;
             setMenuOptions(prevOptions => [...(prevOptions || []), newOption]);
@@ -213,7 +207,6 @@ export const MenuProvider = ({ children }) => {
         setError(null);
         try {
             const response = await axiosWithAuth(keycloak).put(`${menuBaseUrl}/option/${optionId}`, updatedData);
-            console.log(`Menu option with ID ${optionId} updated successfully:`, response.data);
 
             setMenuOptions(prevOptions => {
                 if (!prevOptions || !Array.isArray(prevOptions)) return [];
@@ -221,7 +214,6 @@ export const MenuProvider = ({ children }) => {
                 return prevOptions.map(option => {
                     if (option.id === optionId) {
                         const updatedOption = { ...option, ...updatedData };
-                        console.log("Updated option in state:", updatedOption);
                         return updatedOption;
                     }
                     return option;
@@ -254,12 +246,10 @@ export const MenuProvider = ({ children }) => {
         setError(null);
         try {
             await axiosWithAuth(keycloak).delete(`${menuBaseUrl}/option/${optionId}`);
-            console.log(`Menu option with ID ${optionId} deleted successfully.`);
 
             setMenuOptions(prevOptions => {
                 if (!prevOptions || !Array.isArray(prevOptions)) return [];
                 const filteredOptions = prevOptions.filter(option => option.id !== optionId);
-                console.log("Filtered options after deletion:", filteredOptions);
                 return filteredOptions;
             });
 
@@ -288,10 +278,9 @@ export const MenuProvider = ({ children }) => {
         setIsLoading(true);
         setError(null);
         try {
-            console.log("Sending reordered options to API:", reorderedOptions);
             const response = await axiosWithAuth(keycloak).put(`${menuBaseUrl}/options`, reorderedOptions);
-            console.log("Menu options order updated successfully:", response.data);
 
+            // Update the local state with the reordered menu options
             console.log("Setting new order in state:", reorderedOptions);
             setMenuOptions(reorderedOptions);
 

@@ -27,12 +27,6 @@ export default function Users() {
     const hasAdminPermissions = KeycloakAdminService.hasAdminPermissions(keycloak);
     const hasRoleManagementPermissions = KeycloakAdminService.hasRoleManagementPermissions(keycloak);
 
-    // Debug code
-    console.log("Token parsed:", keycloak?.tokenParsed);
-    console.log("Realm access:", keycloak?.tokenParsed?.realm_access);
-    console.log("Roles:", keycloak?.tokenParsed?.realm_access?.roles);
-    console.log("Has admin permissions:", hasAdminPermissions);
-
     // Get users data and functions from context
     const {
         users,
@@ -360,11 +354,6 @@ export default function Users() {
     const handleInputChange = (e) => {
         const { name, value } = e.target;
 
-        // Debug log for role selection
-        if (name === 'role') {
-            console.log(`Role selected: ${value}`);
-        }
-
         setNewUserData(prev => ({
             ...prev,
             [name]: value
@@ -422,8 +411,6 @@ export default function Users() {
             setFormErrors(errors);
             return;
         }
-
-        console.log("Submitting user data:", newUserData);
 
         try {
             const result = await createUser(newUserData);

@@ -42,7 +42,6 @@ const parseExcel = (file) => {
         const rawData = processWorkbook(e.target.result);
         const formattedData = formatExcelData(rawData);
         
-        console.log("Parsed Excel data:", formattedData);
         resolve(formattedData);
       } catch (error) {
         console.error("Error parsing Excel:", error);
