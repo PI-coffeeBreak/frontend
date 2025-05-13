@@ -3,12 +3,18 @@ import PropTypes from "prop-types";
 import { baseUrl } from "../consts";
 import { useKeycloak } from "@react-keycloak/web";
 import { axiosWithAuth } from '../utils/axiosWithAuth';
+import { useLocation } from "react-router-dom";
 
 const ThemeContext = createContext();
 
 export const ThemeProvider = ({ children }) => {
     const colorThemeBaseUrl = `${baseUrl}/ui/color-theme/color-theme`;
-    const { keycloak } = useKeycloak();
+    const { keycloak, initialized } = useKeycloak();
+    const location = useLocation();
+
+    const shouldRedirectToLogin = () => {
+        return location.pathname !== '/';
+    };
 
     const initialTheme = {
         "base-100": "#f3faff",
@@ -34,9 +40,24 @@ export const ThemeProvider = ({ children }) => {
     };
 
     const [theme, setTheme] = useState(initialTheme);
+    const [isLoading, setIsLoading] = useState(false);
+    const [error, setError] = useState(null);
 
     // Fetch theme colors from the server
     const fetchThemeColors = async () => {
+        if (!initialized) {
+            console.log("Keycloak not initialized");
+            return;
+        }
+
+        if (!keycloak?.authenticated && shouldRedirectToLogin()) {
+            console.log("User not authenticated, redirecting to login");
+            keycloak?.login();
+            return;
+        }
+
+        setIsLoading(true);
+        setError(null);
         try {
             const response = await axiosWithAuth(keycloak).get(colorThemeBaseUrl);
 
@@ -55,11 +76,27 @@ export const ThemeProvider = ({ children }) => {
             console.log("CSS variables updated with theme colors.");
         } catch (error) {
             console.error("Error fetching theme colors:", error);
+            setError("Failed to fetch theme colors. Please try again later.");
+        } finally {
+            setIsLoading(false);
         }
     };
 
     // Update theme colors on the server
     const updateThemeColors = async (newTheme) => {
+        if (!initialized) {
+            console.log("Keycloak not initialized");
+            return;
+        }
+
+        if (!keycloak?.authenticated && shouldRedirectToLogin()) {
+            console.log("User not authenticated, redirecting to login");
+            keycloak?.login();
+            return;
+        }
+
+        setIsLoading(true);
+        setError(null);
         try {
             console.log("Updating theme colors on the server:", newTheme);
 
@@ -88,12 +125,22 @@ export const ThemeProvider = ({ children }) => {
             console.log("CSS variables updated with new theme colors.");
         } catch (error) {
             console.error("Error updating theme colors:", error);
+            setError("Failed to update theme colors. Please try again later.");
+        } finally {
+            setIsLoading(false);
         }
     };
 
     useEffect(() => {
-        fetchThemeColors();
-    }, []);
+        if (initialized) {
+            if (keycloak?.authenticated) {
+                fetchThemeColors();
+            } else if (shouldRedirectToLogin()) {
+                console.log("User not authenticated, redirecting to login");
+                keycloak?.login();
+            }
+        }
+    }, [initialized, keycloak?.authenticated, location.pathname]);
 
     // Memoize the context value
     const contextValue = useMemo(
@@ -103,8 +150,10 @@ export const ThemeProvider = ({ children }) => {
             setTheme,
             fetchThemeColors,
             updateThemeColors,
+            isLoading,
+            error
         }),
-        [theme]
+        [theme, isLoading, error]
     );
 
     return (

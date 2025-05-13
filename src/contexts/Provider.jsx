@@ -11,21 +11,28 @@ import { PagesProvider } from "./PagesContext.jsx";
 import { NotificationProvider } from "./NotificationContext.jsx";
 import { ComponentsProvider } from "./ComponentsContext.jsx";
 import { MenuProvider } from "./MenuContext.jsx";
-import { ColorThemeProvider } from './ColorThemeContext';
 import { AlertsProvider } from "./AlertsContext.jsx";
 import { EventProvider } from "./EventContext.jsx";
 import { MediaProvider } from "./MediaContext.jsx";
 
 export const Provider = ({ children }) => {
   return (
-    <ColorThemeProvider>
+    <Router>
       <ReactKeycloakProvider
         authClient={keycloak}
         initOptions={{
           checkLoginIframe: false,
           pkceMethod: 'S256',
-          tokenRefreshInterval: 60
+          tokenRefreshInterval: 60,
         }}
+        LoadingComponent={
+          <div className="min-h-screen flex items-center justify-center">
+            <div className="text-center">
+              <span className="loading loading-spinner loading-lg"></span>
+              <p className="mt-4 text-xl">Loading...</p>
+            </div>
+          </div>
+        }
       >
         <NotificationProvider>
           <ThemeProvider>
@@ -38,9 +45,7 @@ export const Provider = ({ children }) => {
                         <AlertsProvider>
                           <EventProvider>
                             <MediaProvider>
-                              <Router>
-                                {children}
-                              </Router>
+                              {children}
                             </MediaProvider>
                           </EventProvider>
                         </AlertsProvider>
@@ -53,7 +58,7 @@ export const Provider = ({ children }) => {
           </ThemeProvider>
         </NotificationProvider>
       </ReactKeycloakProvider>
-    </ColorThemeProvider>
+    </Router>
   );
 };
 
