@@ -25,7 +25,6 @@ export default function Home() {
                         const eventData = await getEventInfo();
                         setHasEvent(!!eventData?.id);
                     } catch (error) {
-                        console.log("No event exists or error fetching event:", error);
                         setHasEvent(false);
                     } finally {
                         setIsLoading(false);

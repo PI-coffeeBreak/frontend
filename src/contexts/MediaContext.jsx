@@ -26,7 +26,6 @@ export const MediaProvider = ({ children }) => {
             }
 
             const response = await axiosWithAuth(keycloak).get(`${baseUrl}/media/${uuid}`);
-            console.log(`Media with UUID ${uuid} fetched successfully:`, response.data);
 
             setMedia(prevMedia => ({
                 ...prevMedia,
@@ -75,7 +74,6 @@ export const MediaProvider = ({ children }) => {
         setError(null);
         try {
             const response = await axiosWithAuth(keycloak).post(`${baseUrl}/media/register`);
-            console.log('Media registered with UUID:', response.data.uuid);
             return response.data;
         } catch (err) {
             console.error('Error registering media:', err);
@@ -112,7 +110,6 @@ export const MediaProvider = ({ children }) => {
                 return updatedMedia;
             });
             
-            console.log(`Media ${isUpdate ? 'updated' : 'uploaded'} successfully`);
             return true;
         } catch (err) {
             console.error(`Error ${isUpdate ? 'updating' : 'uploading'} media:`, err);
@@ -138,7 +135,6 @@ export const MediaProvider = ({ children }) => {
                 return updatedMedia;
             });
             
-            console.log(`Media ${uuid} deleted successfully`);
             return true;
         } catch (err) {
             console.error('Error deleting media:', err);

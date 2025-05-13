@@ -96,10 +96,7 @@ export default function Activities() {
         topic: sessionData.topic || "",
         facilitator: sessionData.facilitator || ""
       };
-
-      console.log("Sending activity data:", payload);
       
-
       const formData = new FormData();
       Object.entries(payload).forEach(([key, value]) => {
         if (value !== null && value !== undefined) {

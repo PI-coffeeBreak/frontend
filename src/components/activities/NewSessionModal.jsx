@@ -153,9 +153,6 @@ export function NewSessionModal({ isOpen, onClose, onSubmit }) {
     
     try {
       const formattedData = formatDataForSubmission();
-
-      console.log("Submitting session data:", formattedData);
-      
       await onSubmit(formattedData);
       resetForm();
       setImagePreview(null);

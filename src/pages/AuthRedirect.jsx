@@ -23,7 +23,6 @@ export default function AuthRedirect() {
             navigate('/setup', { replace: true });
           }
         } catch (error) {
-          console.log("Error during auth redirect:", error);
           // Default to setup on error
           navigate('/setup', { replace: true });
         }

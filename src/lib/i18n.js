@@ -9,7 +9,6 @@ import translationPTPT from '../locales/pt-PT/translation.json';
 
 // Get browser language preference
 const browserLanguage = navigator.language || navigator.userLanguage;
-console.log('Browser language preference:', browserLanguage);
 
 i18n
   .use(LanguageDetector)
@@ -42,11 +41,5 @@ i18n
       useSuspense: false
     }
   });
-
-// Log the detected language after initialization
-console.log('Browser language:', navigator.language);
-console.log('i18n initialized with language:', i18n.language);
-console.log('i18n available languages:', i18n.languages);
-console.log('i18n resolved language:', i18n.resolvedLanguage);
 
 export default i18n; 

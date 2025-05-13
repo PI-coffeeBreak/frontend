@@ -18,7 +18,6 @@ export const PagesProvider = ({ children }) => {
         setError(null);
         try {
             const response = await axiosWithAuth(keycloak).get(`${baseUrl}/pages/all`);
-            console.log("Pages fetched successfully:", response.data);
             setPages(response.data);
             return response.data;
         } catch (err) {
@@ -36,7 +35,6 @@ export const PagesProvider = ({ children }) => {
         try {
             const api = axiosWithAuth(keycloak);
             const response = await api.post(`${baseUrl}/pages`, pageData);
-            console.log("Page saved successfully:", response.data);
             setPages((prevPages) => [...prevPages, response.data]);
             return response.data;
         } catch (err) {
@@ -53,7 +51,6 @@ export const PagesProvider = ({ children }) => {
         setError(null);
         try {
             const response = await axiosWithAuth(keycloak).put(`${baseUrl}/pages/${pageId}`, updatedData);
-            console.log("Page updated successfully:", response.data);
             setPages((prevPages) =>
                 prevPages.map((page) => (page.page_id === pageId ? response.data : page))
             );
@@ -74,7 +71,6 @@ export const PagesProvider = ({ children }) => {
             const api = axiosWithAuth(keycloak);
             await api.delete(`${baseUrl}/pages/${pageId}`);
             setPages((prevPages) => prevPages.filter((page) => page.page_id !== pageId));
-            console.log(`Page with ID ${pageId} deleted successfully.`);
             return true;
         } catch (err) {
             console.error("Error deleting page:", err);
@@ -91,7 +87,6 @@ export const PagesProvider = ({ children }) => {
         try {
             const api = axiosWithAuth(keycloak);
             const response = await api.patch(`${baseUrl}/pages/${pageId}`, { enabled: isEnabled });
-            console.log(`Page with ID ${pageId} updated successfully:`, response.data);
             setPages((prevPages) =>
                 prevPages.map((page) =>
                     page.page_id === pageId ? { ...page, enabled: response.data.enabled } : page
@@ -109,7 +104,6 @@ export const PagesProvider = ({ children }) => {
 
     const findPageIdByTitle = (title) => {
         const page = pages.find((p) => p.title === title);
-        console.log("Page ID found:", page ? page.page_id : "not found");
         return page ? page.page_id : null;
     };
 

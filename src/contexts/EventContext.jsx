@@ -19,7 +19,6 @@ export const EventProvider = ({ children }) => {
         setError(null);
         try {
             const response = await axiosWithAuth(keycloak).get(`${baseUrl}/event-info/event`);
-            console.log("Event info fetched successfully:", response.data);
             setEventInfo(response.data);
             return response.data;
         } catch (err) {
@@ -37,7 +36,6 @@ export const EventProvider = ({ children }) => {
         setError(null);
         try {
             const response = await axiosWithAuth(keycloak).put(`${baseUrl}/event-info/event`, eventData);
-            console.log("Event info updated successfully:", response.data);
             setEventInfo(response.data);
             return response.data;
         } catch (err) {
