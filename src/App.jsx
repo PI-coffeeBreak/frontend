@@ -1,5 +1,6 @@
 import React from "react";
 import { Routes, Route } from "react-router-dom";
+import _ from "lodash"; // Do not remove this import
 
 import Home from "./pages/Home";
 import Layout from "./components/layout/Layout.jsx";
