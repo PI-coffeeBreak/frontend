@@ -125,19 +125,12 @@ const ActivitiesFeedback = () => {
         content = (
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
                 {activities.map((activity) => (
-                    <div
+                    <button
                         key={activity.id}
                         className={`bg-base-100 rounded-lg shadow-sm overflow-hidden transition-all duration-300 hover:shadow-lg hover:-translate-y-1 cursor-pointer ${
                             selectedActivity === activity.name ? 'ring-2 ring-primary' : ''
                         }`}
-                        role="button"
-                        tabIndex={0}
                         onClick={() => fetchFeedback(activity.id, activity.name)}
-                        onKeyDown={(e) => {
-                            if (e.key === 'Enter' || e.key === ' ') {
-                                fetchFeedback(activity.id, activity.name);
-                            }
-                        }}
                     >
                         <div className="p-4">
                             <h4 className="font-bold text-primary mb-2">{activity.name}</h4>
@@ -147,7 +140,7 @@ const ActivitiesFeedback = () => {
                                 {activityRatings[activity.id] || t('activitiesFeedback.loading')}
                             </p>
                         </div>
-                    </div>
+                    </button>
                 ))}
             </div>
         );
