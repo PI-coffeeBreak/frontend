@@ -12,7 +12,17 @@ export default function AuthRedirect() {
     const checkEventAndRedirect = async () => {
       if (initialized && keycloak.authenticated) {
         try {
-          // Try to get event info
+          // Check if we have a stored redirect path
+          const redirectPath = sessionStorage.getItem('redirectAfterLogin');
+          if (redirectPath) {
+            // Clear the stored path
+            sessionStorage.removeItem('redirectAfterLogin');
+            // Redirect to the stored path
+            navigate(redirectPath, { replace: true });
+            return;
+          }
+
+          // If no stored path, proceed with normal flow
           const eventData = await getEventInfo();
           
           if (eventData?.id) {
@@ -23,6 +33,7 @@ export default function AuthRedirect() {
             navigate('/setup', { replace: true });
           }
         } catch (error) {
+          console.error("Error during auth redirect:", error);
           // Default to setup on error
           navigate('/setup', { replace: true });
         }

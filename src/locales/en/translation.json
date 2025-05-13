@@ -2,7 +2,7 @@
   "common": {
     "home": "Home",
     "users": "Users",
-    "sessions": "Sessions",
+    "activities": "Activities",
     "alerts": "Alerts",
     "schedule": "Schedule",
     "plugins": "Plugins",
@@ -12,6 +12,7 @@
     "create": "Create",
     "edit": "Edit",
     "save": "Save",
+    "saving": "Saving...",
     "cancel": "Cancel",
     "delete": "Delete",
     "loading": "Loading...",
@@ -25,6 +26,8 @@
       "imageErrorDetails": "The image may be missing or unavailable",
       "sizeError": "Image size must be less than 50MB",
       "typeError": "Please upload an image file",
+      "uploadError": "Failed to upload image. Activity updated, but image was not changed.",
+      "noImageField": "Activity doesn't have an image field. Please try again.",
       "removeImage": "Remove Image",
       "imageAlt": "Image"
     }
@@ -44,20 +47,20 @@
     "sections": {
       "home": {
         "title": "Home",
-        "description": "Manage users and sessions",
+        "description": "Manage users and activities",
         "links": {
           "users": "Users",
-          "sessions": "Sessions",
+          "activities": "Activities",
           "alerts": "Alerts"
         },
         "descriptions": {
           "users": "Manage user accounts, roles and permissions",
-          "sessions": "Schedule and organize sessions and activities",
+          "activities": "Schedule and organize activities",
           "alerts": "Create and send notifications to participants"
         },
         "buttons": {
           "users": "Manage Users",
-          "sessions": "View Sessions",
+          "activities": "View Activities",
           "alerts": "Manage Alerts"
         }
       },
@@ -66,7 +69,7 @@
         "description": "Manage your event settings and components",
         "links": {
           "users": "Users",
-          "sessions": "Sessions",
+          "activities": "Activities",
           "eventInfo": "Event Info",
           "plugins": "Manage Plugins"
         }
@@ -97,10 +100,10 @@
       },
       "management": {
         "title": "Management",
-        "description": "Manage users and sessions",
+        "description": "Manage users and activities",
         "links": {
           "users": "Users",
-          "sessions": "Sessions",
+          "activities": "Activities",
           "alerts": "Alerts"
         }
       }
@@ -118,7 +121,7 @@
     "cards": {
       "management": {
         "title": "Event",
-        "description": "Access tools to manage users, sessions and plugins for your event."
+        "description": "Access tools to manage users, activities and plugins for your event."
       },
       "eventMaker": {
         "title": "Application",
@@ -192,11 +195,11 @@
     }
   },
   "activities": {
-    "title": "Create Sessions",
-    "sessions": "Sessions",
+    "title": "Create Activities",
+    "activities": "Activities",
     "create": {
-      "title": "Create New Session",
-      "description": "Create a new session manually",
+      "title": "Create New Activity",
+      "description": "Create a new activity manually",
       "name": "Name",
       "date": "Date",
       "duration": "Duration",
@@ -207,19 +210,41 @@
       "image": "Image"
     },
     "types": {
-      "title": "Create New Session Type",
-      "description": "Create a new session type manually",
+      "title": "Create New Activity Type",
+      "description": "Create a new activity type manually",
       "name": "Name"
     },
     "import": {
       "title": "Add with Excel file",
-      "description": "Upload an Excel file to quickly add multiple sessions at once"
+      "description": "Upload an Excel file to quickly add multiple activities at once"
     },
     "filters": {
       "searchPlaceholder": "Search activities",
       "all": "All"
     },
+    "registration": {
+      "title": "Registration Settings",
+      "limitParticipants": "Limit number of participants",
+      "maxParticipants": "Maximum participants",
+      "maxParticipantsPlaceholder": "e.g., 50"
+    },
     "delete": "Delete activity",
+    "edit": "Edit activity",
+    "editTitle": "Edit Activity",
+    "deleteConfirmTitle": "Delete Activity",
+    "name": "Name",
+    "description": "Description",
+    "type": "Type",
+    "selectType": "Select a type",
+    "topic": "Topic",
+    "speaker": "Speaker",
+    "facilitator": "Facilitator",
+    "date": "Date & Time",
+    "duration": "Duration",
+    "image": "Image",
+    "currentImage": "Current Image (click browse to change)",
+    "updateSuccess": "Activity updated successfully",
+    "updateError": "Failed to update activity",
     "deleteConfirm": "Are you sure you want to delete this activity?",
     "deleteSuccess": "Activity deleted successfully",
     "deleteError": "Failed to delete activity",
@@ -555,10 +580,10 @@
         "description": "Manage user accounts, roles and permissions. Add new users, edit existing ones or control access to different resources of your event.",
         "buttonText": "Manage Users"
       },
-      "sessions": {
-        "title": "Sessions",
-        "description": "Schedule and organize sessions, workshops and event activities. Control schedules, locations and participant registration for all event activities.",
-        "buttonText": "View Sessions"
+      "activities": {
+        "title": "Activities",
+        "description": "Schedule and organize activities, workshops and event activities. Control schedules, locations and participant registration for all event activities.",
+        "buttonText": "View Activities"
       },
       "alerts": {
         "title": "Alerts",
@@ -599,11 +624,17 @@
     }
   },
   "feedback": {
-    "title": "Rate this Session",
+    "title": "Rate this Activity",
     "description": "Your opinion helps us improve!",
     "submit": "Submit Feedback",
     "ratingLabel": "Rating:",
     "commentLabel": "Comment:",
     "commentPlaceholder": "Write your comment here..."
+  },
+  "validation": {
+    "required": "This field is required",
+    "invalidDate": "Invalid date format",
+    "dateInPast": "Date cannot be in the past",
+    "positiveNumber": "Must be a positive number"
   }
 } 

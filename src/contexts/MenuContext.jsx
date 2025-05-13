@@ -1,6 +1,7 @@
 import React, { createContext, useContext, useState, useEffect, useMemo } from "react";
 import PropTypes from "prop-types";
 import { baseUrl } from "../consts";
+import { useLocation } from "react-router-dom";
 
 // Import all icon libraries
 import * as Ai from "react-icons/ai";
@@ -42,12 +43,16 @@ const MenuContext = createContext();
 
 export const MenuProvider = ({ children }) => {
     const menuBaseUrl = `${baseUrl}/ui/menu`;
-
-    const { keycloak } = useKeycloak();
+    const location = useLocation();
+    const { keycloak, initialized } = useKeycloak();
 
     const [menuOptions, setMenuOptions] = useState([]);
     const [isLoading, setIsLoading] = useState(false);
     const [error, setError] = useState(null);
+
+    const shouldRedirectToLogin = () => {
+        return location.pathname !== '/';
+    };
 
     const getIconComponent = (iconName) => {
         if (iconName.includes('/')) {
@@ -117,6 +122,17 @@ export const MenuProvider = ({ children }) => {
     };
 
     const getMenuOptions = async () => {
+        if (!initialized) {
+            console.log("Keycloak not initialized");
+            return;
+        }
+
+        if (!keycloak?.authenticated && shouldRedirectToLogin()) {
+            console.log("User not authenticated, redirecting to login");
+            keycloak?.login();
+            return;
+        }
+
         setIsLoading(true);
         setError(null);
         try {
@@ -125,10 +141,8 @@ export const MenuProvider = ({ children }) => {
             // Handle different response structures
             let options = [];
             if (response.data.options && Array.isArray(response.data.options)) {
-                // If API returns { options: [...] }
                 options = response.data.options;
             } else if (Array.isArray(response.data)) {
-                // If API returns direct array
                 options = response.data;
             } else {
                 console.warn("Unexpected menu data format:", response.data);
@@ -147,14 +161,23 @@ export const MenuProvider = ({ children }) => {
         }
     };
 
-    // Add a new menu option
     const addMenuOption = async (optionData) => {
+        if (!initialized) {
+            console.log("Keycloak not initialized");
+            return;
+        }
+
+        if (!keycloak?.authenticated && shouldRedirectToLogin()) {
+            console.log("User not authenticated, redirecting to login");
+            keycloak?.login();
+            return;
+        }
+
         setIsLoading(true);
         setError(null);
         try {
             const response = await axiosWithAuth(keycloak).post(`${menuBaseUrl}/option`, optionData);
 
-            // Create a completely new array for state update
             const newOption = response.data;
             setMenuOptions(prevOptions => [...(prevOptions || []), newOption]);
 
@@ -168,20 +191,28 @@ export const MenuProvider = ({ children }) => {
         }
     };
 
-    // Update an existing menu option
     const updateMenuOption = async (optionId, updatedData) => {
+        if (!initialized) {
+            console.log("Keycloak not initialized");
+            return;
+        }
+
+        if (!keycloak?.authenticated && shouldRedirectToLogin()) {
+            console.log("User not authenticated, redirecting to login");
+            keycloak?.login();
+            return;
+        }
+
         setIsLoading(true);
         setError(null);
         try {
             const response = await axiosWithAuth(keycloak).put(`${menuBaseUrl}/option/${optionId}`, updatedData);
 
-            // Create a completely new array with the updated option
             setMenuOptions(prevOptions => {
                 if (!prevOptions || !Array.isArray(prevOptions)) return [];
 
                 return prevOptions.map(option => {
                     if (option.id === optionId) {
-                        // Return a completely new object
                         const updatedOption = { ...option, ...updatedData };
                         return updatedOption;
                     }
@@ -199,14 +230,23 @@ export const MenuProvider = ({ children }) => {
         }
     };
 
-    // Delete a menu option
     const deleteMenuOption = async (optionId) => {
+        if (!initialized) {
+            console.log("Keycloak not initialized");
+            return;
+        }
+
+        if (!keycloak?.authenticated && shouldRedirectToLogin()) {
+            console.log("User not authenticated, redirecting to login");
+            keycloak?.login();
+            return;
+        }
+
         setIsLoading(true);
         setError(null);
         try {
             await axiosWithAuth(keycloak).delete(`${menuBaseUrl}/option/${optionId}`);
 
-            // Create a completely new array without the deleted option
             setMenuOptions(prevOptions => {
                 if (!prevOptions || !Array.isArray(prevOptions)) return [];
                 const filteredOptions = prevOptions.filter(option => option.id !== optionId);
@@ -223,14 +263,25 @@ export const MenuProvider = ({ children }) => {
         }
     };
 
-    // Update menu options order
     const updateMenuOptionsOrder = async (reorderedOptions) => {
+        if (!initialized) {
+            console.log("Keycloak not initialized");
+            return;
+        }
+
+        if (!keycloak?.authenticated && shouldRedirectToLogin()) {
+            console.log("User not authenticated, redirecting to login");
+            keycloak?.login();
+            return;
+        }
+
         setIsLoading(true);
         setError(null);
         try {
             const response = await axiosWithAuth(keycloak).put(`${menuBaseUrl}/options`, reorderedOptions);
 
             // Update the local state with the reordered menu options
+            console.log("Setting new order in state:", reorderedOptions);
             setMenuOptions(reorderedOptions);
 
             return response.data;
@@ -244,10 +295,17 @@ export const MenuProvider = ({ children }) => {
         }
     };
 
-    // Initialize by fetching the menu options
+    // Initialize by fetching the menu options when Keycloak is ready
     useEffect(() => {
-        getMenuOptions();
-    }, []);
+        if (initialized) {
+            if (keycloak?.authenticated) {
+                getMenuOptions();
+            } else if (shouldRedirectToLogin()) {
+                console.log("User not authenticated, redirecting to login");
+                keycloak?.login();
+            }
+        }
+    }, [initialized, keycloak?.authenticated, location.pathname]);
 
     // Get all available icons from all libraries
     const getAllAvailableIcons = () => {

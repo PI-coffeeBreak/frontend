@@ -27,7 +27,7 @@ FormField.propTypes = {
 };
 
 
-export function NewSessionModal({ isOpen, onClose, onSubmit }) {
+export function CreateActivityModal({ isOpen, onClose, onSubmit }) {
   const stopPropagation = (e) => {
     e.stopPropagation();
   };
@@ -47,7 +47,6 @@ export function NewSessionModal({ isOpen, onClose, onSubmit }) {
     duration: 30,
     type_id: "",
     topic: "",
-    facilitator: "",
     image: null,
   };
 
@@ -84,10 +83,6 @@ export function NewSessionModal({ isOpen, onClose, onSubmit }) {
     if (values.date) {
       validateDate(values.date, newErrors);
     }
-
-    if (values.is_online && !values.meeting_link) {
-      newErrors.meeting_link = "Meeting link is required for online sessions";
-    }
     
     setErrors(newErrors);
     return Object.keys(newErrors).length === 0;
@@ -95,8 +90,8 @@ export function NewSessionModal({ isOpen, onClose, onSubmit }) {
 
   const validateDate = (date, errors) => {
     try {
-      const sessionDate = new Date(date);
-      if (sessionDate < new Date()) {
+      const activityDate = new Date(date);
+      if (activityDate < new Date()) {
         errors.date = "Date cannot be in the past";
       }
     } catch (e) {
@@ -139,7 +134,6 @@ export function NewSessionModal({ isOpen, onClose, onSubmit }) {
       duration: parseInt(values.duration, 10),
       type_id: typeof values.type_id === 'string' ? parseInt(values.type_id, 10) : values.type_id,
       topic: values.topic || "",
-      facilitator: values.facilitator || "",
       ...(imagePreview && { image: values.image })
     };
   };
@@ -159,7 +153,7 @@ export function NewSessionModal({ isOpen, onClose, onSubmit }) {
     } catch (error) {
       console.error("Error submitting form:", error);
       showNotification(
-        error.response?.data?.message || "Failed to create session",
+        error.response?.data?.message || "Failed to create activity",
         "error"
       );
     } finally {
@@ -350,7 +344,7 @@ export function NewSessionModal({ isOpen, onClose, onSubmit }) {
     <Modal
       isOpen={isOpen}
       onClose={handleCloseModal}
-      title="Create New Session"
+      title="Create New Activity"
       description=""
     >
       {loading ? (
@@ -367,7 +361,7 @@ export function NewSessionModal({ isOpen, onClose, onSubmit }) {
                 name="name"
                 value={values.name}
                 onChange={handleChangeWithStop}
-                placeholder="Enter the session title"
+                placeholder="Enter the activity title"
                 className={`input input-bordered w-full ${errors.name ? 'input-error' : ''}`}
               />
             </FormField>
@@ -377,7 +371,7 @@ export function NewSessionModal({ isOpen, onClose, onSubmit }) {
                 name="description"
                 value={values.description}
                 onChange={handleChangeWithStop}
-                placeholder="Enter the session description"
+                placeholder="Enter the activity description"
                 className={`textarea textarea-bordered w-full h-24 ${errors.description ? 'textarea-error' : ''}`}
               />
             </FormField>
@@ -419,18 +413,7 @@ export function NewSessionModal({ isOpen, onClose, onSubmit }) {
                     name="topic"
                     value={values.topic}
                     onChange={handleChangeWithStop}
-                    placeholder="Enter the session topic"
-                    className="input input-bordered w-full"
-                />
-              </FormField>
-              <FormField label="Facilitator" id="facilitator">
-                <input
-                    type="text"
-                    id="facilitator"
-                    name="facilitator"
-                    value={values.facilitator}
-                    onChange={handleChangeWithStop}
-                    placeholder="Enter the facilitator's name"
+                    placeholder="Enter the activity topic"
                     className="input input-bordered w-full"
                 />
               </FormField>
@@ -453,7 +436,7 @@ export function NewSessionModal({ isOpen, onClose, onSubmit }) {
                   <span>Creating...</span>
                 </div>
               ) : (
-                "Create Session"
+                "Create Activity"
               )}
             </button>
           </div>
@@ -463,10 +446,10 @@ export function NewSessionModal({ isOpen, onClose, onSubmit }) {
   );
 }
 
-NewSessionModal.propTypes = {
+CreateActivityModal.propTypes = {
   isOpen: PropTypes.bool.isRequired,
   onClose: PropTypes.func.isRequired,
   onSubmit: PropTypes.func.isRequired
 };
 
-export default NewSessionModal;
+export default CreateActivityModal;

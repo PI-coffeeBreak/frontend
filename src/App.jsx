@@ -47,7 +47,7 @@ export default function App() {
           <Route path="event">
             <Route index element={<Management />} />
             <Route path="users" element={<Users />} />
-            <Route path="sessions" element={<Activities />} />
+            <Route path="activities" element={<Activities />} />
             <Route path="info" element={<EventEditor />} />
             <Route path="plugins" element={<Plugins />} />
           </Route>

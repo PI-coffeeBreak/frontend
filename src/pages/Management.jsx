@@ -17,13 +17,13 @@ export default function Management() {
             buttonText: t('management.cards.users.buttonText')
         },
         {
-            id: 'sessions',
-            title: t('management.cards.sessions.title'),
-            description: t('management.cards.sessions.description'),
+            id: 'activities',
+            title: t('management.cards.activities.title'),
+            description: t('management.cards.activities.description'),
             icon: FaCalendarAlt,
-            path: "/instantiate/event/sessions",
+            path: "/instantiate/event/activities",
             color: "purple",
-            buttonText: t('management.cards.sessions.buttonText')
+            buttonText: t('management.cards.activities.buttonText')
         },
         {
             id: 'event-info',
