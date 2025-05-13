@@ -14,7 +14,7 @@ export function PageHeader({ title, subtitle, mode, hasUnsavedChanges }) {
                 <div className="hidden md:flex items-center gap-3">
                     <div className="badge badge-outline p-3">{mode} Mode</div>
                     {hasUnsavedChanges && (
-                        <div className="badge badge-warning p-3">
+                        <div className="badge badge-accent text-white font-bold p-3">
                             Unsaved changes
                         </div>
                     )}

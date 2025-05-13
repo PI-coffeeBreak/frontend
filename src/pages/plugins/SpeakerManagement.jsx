@@ -20,25 +20,18 @@ const truncateText = (text, maxLength = 80) => {
   return `${truncated}...`;
 };
 
-const prepareImageUpload = (formData, editMode) => {
+const prepareImageUpload = (formData) => {
   if (formData.image instanceof File) {
-    console.log('New image selected for upload:', formData.image.name);
     return formData.image;
   } 
-  
-  if (editMode && formData.image_uuid) {
-    console.log('Keeping existing image by omitting field, UUID:', formData.image_uuid);
-  } else {
-    console.log('No image for this speaker');
-  }
-  
   return null;
 };
 
 const prepareSpeakerData = (formData, imageToUpload) => {
   const speakerData = {
     name: formData.name,
-    title: formData.title,
+    role: formData.role,
+    description: formData.description,
     activity_id: formData.activity_id || null,
   };
 
@@ -61,7 +54,8 @@ const SpeakerManagement = () => {
 
   const [formData, setFormData] = useState({
     name: '',
-    title: '',
+    role: '',
+    description: '',
     image: null,
     activity_id: null,
   });
@@ -92,31 +86,29 @@ const SpeakerManagement = () => {
     setLoading(true);
     setError(null);
     try {
-      console.log(`Fetching speakers from: ${API_ENDPOINTS.SPEAKERS}`);
-      
       const response = await axiosWithAuth(keycloak).get(API_ENDPOINTS.SPEAKERS);
       
       if (Array.isArray(response.data)) {
         const normalizedSpeakers = response.data.map(speaker => ({
           id: speaker.id,
           name: speaker.name || 'Unnamed Speaker',
+          role: speaker.role || '',
           description: speaker.description || '',
           image_uuid: speaker.image,
           activity_id: speaker.activity_id
         }));
         setSpeakers(normalizedSpeakers);
-        console.log(`Successfully loaded ${normalizedSpeakers.length} speakers`);
       } else if (response.data && typeof response.data === 'object') {
         const dataArray = response.data.results || response.data.items || [];
         const normalizedSpeakers = dataArray.map(speaker => ({
           id: speaker.id,
           name: speaker.name || 'Unnamed Speaker',
+          role: speaker.role || '',
           description: speaker.description || '',
           image_uuid: speaker.image,
           activity_id: speaker.activity_id
         }));
         setSpeakers(normalizedSpeakers);
-        console.log(`Successfully loaded ${normalizedSpeakers.length} speakers from nested data`);
       } else {
         console.error('Unexpected API response structure:', response.data);
         setSpeakers([]);
@@ -143,15 +135,12 @@ const SpeakerManagement = () => {
     try {
       const payload = {
         name: speakerData.name,
-        description: speakerData.title || '',
+        role: speakerData.role || '',
+        description: speakerData.description || '',
         activity_id: speakerData.activity_id || null
       };
       
-      console.log('API Payload for creating speaker:', payload);
-      console.log('API URL:', API_ENDPOINTS.SPEAKERS);
-      
       const response = await axiosWithAuth(keycloak).post(API_ENDPOINTS.SPEAKERS, payload);
-      console.log('API Response from creating speaker:', response.data);
       
       return { success: true, data: response.data };
     } catch (err) {
@@ -176,7 +165,8 @@ const SpeakerManagement = () => {
     try {
       const payload = {
         name: speakerData.name,
-        description: speakerData.title || '',
+        role: speakerData.role || '',
+        description: speakerData.description || '',
         activity_id: speakerData.activity_id || null,
       };
       
@@ -185,8 +175,6 @@ const SpeakerManagement = () => {
       } else if (speakerData.image && speakerData.image !== 'keep') {
         payload.image = speakerData.image;
       }
-      
-      console.log(`Updating speaker ${id} with data:`, payload);
       
       const response = await axiosWithAuth(keycloak).patch(
         `${API_ENDPOINTS.SPEAKERS}${id}/`, 
@@ -197,8 +185,6 @@ const SpeakerManagement = () => {
           }
         }
       );
-      
-      console.log('API Response from updating speaker:', response.data);
       
       return { success: true, data: response.data };
     } catch (err) {
@@ -223,11 +209,7 @@ const SpeakerManagement = () => {
   const deleteSpeaker = async (id) => {
     setLoading(true);
     try {
-      console.log(`Deleting speaker ${id}...`);
-      
       await axiosWithAuth(keycloak).delete(`${API_ENDPOINTS.SPEAKERS}${id}/`);
-      
-      console.log('Speaker deleted, refreshing list');
       return { success: true };
     } catch (err) {
       const errorMessage = err.response?.data?.detail || 'Failed to delete speaker';
@@ -249,11 +231,8 @@ const SpeakerManagement = () => {
 
   useEffect(() => {
     if (keycloak?.authenticated) {
-      console.log('Authenticated, fetching speakers');
       fetchSpeakers();
       fetchActivities();
-    } else {
-      console.log('Not authenticated yet, waiting...');
     }
   }, [keycloak?.authenticated]);
   
@@ -296,7 +275,8 @@ const SpeakerManagement = () => {
   const resetForm = () => {
     setFormData({
       name: '',
-      title: '',
+      role: '',
+      description: '',
       image: null,
       activity_id: null,
     });
@@ -324,7 +304,8 @@ const SpeakerManagement = () => {
 
     setFormData({
       name: speaker.name || '',
-      title: speaker.description || '',
+      role: speaker.role || '',
+      description: speaker.description || '',
       image: null,
       image_uuid: speaker.image_uuid,
       activity_id: speaker.activity_id || null,
@@ -355,7 +336,7 @@ const SpeakerManagement = () => {
     showNotification(`${editMode ? 'Updating' : 'Adding'} speaker...`, 'info');
 
     try {
-      const imageToUpload = prepareImageUpload(formData, editMode);
+      const imageToUpload = prepareImageUpload(formData);
       const speakerData = prepareSpeakerData(formData, imageToUpload);
       
       const result = editMode
@@ -385,14 +366,12 @@ const SpeakerManagement = () => {
   const uploadSpeakerImage = async (imageUuid, imageFile) => {
     try {
       await uploadMedia(imageUuid, imageFile, true);
-      console.log('Image upload successful using PUT');
       showNotification('Image uploaded successfully', 'success');
     } catch (putError) {
       console.error('PUT failed, trying with POST:', putError);
       
       try {
         await uploadMedia(imageUuid, imageFile, false);
-        console.log('Image upload successful using POST');
         showNotification('Image uploaded successfully', 'success');
       } catch (postError) {
         console.error('Both PUT and POST failed:', postError);
@@ -438,6 +417,18 @@ const SpeakerManagement = () => {
         }
       }
     );
+  };
+
+  const handleRemoveImage = async () => {
+    if (formData.image_uuid) {
+      try {
+        await axiosWithAuth(keycloak).delete(`${baseUrl}/media/${formData.image_uuid}/`);
+      } catch (err) {
+        console.error('Error removing image:', err);
+      }
+    } else {
+      showNotification('No image to remove', 'info');
+    }
   };
 
   const getInitials = (name) => {
@@ -608,13 +599,28 @@ const SpeakerManagement = () => {
               </div>
 
               <div className="form-control w-full mb-4">
+                <label htmlFor="speaker-role" className="label">
+                  <span className="label-text">Role</span>
+                </label>
+                <input
+                  id="speaker-role"
+                  type="text"
+                  name="role"
+                  value={formData.role}
+                  onChange={handleInputChange}
+                  placeholder="Enter speaker role"
+                  className="input input-bordered w-full"
+                />
+              </div>
+
+              <div className="form-control w-full mb-4">
                 <label htmlFor="speaker-description" className="label">
                   <span className="label-text">Description</span>
                 </label>
                 <textarea
                   id="speaker-description"
-                  name="title"
-                  value={formData.title}
+                  name="description"
+                  value={formData.description}
                   onChange={handleInputChange}
                   placeholder="Enter speaker description"
                   className="textarea textarea-bordered w-full h-24"
@@ -691,6 +697,7 @@ const SpeakerManagement = () => {
                         setImagePreview(null);
                         document.getElementById('speaker-image').value = '';
                         if (editMode) {
+                          handleRemoveImage();
                           setFormData(prev => ({ ...prev, image_uuid: null }));
                         }
                       }}
@@ -836,6 +843,12 @@ const SpeakerManagement = () => {
                     </th>
                     <th 
                       className="uppercase text-xs font-semibold text-base-content/60 cursor-pointer"
+                      onClick={() => handleSort('role')}
+                    >
+                      Role {getSortIndicator('role')}
+                    </th>
+                    <th 
+                      className="uppercase text-xs font-semibold text-base-content/60 cursor-pointer"
                       onClick={() => handleSort('description')}
                     >
                       Description {getSortIndicator('description')}
@@ -861,7 +874,6 @@ const SpeakerManagement = () => {
                                 alt={speaker.name}
                                 className="w-full h-full object-cover rounded-full"
                                 onError={(e) => {
-                                  console.log('Image load error for:', speaker.name, speaker.image_uuid);
                                   e.target.onerror = null;
                                   e.target.style.display = 'none';
                                   e.target.parentElement.innerHTML = `<span class="flex h-full w-full items-center justify-center text-lg font-medium">${getInitials(speaker.name)}</span>`;
@@ -876,6 +888,7 @@ const SpeakerManagement = () => {
                         </div>
                       </td>
                       <td className="font-medium">{speaker.name}</td>
+                      <td className="text-base-content/70">{speaker.role}</td>
                       <td className="text-base-content/70">{truncateText(speaker.description)}</td>
                       <td className="text-base-content/70">
                         {speaker.activity_id

@@ -42,7 +42,7 @@ export default function Activity({ id, title, description, image, category, type
 
   return (
     <div
-      className="fc-event cursor-pointer flex items-center w-full gap-4 h-36 p-4 bg-white shadow-md rounded-md relative"
+      className="fc-event cursor-pointer flex items-center w-full gap-4 h-36 p-4 rounded-xl bg-white relative"
       data-id={id}
       data-title={title}
     >
@@ -120,7 +120,7 @@ export default function Activity({ id, title, description, image, category, type
             key={`activity-img-${id}-${imageUrl}`} // Force image reload when URL changes
           />
         ) : (
-          <div className="w-full h-full bg-gray-200 rounded-md flex items-center justify-center">
+          <div className="w-full h-full bg-gray-200 rounded-xl flex items-center justify-center">
             <span className="text-gray-400">{t('activities.noImage')}</span>
           </div>
         )}

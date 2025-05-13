@@ -63,7 +63,7 @@ const getModalStyles = () => {
   return (
     <dialog
       ref={modalRef}
-      className="modal"
+      className="modal rounded-md"
       onClose={() => onClose()}
       onCancel={(e) => {
         // Prevent default dialog behavior on cancel (when ESC is pressed)

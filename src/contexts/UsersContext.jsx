@@ -23,6 +23,9 @@ export const UsersProvider = ({ children }) => {
     const [userRoles, setUserRoles] = useState({});
     const [userPermissions, setUserPermissions] = useState({});
 
+
+
+
     // Initialize Keycloak Admin Service
     const initKeycloakAdminService = () => {
         if (!initialized || !keycloak?.authenticated || !keycloak?.token) {
@@ -43,14 +46,18 @@ export const UsersProvider = ({ children }) => {
             return;
         }
 
+
         setIsLoading(true);
         setError(null);
         try {
             console.log("Fetching users with auth status:", keycloak.authenticated);
+            console.log("URL-MARTIM:",baseUrl)
 
+            console.log("URL-SEBASTIAO", usersBaseUrl);
             // Fetch all users first
             const allUsersResponse = await axiosWithAuth(keycloak).get(usersBaseUrl);
             console.log("All users fetched successfully:", allUsersResponse.data);
+
 
             // Then fetch users grouped by role
             const groupedUsersResponse = await axiosWithAuth(keycloak).get(usersRolesUrl);

@@ -10,7 +10,7 @@ export const EventProvider = ({ children }) => {
     const { keycloak } = useKeycloak();
     
     const [eventInfo, setEventInfo] = useState(null);
-    const [isLoading, setIsLoading] = useState(false);
+    const [isLoading, setIsLoading] = useState(true);
     const [error, setError] = useState(null);
 
     // Get event information

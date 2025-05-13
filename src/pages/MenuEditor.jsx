@@ -9,6 +9,7 @@ import { CSS } from "@dnd-kit/utilities";
 import { FaPlus, FaEdit, FaTrash, FaBars, FaSearch } from "react-icons/fa";
 import { IconSelector } from "../components/event_maker/IconSelector.jsx";
 import { useTranslation } from "react-i18next";
+import DeleteConfirmationModal from '../components/common/DeleteConfirmationModal.jsx';
 
 function SortableMenuItem({ option, onEdit, onDelete }) {
   const { t } = useTranslation();
@@ -33,33 +34,33 @@ function SortableMenuItem({ option, onEdit, onDelete }) {
     <div 
       ref={setNodeRef} 
       style={style} 
-      className="bg-white p-4 mb-2 rounded-lg shadow-sm border border-gray-200 flex justify-between items-center"
+      className="p-4 rounded-xl border border-gray-300 flex justify-between items-center"
     >
       <div className="flex items-center gap-3">
         <div {...listeners} {...attributes} className="cursor-grab text-gray-400 hover:text-gray-600">
           <FaBars />
         </div>
-        <div className="flex items-center gap-2">
-          <span className="p-2 rounded-full bg-primary/10 text-primary">
-            <IconComponent />
+        <div className="flex gap-2">
+          <span className="p-2 rounded-xl flex items-center w-12 bg-primary/10 text-primary">
+            <IconComponent className="mx-auto" />
           </span>
           <div>
-            <p className="font-medium">{option.label}</p>
-            <p className="text-xs text-gray-500">{option.href}</p>
+            <p className="font-semibold text-xl">{option.label}</p>
+            <p className="text-gray-500">{option.href}</p>
           </div>
         </div>
       </div>
       <div className="flex items-center gap-2">
         <button 
           onClick={() => onEdit(option)}
-          className="p-2 text-blue-500 hover:bg-blue-50 rounded-full"
+          className="p-2 text-primary hover:text-primary/85 rounded-full"
           title={t('menuEditor.actions.edit')}
         >
           <FaEdit />
         </button>
         <button 
           onClick={() => onDelete(option.id)}
-          className="p-2 text-red-500 hover:bg-red-50 rounded-full"
+          className="p-2 text-primary hover:text-primary/85 rounded-full"
           title={t('menuEditor.actions.delete')}
         >
           <FaTrash />
@@ -249,7 +250,7 @@ function EditOptionModal({ isOpen, onClose, editingOption, setEditingOption, onU
                   type="text"
                   value={editingOption.label}
                   onChange={(e) => setEditingOption({...editingOption, label: e.target.value})}
-                  className="w-full p-2 border border-gray-300 rounded-md"
+                  className="w-full p-2 rounded-xl border border-gray-300 rounded-md"
                 />
               </div>
               
@@ -265,7 +266,7 @@ function EditOptionModal({ isOpen, onClose, editingOption, setEditingOption, onU
                   type="text"
                   value={editingOption.href}
                   onChange={(e) => setEditingOption({...editingOption, href: e.target.value})}
-                  className="w-full p-2 border border-gray-300 rounded-md"
+                  className="w-full p-2 rounded-xl border border-gray-300 rounded-md"
                 />
               </div>
             </div>
@@ -275,14 +276,14 @@ function EditOptionModal({ isOpen, onClose, editingOption, setEditingOption, onU
         <div className="modal-action mt-4">
           <button
             type="button"
-            className="btn btn-outline"
+            className="btn btn-secondary rounded-xl"
             onClick={onClose}
           >
             {t('menuEditor.modal.edit.cancel')}
           </button>
           <button
             type="button"
-            className="btn btn-primary"
+            className="btn btn-primary rounded-xl"
             onClick={onUpdate}
           >
             {t('menuEditor.modal.edit.update')}
@@ -333,6 +334,10 @@ export function MenuEditor() {
   const [isEditModalOpen, setIsEditModalOpen] = useState(false);
   const [searchTerm, setSearchTerm] = useState("");
   const [filteredOptions, setFilteredOptions] = useState([]);
+  
+  const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
+  const [deletingItemId, setDeletingItemId] = useState(null);
+  const [isDeleting, setIsDeleting] = useState(false);
 
   const sensors = useSensors(
     useSensor(PointerSensor),
@@ -395,17 +400,30 @@ export function MenuEditor() {
     }
   };
 
-  const handleDeleteOption = async (id) => {
-    if (window.confirm(t('menuEditor.actions.deleteConfirm'))) {
-      try {
-        await deleteMenuOption(id);
-        showNotification(t('menuEditor.actions.deleteSuccess'), "success");
-        
-        await getMenuOptions();
-      } catch (error) {
-        console.error("Error deleting menu option:", error);
-        showNotification(t('menuEditor.actions.deleteError'), "error");
-      }
+  const handleDeleteOption = (id) => {
+    setDeletingItemId(id);
+    setIsDeleteModalOpen(true);
+  };
+
+  const closeDeleteModal = () => {
+    setIsDeleteModalOpen(false);
+    setDeletingItemId(null);
+  };
+
+  const confirmDelete = async () => {
+    if (!deletingItemId) return;
+
+    setIsDeleting(true);
+    try {
+      await deleteMenuOption(deletingItemId);
+      showNotification(t('menuEditor.actions.deleteSuccess'), "success");
+      await getMenuOptions();
+    } catch (error) {
+      console.error("Error deleting menu option:", error);
+      showNotification(t('menuEditor.actions.deleteError'), "error");
+    } finally {
+      setIsDeleting(false);
+      closeDeleteModal();
     }
   };
 
@@ -436,36 +454,29 @@ export function MenuEditor() {
   };
 
   return (
-    <div className="container mx-auto p-6 max-w-4xl">
-      <div className="flex justify-between items-center mb-6">
-        <h1 className="text-3xl font-bold">{t('menuEditor.title')}</h1>
+    <div className="w-full min-h-svh p-2 lg:p-8">
+      <h1 className="text-3xl font-bold my-8">{t('menuEditor.title')}</h1>
+
+      <div className="mb-4">
         <button
-          onClick={() => setIsAddModalOpen(true)}
-          className="btn btn-primary gap-2"
+            onClick={() => setIsAddModalOpen(true)}
+            className="btn btn-primary flex items-center gap-2 px-4 py-2 text-white rounded-xl"
         >
           <FaPlus /> {t('menuEditor.addButton')}
         </button>
       </div>
 
-      <div className="bg-base-200 p-4 rounded-lg mb-6">
-        <p className="text-base-content/70">
-          {t('menuEditor.description')}
-        </p>
-      </div>
-
-      <div className="mb-6">
-        <div className="relative">
-          <label htmlFor="menuSearchInput" className="sr-only">{t('menuEditor.searchPlaceholder')}</label>
+      <div className="flex flex-col sm:flex-row gap-4 mb-6">
+        <label className="input input-bordered rounded-xl flex items-center gap-2">
+          <FaSearch className="text-gray-400"/>
           <input
-            id="menuSearchInput"
-            type="text"
-            placeholder={t('menuEditor.searchPlaceholder')}
-            value={searchTerm}
-            onChange={(e) => setSearchTerm(e.target.value)}
-            className="w-full p-2 pl-10 border border-gray-300 rounded-md"
+              type="text"
+              placeholder={t('menuEditor.searchPlaceholder')}
+              value={searchTerm}
+              onChange={(e) => setSearchTerm(e.target.value)}
+              className="grow"
           />
-          <FaSearch className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400" />
-        </div>
+        </label>
       </div>
 
       {renderContent()}
@@ -484,6 +495,15 @@ export function MenuEditor() {
         editingOption={editingOption}
         setEditingOption={setEditingOption}
         onUpdate={handleUpdateOption}
+      />
+
+      <DeleteConfirmationModal
+        isOpen={isDeleteModalOpen}
+        onClose={closeDeleteModal}
+        onConfirm={confirmDelete}
+        title={t('menuEditor.actions.delete')}
+        message={t('menuEditor.actions.deleteConfirm')}
+        isLoading={isDeleting}
       />
     </div>
   );
