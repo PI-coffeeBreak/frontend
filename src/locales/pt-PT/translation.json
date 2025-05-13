@@ -508,12 +508,16 @@
       "dragToReorder": "Arraste para reordenar",
       "componentSettings": "Definições do Componente",
       "noComponents": "Nenhum componente adicionado",
-      "addFirstComponent": "Adicione o seu primeiro componente"
+      "addFirstComponent": "Adicione o seu primeiro componente",
+      "descriptionPlaceholder": "Introduza uma descrição para a sua página"
     }
   },
   "components": {
     "pageTitleInput": {
       "label": "Título da Página"
+    },
+    "pageDescriptionInput": {
+      "label": "Descrição da Página"
     },
     "dynamicComponentConfiguration": {
       "componentType": "Tipo de Componente",

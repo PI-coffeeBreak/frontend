@@ -15,6 +15,7 @@ import { restrictToVerticalAxis } from '@dnd-kit/modifiers';
 import { DynamicComponentConfiguration } from "../../components/event_maker/pages/DynamicComponentConfiguration";
 import { prepareComponentsWithDefaults } from "../../utils/pageUtils";
 import { useTranslation } from "react-i18next";
+import { PageDescriptionInput } from "../../components/event_maker/pages/inputs/PageDescriptionInput";
 
 // Prevent unnecessary re-renders when dragging
 const MemoizedDynamicComponentConfiguration = React.memo(
@@ -36,7 +37,7 @@ export function CreatePage() {
     const { getDefaultPropsForComponent, getComponentSchema, isLoading: isComponentsLoading } = useComponents();
     const { showNotification } = useNotification();
 
-    const [page, setPage] = useState({ title: "" });
+    const [page, setPage] = useState({ title: "", description: "" });
     const [hasUnsavedChanges, setHasUnsavedChanges] = useState(true);
     const {
         sections,
@@ -87,6 +88,7 @@ export function CreatePage() {
 
             const pageData = {
                 title: uniqueTitle,
+                description: page.description.trim(), // Adiciona a descrição
                 components: componentsWithFullProps,
             };
 
@@ -131,6 +133,12 @@ export function CreatePage() {
                 title={page.title}
                 onChange={(newTitle) => setPage({ ...page, title: newTitle })}
                 placeholder={t('pageEditor.common.titlePlaceholder')}
+            />
+
+            <PageDescriptionInput
+                description={page.description}
+                onChange={(newDescription) => setPage({ ...page, description: newDescription })}
+                placeholder={t('pageEditor.common.descriptionPlaceholder')}
             />
 
             <PageContent

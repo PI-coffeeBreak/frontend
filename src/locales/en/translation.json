@@ -508,12 +508,16 @@
       "dragToReorder": "Drag to reorder",
       "componentSettings": "Component Settings",
       "noComponents": "No components added",
-      "addFirstComponent": "Add your first component"
+      "addFirstComponent": "Add your first component",
+      "descriptionPlaceholder": "Enter a description for your page"
     }
   },
   "components": {
     "pageTitleInput": {
       "label": "Page Title"
+    },
+    "pageDescriptionInput": {
+      "label": "Page Description"
     },
     "dynamicComponentConfiguration": {
       "componentType": "Component Type",
