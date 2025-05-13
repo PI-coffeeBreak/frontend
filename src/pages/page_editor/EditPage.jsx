@@ -144,8 +144,6 @@ export function EditPage() {
 
         const dataToSave = { ...pageData, page_id: page.page_id };
 
-        console.log("Saving page data:", dataToSave);
-
         updatePage(page.page_id, dataToSave)
             .then(() => {
                 showNotification(t('pageEditor.edit.updateSuccess'), "success");

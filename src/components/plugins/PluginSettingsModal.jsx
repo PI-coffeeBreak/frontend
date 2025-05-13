@@ -29,7 +29,6 @@ function PluginSettingsModal({ pluginConfig, onClose }) {
             try {
                 setIsLoading(true);
                 const settingsData = await fetchPluginSettings(pluginConfig.title);
-                console.log("Retrieved settings:", settingsData);
                 
                 if (isMounted && settingsData) {
                     setSettings(settingsData);
@@ -67,11 +66,9 @@ function PluginSettingsModal({ pluginConfig, onClose }) {
         
         // Use the context function to process form data
         const processedSettings = processPluginFormData(formData);
-        console.log("Form data processed:", processedSettings);
         
         try {
             await submitPluginSettings(pluginConfig.title, processedSettings);
-            console.log("Settings submitted successfully");
             onClose();
         } catch (error) {
             console.error("Error submitting settings:", error);

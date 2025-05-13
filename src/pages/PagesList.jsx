@@ -35,7 +35,6 @@ export function PagesList() {
     };
 
     const handleDelete = (pageId) => {
-        console.log("Deleting page with ID:", pageId);
         setDeletingPageId(pageId);
         setIsDeleteModalOpen(true);
     };

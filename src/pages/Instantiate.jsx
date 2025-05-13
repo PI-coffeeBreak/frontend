@@ -12,11 +12,7 @@ export default function Instantiate() {
     const { eventInfo ,isLoading } = useEvent();
     const navigate = useNavigate();
 
-    console.log("Event Info:", eventInfo);
-
     useEffect(() => {
-        console.log("isLoassidkelm:", isLoading)
-        console.log("Event Info2123:", eventInfo);
         if (!isLoading && eventInfo === null) {
             navigate('/setup');
         }

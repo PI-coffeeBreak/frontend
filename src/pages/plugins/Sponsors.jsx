@@ -61,12 +61,10 @@ export function Sponsors() {
     setError(null);
     
     try {
-      console.log("Fetching levels from API:", API_ENDPOINTS.LEVELS);
       const response = await axiosWithAuth(keycloak).get(API_ENDPOINTS.LEVELS);
       
       if (Array.isArray(response.data)) {
         setLevels(response.data);
-        console.log(`Successfully loaded ${response.data.length} sponsor levels`);
       } else {
         console.error("Unexpected API response structure for levels:", response.data);
         setLevels([]);
@@ -95,12 +93,10 @@ export function Sponsors() {
     setError(null);
     
     try {
-      console.log("Fetching sponsors from API:", API_ENDPOINTS.SPONSORS);
       const response = await axiosWithAuth(keycloak).get(API_ENDPOINTS.SPONSORS);
       
       if (Array.isArray(response.data)) {
         setSponsors(response.data);
-        console.log(`Successfully loaded ${response.data.length} sponsors`);
       } else {
         console.error("Unexpected API response structure for sponsors:", response.data);
         setSponsors([]);
@@ -132,9 +128,6 @@ export function Sponsors() {
     
     setIsLoading(prev => ({ ...prev, levels: true }));
     try {
-      console.log("Attempting to create level with name:", newLevelName);
-      console.log("Using API URL:", API_ENDPOINTS.LEVELS);
-      
       const response = await axiosWithAuth(keycloak).post(API_ENDPOINTS.LEVELS, {
         name: newLevelName
       });
@@ -221,9 +214,6 @@ export function Sponsors() {
     
     setIsLoading(prev => ({ ...prev, sponsors: true }));
     try {
-      console.log("Attempting to create sponsor with data:", sponsorForm);
-      console.log("Using API URL:", API_ENDPOINTS.SPONSORS);
-      
       const response = await axiosWithAuth(keycloak).post(API_ENDPOINTS.SPONSORS, sponsorForm);
       
       setSponsors(prevSponsors => [...prevSponsors, response.data]);

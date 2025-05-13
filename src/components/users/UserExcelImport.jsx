@@ -41,18 +41,6 @@ const parseExcel = (file) => {
             temporaryPassword: row.password || row.temporaryPassword || generateRandomPassword(),
           }));
 
-        // Count invalid emails
-        const invalidCount = allRows.length - validData.length;
-
-        console.log("Parsed Excel data:", validData);
-        resolve({
-          data: validData,
-          stats: {
-            total: allRows.length,
-            valid: validData.length,
-            invalid: invalidCount
-          }
-        });
       } catch (error) {
         console.error("Error parsing Excel:", error);
         reject(new Error("Failed to parse Excel file. Please ensure it's a valid Excel format."));
