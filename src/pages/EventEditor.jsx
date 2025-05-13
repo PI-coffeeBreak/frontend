@@ -5,7 +5,6 @@ import { useMedia } from "../contexts/MediaContext";
 import { useNotification } from "../contexts/NotificationContext";
 import { useTranslation } from "react-i18next";
 import axios from "axios";
-import { FaRegCalendarAlt, FaMapMarkerAlt, FaImage, FaInfoCircle } from "react-icons/fa";
 import PropTypes from "prop-types";
 import { renderLocationSuggestions as renderLocationSuggestionsUtil } from '../utils/LocationUtils';
 import { ImagePlaceholder } from '../components/common/ImagePlaceholder.jsx';

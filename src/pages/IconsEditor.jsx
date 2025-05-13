@@ -1,5 +1,4 @@
 import React, { useRef, useState, useEffect } from "react";
-import PropTypes from "prop-types";
 import { ImagePlaceholder } from '../components/common/ImagePlaceholder.jsx';
 import { ImageError } from '../components/event_maker/ImageError.jsx';
 import { useTranslation } from "react-i18next";
@@ -585,4 +584,3 @@ export function IconsEditor() {
     );
 }
 
-export default IconsEditor;
