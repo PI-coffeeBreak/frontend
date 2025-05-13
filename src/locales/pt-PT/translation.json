@@ -11,8 +11,8 @@
     "pages": "Páginas",
     "create": "Criar",
     "edit": "Editar",
-    "save": "Guardar",
-    "saving": "A guardar...",
+    "save": "Save",
+    "saving": "Saving...",
     "cancel": "Cancelar",
     "delete": "Eliminar",
     "loading": "A carregar...",
@@ -144,13 +144,16 @@
       "unbanUser": "Desbanir Utilizador"
     },
     "create": {
-      "title": "Adicionar Utilizador",
+      "title": "Criar Novo Utilizador",
       "description": "Adicionar um novo utilizador ao sistema",
-      "firstName": "Nome Próprio",
+      "success": "Utilizador criado com sucesso!",
+      "firstName": "Nome",
       "lastName": "Apelido",
-      "email": "Email",
+      "email": "Endereço de Email",
       "role": "Função",
       "temporaryPassword": "Palavra-passe Temporária",
+      "hidePassword": "Ocultar Palavra-passe",
+      "showPassword": "Mostrar Palavra-passe",
       "passwordStrength": "Força da Palavra-passe",
       "passwordChangeNote": "O utilizador irá alterar a palavra-passe futuramente",
       "generatePassword": "Gerar Palavra-passe",
@@ -159,7 +162,20 @@
     },
     "manageRoles": {
       "title": "Gerir Funções",
-      "description": "Configurar funções e permissões do sistema"
+      "create": "Criar Função",
+      "permissions": "Gerir Permissões",
+      "permissionsWarning": "Não tem permissão para gerir funções. Precisa de uma das seguintes funções: realm-admin, create-realm, manage-realm, cb-admin ou admin. A criação de funções pode falhar com um erro de permissão.",
+      "roleName": "Nome da Função",
+      "roleNamePlaceholder": "organizador",
+      "createRole": "Criar Função",
+      "selectRole": "Selecionar Função:",
+      "permissionName": "Nome da Permissão",
+      "description": "Gerir as funções e permissões",
+      "actions": "Ações",
+      "noDescription": "Sem descrição",
+      "assigned": "Atribuído",
+      "assign": "Atribuir",
+      "noRoles": "Nenhuma função disponível. Crie uma função primeiro."
     },
     "list": {
       "title": "Lista de Utilizadores"
@@ -171,7 +187,13 @@
       "success": "{{success}} de {{total}} utilizadores importados com sucesso",
       "failed": "Falha ao importar {{failed}} utilizadores"
     },
-    "adminPermissionsWarning": "Não tem permissão para gerir funções e permissões"
+    "adminPermissionsWarning": "Não tem permissão para gerir funções e permissões",
+    "roles": {
+      "participant": "Participante",
+      "speaker": "Palestrante",
+      "staff": "Staff",
+      "organizer": "Organizador"
+    }
   },
   "activities": {
     "title": "Atividades",
@@ -184,14 +206,17 @@
       "duration": "Duração",
       "type": "Tipo",
       "topic": "Tópico",
-      "speaker": "Orador",
-      "facilitator": "Facilitador",
       "image": "Imagem"
     },
     "types": {
       "title": "Tipos de Atividade",
-      "description": "Configurar tipos de atividade disponíveis",
-      "name": "Nome"
+      "name": "Nome",
+      "namePlaceholder": "Introduza o nome do tipo de atividade",
+      "color": "Cor",
+      "createButton": "Criar Tipo de Atividade",
+      "creating": "A criar...",
+      "createSuccess": "Tipo de atividade criado com sucesso",
+      "createError": "Falha ao criar tipo de atividade"
     },
     "import": {
       "title": "Importar Atividades",
@@ -200,12 +225,6 @@
     "filters": {
       "searchPlaceholder": "Procurar atividades",
       "all": "Todas"
-    },
-    "registration": {
-      "title": "Configurações de Registo",
-      "limitParticipants": "Limitar número de participantes",
-      "maxParticipants": "Número máximo de participantes",
-      "maxParticipantsPlaceholder": "ex., 50"
     },
     "delete": "Eliminar atividade",
     "edit": "Editar atividade",
@@ -216,8 +235,6 @@
     "type": "Tipo",
     "selectType": "Selecione um tipo",
     "topic": "Tópico",
-    "speaker": "Orador",
-    "facilitator": "Facilitador",
     "date": "Data e Hora",
     "duration": "Duração",
     "image": "Imagem",
@@ -231,18 +248,13 @@
     "trySearch": "Tente alterar os filtros de pesquisa",
     "imageAlt": "Imagem da atividade",
     "noImage": "Sem imagem",
+    "createButton": "Criar",
+    "creating": "A criar...",
+    "imageSelected": "Imagem selecionada",
+    "clickToRemoveAndUploadDifferentImage": "Clique para remover e fazer upload de uma imagem diferente",
+    "removeImage": "Remover imagem",
     "permissions": {
       "disabled": "Não tem permissão para gerir atividades"
-    },
-    "editSlotsTitle": "Gestão de Participantes",
-    "slots": {
-      "title": "participante(s)",
-      "modalTitle": "Editar o Número de Participantes",
-      "limitLabel": "Limitar número de participantes?",
-      "slotPlaceholder": "Número máximo de participantes. Ex: 50",
-      "saveSuccess": "Dados atualizados com sucesso",
-      "saveError": "Erro ao atualizar os dados",
-      "noMetadataInfo": "Esta atividade ainda não tem metadados definidos."
     }
   },
   "eventEditor": {
@@ -364,6 +376,12 @@
       "resetTitle": "Repor para o tema original",
       "save": "Guardar",
       "text": "Texto"
+    },
+    "success": {
+      "save": "Tema salvo com sucesso"
+    },
+    "error": {
+      "save": "Falha ao salvar o tema"
     }
   },
   "menuEditor": {
@@ -593,29 +611,6 @@
       "privacy": {
         "text": "Respeitamos os seus dados. Leia a nossa",
         "link": "política de privacidade"
-      }
-    },
-    "footer": {
-      "tagline": "Não há evento sem um coffeeBreak",
-      "services": {
-        "title": "Serviços",
-        "branding": "Branding",
-        "design": "Design",
-        "marketing": "Marketing",
-        "advertisement": "Publicidade"
-      },
-      "company": {
-        "title": "Empresa",
-        "about": "Sobre nós",
-        "contact": "Contacto",
-        "jobs": "Trabalhos",
-        "press": "Kit de imprensa"
-      },
-      "legal": {
-        "title": "Legal",
-        "terms": "Termos de utilização",
-        "privacy": "Política de privacidade",
-        "cookies": "Política de cookies"
       }
     }
   },
