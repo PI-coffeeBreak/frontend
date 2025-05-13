@@ -14,6 +14,7 @@ import { MenuProvider } from "./MenuContext.jsx";
 import { AlertsProvider } from "./AlertsContext.jsx";
 import { EventProvider } from "./EventContext.jsx";
 import { MediaProvider } from "./MediaContext.jsx";
+import { ManifestProvider } from "./ManifestContext.jsx";
 
 export const Provider = ({ children }) => {
   return (
@@ -45,7 +46,9 @@ export const Provider = ({ children }) => {
                         <AlertsProvider>
                           <EventProvider>
                             <MediaProvider>
-                              {children}
+                              <ManifestProvider>
+                                {children}
+                              </ManifestProvider>
                             </MediaProvider>
                           </EventProvider>
                         </AlertsProvider>

@@ -29,7 +29,10 @@
       "uploadError": "Failed to upload image. Activity updated, but image was not changed.",
       "noImageField": "Activity doesn't have an image field. Please try again.",
       "removeImage": "Remove Image",
-      "imageAlt": "Image"
+      "imageAlt": "Image",
+      "pwaIcon192Alt": "192x192 PWA Icon",
+      "pwaIcon512Alt": "512x512 PWA Icon",
+      "faviconAlt": "32x32 Favicon"
     }
   },
   "auth": {
@@ -80,7 +83,8 @@
         "links": {
           "pages": "Pages",
           "menus": "Menus",
-          "colors": "Colors"
+          "colors": "Colors",
+          "icons": "Icons"
         }
       },
       "eventMaker": {
@@ -638,6 +642,73 @@
     "commentLabel": "Comment:",
     "commentPlaceholder": "Write your comment here..."
   },
+  "floorPlans": {
+    "title": "Floor Plan Management",
+    "reorder": "Reorder All",
+    "exitReorder": "Exit Order Mode",
+    "add": "Add Floor Plan",
+    "dragHint": "Floor Plans order can be changed by dragging and dropping them.",
+    "noPlans": "No Floor Plans yet.",
+    "noDetails": "No details available yet",
+    "confirmDelete": "Delete this floor plan?"
+  },
+  "pagination": {
+    "previous": "Previous",
+    "next": "Next",
+    "page": "Page {{page}} of {{totalPages}}"
+  },
+  "table": {
+    "order": "Order",
+    "drag": "Drag",
+    "image": "Image",
+    "name": "Name",
+    "details": "Details",
+    "actions": "Actions"
+  },
+  "actions": {
+    "edit": "Edit",
+    "delete": "Delete",
+    "close": "Close"
+  },
+  "floorPlanModal": {
+    "editTitle": "Edit Floor Plan",
+    "addTitle": "Add Floor Plan",
+    "removeImage": "Remove image",
+    "noImageToRemove": "No image to remove",
+    "onlyInternalImages": "Only internal managed images can be removed",
+    "name": "Name",
+    "dragAndDrop": "Drag and drop your image here or",
+    "browse": "Browse",
+    "maxFileSize": "Maximum file size: 5MB",
+    "selectImageInputType": "Select Image Input Type",
+    "details": "Details",
+    "cancel": "Cancel",
+    "update": "Update",
+    "add": "Add",
+    "imageUrl": "Image URL",
+    "uploadFile": "Upload File",
+    "optional": "Optional",
+    "imageSelected": "Image selected",
+    "clickTrashIcon": "Click the trash icon to",
+    "removeExistingImage": "remove the existing image",
+    "nameRequired": "Name is required",
+    "nameExists": "A floor plan with this name already exists",
+    "preview": "Preview",
+    "imageUrlRequired": "Image URL is required"
+  },
+    "notifications": {
+    "loadFailed": "Failed to load Floor Plans",
+    "createSuccess": "Floor Plan Created",
+    "createFailed": "Creation failed",
+    "updateSuccess": "Floor Plan Updated",
+    "updateFailed": "Update failed",
+    "deleteSuccess": "Floor Plan Deleted",
+    "deleteFailed": "Deletion failed",
+    "removeImageSuccess": "Image removed",
+    "removeImageFailed": "Failed to remove image",
+    "orderUpdateSuccess": "Order updated successfully",
+    "orderUpdateFailed": "Failed to update order"
+  },
   "validation": {
     "required": "This field is required",
     "invalidDate": "Invalid date format",
@@ -669,5 +740,27 @@
     "comment": "Comment",
     "of":"of",
     "enterRating": "Enter rating"
+  },
+  "iconsEditor": {
+    "title": "Icons Editor",
+    "description": "Manage your PWA and favicon icons. Supported sizes and formats are listed below.",
+    "pwa512Description": "Used for PWA install. Must be exactly 512x512 pixels. PNG recommended.",
+    "pwa192Description": "Used for PWA install. Must be exactly 192x192 pixels. PNG recommended.",
+    "faviconDescription": "Used as browser tab icon. Must be (16x16, 32x32, 48x48) pixels. PNG, SVG, or ICO supported. For best results, upload a .ico file with all standard sizes.",
+    "validation": {
+      "requiredIcons": "All icons are required"
+    },
+    "success": {
+      "save": "Icons saved successfully"
+    },
+    "error": {
+      "save": "Failed to save icons",
+      "upload": "Failed to upload icon",
+      "fetchData": "Failed to fetch icons data"
+    },
+    "actions": {
+      "save": "Save Icons",
+      "saving": "Saving..."
+    }
   }
-} 
+}

@@ -29,7 +29,10 @@
       "uploadError": "Falha ao fazer upload da imagem. A atividade foi atualizada, mas a imagem não foi alterada.",
       "noImageField": "A atividade não tem um campo de imagem. Por favor, tente novamente.",
       "removeImage": "Remover Imagem",
-      "imageAlt": "Imagem"
+      "imageAlt": "Imagem",
+      "pwaIcon192Alt": "Ícone PWA 192x192",
+      "pwaIcon512Alt": "Ícone PWA 512x512",
+      "faviconAlt": "Favicon 32x32"
     }
   },
   "auth": {
@@ -80,7 +83,8 @@
         "links": {
           "pages": "Páginas",
           "menus": "Menus",
-          "colors": "Cores"
+          "colors": "Cores",
+          "icons": "Ícones"
         }
       },
       "eventMaker": {
@@ -661,6 +665,73 @@
     "commentLabel": "Comentário:",
     "commentPlaceholder": "Escreva seu comentário aqui..."
   },
+  "floorPlans": {
+    "title": "Gerenciamento de Plantas",
+    "reorder": "Reordenar Tudo",
+    "exitReorder": "Sair do Modo de Reordenação",
+    "add": "Adicionar Planta",
+    "dragHint": "A ordem das plantas pode ser alterada arrastando e soltando.",
+    "noPlans": "Nenhuma planta ainda.",
+    "noDetails": "Nenhum detalhe disponível ainda",
+    "confirmDelete": "Excluir esta planta?"
+  },
+  "pagination": {
+    "previous": "Anterior",
+    "next": "Próximo",
+    "page": "Página {{page}} de {{totalPages}}"
+  },
+  "table": {
+    "order": "Ordem",
+    "drag": "Arrastar",
+    "image": "Imagem",
+    "name": "Nome",
+    "details": "Detalhes",
+    "actions": "Ações"
+  },
+  "actions": {
+    "edit": "Editar",
+    "delete": "Excluir",
+    "close": "Fechar"
+  },
+  "floorPlanModal": {
+    "editTitle": "Editar Planta",
+    "addTitle": "Adicionar Planta",
+    "removeImage": "Remover imagem",
+    "noImageToRemove": "Nenhuma imagem para remover",
+    "onlyInternalImages": "Apenas imagens gerenciadas internamente podem ser removidas",
+    "name": "Nome",
+    "dragAndDrop": "Arraste e solte sua imagem aqui ou",
+    "browse": "Procurar",
+    "maxFileSize": "Tamanho máximo do arquivo: 5MB",
+    "selectImageInputType": "Selecione o Tipo de Imagem a Usar",
+    "details": "Detalhes",
+    "cancel": "Cancelar",
+    "update": "Atualizar",
+    "add": "Adicionar",
+    "imageUrl": "URL da Imagem",
+    "uploadFile": "Carregar Arquivo",
+    "optional": "Opcional",
+    "imageSelected": "Imagem selecionada",
+    "clickTrashIcon": "Clique na lixeira para",
+    "removeExistingImage": "remover a imagem existente",
+    "nameRequired": "O nome é obrigatório",
+    "nameExists": "Já existe uma planta com este nome",
+    "preview": "Pré-visualização",
+    "imageUrlRequired": "A URL da imagem é obrigatória"
+  },
+    "notifications": {
+    "loadFailed": "Falha ao carregar as Plantas",
+    "createSuccess": "Planta criada com sucesso",
+    "createFailed": "Falha na criação",
+    "updateSuccess": "Planta atualizada com sucesso",
+    "updateFailed": "Falha na atualização",
+    "deleteSuccess": "Planta excluída com sucesso",
+    "deleteFailed": "Falha na exclusão",
+    "removeImageSuccess": "Imagem removida com sucesso",
+    "removeImageFailed": "Falha ao remover a imagem",
+    "orderUpdateSuccess": "Ordem atualizada com sucesso",
+    "orderUpdateFailed": "Falha ao atualizar a ordem"
+  },
   "validation": {
     "required": "Este campo é obrigatório",
     "invalidDate": "Formato de data inválido",
@@ -692,5 +763,27 @@
       "comment": "Comentário",
       "of": "de",
       "enterRating": "Digite a classificação"
+  },
+  "iconsEditor": {
+    "title": "Editor de Ícones",
+    "description": "Gerencie seus ícones PWA e ícones de favicon. Os tamanhos e formatos suportados estão listados abaixo.",
+    "pwa512Description": "Usado para instalar o PWA. Deve ser exatamente 512x512 pixels. PNG recomendado.",
+    "pwa192Description": "Usado para instalar o PWA. Deve ser exatamente 192x192 pixels. PNG recomendado.",
+    "faviconDescription": "Usado como ícone da aba do navegador. Deve ser (16x16, 32x32, 48x48) pixels. PNG, SVG ou ICO suportado. Para melhores resultados, envie um arquivo .ico com todos os tamanhos padrão.",
+    "validation": {
+      "requiredIcons": "Todos os ícones são obrigatórios"
+    },
+    "success": {
+      "save": "Ícones salvos com sucesso"
+    },
+    "error": {
+      "save": "Falha ao salvar ícones",
+      "upload": "Falha ao fazer upload do ícone",
+      "fetchData": "Falha ao buscar dados dos ícones"
+    },
+    "actions": {
+      "save": "Salvar Ícones",
+      "saving": "Salvando..."
+    }
   }
-} 
+}

@@ -47,6 +47,30 @@ export const EventProvider = ({ children }) => {
         }
     };
 
+    const uploadApplicationIcon = async(src, sizes, type) => {
+        setIsLoading(true);
+        setError(null);
+        try {
+
+            const payload = {
+                "src": baseUrl + "/media/" + src,
+                "sizes": sizes,
+                "type": type
+            }
+
+            const response = await axiosWithAuth(keycloak).post(`${baseUrl}/manifest/icon`, payload);
+
+            console.log("File uploaded successfully:", response.data);
+            return response.data;
+        } catch (err) {
+            console.error("Error uploading file:", err);
+            setError("Failed to upload file. Please try again.");
+            throw err;
+        } finally {
+            setIsLoading(false);
+        }
+    }
+
     // Auto-fetch event info when the context mounts
     useEffect(() => {
         if (keycloak?.authenticated) {
@@ -59,7 +83,8 @@ export const EventProvider = ({ children }) => {
         isLoading,
         error,
         getEventInfo,
-        updateEventInfo
+        updateEventInfo,
+        uploadApplicationIcon,
     }), [eventInfo, isLoading, error]);
 
     return (
