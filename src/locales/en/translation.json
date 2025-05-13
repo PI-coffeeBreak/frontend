@@ -637,5 +637,31 @@
     "invalidDate": "Invalid date format",
     "dateInPast": "Date cannot be in the past",
     "positiveNumber": "Must be a positive number"
+  },
+  "activitiesFeedback": {
+    "title": "Activities Feedback",
+    "loading": "Loading...",
+    "error": "Error fetching activities.",
+    "averageRating": "Average Rating",
+    "feedbackFor": "Feedback for",
+    "filterByRating": "Filter by Rating",
+    "filterByUserType": "Filter by User Type",
+    "allRatings": "All Ratings",
+    "above": "Above",
+    "below": "Below",
+    "exact": "Exact",
+    "anonymousUsers": "Anonymous Users",
+    "anonymousUser": "Anonymous",
+    "namedUsers": "Named Users",
+    "allUsers": "All Users",
+    "noFeedback": "No feedback available for this activity.",
+    "previous": "Previous",
+    "next": "Next",
+    "page": "Page",
+    "user": "User",
+    "rating": "Rating",
+    "comment": "Comment",
+    "of":"of",
+    "enterRating": "Enter rating"
   }
 } 
