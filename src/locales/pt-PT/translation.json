@@ -2,7 +2,7 @@
   "common": {
     "home": "Início",
     "users": "Utilizadores",
-    "sessions": "Sessões",
+    "activities": "Atividades",
     "alerts": "Alertas",
     "schedule": "Agenda",
     "plugins": "Extensões",
@@ -50,7 +50,7 @@
         "description": "Gerir as configurações e componentes do evento",
         "links": {
           "users": "Utilizadores",
-          "sessions": "Sessões",
+          "activities": "Atividades",
           "eventInfo": "Informação do Evento",
           "plugins": "Gerir Extensões"
         }
@@ -81,29 +81,29 @@
       },
       "management": {
         "title": "Gestão",
-        "description": "Gerir utilizadores e sessões",
+        "description": "Gerir utilizadores e atividades",
         "links": {
           "users": "Utilizadores",
-          "sessions": "Sessões",
+          "activities": "Atividades",
           "alerts": "Alertas"
         }
       },
       "home": {
         "title": "Início",
-        "description": "Gerir utilizadores, sessões e alertas",
+        "description": "Gerir utilizadores, atividades e alertas",
         "links": {
           "users": "Utilizadores",
-          "sessions": "Sessões",
+          "activities": "Atividades",
           "alerts": "Alertas"
         },
         "descriptions": {
           "users": "Gerir contas de utilizadores, funções e permissões",
-          "sessions": "Agendar e organizar sessões e atividades",
+          "activities": "Agendar e organizar atividades",
           "alerts": "Criar e enviar notificações para participantes"
         },
         "buttons": {
           "users": "Gerir Utilizadores",
-          "sessions": "Ver Sessões",
+          "activities": "Ver Atividades",
           "alerts": "Gerir Alertas"
         }
       }
@@ -121,7 +121,7 @@
     "cards": {
       "management": {
         "title": "Gestão",
-        "description": "Aceda a ferramentas para gerir utilizadores, sessões e alertas do seu evento."
+        "description": "Aceda a ferramentas para gerir utilizadores, atividades e alertas do seu evento."
       },
       "eventMaker": {
         "title": "Event Maker",
@@ -175,7 +175,7 @@
   },
   "activities": {
     "title": "Atividades",
-    "sessions": "Sessões",
+    "activity": "Atividade",
     "create": {
       "title": "Criar Atividade",
       "description": "Adicionar uma nova atividade ao evento",
@@ -209,8 +209,8 @@
     },
     "delete": "Eliminar atividade",
     "edit": "Editar atividade",
-    "editTitle": "Editar Sessão",
-    "deleteConfirmTitle": "Eliminar Sessão",
+    "editTitle": "Editar Atividade",
+    "deleteConfirmTitle": "Eliminar Atividade",
     "name": "Nome",
     "description": "Descrição",
     "type": "Tipo",
@@ -218,12 +218,12 @@
     "topic": "Tópico",
     "speaker": "Orador",
     "facilitator": "Facilitador",
-    "startTime": "Hora de Início",
+    "date": "Data e Hora",
     "duration": "Duração",
     "image": "Imagem",
     "currentImage": "Imagem Atual (clique em navegar para alterar)",
-    "updateSuccess": "Sessão atualizada com sucesso",
-    "updateError": "Falha ao atualizar sessão",
+    "updateSuccess": "Atividade atualizada com sucesso",
+    "updateError": "Falha ao atualizar atividade",
     "deleteConfirm": "Deseja eliminar esta atividade?",
     "deleteSuccess": "Atividade eliminada com sucesso",
     "deleteError": "Erro ao eliminar atividade",
@@ -234,11 +234,11 @@
     "permissions": {
       "disabled": "Não tem permissão para gerir atividades"
     },
-    "editSlotsTitle": "Gestão de Vagas",
+    "editSlotsTitle": "Gestão de Participantes",
     "slots": {
-      "title": "vaga(s)",
-      "modalTitle": "Editar o Número Vagas",
-      "limitLabel": "Limitar número de vagas?",
+      "title": "participante(s)",
+      "modalTitle": "Editar o Número de Participantes",
+      "limitLabel": "Limitar número de participantes?",
       "slotPlaceholder": "Número máximo de participantes. Ex: 50",
       "saveSuccess": "Dados atualizados com sucesso",
       "saveError": "Erro ao atualizar os dados",
@@ -521,10 +521,10 @@
         "description": "Gerir contas de utilizadores, funções e permissões. Adicione novos utilizadores, edite os existentes ou controle o acesso a diferentes recursos do seu evento.",
         "buttonText": "Gerir Utilizadores"
       },
-      "sessions": {
-        "title": "Sessões",
-        "description": "Agendar e organizar sessões, workshops e atividades do evento. Controle horários, locais e registo de participantes para todas as atividades do evento.",
-        "buttonText": "Ver Sessões"
+      "activities": {
+        "title": "Atividades",
+        "description": "Agendar e organizar atividades do evento. Controle horários, locais e registo de participantes para todas as atividades do evento.",
+        "buttonText": "Ver Atividades"
       },
       "alerts": {
         "title": "Alertas",
@@ -630,7 +630,7 @@
     "subtitle": "Monitorize e gerencie todos os aspetos do seu evento num só lugar"
   },
   "feedback": {
-    "title": "Avalia esta Sessão",
+    "title": "Avalia esta Atividade",
     "description": "A tua opinião ajuda-nos a melhorar!",
     "submit": "Enviar Feedback",
     "ratingLabel": "Avaliação:",

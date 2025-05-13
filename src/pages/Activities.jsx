@@ -3,8 +3,8 @@ import { ActivityList } from "../components/activities/ActivityList";
 import { ActivityFilters } from "../components/activities/ActivityFilters";
 import { CreateActivityCards } from "../components/activities/CreateActivityCards";
 import { ExcelImportModal } from "../components/activities/ExcelImportModal";
-import { NewSessionModal } from "../components/activities/NewSessionModal";
-import { NewSessionTypeModal } from "../components/activities/NewSessionTypeModal";
+import { CreateActivityModal } from "../components/activities/CreateActivityModal";
+import { CreateActivityTypeModal } from "../components/activities/CreateActivityTypeModal";
 import { EditActivityModal } from "../components/activities/EditActivityModal";
 import { useActivities } from "../contexts/ActivitiesContext";
 import { useNotification } from "../contexts/NotificationContext";
@@ -44,8 +44,8 @@ export default function Activities() {
 
   // Modal state
   const [isExcelModalOpen, setIsExcelModalOpen] = useState(false);
-  const [isNewSessionModalOpen, setIsNewSessionModalOpen] = useState(false);
-  const [isNewSessionTypeModalOpen, setIsNewSessionTypeModalOpen] = useState(false);
+  const [isCreateActivityModalOpen, setIsCreateActivityModalOpen] = useState(false);
+  const [isCreateActivityTypeModalOpen, setIsCreateActivityTypeModalOpen] = useState(false);
   const [isEditModalOpen, setIsEditModalOpen] = useState(false);
   const [selectedActivity, setSelectedActivity] = useState(null);
   
@@ -76,11 +76,11 @@ export default function Activities() {
   const openExcelModal = () => setIsExcelModalOpen(true);
   const closeExcelModal = () => setIsExcelModalOpen(false);
 
-  const openNewSessionModal = () => setIsNewSessionModalOpen(true);
-  const closeNewSessionModal = () => setIsNewSessionModalOpen(false);
+  const openCreateActivityModal = () => setIsCreateActivityModalOpen(true);
+  const closeCreateActivityModal = () => setIsCreateActivityModalOpen(false);
 
-  const openNewSessionTypeModal = () => setIsNewSessionTypeModalOpen(true);
-  const closeNewSessionTypeModal = () => setIsNewSessionTypeModalOpen(false);
+  const openCreateActivityTypeModal = () => setIsCreateActivityTypeModalOpen(true);
+  const closeCreateActivityTypeModal = () => setIsCreateActivityTypeModalOpen(false);
 
   const handleEditActivity = (activityId) => {
     const activity = activities.find(a => a.id === activityId);
@@ -136,17 +136,16 @@ export default function Activities() {
       closeExcelModal();
   };
 
-  const handleCreateSession = async (sessionData) => {
+  const handleCreateActivity = async (activityData) => {
       const payload = {
-        name: sessionData.name,
-        description: sessionData.description,
-        date: sessionData.date,
-        duration: parseInt(sessionData.duration, 10),
-        type_id: typeof sessionData.type_id === 'string' 
-          ? parseInt(sessionData.type_id, 10) 
-          : sessionData.type_id,
-        topic: sessionData.topic || "",
-        facilitator: sessionData.facilitator || ""
+        name: activityData.name,
+        description: activityData.description,
+        date: activityData.date,
+        duration: parseInt(activityData.duration, 10),
+        type_id: typeof activityData.type_id === 'string' 
+          ? parseInt(activityData.type_id, 10) 
+          : activityData.type_id,
+        topic: activityData.topic || "",
       };
 
       console.log("Sending activity data:", payload);
@@ -158,26 +157,26 @@ export default function Activities() {
           formData.append(key, value);
         }
       });
-      if (sessionData.image) {
+      if (activityData.image) {
         formData.append('image', "");
       }
 
       const activity = await createActivity(formData);
 
-      if (sessionData.image) {
-        await uploadMedia(activity.image, sessionData.image);
+      if (activityData.image) {
+        await uploadMedia(activity.image, activityData.image);
       }
 
-      showNotification("Session created successfully", "success");
+      showNotification("Activity created successfully", "success");
 
       fetchActivities();
-      closeNewSessionModal();
+      closeCreateActivityModal();
   };
 
-  const handleCreateSessionType = async (typeData) => {
+  const handleCreateActivityType = async (typeData) => {
     await createActivityType(typeData);
-    showNotification("Session type created successfully", "success");
-    closeNewSessionTypeModal();
+    showNotification("Activity type created successfully", "success");
+    closeCreateActivityTypeModal();
   };
 
   return (
@@ -187,12 +186,12 @@ export default function Activities() {
 
               <CreateActivityCards
                 onOpenExcelModal={openExcelModal}
-                onOpenNewSessionModal={openNewSessionModal}
-                onOpenNewSessionTypeModal={openNewSessionTypeModal}
+                onOpenCreateActivityModal={openCreateActivityModal}
+                onOpenCreateActivityTypeModal={openCreateActivityTypeModal}
                 canCreateActivities={canCreateActivities()}
               />
 
-              <h1 className="text-3xl font-bold mt-8">{t('activities.sessions')}</h1>
+              <h1 className="text-3xl font-bold mt-8">{t('activities.activities')}</h1>
 
               <ActivityFilters
                 activityTypes={activityTypes}
@@ -215,16 +214,16 @@ export default function Activities() {
                 onImport={handleImportExcel}
               />
 
-              <NewSessionModal
-                isOpen={isNewSessionModalOpen}
-                onClose={closeNewSessionModal}
-                onSubmit={handleCreateSession}
+              <CreateActivityModal
+                isOpen={isCreateActivityModalOpen}
+                onClose={closeCreateActivityModal}
+                onSubmit={handleCreateActivity}
               />
 
-              <NewSessionTypeModal
-                isOpen={isNewSessionTypeModalOpen}
-                onClose={closeNewSessionTypeModal}
-                onSubmit={handleCreateSessionType}
+              <CreateActivityTypeModal
+                isOpen={isCreateActivityTypeModalOpen}
+                onClose={closeCreateActivityTypeModal}
+                onSubmit={handleCreateActivityType}
               />
 
               <EditActivityModal

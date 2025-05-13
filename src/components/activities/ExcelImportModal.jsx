@@ -14,7 +14,6 @@ const formatExcelData = (rawData) => {
     duration: isNaN(parseInt(row.duration)) ? 0 : parseInt(row.duration),
     type_id: isNaN(parseInt(row.type_id)) ? 0 : parseInt(row.type_id),
     topic: row.topic || "",
-    facilitator: row.facilitator || ""
   }));
 };
 
@@ -67,7 +66,6 @@ const generateTemplate = () => {
       duration: 60,
       type_id: 1,
       topic: "Example Topic",
-      facilitator: "Example Facilitator"
     }
   ]);
   
@@ -134,7 +132,7 @@ export function ExcelImportModal({ isOpen, onClose, onImport }) {
       isOpen={isOpen}
       onClose={handleClose}
       title="Upload Excel File"
-      description="Select an Excel file to upload multiple sessions at once."
+      description="Select an Excel file to upload multiple activities at once."
     >
       <form onSubmit={handleSubmit}>
         {excelHelper.renderTemplateButton()}

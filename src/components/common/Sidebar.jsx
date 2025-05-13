@@ -243,7 +243,7 @@ export default function Sidebar() {
                 hasHomepage={true}
                 links={[
                   { label: t('menu.sections.event.links.users'), path: "/instantiate/event/users", icon: FaUsers },
-                  { label: t('menu.sections.event.links.sessions'), path: "/instantiate/event/sessions", icon: FaCalendarAlt },
+                  { label: t('menu.sections.event.links.activities'), path: "/instantiate/event/activities", icon: FaCalendarAlt },
                   { label: t('menu.sections.event.links.eventInfo'), path: "/instantiate/event/info", icon: FaEdit },
                   { label: t('menu.sections.event.links.plugins'), path: "/instantiate/event/plugins", icon: FaPuzzlePiece }
                 ]}

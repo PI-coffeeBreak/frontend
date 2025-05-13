@@ -1,9 +1,10 @@
 import React from 'react';
 import PropTypes from 'prop-types';
-import { useColorTheme } from '../../contexts/ColorThemeContext.jsx';
+import { useTheme } from '../../contexts/ThemeContext.jsx';
 
 export function ColorThemeLayout({ children }) {
-  const { colorTheme, loading, error } = useColorTheme();
+  const { colorTheme, loading, error } = useTheme();
+
 
   if (loading) {
     return <div>Loading theme...</div>;

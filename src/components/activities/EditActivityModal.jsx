@@ -28,7 +28,7 @@ FormField.propTypes = {
 
 export function EditActivityModal({ isOpen, onClose, activity }) {
   const { t } = useTranslation();
-  const { activityTypes, updateActivity } = useActivities();
+  const { activityTypes, updateActivity, fetchActivities } = useActivities();
   const { uploadMedia, getMediaUrl } = useMedia();
   const { showNotification } = useNotification();
   const fileInputRef = useRef(null);
@@ -38,13 +38,9 @@ export function EditActivityModal({ isOpen, onClose, activity }) {
     description: "",
     type_id: "",
     topic: "",
-    speaker: "",
-    facilitator: "",
-    start_time: "",
+    date: "",
     duration: "",
-    image: null,
-    requires_registration: false,
-    max_participants: ""
+    image: null
   });
   
   const [imagePreview, setImagePreview] = useState(null);
@@ -65,8 +61,8 @@ export function EditActivityModal({ isOpen, onClose, activity }) {
     if (activity) {
       // Format the date for the input field
       let formattedDate = "";
-      if (activity.start_time) {
-        const date = new Date(activity.start_time);
+      if (activity.date) {
+        const date = new Date(activity.date);
         // Format to YYYY-MM-DDTHH:MM
         formattedDate = date.toISOString().slice(0, 16);
       }
@@ -76,13 +72,9 @@ export function EditActivityModal({ isOpen, onClose, activity }) {
         description: activity.description || "",
         type_id: activity.type_id || "",
         topic: activity.topic || "",
-        speaker: activity.speaker || "",
-        facilitator: activity.facilitator || "",
-        start_time: formattedDate,
+        date: formattedDate,
         duration: activity.duration || "",
         image: null,
-        requires_registration: activity.requires_registration || false,
-        max_participants: activity.max_participants || ""
       });
       
       // Reset image preview
@@ -120,24 +112,13 @@ export function EditActivityModal({ isOpen, onClose, activity }) {
     if (!formData.description.trim()) newErrors.description = t('validation.required');
     if (!formData.type_id) newErrors.type_id = t('validation.required');
     
-    if (formData.start_time) {
-      const sessionDate = new Date(formData.start_time);
+    if (formData.date) {
+      const activityDate = new Date(formData.date);
 
-      if (isNaN(sessionDate.getTime())) {
-        newErrors.start_time = t('validation.invalidDate');
-      } else if (sessionDate < new Date()) {
-        newErrors.start_time = t('validation.dateInPast');
-      }
-    }
-    
-    if (formData.requires_registration) {
-      if (!formData.max_participants) {
-        newErrors.max_participants = t('validation.required');
-      } else {
-        const maxPart = parseInt(formData.max_participants, 10);
-        if (isNaN(maxPart) || maxPart <= 0) {
-          newErrors.max_participants = t('validation.positiveNumber');
-        }
+      if (isNaN(activityDate.getTime())) {
+        newErrors.date = t('validation.invalidDate');
+      } else if (activityDate < new Date()) {
+        newErrors.date = t('validation.dateInPast');
       }
     }
     
@@ -180,17 +161,9 @@ export function EditActivityModal({ isOpen, onClose, activity }) {
       description: formData.description,
       type_id: parseInt(formData.type_id, 10),
       topic: formData.topic || "",
-      speaker: formData.speaker || "",
-      facilitator: formData.facilitator || "",
-      requires_registration: formData.requires_registration || false,
     };
 
-    if (formData.requires_registration && formData.max_participants) {
-      const parsedValue = parseInt(formData.max_participants, 10);
-      payload.max_participants = !isNaN(parsedValue) ? parsedValue : 0;
-    }
-
-    if (formData.start_time) payload.start_time = formData.start_time;
+    if (formData.date) payload.date = formData.date;
     if (formData.duration) payload.duration = parseInt(formData.duration, 10);
 
     return payload;
@@ -232,9 +205,7 @@ export function EditActivityModal({ isOpen, onClose, activity }) {
       showNotification(t('activities.updateSuccess'), "success");
       handleCloseModal();
 
-      setTimeout(() => {
-        window.location.reload();
-      }, 800);
+      fetchActivities();
     } catch (error) {
       console.error("Error updating activity:", error);
       showNotification(t('activities.updateError'), "error");
@@ -249,13 +220,9 @@ export function EditActivityModal({ isOpen, onClose, activity }) {
       description: "",
       type_id: "",
       topic: "",
-      speaker: "",
-      facilitator: "",
-      start_time: "",
+      date: "",
       duration: "",
       image: null,
-      requires_registration: false,
-      max_participants: ""
     });
     setImagePreview(null);
     setCurrentImageUrl(null);
@@ -443,47 +410,15 @@ export function EditActivityModal({ isOpen, onClose, activity }) {
           
           <div>
             <FormField 
-              label={t('activities.speaker')} 
-              id="speaker"
-            >
-              <input
-                type="text"
-                id="speaker"
-                name="speaker"
-                value={formData.speaker}
-                onChange={handleChangeWithStop}
-                className="input input-sm input-bordered w-full"
-              />
-            </FormField>
-          </div>
-          
-          <div>
-            <FormField 
-              label={t('activities.facilitator')} 
-              id="facilitator"
-            >
-              <input
-                type="text"
-                id="facilitator"
-                name="facilitator"
-                value={formData.facilitator}
-                onChange={handleChangeWithStop}
-                className="input input-sm input-bordered w-full"
-              />
-            </FormField>
-          </div>
-          
-          <div>
-            <FormField 
-              label={t('activities.startTime')} 
-              id="start_time"
-              error={errors.start_time}
+              label={t('activities.date')} 
+              id="date"
+              error={errors.date}
             >
               <input
                 type="datetime-local"
-                id="start_time"
-                name="start_time"
-                value={formData.start_time}
+                id="date"
+                name="date"
+                value={formData.date}
                 onChange={handleChangeWithStop}
                 className="input input-sm input-bordered w-full"
               />
@@ -505,47 +440,6 @@ export function EditActivityModal({ isOpen, onClose, activity }) {
                 min="1"
               />
             </FormField>
-          </div>
-          
-          <div className="md:col-span-2 mt-2">
-            <div className="border-t pt-3">
-              <h3 className="text-sm font-semibold mb-2">{t('activities.registration.title')}</h3>
-              
-              <div className="flex items-center mb-3">
-                <input
-                  type="checkbox"
-                  id="requires_registration"
-                  name="requires_registration"
-                  checked={formData.requires_registration}
-                  onChange={handleChangeWithStop}
-                  className="checkbox checkbox-primary checkbox-sm mr-2"
-                />
-                <label htmlFor="requires_registration" className="cursor-pointer text-sm">
-                  {t('activities.registration.limitParticipants')}
-                </label>
-              </div>
-              
-              {formData.requires_registration && (
-                <div className="ml-6">
-                  <FormField 
-                    label={t('activities.registration.maxParticipants')} 
-                    id="max_participants"
-                    error={errors.max_participants}
-                  >
-                    <input
-                      type="number"
-                      id="max_participants"
-                      name="max_participants"
-                      value={formData.max_participants}
-                      onChange={handleChangeWithStop}
-                      className="input input-sm input-bordered w-full"
-                      min="1"
-                      placeholder={t('activities.registration.maxParticipantsPlaceholder')}
-                    />
-                  </FormField>
-                </div>
-              )}
-            </div>
           </div>
           
           <div className="md:col-span-2">
