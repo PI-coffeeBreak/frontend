@@ -15,7 +15,8 @@ import {
   FaFileAlt,
   FaBars,
   FaRocket,
-  FaCog
+  FaCog,
+  FaIcons
 } from "react-icons/fa";
 import { RiApps2AddLine } from "react-icons/ri";
 import DropdownMenu from "./DropdownMenu.jsx";
@@ -258,6 +259,7 @@ export default function Sidebar() {
                   { label: t('menu.sections.application.links.pages'), path: "/instantiate/application/pages", icon: FaFileAlt },
                   { label: t('menu.sections.application.links.menus'), path: "/instantiate/application/menus", icon: FaBars },
                   { label: t('menu.sections.application.links.colors'), path: "/instantiate/application/colors", icon: FaPalette },
+                  { label: t('menu.sections.application.links.icons'), path: "/instantiate/application/icons", icon: FaIcons },
                 ]}
               />
             </ul>

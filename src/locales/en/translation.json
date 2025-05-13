@@ -29,7 +29,10 @@
       "uploadError": "Failed to upload image. Activity updated, but image was not changed.",
       "noImageField": "Activity doesn't have an image field. Please try again.",
       "removeImage": "Remove Image",
-      "imageAlt": "Image"
+      "imageAlt": "Image",
+      "pwaIcon192Alt": "192x192 PWA Icon",
+      "pwaIcon512Alt": "512x512 PWA Icon",
+      "faviconAlt": "32x32 Favicon"
     }
   },
   "auth": {
@@ -80,7 +83,8 @@
         "links": {
           "pages": "Pages",
           "menus": "Menus",
-          "colors": "Colors"
+          "colors": "Colors",
+          "icons": "Icons"
         }
       },
       "eventMaker": {
@@ -663,5 +667,27 @@
     "comment": "Comment",
     "of":"of",
     "enterRating": "Enter rating"
+  },
+  "iconsEditor": {
+    "title": "Icons Editor",
+    "description": "Manage your PWA and favicon icons. Supported sizes and formats are listed below.",
+    "pwa512Description": "Used for PWA install. Must be exactly 512x512 pixels. PNG recommended.",
+    "pwa192Description": "Used for PWA install. Must be exactly 192x192 pixels. PNG recommended.",
+    "faviconDescription": "Used as browser tab icon. Must be (16x16, 32x32, 48x48) pixels. PNG, SVG, or ICO supported. For best results, upload a .ico file with all standard sizes.",
+    "validation": {
+      "requiredIcons": "All icons are required"
+    },
+    "success": {
+      "save": "Icons saved successfully"
+    },
+    "error": {
+      "save": "Failed to save icons",
+      "upload": "Failed to upload icon",
+      "fetchData": "Failed to fetch icons data"
+    },
+    "actions": {
+      "save": "Save Icons",
+      "saving": "Saving..."
+    }
   }
 } 

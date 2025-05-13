@@ -29,7 +29,10 @@
       "uploadError": "Falha ao fazer upload da imagem. A atividade foi atualizada, mas a imagem não foi alterada.",
       "noImageField": "A atividade não tem um campo de imagem. Por favor, tente novamente.",
       "removeImage": "Remover Imagem",
-      "imageAlt": "Imagem"
+      "imageAlt": "Imagem",
+      "pwaIcon192Alt": "Ícone PWA 192x192",
+      "pwaIcon512Alt": "Ícone PWA 512x512",
+      "faviconAlt": "Favicon 32x32"
     }
   },
   "auth": {
@@ -80,7 +83,8 @@
         "links": {
           "pages": "Páginas",
           "menus": "Menus",
-          "colors": "Cores"
+          "colors": "Cores",
+          "icons": "Ícones"
         }
       },
       "eventMaker": {
@@ -686,5 +690,27 @@
       "comment": "Comentário",
       "of": "de",
       "enterRating": "Digite a classificação"
+  },
+  "iconsEditor": {
+    "title": "Editor de Ícones",
+    "description": "Gerencie seus ícones PWA e ícones de favicon. Os tamanhos e formatos suportados estão listados abaixo.",
+    "pwa512Description": "Usado para instalar o PWA. Deve ser exatamente 512x512 pixels. PNG recomendado.",
+    "pwa192Description": "Usado para instalar o PWA. Deve ser exatamente 192x192 pixels. PNG recomendado.",
+    "faviconDescription": "Usado como ícone da aba do navegador. Deve ser (16x16, 32x32, 48x48) pixels. PNG, SVG ou ICO suportado. Para melhores resultados, envie um arquivo .ico com todos os tamanhos padrão.",
+    "validation": {
+      "requiredIcons": "Todos os ícones são obrigatórios"
+    },
+    "success": {
+      "save": "Ícones salvos com sucesso"
+    },
+    "error": {
+      "save": "Falha ao salvar ícones",
+      "upload": "Falha ao fazer upload do ícone",
+      "fetchData": "Falha ao buscar dados dos ícones"
+    },
+    "actions": {
+      "save": "Salvar Ícones",
+      "saving": "Salvando..."
+    }
   }
 } 
