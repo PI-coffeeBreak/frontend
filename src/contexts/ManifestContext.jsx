@@ -3,11 +3,12 @@ import { baseUrl } from "../consts";
 import axios from "axios";
 import { axiosWithAuth } from "../utils/axiosWithAuth";
 import { useKeycloak } from "@react-keycloak/web";
+import PropTypes from "prop-types";
 
 const ManifestContext = createContext();
 
 export function ManifestProvider({ children }) {
-    const { keycloak, initialized } = useKeycloak();
+    const { keycloak } = useKeycloak();
     // Fetch the manifest.json
     const fetchManifest = async () => {
         const response = await axios.get(`${baseUrl}/manifest.json`);
@@ -48,8 +49,12 @@ export function ManifestProvider({ children }) {
         {children}
         </ManifestContext.Provider>
     );
-    }
+}
 
-    export function useManifest() {
+ManifestProvider.propTypes = {
+    children: PropTypes.node.isRequired,
+};
+
+export function useManifest() {
     return useContext(ManifestContext);
 } 
