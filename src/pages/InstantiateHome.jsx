@@ -17,13 +17,13 @@ export default function InstantiateHome() {
             buttonText: t('menu.sections.home.buttons.users')
         },
         {
-            id: 'sessions',
-            title: t('menu.sections.home.links.sessions'),
-            description: t('menu.sections.home.descriptions.sessions'),
+            id: 'activities',
+            title: t('menu.sections.home.links.activities'),
+            description: t('menu.sections.home.descriptions.activities'),
             icon: FaCalendarCheck,
-            path: "sessions",
+            path: "activities",
             color: "secondary",
-            buttonText: t('menu.sections.home.buttons.sessions')
+            buttonText: t('menu.sections.home.buttons.activities')
         },
         {
             id: 'alerts',

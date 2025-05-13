@@ -4,21 +4,36 @@ import { FaTrash, FaEdit } from 'react-icons/fa';
 import { useState, useEffect } from 'react';
 import { useMedia } from '../../contexts/MediaContext.jsx';
 
-export default function Activity({ id, title, description, image, category, type, onDelete, onEdit, metadata }) {
+export default function Activity({ id, title, description, image, category, type, onDelete, onEdit, mode, metadata }) {
   const { t } = useTranslation();
   const { getMediaUrl } = useMedia();
-  const [imageUrl, setImageUrl] = useState(image);
+  const [imageUrl, setImageUrl] = useState(null);
+  const [imageError, setImageError] = useState(false);
 
+  // When image prop changes, update the image URL
   useEffect(() => {
     if (image) {
       const isImageLink = image.startsWith('http');
       if (!isImageLink) {
-        setImageUrl(getMediaUrl(image));
+        const mediaUrl = getMediaUrl(image);
+        setImageUrl(mediaUrl);
       } else {
         setImageUrl(image);
       }
+      setImageError(false);
+    } else {
+      setImageUrl(null);
+      setImageError(false);
     }
-  }, [image]);
+  }, [id, image, getMediaUrl]);
+
+  const handleImageLoad = () => {
+    setImageError(false);
+  };
+
+  const handleImageError = () => {
+    setImageError(true);
+  };
 
   return (
     <div
@@ -26,49 +41,78 @@ export default function Activity({ id, title, description, image, category, type
       data-id={id}
       data-title={title}
     >
-      {onDelete && (
-        <button
-          onClick={(e) => {
-            e.stopPropagation();
-            onDelete(id);
-          }}
-          className="absolute top-2 right-2 p-2 text-gray-400 hover:text-error rounded-full hover:bg-gray-100 transition-colors"
-          aria-label={t('activities.delete')}
-          type="button"
-        >
-          <FaTrash className="w-4 h-4" aria-hidden="true" />
-        </button>
+      {mode === 'both' ? (
+        <div className="absolute top-2 right-2 flex gap-2">
+          {onEdit && (
+            <button
+              onClick={(e) => {
+                e.stopPropagation();
+                onEdit(id);
+              }}
+              className="p-2 text-gray-400 hover:text-primary rounded-full hover:bg-gray-100 transition-colors"
+              aria-label={t('activities.edit')}
+              type="button"
+            >
+              <FaEdit className="w-4 h-4" aria-hidden="true" />
+            </button>
+          )}
+          
+          {onDelete && (
+            <button
+              onClick={(e) => {
+                e.stopPropagation();
+                onDelete(id);
+              }}
+              className="p-2 text-gray-400 hover:text-error rounded-full hover:bg-gray-100 transition-colors"
+              aria-label={t('activities.delete')}
+              type="button"
+            >
+              <FaTrash className="w-4 h-4" aria-hidden="true" />
+            </button>
+          )}
+        </div>
+      ) : (
+        <>
+          {/* Single button mode (only edit or only delete) */}
+          {onDelete && mode === 'delete' && (
+            <button
+              onClick={(e) => {
+                e.stopPropagation();
+                onDelete(id);
+              }}
+              className="absolute top-2 right-2 p-2 text-gray-400 hover:text-error rounded-full hover:bg-gray-100 transition-colors"
+              aria-label={t('activities.delete')}
+              type="button"
+            >
+              <FaTrash className="w-4 h-4" aria-hidden="true" />
+            </button>
+          )}
+  
+          {onEdit && mode === 'edit' && (
+            <button
+              onClick={(e) => {
+                e.stopPropagation();
+                onEdit(id);
+              }}
+              className="absolute top-2 right-2 p-2 text-gray-400 hover:text-primary rounded-full hover:bg-gray-100 transition-colors"
+              aria-label={t('activities.edit')}
+              type="button"
+            >
+              <FaEdit className="w-4 h-4" aria-hidden="true" />
+            </button>
+          )}
+        </>
       )}
 
-      {onEdit && (
-        <button
-          onClick={(e) => {
-            e.stopPropagation();
-            onEdit(id);
-          }}
-          className="absolute top-2 right-2 p-2 text-gray-400 hover:text-primary rounded-full hover:bg-gray-100 transition-colors"
-          aria-label={t('activities.edit')}
-          type="button"
-        >
-          <FaEdit className="w-4 h-4" aria-hidden="true" />
-        </button>
-      )}
-
-      <div className="w-1/3 h-full items-center justify-center hidden sm:block">
-        {image ? (
+      <div className="w-1/3 h-full items-center justify-center hidden sm:flex overflow-hidden">
+        {imageUrl && !imageError ? (
           <img
             src={imageUrl}
             alt={t('activities.imageAlt')}
-            className="w-full h-full object-cover rounded-xl"
-            onError={(e) => {
-              e.target.onerror = null;
-              e.target.style.display = 'none';
-              e.target.parentElement.innerHTML = `
-                <div class="w-full h-full bg-gray-200 rounded-md flex items-center justify-center">
-                  <span class="text-gray-400">${t('activities.noImage')}</span>
-                </div>
-              `;
-            }}
+            className="w-full h-full object-cover rounded-md"
+            onLoad={handleImageLoad}
+            onError={handleImageError}
+            key={`activity-img-${id}-${imageUrl}`} // Force image reload when URL changes
           />
         ) : (
           <div className="w-full h-full bg-gray-200 rounded-xl flex items-center justify-center">
@@ -103,6 +147,7 @@ Activity.propTypes = {
   type: PropTypes.string.isRequired,
   onDelete: PropTypes.func,
   onEdit: PropTypes.func,
+  mode: PropTypes.oneOf(['edit', 'delete', 'both']),
   metadata: PropTypes.shape({
     is_restricted: PropTypes.bool,
     slots: PropTypes.number,
@@ -116,5 +161,6 @@ Activity.defaultProps = {
   category: '',
   onDelete: null,
   onEdit: null,
+  mode: 'delete',
   metadata: null
 };

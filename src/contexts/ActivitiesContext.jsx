@@ -9,14 +9,23 @@ const ActivitiesContext = createContext();
 export const ActivitiesProvider = ({ children }) => {
     const activitiesBaseUrl = `${baseUrl}/activities`;
     const activityTypesBaseUrl = `${baseUrl}/activity-types`;
-    const { keycloak } = useKeycloak();
+    const { keycloak, initialized } = useKeycloak();
 
     const [activities, setActivities] = useState([]);
     const [activityTypes, setActivityTypes] = useState([]);
     const [calendarActivities, setCalendarActivities] = useState([]);
     const [outsideActivities, setOutsideActivities] = useState([]);
+    const [isLoading, setIsLoading] = useState(false);
+    const [error, setError] = useState(null);
 
     const fetchActivities = async () => {
+        if (!initialized || !keycloak?.authenticated) {
+            console.log("Keycloak not initialized or user not authenticated");
+            return;
+        }
+
+        setIsLoading(true);
+        setError(null);
         try {
             const response = await axiosWithAuth(keycloak).get(activitiesBaseUrl);
             const data = response.data;
@@ -33,19 +42,39 @@ export const ActivitiesProvider = ({ children }) => {
             setOutsideActivities(outsideEvents);
         } catch (error) {
             console.error("Error fetching activities:", error);
+            setError("Failed to fetch activities. Please try again.");
+        } finally {
+            setIsLoading(false);
         }
     };
 
     const fetchActivityTypes = async () => {
+        if (!initialized || !keycloak?.authenticated) {
+            console.log("Keycloak not initialized or user not authenticated");
+            return;
+        }
+
+        setIsLoading(true);
+        setError(null);
         try {
             const response = await axiosWithAuth(keycloak).get(activityTypesBaseUrl);
             setActivityTypes(response.data);
         } catch (error) {
             console.error("Error fetching activity types:", error);
+            setError("Failed to fetch activity types. Please try again.");
+        } finally {
+            setIsLoading(false);
         }
     };
 
     const updateActivity = async (activityId, updates) => {
+        if (!initialized || !keycloak?.authenticated) {
+            console.log("Keycloak not initialized or user not authenticated");
+            return;
+        }
+
+        setIsLoading(true);
+        setError(null);
         try {
             const activity = activities.find((act) => act.id === activityId);
 
@@ -57,9 +86,13 @@ export const ActivitiesProvider = ({ children }) => {
 
             await axiosWithAuth(keycloak).put(`${activitiesBaseUrl}/${activityId}`, updatedActivity);
 
-            fetchActivities();
+            await fetchActivities();
         } catch (error) {
             console.error("Error updating activity:", error);
+            setError("Failed to update activity. Please try again.");
+            throw error;
+        } finally {
+            setIsLoading(false);
         }
     };
 
@@ -94,19 +127,34 @@ export const ActivitiesProvider = ({ children }) => {
     };
 
     const createActivityType = async (typeData) => {
+        if (!initialized || !keycloak?.authenticated) {
+            console.log("Keycloak not initialized or user not authenticated");
+            return null;
+        }
+
+        setIsLoading(true);
+        setError(null);
         try {
             const response = await axiosWithAuth(keycloak).post(`${baseUrl}/activity-types`, typeData);
-
             setActivityTypes(prev => [...prev, response.data]);
-            
             return response.data;
         } catch (error) {
             console.error("Error creating activity type:", error);
+            setError("Failed to create activity type. Please try again.");
             throw error;
+        } finally {
+            setIsLoading(false);
         }
     };
 
     const createActivitiesBatch = async (activitiesData) => {
+        if (!initialized || !keycloak?.authenticated) {
+            console.log("Keycloak not initialized or user not authenticated");
+            return null;
+        }
+
+        setIsLoading(true);
+        setError(null);
         try {
             const response = await axiosWithAuth(keycloak).post(
                 `${baseUrl}/activities/batch`,
@@ -120,6 +168,7 @@ export const ActivitiesProvider = ({ children }) => {
             return response.data;
         } catch (error) {
             console.error("Error importing activities:", error);
+            setError("Failed to import activities. Please try again.");
 
             if (error.response?.data?.detail) {
                 const errorMessages = Array.isArray(error.response.data.detail)
@@ -130,10 +179,19 @@ export const ActivitiesProvider = ({ children }) => {
                 console.error(error.response?.data?.message || "Failed to import activities");
             }
             throw error;
+        } finally {
+            setIsLoading(false);
         }
     }
 
     const createActivity = async (activityData) => {
+        if (!initialized || !keycloak?.authenticated) {
+            console.log("Keycloak not initialized or user not authenticated");
+            return null;
+        }
+
+        setIsLoading(true);
+        setError(null);
         try {
             const response = await axiosWithAuth(keycloak).post(
                 `${baseUrl}/activities/`,
@@ -147,11 +205,21 @@ export const ActivitiesProvider = ({ children }) => {
             return response.data;
         } catch (error) {
             console.error("Error creating activity:", error);
+            setError("Failed to create activity. Please try again.");
             throw error;
+        } finally {
+            setIsLoading(false);
         }
     }
 
     const deleteActivity = async (activityId) => {
+        if (!initialized || !keycloak?.authenticated) {
+            console.log("Keycloak not initialized or user not authenticated");
+            return null;
+        }
+
+        setIsLoading(true);
+        setError(null);
         try {
             await axiosWithAuth(keycloak).delete(`${activitiesBaseUrl}/${activityId}`);
 
@@ -162,14 +230,20 @@ export const ActivitiesProvider = ({ children }) => {
             return true;
         } catch (error) {
             console.error("Error deleting activity:", error);
+            setError("Failed to delete activity. Please try again.");
             throw error;
+        } finally {
+            setIsLoading(false);
         }
     };
 
+    // Fetch data when Keycloak is initialized and authenticated
     useEffect(() => {
-        fetchActivities();
-        fetchActivityTypes();
-    }, []);
+        if (initialized && keycloak?.authenticated) {
+            fetchActivities();
+            fetchActivityTypes();
+        }
+    }, [initialized, keycloak?.authenticated]);
 
     // Memoize the value object to prevent unnecessary re-renders
     const contextValue = useMemo(
@@ -178,6 +252,8 @@ export const ActivitiesProvider = ({ children }) => {
             activityTypes,
             calendarActivities,
             outsideActivities,
+            isLoading,
+            error,
             fetchActivities,
             fetchActivityTypes,
             updateActivity,
@@ -197,7 +273,9 @@ export const ActivitiesProvider = ({ children }) => {
             activityTypes,
             calendarActivities,
             outsideActivities,
-        ] // Dependencies
+            isLoading,
+            error
+        ]
     );
 
     return (
@@ -207,7 +285,6 @@ export const ActivitiesProvider = ({ children }) => {
     );
 };
 
-// Add PropTypes validation for the `children` prop
 ActivitiesProvider.propTypes = {
     children: PropTypes.node.isRequired,
 };

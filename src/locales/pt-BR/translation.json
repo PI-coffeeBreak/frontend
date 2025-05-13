@@ -2,7 +2,7 @@
   "common": {
     "home": "Início",
     "users": "Usuários",
-    "sessions": "Sessões",
+    "activities": "Atividades",
     "alerts": "Alertas",
     "schedule": "Agenda",
     "plugins": "Plugins",
@@ -12,6 +12,7 @@
     "create": "Criar",
     "edit": "Editar",
     "save": "Salvar",
+    "saving": "Salvando...",
     "cancel": "Cancelar",
     "delete": "Excluir",
     "loading": "Carregando...",
@@ -23,8 +24,10 @@
       "noImage": "Nenhuma imagem selecionada",
       "imageError": "Não foi possível exibir a imagem",
       "imageErrorDetails": "A imagem pode estar faltando ou indisponível",
-      "sizeError": "O tamanho da imagem deve ser inferior a 50MB",
+      "sizeError": "O tamanho da imagem deve ser menor que 50MB",
       "typeError": "Por favor, envie um arquivo de imagem",
+      "uploadError": "Falha ao fazer upload da imagem. A atividade foi atualizada, mas a imagem não foi alterada.",
+      "noImageField": "A atividade não tem um campo de imagem. Por favor, tente novamente.",
       "removeImage": "Remover Imagem",
       "imageAlt": "Imagem"
     }
@@ -44,20 +47,20 @@
     "sections": {
       "home": {
         "title": "Início",
-        "description": "Gerenciar usuários e sessões",
+        "description": "Gerenciar usuários e atividades",
         "links": {
           "users": "Usuários",
-          "sessions": "Sessões",
+          "activities": "Atividades",
           "alerts": "Alertas"
         },
         "descriptions": {
           "users": "Gerencie contas de usuários, funções e permissões",
-          "sessions": "Agende e organize sessões e atividades",
+          "activities": "Agende e organize atividades do evento",
           "alerts": "Crie e envie notificações para participantes"
         },
         "buttons": {
           "users": "Gerenciar Usuários",
-          "sessions": "Ver Sessões",
+          "activities": "Ver Atividades",
           "alerts": "Gerenciar Alertas"
         }
       },
@@ -66,7 +69,7 @@
         "description": "Gerencie as configurações e componentes do evento",
         "links": {
           "users": "Usuários",
-          "sessions": "Sessões",
+          "activities": "Atividades",
           "eventInfo": "Informações do Evento",
           "plugins": "Gerenciar Plugins"
         }
@@ -97,10 +100,10 @@
       },
       "management": {
         "title": "Gestão",
-        "description": "Gerencie usuários, sessões e alertas",
+        "description": "Gerencie usuários, atividades e alertas",
         "links": {
           "users": "Usuários",
-          "sessions": "Sessões",
+          "activities": "Atividades",
           "alerts": "Alertas"
         }
       }
@@ -118,7 +121,7 @@
     "cards": {
       "management": {
         "title": "Gestão",
-        "description": "Acesse ferramentas para gerenciar usuários, sessões e alertas do seu evento."
+        "description": "Acesse ferramentas para gerenciar usuários, atividades e alertas do seu evento."
       },
       "eventMaker": {
         "title": "Event Maker",
@@ -140,6 +143,23 @@
       "banUser": "Banir Usuário",
       "unbanUser": "Desbanir Usuário"
     },
+    "create": {
+      "title": "Criar Novo Usuário",
+      "description": "Adicionar um novo usuário ao sistema",
+      "success": "Usuário criado com sucesso!",
+      "firstName": "Nome",
+      "lastName": "Sobrenome",
+      "email": "Endereço de Email",
+      "role": "Função",
+      "temporaryPassword": "Senha Temporária",
+      "hidePassword": "Esconder",
+      "showPassword": "Mostrar",
+      "passwordStrength": "Força da Senha",
+      "passwordChangeNote": "O usuário será solicitado a alterar esta senha na primeira vez que entrar.",
+      "generatePassword": "Gerar Senha",
+      "createUser": "Criar Usuário",
+      "cancel": "Cancelar"
+    },
     "manageRoles": {
       "title": "Gerenciar Funções",
       "create": "Criar Função",
@@ -147,29 +167,15 @@
       "permissionsWarning": "Você não tem permissão para gerenciar funções. Você precisa de uma destas funções: realm-admin, create-realm, manage-realm, cb-admin ou admin. A criação de função pode falhar com erro de permissão.",
       "roleName": "Nome da Função",
       "roleNamePlaceholder": "organizador",
-      "createRole": "Criar Função",
-      "selectRole": "Selecionar Função:",
-      "permissionName": "Nome da Permissão",
-      "description": "Gerir os papéis e permissões",
-      "actions": "Ações",
+      "createRole": "Create Role",
+      "selectRole": "Select Role:",
+      "permissionName": "Permission Name",
+      "description": "Manage the roles and permissions",
+      "actions": "Actions",
       "noDescription": "Sem descrição",
       "assigned": "Atribuída",
       "assign": "Atribuir",
       "noRoles": "Nenhuma função disponível. Crie uma função primeiro."
-    },
-    "create": {
-      "title": "Criar Novo Usuário",
-      "description": "Adicionar um novo usuário ao sistema",
-      "firstName": "Nome",
-      "lastName": "Sobrenome",
-      "email": "Endereço de Email",
-      "role": "Função",
-      "temporaryPassword": "Senha Temporária",
-      "passwordStrength": "Força da Senha",
-      "passwordChangeNote": "O usuário terá de alterar esta senha no primeiro login.",
-      "generatePassword": "Gerar Senha",
-      "createUser": "Criar Usuário",
-      "cancel": "Cancelar"
     },
     "list": {
       "title": "Lista de Usuários"
@@ -190,52 +196,65 @@
     }
   },
   "activities": {
-    "title": "Gerenciar Sessões",
-    "sessions": "Sessões",
+    "title": "Gerenciar Atividades",
+    "activities": "Atividades",
     "create": {
-      "title": "Criar Nova Sessão",
-      "description": "Adicionar uma nova sessão ao evento",
+      "title": "Criar Nova Atividade",
+      "description": "Adicionar uma nova atividade ao evento",
       "name": "Nome",
       "date": "Data",
       "duration": "Duração",
       "type": "Tipo",
       "topic": "Tópico",
-      "speaker": "Palestrante",
-      "facilitator": "Facilitador",
       "image": "Imagem"
     },
     "types": {
-      "title": "Criar Novo Tipo de Sessão",
-      "description": "Crie um novo tipo de sessão manualmente"
+      "title": "Criar Novo Tipo de Atividade",
+      "name": "Nome",
+      "namePlaceholder": "Digite o nome do tipo de atividade",
+      "color": "Cor",
+      "createButton": "Criar Tipo de Atividade",
+      "creating": "Criando...",
+      "createSuccess": "Tipo de atividade criado com sucesso",
+      "createError": "Falha ao criar tipo de atividade"
     },
     "import": {
       "title": "Adicionar com arquivo Excel",
-      "description": "Importe várias sessões de uma vez através de um arquivo Excel"
+      "description": "Importe várias atividades de uma vez através de um arquivo Excel"
     },
     "filters": {
-      "searchPlaceholder": "Pesquisar sessões",
+      "searchPlaceholder": "Pesquisar atividades",
       "all": "Todas"
     },
-    "delete": "Excluir sessão",
-    "deleteConfirm": "Tem certeza que deseja excluir esta sessão?",
-    "deleteSuccess": "Sessão excluída com sucesso",
-    "deleteError": "Falha ao excluir sessão",
-    "noActivities": "Nenhuma sessão encontrada",
+    "delete": "Excluir atividade",
+    "edit": "Editar atividade",
+    "editTitle": "Editar Atividade",
+    "deleteConfirmTitle": "Excluir Atividade",
+    "name": "Nome",
+    "description": "Descrição",
+    "type": "Tipo",
+    "selectType": "Selecione um tipo",
+    "topic": "Tópico",
+    "date": "Data e Hora",
+    "duration": "Duração",
+    "image": "Imagem",
+    "currentImage": "Imagem atual (clique em 'Procurar' para alterar)",
+    "updateSuccess": "Atividade atualizada com sucesso",
+    "updateError": "Falha ao atualizar atividade",
+    "deleteConfirm": "Tem certeza que deseja excluir esta atividade?",
+    "deleteSuccess": "Atividade excluída com sucesso",
+    "deleteError": "Falha ao excluir atividade",
+    "noActivities": "Nenhuma atividade encontrada",
     "trySearch": "Tente alterar sua pesquisa ou filtros",
-    "imageAlt": "Imagem da sessão",
+    "imageAlt": "Imagem da atividade",
     "noImage": "Sem imagem",
+    "createButton": "Criar",
+    "creating": "Criando...",
+    "imageSelected": "Imagem selecionada",
+    "clickToRemoveAndUploadDifferentImage": "Clique para remover e fazer upload de uma imagem diferente",
+    "removeImage": "Remover imagem",
     "permissions": {
-      "disabled": "Você não tem permissão para criar sessões"
-    },
-    "editSlotsTitle": "Gestão de Vagas",
-    "slots": {
-      "title": "vaga(s)",
-      "modalTitle": "Editar Número de Vagas",
-      "limitLabel": "Limitar número de vagas?",
-      "slotPlaceholder": "Número máximo de participantes. Ex: 50",
-      "saveSuccess": "Dados atualizados com sucesso",
-      "saveError": "Erro ao atualizar os dados",
-      "noMetadataInfo": "Esta atividade ainda não possui metadados definidos."
+      "disabled": "Você não tem permissão para criar atividades"
     }
   },
   "eventEditor": {
@@ -357,6 +376,12 @@
       "resetTitle": "Redefinir para o tema original",
       "save": "Salvar",
       "text": "Texto"
+    },
+    "success": {
+      "save": "Tema salvo com sucesso"
+    },
+    "error": {
+      "save": "Falha ao salvar o tema"
     }
   },
   "menuEditor": {
@@ -514,10 +539,10 @@
         "description": "Gerencie contas de usuários, funções e permissões. Adicione novos usuários, edite os existentes ou controle o acesso a diferentes recursos do seu evento.",
         "buttonText": "Gerenciar Usuários"
       },
-      "sessions": {
-        "title": "Sessões",
-        "description": "Agende e organize sessões, workshops e atividades do evento. Controle horários, locais e registro de participantes para todas as atividades do evento.",
-        "buttonText": "Ver Sessões"
+      "activities": {
+        "title": "Atividades",
+        "description": "Agende e organize atividades, workshops e atividades do evento. Controle horários, locais e registro de participantes para todas as atividades do evento.",
+        "buttonText": "Ver Atividades"
       },
       "alerts": {
         "title": "Alertas",
@@ -623,11 +648,17 @@
     "subtitle": "Monitore e gerencie todos os aspectos do seu evento em um só lugar"
   },
   "feedback": {
-    "title": "Avalie esta Sessão",
+    "title": "Avalie esta Atividade",
     "description": "Sua opinião nos ajuda a melhorar!",
     "submit": "Enviar Feedback",
     "ratingLabel": "Avaliação:",
     "commentLabel": "Comentário:",
     "commentPlaceholder": "Escreva seu comentário aqui..."
+  },
+  "validation": {
+    "required": "Este campo é obrigatório",
+    "invalidDate": "Formato de data inválido",
+    "dateInPast": "A data não pode ser no passado",
+    "positiveNumber": "Deve ser um número positivo"
   }
 } 

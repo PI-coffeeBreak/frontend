@@ -2,7 +2,7 @@
   "common": {
     "home": "Início",
     "users": "Utilizadores",
-    "sessions": "Sessões",
+    "activities": "Atividades",
     "alerts": "Alertas",
     "schedule": "Agenda",
     "plugins": "Extensões",
@@ -11,7 +11,8 @@
     "pages": "Páginas",
     "create": "Criar",
     "edit": "Editar",
-    "save": "Guardar",
+    "save": "Save",
+    "saving": "Saving...",
     "cancel": "Cancelar",
     "delete": "Eliminar",
     "loading": "A carregar...",
@@ -25,6 +26,8 @@
       "imageErrorDetails": "A imagem pode estar em falta ou indisponível",
       "sizeError": "O tamanho da imagem deve ser inferior a 50MB",
       "typeError": "Por favor, envie um ficheiro de imagem",
+      "uploadError": "Falha ao carregar imagem. Atividade atualizada, mas a imagem não foi alterada.",
+      "noImageField": "A atividade não tem um campo de imagem. Por favor, tente novamente.",
       "removeImage": "Remover Imagem",
       "imageAlt": "Imagem"
     }
@@ -47,7 +50,7 @@
         "description": "Gerir as configurações e componentes do evento",
         "links": {
           "users": "Utilizadores",
-          "sessions": "Sessões",
+          "activities": "Atividades",
           "eventInfo": "Informação do Evento",
           "plugins": "Gerir Extensões"
         }
@@ -78,29 +81,29 @@
       },
       "management": {
         "title": "Gestão",
-        "description": "Gerir utilizadores e sessões",
+        "description": "Gerir utilizadores e atividades",
         "links": {
           "users": "Utilizadores",
-          "sessions": "Sessões",
+          "activities": "Atividades",
           "alerts": "Alertas"
         }
       },
       "home": {
         "title": "Início",
-        "description": "Gerir utilizadores, sessões e alertas",
+        "description": "Gerir utilizadores, atividades e alertas",
         "links": {
           "users": "Utilizadores",
-          "sessions": "Sessões",
+          "activities": "Atividades",
           "alerts": "Alertas"
         },
         "descriptions": {
           "users": "Gerir contas de utilizadores, funções e permissões",
-          "sessions": "Agendar e organizar sessões e atividades",
+          "activities": "Agendar e organizar atividades",
           "alerts": "Criar e enviar notificações para participantes"
         },
         "buttons": {
           "users": "Gerir Utilizadores",
-          "sessions": "Ver Sessões",
+          "activities": "Ver Atividades",
           "alerts": "Gerir Alertas"
         }
       }
@@ -118,7 +121,7 @@
     "cards": {
       "management": {
         "title": "Gestão",
-        "description": "Aceda a ferramentas para gerir utilizadores, sessões e alertas do seu evento."
+        "description": "Aceda a ferramentas para gerir utilizadores, atividades e alertas do seu evento."
       },
       "eventMaker": {
         "title": "Event Maker",
@@ -141,13 +144,16 @@
       "unbanUser": "Desbanir Utilizador"
     },
     "create": {
-      "title": "Adicionar Utilizador",
+      "title": "Criar Novo Utilizador",
       "description": "Adicionar um novo utilizador ao sistema",
-      "firstName": "Nome Próprio",
+      "success": "Utilizador criado com sucesso!",
+      "firstName": "Nome",
       "lastName": "Apelido",
-      "email": "Email",
+      "email": "Endereço de Email",
       "role": "Função",
       "temporaryPassword": "Palavra-passe Temporária",
+      "hidePassword": "Ocultar Palavra-passe",
+      "showPassword": "Mostrar Palavra-passe",
       "passwordStrength": "Força da Palavra-passe",
       "passwordChangeNote": "O utilizador irá alterar a palavra-passe futuramente",
       "generatePassword": "Gerar Palavra-passe",
@@ -156,7 +162,20 @@
     },
     "manageRoles": {
       "title": "Gerir Funções",
-      "description": "Configurar funções e permissões do sistema"
+      "create": "Criar Função",
+      "permissions": "Gerir Permissões",
+      "permissionsWarning": "Não tem permissão para gerir funções. Precisa de uma das seguintes funções: realm-admin, create-realm, manage-realm, cb-admin ou admin. A criação de funções pode falhar com um erro de permissão.",
+      "roleName": "Nome da Função",
+      "roleNamePlaceholder": "organizador",
+      "createRole": "Criar Função",
+      "selectRole": "Selecionar Função:",
+      "permissionName": "Nome da Permissão",
+      "description": "Gerir as funções e permissões",
+      "actions": "Ações",
+      "noDescription": "Sem descrição",
+      "assigned": "Atribuído",
+      "assign": "Atribuir",
+      "noRoles": "Nenhuma função disponível. Crie uma função primeiro."
     },
     "list": {
       "title": "Lista de Utilizadores"
@@ -168,11 +187,17 @@
       "success": "{{success}} de {{total}} utilizadores importados com sucesso",
       "failed": "Falha ao importar {{failed}} utilizadores"
     },
-    "adminPermissionsWarning": "Não tem permissão para gerir funções e permissões"
+    "adminPermissionsWarning": "Não tem permissão para gerir funções e permissões",
+    "roles": {
+      "participant": "Participante",
+      "speaker": "Palestrante",
+      "staff": "Staff",
+      "organizer": "Organizador"
+    }
   },
   "activities": {
     "title": "Atividades",
-    "sessions": "Sessões",
+    "activity": "Atividade",
     "create": {
       "title": "Criar Atividade",
       "description": "Adicionar uma nova atividade ao evento",
@@ -181,14 +206,17 @@
       "duration": "Duração",
       "type": "Tipo",
       "topic": "Tópico",
-      "speaker": "Orador",
-      "facilitator": "Facilitador",
       "image": "Imagem"
     },
     "types": {
       "title": "Tipos de Atividade",
-      "description": "Configurar tipos de atividade disponíveis",
-      "name": "Nome"
+      "name": "Nome",
+      "namePlaceholder": "Introduza o nome do tipo de atividade",
+      "color": "Cor",
+      "createButton": "Criar Tipo de Atividade",
+      "creating": "A criar...",
+      "createSuccess": "Tipo de atividade criado com sucesso",
+      "createError": "Falha ao criar tipo de atividade"
     },
     "import": {
       "title": "Importar Atividades",
@@ -199,6 +227,20 @@
       "all": "Todas"
     },
     "delete": "Eliminar atividade",
+    "edit": "Editar atividade",
+    "editTitle": "Editar Atividade",
+    "deleteConfirmTitle": "Eliminar Atividade",
+    "name": "Nome",
+    "description": "Descrição",
+    "type": "Tipo",
+    "selectType": "Selecione um tipo",
+    "topic": "Tópico",
+    "date": "Data e Hora",
+    "duration": "Duração",
+    "image": "Imagem",
+    "currentImage": "Imagem Atual (clique em navegar para alterar)",
+    "updateSuccess": "Atividade atualizada com sucesso",
+    "updateError": "Falha ao atualizar atividade",
     "deleteConfirm": "Deseja eliminar esta atividade?",
     "deleteSuccess": "Atividade eliminada com sucesso",
     "deleteError": "Erro ao eliminar atividade",
@@ -206,18 +248,13 @@
     "trySearch": "Tente alterar os filtros de pesquisa",
     "imageAlt": "Imagem da atividade",
     "noImage": "Sem imagem",
+    "createButton": "Criar",
+    "creating": "A criar...",
+    "imageSelected": "Imagem selecionada",
+    "clickToRemoveAndUploadDifferentImage": "Clique para remover e fazer upload de uma imagem diferente",
+    "removeImage": "Remover imagem",
     "permissions": {
       "disabled": "Não tem permissão para gerir atividades"
-    },
-    "editSlotsTitle": "Gestão de Vagas",
-    "slots": {
-      "title": "vaga(s)",
-      "modalTitle": "Editar o Número Vagas",
-      "limitLabel": "Limitar número de vagas?",
-      "slotPlaceholder": "Número máximo de participantes. Ex: 50",
-      "saveSuccess": "Dados atualizados com sucesso",
-      "saveError": "Erro ao atualizar os dados",
-      "noMetadataInfo": "Esta atividade ainda não tem metadados definidos."
     }
   },
   "eventEditor": {
@@ -339,6 +376,12 @@
       "resetTitle": "Repor para o tema original",
       "save": "Guardar",
       "text": "Texto"
+    },
+    "success": {
+      "save": "Tema salvo com sucesso"
+    },
+    "error": {
+      "save": "Falha ao salvar o tema"
     }
   },
   "menuEditor": {
@@ -496,10 +539,10 @@
         "description": "Gerir contas de utilizadores, funções e permissões. Adicione novos utilizadores, edite os existentes ou controle o acesso a diferentes recursos do seu evento.",
         "buttonText": "Gerir Utilizadores"
       },
-      "sessions": {
-        "title": "Sessões",
-        "description": "Agendar e organizar sessões, workshops e atividades do evento. Controle horários, locais e registo de participantes para todas as atividades do evento.",
-        "buttonText": "Ver Sessões"
+      "activities": {
+        "title": "Atividades",
+        "description": "Agendar e organizar atividades do evento. Controle horários, locais e registo de participantes para todas as atividades do evento.",
+        "buttonText": "Ver Atividades"
       },
       "alerts": {
         "title": "Alertas",
@@ -569,29 +612,6 @@
         "text": "Respeitamos os seus dados. Leia a nossa",
         "link": "política de privacidade"
       }
-    },
-    "footer": {
-      "tagline": "Não há evento sem um coffeeBreak",
-      "services": {
-        "title": "Serviços",
-        "branding": "Branding",
-        "design": "Design",
-        "marketing": "Marketing",
-        "advertisement": "Publicidade"
-      },
-      "company": {
-        "title": "Empresa",
-        "about": "Sobre nós",
-        "contact": "Contacto",
-        "jobs": "Trabalhos",
-        "press": "Kit de imprensa"
-      },
-      "legal": {
-        "title": "Legal",
-        "terms": "Termos de utilização",
-        "privacy": "Política de privacidade",
-        "cookies": "Política de cookies"
-      }
     }
   },
   "navbar": {
@@ -605,11 +625,17 @@
     "subtitle": "Monitorize e gerencie todos os aspetos do seu evento num só lugar"
   },
   "feedback": {
-    "title": "Avalia esta Sessão",
+    "title": "Avalia esta Atividade",
     "description": "A tua opinião ajuda-nos a melhorar!",
     "submit": "Enviar Feedback",
     "ratingLabel": "Avaliação:",
     "commentLabel": "Comentário:",
     "commentPlaceholder": "Escreve o teu comentário aqui..."
+  },
+  "validation": {
+    "required": "Este campo é obrigatório",
+    "invalidDate": "Formato de data inválido",
+    "dateInPast": "A data não pode ser no passado",
+    "positiveNumber": "Deve ser um número positivo"
   }
 } 

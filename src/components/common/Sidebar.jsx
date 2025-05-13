@@ -68,7 +68,6 @@ export default function Sidebar() {
       keycloak
         .loadUserProfile()
         .then((profile) => {
-          console.log("User profile loaded:", profile);
           setUserProfile(profile);
         })
         .catch((error) => {
@@ -79,7 +78,6 @@ export default function Sidebar() {
 
   useEffect(() => {
     setImageError(false);
-    console.log("Event info changed:", eventInfo);
   }, [eventInfo]);
 
   // Extract plugin-related logic
@@ -243,7 +241,7 @@ export default function Sidebar() {
                 hasHomepage={true}
                 links={[
                   { label: t('menu.sections.event.links.users'), path: "/instantiate/event/users", icon: FaUsers },
-                  { label: t('menu.sections.event.links.sessions'), path: "/instantiate/event/sessions", icon: FaCalendarAlt },
+                  { label: t('menu.sections.event.links.activities'), path: "/instantiate/event/activities", icon: FaCalendarAlt },
                   { label: t('menu.sections.event.links.eventInfo'), path: "/instantiate/event/info", icon: FaEdit },
                   { label: t('menu.sections.event.links.plugins'), path: "/instantiate/event/plugins", icon: FaPuzzlePiece }
                 ]}

@@ -35,7 +35,6 @@ export function MediaInput({
         try {
             // First register the media
             const { data: { uuid } } = await axiosWithAuth(keycloak).post(`${baseUrl}/media/register`);
-            console.log('Media registered with UUID:', uuid);
 
             // Then upload the file
             const formData = new FormData();
@@ -51,16 +50,12 @@ export function MediaInput({
                 }
             );
 
-            console.log('Media uploaded successfully');
-
             // Update preview with the media URL
             const mediaUrl = getMediaUrl(uuid);
-            console.log('Setting preview to:', mediaUrl);
             setPreview(mediaUrl);
 
             // Call onChange with the media object
             const mediaValue = { uuid };
-            console.log('Calling onChange with value:', mediaValue);
             onChange({
                 target: {
                     name: name,

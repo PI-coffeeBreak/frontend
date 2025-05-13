@@ -4,7 +4,7 @@ import { FaStar, FaRegStar } from "react-icons/fa";
 import { useTranslation } from "react-i18next";
 
 const fallbackData = {
-  title: { text: "Rate this Session" },
+  title: { text: "Rate this Activity" },
   description: { text: "Your opinion helps us improve!" },
   submit_button: { text: "Submit Feedback" },
   rating_scale: 5,
