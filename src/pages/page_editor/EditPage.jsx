@@ -12,12 +12,14 @@ import { useSections } from "../../hooks/useSections";
 import { restrictToVerticalAxis } from '@dnd-kit/modifiers';
 import { prepareComponentsWithDefaults } from "../../utils/pageUtils";
 import { useTranslation } from "react-i18next";
+import { useMenus } from "../../contexts/MenuContext";
 
 export function EditPage() {
     const { t } = useTranslation();
     const { pageTitle } = useParams();
     const navigate = useNavigate();
     const { pages, getPages, updatePage, isLoading: isPagesLoading } = usePages();
+    const { getMenuOptions, updateMenuOption } = useMenus();
     const { getDefaultPropsForComponent, getComponentSchema, isLoading: isComponentsLoading } = useComponents();
     const { showNotification } = useNotification();
 
@@ -121,7 +123,7 @@ export function EditPage() {
         }
     };
 
-    const handleUpdatePage = () => {
+    const handleUpdatePage = async () => {
         if (!page.title.trim()) {
             showNotification(t('pageEditor.edit.emptyTitleError'), "error");
             return;
@@ -141,16 +143,14 @@ export function EditPage() {
 
         const pageData = {
             title: page.title,
-            components: componentsWithFullProps
+            components: componentsWithFullProps,
         };
 
-        // Compare current data with original page data
         const originalComponents = page.components || [];
         const componentsEqual = compareComponents(originalComponents, pageData.components);
-        const originalTitle = pages.find(p => p.page_id === page.page_id)?.title || "";
+        const originalTitle = pages.find((p) => p.page_id === page.page_id)?.title || "";
         const titleEqual = originalTitle === pageData.title;
 
-        // If nothing has changed, show a notification and return early
         if (titleEqual && componentsEqual) {
             showNotification(t('pageEditor.edit.noChanges'), "info");
             return;
@@ -158,15 +158,27 @@ export function EditPage() {
 
         const dataToSave = { ...pageData, page_id: page.page_id };
 
-        updatePage(page.page_id, dataToSave)
-            .then(() => {
-                showNotification(t('pageEditor.edit.updateSuccess'), "success");
-                navigate("/instantiate/application/pages");
-            })
-            .catch((error) => {
-                console.error("Failed to update the page.", error);
-                showNotification(t('pageEditor.edit.updateError'), "error");
-            });
+        try {
+            await updatePage(page.page_id, dataToSave);
+
+            const menuOptions = await getMenuOptions();
+            const menuOption = menuOptions.find((opt) => opt.label === originalTitle);
+
+            if (menuOption) {
+                const updatedMenuOption = {
+                    ...menuOption,
+                    label: pageData.title,
+                    href: pageData.title.toLowerCase().replace(/\s+/g, '-'),
+                };
+                await updateMenuOption(menuOption.id, updatedMenuOption);
+            }
+
+            showNotification(t('pageEditor.edit.updateSuccess'), "success");
+            navigate("/instantiate/application/pages");
+        } catch (error) {
+            console.error("Failed to update the page or menu.", error);
+            showNotification(t('pageEditor.edit.updateError'), "error");
+        }
     };
 
     const compareComponents = (originalComponents, newComponents) => {
