@@ -49,7 +49,7 @@ export function IconsEditor() {
     const [pwaIcon512File, setPwaIcon512File] = useState(null);
     const [faviconFile, setFaviconFile] = useState(null);
 
-    const { fetchManifest, fetchFavicon, updateManifestIcon } = useManifest();
+    const { fetchManifest, fetchFavicon, updateManifestIcon, updateFavicon } = useManifest();
 
     // Fetch manifest and favicon data on component mount
     useEffect(() => {
@@ -177,10 +177,9 @@ export function IconsEditor() {
                 setFaviconType(newFaviconType);
                 setFaviconFile(null);
                 setUserChangedFavicon(false);
-                // Update manifest icon using context
-                await updateManifestIcon({
-                    src: getMediaUrl(newFaviconId),
-                    sizes: "32x32",
+
+                await updateFavicon({
+                    url: getMediaUrl(newFaviconId),
                     type: newFaviconType
                 });
             }
@@ -290,18 +289,23 @@ export function IconsEditor() {
             showNotification(t('common.media.sizeError'), "error");
             return;
         }
-        if (!file.type.startsWith('image/') && file.type !== 'image/svg+xml') {
+        // Allow image/svg+xml and image/x-icon (ico) and all image/*
+        const isSvg = file.type === 'image/svg+xml';
+        const isIco = file.type === 'image/x-icon' || file.name.endsWith('.ico');
+        if (!file.type.startsWith('image/') && !isSvg && !isIco) {
             showNotification(t('common.media.typeError'), "error");
             return;
         }
         const objectUrl = URL.createObjectURL(file);
-        if (file.type === 'image/svg+xml') {
+        // For SVG and ICO files, skip dimension check
+        if (isSvg || isIco) {
             setFaviconPreview(objectUrl);
             setUserChangedFavicon(true);
             setFaviconError(false);
             setFaviconFile(file);
             return;
         }
+        // For regular images, check dimensions
         const img = new window.Image();
         img.onload = () => {
             if (img.width !== 32 || img.height !== 32) {

@@ -32,7 +32,7 @@ export function ManifestProvider({ children }) {
     };
 
     const updateFavicon = async (favicon) => {
-        return axiosWithAuth(keycloak).post(`${baseUrl}/favicon/`, { favicon });
+        return axiosWithAuth(keycloak).put(`${baseUrl}/favicon/`, favicon);
     };
 
     return (
