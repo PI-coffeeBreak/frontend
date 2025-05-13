@@ -12,6 +12,7 @@
     "create": "Criar",
     "edit": "Editar",
     "save": "Salvar",
+    "saving": "Salvando...",
     "cancel": "Cancelar",
     "delete": "Excluir",
     "loading": "Carregando...",
@@ -23,8 +24,10 @@
       "noImage": "Nenhuma imagem selecionada",
       "imageError": "Não foi possível exibir a imagem",
       "imageErrorDetails": "A imagem pode estar faltando ou indisponível",
-      "sizeError": "O tamanho da imagem deve ser inferior a 50MB",
+      "sizeError": "O tamanho da imagem deve ser menor que 50MB",
       "typeError": "Por favor, envie um arquivo de imagem",
+      "uploadError": "Falha ao fazer upload da imagem. A atividade foi atualizada, mas a imagem não foi alterada.",
+      "noImageField": "A atividade não tem um campo de imagem. Por favor, tente novamente.",
       "removeImage": "Remover Imagem",
       "imageAlt": "Imagem"
     }
@@ -140,6 +143,23 @@
       "banUser": "Banir Usuário",
       "unbanUser": "Desbanir Usuário"
     },
+    "create": {
+      "title": "Criar Novo Usuário",
+      "description": "Adicionar um novo usuário ao sistema",
+      "success": "Usuário criado com sucesso!",
+      "firstName": "Nome",
+      "lastName": "Sobrenome",
+      "email": "Endereço de Email",
+      "role": "Função",
+      "temporaryPassword": "Senha Temporária",
+      "hidePassword": "Esconder",
+      "showPassword": "Mostrar",
+      "passwordStrength": "Força da Senha",
+      "passwordChangeNote": "O usuário será solicitado a alterar esta senha na primeira vez que entrar.",
+      "generatePassword": "Gerar Senha",
+      "createUser": "Criar Usuário",
+      "cancel": "Cancelar"
+    },
     "manageRoles": {
       "title": "Gerenciar Funções",
       "create": "Criar Função",
@@ -147,29 +167,15 @@
       "permissionsWarning": "Você não tem permissão para gerenciar funções. Você precisa de uma destas funções: realm-admin, create-realm, manage-realm, cb-admin ou admin. A criação de função pode falhar com erro de permissão.",
       "roleName": "Nome da Função",
       "roleNamePlaceholder": "organizador",
-      "createRole": "Criar Função",
-      "selectRole": "Selecionar Função:",
-      "permissionName": "Nome da Permissão",
-      "description": "Gerir os papéis e permissões",
-      "actions": "Ações",
+      "createRole": "Create Role",
+      "selectRole": "Select Role:",
+      "permissionName": "Permission Name",
+      "description": "Manage the roles and permissions",
+      "actions": "Actions",
       "noDescription": "Sem descrição",
       "assigned": "Atribuída",
       "assign": "Atribuir",
       "noRoles": "Nenhuma função disponível. Crie uma função primeiro."
-    },
-    "create": {
-      "title": "Criar Novo Usuário",
-      "description": "Adicionar um novo usuário ao sistema",
-      "firstName": "Nome",
-      "lastName": "Sobrenome",
-      "email": "Endereço de Email",
-      "role": "Função",
-      "temporaryPassword": "Senha Temporária",
-      "passwordStrength": "Força da Senha",
-      "passwordChangeNote": "O usuário terá de alterar esta senha no primeiro login.",
-      "generatePassword": "Gerar Senha",
-      "createUser": "Criar Usuário",
-      "cancel": "Cancelar"
     },
     "list": {
       "title": "Lista de Usuários"
@@ -200,13 +206,17 @@
       "duration": "Duração",
       "type": "Tipo",
       "topic": "Tópico",
-      "speaker": "Palestrante",
-      "facilitator": "Facilitador",
       "image": "Imagem"
     },
     "types": {
       "title": "Criar Novo Tipo de Atividade",
-      "description": "Crie um novo tipo de atividade manualmente"
+      "name": "Nome",
+      "namePlaceholder": "Digite o nome do tipo de atividade",
+      "color": "Cor",
+      "createButton": "Criar Tipo de Atividade",
+      "creating": "Criando...",
+      "createSuccess": "Tipo de atividade criado com sucesso",
+      "createError": "Falha ao criar tipo de atividade"
     },
     "import": {
       "title": "Adicionar com arquivo Excel",
@@ -217,6 +227,20 @@
       "all": "Todas"
     },
     "delete": "Excluir atividade",
+    "edit": "Editar atividade",
+    "editTitle": "Editar Atividade",
+    "deleteConfirmTitle": "Excluir Atividade",
+    "name": "Nome",
+    "description": "Descrição",
+    "type": "Tipo",
+    "selectType": "Selecione um tipo",
+    "topic": "Tópico",
+    "date": "Data e Hora",
+    "duration": "Duração",
+    "image": "Imagem",
+    "currentImage": "Imagem atual (clique em 'Procurar' para alterar)",
+    "updateSuccess": "Atividade atualizada com sucesso",
+    "updateError": "Falha ao atualizar atividade",
     "deleteConfirm": "Tem certeza que deseja excluir esta atividade?",
     "deleteSuccess": "Atividade excluída com sucesso",
     "deleteError": "Falha ao excluir atividade",
@@ -224,18 +248,13 @@
     "trySearch": "Tente alterar sua pesquisa ou filtros",
     "imageAlt": "Imagem da atividade",
     "noImage": "Sem imagem",
+    "createButton": "Criar",
+    "creating": "Criando...",
+    "imageSelected": "Imagem selecionada",
+    "clickToRemoveAndUploadDifferentImage": "Clique para remover e fazer upload de uma imagem diferente",
+    "removeImage": "Remover imagem",
     "permissions": {
       "disabled": "Você não tem permissão para criar atividades"
-    },
-    "editSlotsTitle": "Gestão de Vagas",
-    "slots": {
-      "title": "vaga(s)",
-      "modalTitle": "Editar Número de Vagas",
-      "limitLabel": "Limitar número de vagas?",
-      "slotPlaceholder": "Número máximo de participantes. Ex: 50",
-      "saveSuccess": "Dados atualizados com sucesso",
-      "saveError": "Erro ao atualizar os dados",
-      "noMetadataInfo": "Esta atividade ainda não possui metadados definidos."
     }
   },
   "eventEditor": {
@@ -357,6 +376,12 @@
       "resetTitle": "Redefinir para o tema original",
       "save": "Salvar",
       "text": "Texto"
+    },
+    "success": {
+      "save": "Tema salvo com sucesso"
+    },
+    "error": {
+      "save": "Falha ao salvar o tema"
     }
   },
   "menuEditor": {
@@ -629,5 +654,11 @@
     "ratingLabel": "Avaliação:",
     "commentLabel": "Comentário:",
     "commentPlaceholder": "Escreva seu comentário aqui..."
+  },
+  "validation": {
+    "required": "Este campo é obrigatório",
+    "invalidDate": "Formato de data inválido",
+    "dateInPast": "A data não pode ser no passado",
+    "positiveNumber": "Deve ser um número positivo"
   }
 } 

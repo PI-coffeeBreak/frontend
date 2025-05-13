@@ -157,7 +157,8 @@
       "passwordStrength": "Password Strength",
       "passwordChangeNote": "The user will be prompted to change this password on first login.",
       "generatePassword": "Generate Password",
-      "createUser": "Create User"
+      "createUser": "Create User",
+      "cancel": "Cancel"
     },
     "manageRoles": {
       "title": "Manage Roles",
@@ -205,14 +206,17 @@
       "duration": "Duration",
       "type": "Type",
       "topic": "Topic",
-      "speaker": "Speaker",
-      "facilitator": "Facilitator",
       "image": "Image"
     },
     "types": {
       "title": "Create New Activity Type",
-      "description": "Create a new activity type manually",
-      "name": "Name"
+      "name": "Name",
+      "namePlaceholder": "Enter activity type name",
+      "color": "Color",
+      "createButton": "Create Activity Type",
+      "creating": "Creating...",
+      "createSuccess": "Activity type created successfully",
+      "createError": "Failed to create activity type"
     },
     "import": {
       "title": "Add with Excel file",
@@ -221,12 +225,6 @@
     "filters": {
       "searchPlaceholder": "Search activities",
       "all": "All"
-    },
-    "registration": {
-      "title": "Registration Settings",
-      "limitParticipants": "Limit number of participants",
-      "maxParticipants": "Maximum participants",
-      "maxParticipantsPlaceholder": "e.g., 50"
     },
     "delete": "Delete activity",
     "edit": "Edit activity",
@@ -237,8 +235,6 @@
     "type": "Type",
     "selectType": "Select a type",
     "topic": "Topic",
-    "speaker": "Speaker",
-    "facilitator": "Facilitator",
     "date": "Date & Time",
     "duration": "Duration",
     "image": "Image",
@@ -252,18 +248,13 @@
     "trySearch": "Try changing your search or filters",
     "imageAlt": "Activity image",
     "noImage": "No image",
+    "createButton": "Create",
+    "creating": "Creating...",
+    "imageSelected": "Image selected",
+    "clickToRemoveAndUploadDifferentImage": "Click to remove and upload a different image",
+    "removeImage": "Remove image",
     "permissions": {
       "disabled": "You don't have permission to create activities"
-    },
-    "editSlotsTitle": "Slot Management",
-    "slots": {
-      "title": "slot(s)",
-      "modalTitle": "Edit Slot Count",
-      "limitLabel": "Limit number of slots?",
-      "slotPlaceholder": "Maximum number of participants. E.g. 50",
-      "saveSuccess": "Data updated successfully",
-      "saveError": "Error updating data",
-      "noMetadataInfo": "This activity has no metadata defined yet."
     }
   },
   "eventEditor": {
@@ -385,6 +376,12 @@
       "resetTitle": "Reset to original theme",
       "save": "Save Changes",
       "text": "Text"
+    },
+    "success": {
+      "save": "Theme saved successfully"
+    },
+    "error": {
+      "save": "Failed to save theme"
     }
   },
   "menuEditor": {
@@ -533,44 +530,6 @@
       "addNewSection": "Add New Section"
     }
   },
-  "navbar": {
-    "logoAlt": "coffeeBreak Logo",
-    "develop": "Develop",
-    "login": "Login",
-    "logout": "Logout"
-  },
-  "home": {
-    "title": "Plan, Manage and Elevate Your Events with Ease.",
-    "subtitle": "coffeeBreak. makes event management easy. Plan, organize and execute events without complication, all in one place. Simple tools, smart resources and a seamless experience for amazing events.",
-    "getStarted": "Get Started",
-    "learnMore": "Learn More",
-    "loading": "Loading...",
-    "features": {
-      "title": "Manage Events Effortlessly",
-      "subtitle": "Everything you need to plan and execute your event without complications.",
-      "dashboard": {
-        "title": "Site Dashboard",
-        "description": "A complete platform to configure, monitor and collect data from your events."
-      },
-      "customizable": {
-        "title": "Customizable Resources",
-        "description": "A variety of additional modules to customize your event experience as you wish."
-      },
-      "mobile": {
-        "title": "Mobile App",
-        "description": "A perfect extension of your event, reflecting everything configured on the site."
-      }
-    },
-    "newsletter": {
-      "title": "Want to receive our updates? Subscribe to our newsletter.",
-      "placeholder": "Enter your email",
-      "button": "Notify me",
-      "privacy": {
-        "text": "We respect your data. Read our",
-        "link": "privacy policy"
-      }
-    }
-  },
   "management": {
     "title": "Event",
     "subtitle": "Manage all aspects of your event through these administrative tools",
@@ -622,6 +581,48 @@
         "buttonText": "Manage Plugins"
       }
     }
+  },
+  "home": {
+    "title": "Plan, Manage and Elevate Your Events with Ease.",
+    "subtitle": "coffeeBreak. makes event management easy. Plan, organize and execute events without complication, all in one place. Simple tools, smart resources and a seamless experience for amazing events.",
+    "getStarted": "Get Started",
+    "learnMore": "Learn More",
+    "loading": "Loading...",
+    "features": {
+      "title": "Manage Events Effortlessly",
+      "subtitle": "Everything you need to plan and execute your event without complications.",
+      "dashboard": {
+        "title": "Site Dashboard",
+        "description": "A complete platform to configure, monitor and collect data from your events."
+      },
+      "customizable": {
+        "title": "Customizable Resources",
+        "description": "A variety of additional modules to customize your event experience as you wish."
+      },
+      "mobile": {
+        "title": "Mobile App",
+        "description": "A perfect extension of your event, reflecting everything configured on the site."
+      }
+    },
+    "newsletter": {
+      "title": "Want to receive our updates? Subscribe to our newsletter.",
+      "placeholder": "Enter your email",
+      "button": "Notify me",
+      "privacy": {
+        "text": "We respect your data. Read our",
+        "link": "privacy policy"
+      }
+    }
+  },
+  "navbar": {
+    "logoAlt": "coffeeBreak logo",
+    "develop": "Develop",
+    "login": "Login",
+    "logout": "Logout"
+  },
+  "instantiateHome": {
+    "title": "Event Dashboard",
+    "subtitle": "Monitor and manage all aspects of your event in one place"
   },
   "feedback": {
     "title": "Rate this Activity",

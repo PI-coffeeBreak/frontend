@@ -6,6 +6,7 @@ import { useActivities } from "../../contexts/ActivitiesContext";
 import { useNotification } from "../../contexts/NotificationContext";
 import { FiUpload } from "react-icons/fi";
 import { FaTrash } from "react-icons/fa";
+import { useTranslation } from "react-i18next";
 
 const FormField = ({ label, id, type = "text", required = false, error, children }) => (
   <div>
@@ -28,6 +29,7 @@ FormField.propTypes = {
 
 
 export function CreateActivityModal({ isOpen, onClose, onSubmit }) {
+  const { t } = useTranslation();
   const stopPropagation = (e) => {
     e.stopPropagation();
   };
@@ -306,7 +308,7 @@ export function CreateActivityModal({ isOpen, onClose, onSubmit }) {
               aria-label="Remove image"
             >
               <FaTrash aria-hidden="true" />
-              <span className="sr-only">Remove image</span>
+              <span className="sr-only">{t('activities.removeImage')}</span>
             </button>
             
             <div className="flex items-center gap-3">
@@ -318,9 +320,9 @@ export function CreateActivityModal({ isOpen, onClose, onSubmit }) {
                 />
               </div>
               <div>
-                <p className="font-medium">Image selected</p>
+                <p className="font-medium">{t('activities.imageSelected')}</p>
                 <p className="text-sm text-gray-500">
-                  Click to remove and upload a different image
+                  {t('activities.clickToRemoveAndUploadDifferentImage')}
                 </p>
               </div>
             </div>
@@ -361,7 +363,7 @@ export function CreateActivityModal({ isOpen, onClose, onSubmit }) {
                 name="name"
                 value={values.name}
                 onChange={handleChangeWithStop}
-                placeholder="Enter the activity title"
+                placeholder={t('activities.name')}
                 className={`input input-bordered w-full ${errors.name ? 'input-error' : ''}`}
               />
             </FormField>
@@ -371,7 +373,7 @@ export function CreateActivityModal({ isOpen, onClose, onSubmit }) {
                 name="description"
                 value={values.description}
                 onChange={handleChangeWithStop}
-                placeholder="Enter the activity description"
+                placeholder={t('activities.description')}
                 className={`textarea textarea-bordered w-full h-24 ${errors.description ? 'textarea-error' : ''}`}
               />
             </FormField>
@@ -392,7 +394,7 @@ export function CreateActivityModal({ isOpen, onClose, onSubmit }) {
                 />
               </FormField>
               
-              <FormField label="Duration (minutes)" id="duration">
+              <FormField label={t('activities.duration')} id="duration">
                 <input
                   type="number"
                   id="duration"
@@ -413,7 +415,7 @@ export function CreateActivityModal({ isOpen, onClose, onSubmit }) {
                     name="topic"
                     value={values.topic}
                     onChange={handleChangeWithStop}
-                    placeholder="Enter the activity topic"
+                    placeholder={t('activities.topic')}
                     className="input input-bordered w-full"
                 />
               </FormField>
@@ -433,10 +435,10 @@ export function CreateActivityModal({ isOpen, onClose, onSubmit }) {
               {isSubmitting ? (
                 <div className="flex items-center gap-2">
                   <span className="loading loading-spinner loading-sm"></span>
-                  <span>Creating...</span>
+                  <span>{t('activities.creating')}</span>
                 </div>
               ) : (
-                "Create Activity"
+                t('activities.createButton')
               )}
             </button>
           </div>
