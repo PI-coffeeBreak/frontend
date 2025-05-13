@@ -42,7 +42,7 @@ export function Modal({ isOpen, onClose, title, description, children }) {
   return (
     <dialog
       ref={modalRef}
-      className="modal"
+      className="modal rounded-md"
       onClose={() => onClose()}
       onCancel={(e) => {
         // Prevent default dialog behavior on cancel (when ESC is pressed)
@@ -57,7 +57,7 @@ export function Modal({ isOpen, onClose, title, description, children }) {
 
         <button
           ref={closeButtonRef}
-          className="btn absolute right-2 top-2"
+          className="btn rounded-xl absolute right-2 top-2"
           onClick={onClose}
           aria-label="Close"
         >

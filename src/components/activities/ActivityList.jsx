@@ -53,7 +53,7 @@ export function ActivityList({ activities, onDelete, onEdit, mode = 'delete' }) 
 
   return (
     <>
-      <div className="w-full grid grid-cols-1 gap-4 overflow-hidden mt-6 md:grid-cols-2 lg:grid-cols-3">
+      <div className="w-full grid grid-cols-1 gap-4 max-h-screen overflow-hidden mt-6 md:grid-cols-2 lg:grid-cols-3">
         {activities.map((activity) => (
           <Activity
             key={activity.id}

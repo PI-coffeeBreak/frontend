@@ -40,22 +40,32 @@ export default function App() {
         </Route>
 
         <Route path="instantiate" element={<PrivateRoute><LayoutInstantiate /></PrivateRoute>}>
+          {/* Dashboard */}
           <Route index element={<Instantiate />} />
-          <Route path="management">
+          
+          {/* Event section */}
+          <Route path="event">
             <Route index element={<Management />} />
             <Route path="users" element={<Users />} />
             <Route path="sessions" element={<Activities />} />
+            <Route path="info" element={<EventEditor />} />
+            <Route path="plugins" element={<Plugins />} />
           </Route>
-          <Route path="eventmaker">
+          
+          {/* Application section */}
+          <Route path="application">
             <Route index element={<EventMaker />} />
-            <Route path="edit" element={<EventEditor />} />
-            <Route path="colors" element={<Colors />} />
+            <Route path="pages">
+              <Route index element={<PagesList />} />
+              <Route path="edit-page/:pageTitle" element={<EditPage />} />
+              <Route path="create-page" element={<CreatePage />} />
+            </Route>
             <Route path="menus" element={<MenuEditor />} />
-            <Route path="pages" element={<PagesList />} />
-            <Route path="choose-plugins" element={<Plugins />} />
-            <Route path="edit-page/:pageTitle" element={<EditPage />} />
-            <Route path="create-page" element={<CreatePage />} />
+            <Route path="colors" element={<Colors />} />
+
           </Route>
+          
+          {/* Plugins section */}
           <Route path="plugins">
             <Route path="alert-system-plugin" element={<Alerts />} />
             <Route path="event-schedule-plugin" element={<Schedule />} />
