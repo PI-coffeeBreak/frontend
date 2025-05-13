@@ -239,29 +239,31 @@ export function ThemeCustomizer() {
                 <h3 className="text-lg">{groupName}</h3>
                 <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 mt-2">
                   {colorKeys.map((key) => (
-                    <div key={key} className="bg-base-200/70 p-4 rounded-xl">
-                      <div className="flex items-center gap-3">
-                        <div
-                          className="w-12 h-12 rounded-xl shadow-inner flex items-center justify-center"
-                          style={{ backgroundColor: hexValues[key] }}
+                    <div key={key} className="bg-base-200/70 p-4 rounded-xl flex flex-col items-center justify-center">
+                      <span className="font-medium mb-2">{colorMapping[key] || key}</span>
+                      <label className="flex flex-col items-center relative mt-1 mx-auto">
+                        <input
+                          type="color"
+                          value={hexValues[key] || "#000000"}
+                          onChange={(e) => handleColorChange(key, e.target.value)}
+                          className="absolute inset-0 w-12 h-12 opacity-0 cursor-pointer"
+                          tabIndex={-1}
+                          aria-label={colorMapping[key] || key}
+                          style={{ zIndex: 2 }}
+                        />
+                        <span
+                          className="w-12 h-12 rounded-xl shadow-inner border-2 border-base-300 flex items-center justify-center text-xs font-medium"
+                          style={{
+                            backgroundColor: key.includes('content') ? hexValues[key.replace('-content', '')] : hexValues[key],
+                            color: key.includes('content') ? hexValues[key] : undefined,
+                          }}
                         >
-                          {key.includes('content') && (
-                            <span className="text-xs font-medium">{t('themeCustomizer.actions.text')}</span>
-                          )}
-                        </div>
-                        <div className="flex-1">
-                          <label className="font-medium block mb-1">{colorMapping[key] || key}</label>
-                          <div className="flex gap-2 items-center">
-                            <input
-                              type="color"
-                              value={hexValues[key] || "#000000"}
-                              onChange={(e) => handleColorChange(key, e.target.value)}
-                              className="w-full h-8 cursor-pointer rounded-xl border-none"
-                            />
-                            <span className="text-xs font-mono bg-base-300 px-2 py-1 rounded">{hexValues[key]}</span>
-                          </div>
-                        </div>
-                      </div>
+                          {key.includes('content') && t('themeCustomizer.actions.text')}
+                        </span>
+                        <span className="text-xs font-mono bg-base-300 px-2 py-0.5 rounded mt-1 inline-block">
+                          {hexValues[key]}
+                        </span>
+                      </label>
                     </div>
                   ))}
                 </div>
