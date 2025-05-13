@@ -32,7 +32,8 @@
       "imageAlt": "Imagem",
       "pwaIcon192Alt": "Ícone PWA 192x192",
       "pwaIcon512Alt": "Ícone PWA 512x512",
-      "faviconAlt": "Favicon 32x32"
+      "faviconAlt": "Favicon 32x32",
+      "dimensionError": "As dimensões da imagem estão incorretas. Carregue uma imagem com as dimensões corretas"
     }
   },
   "auth": {
@@ -344,8 +345,8 @@
       "primary-content": "Texto sobre Cor Principal",
       "secondary": "Cor Secundária da Marca",
       "secondary-content": "Texto sobre Cor Secundária",
-      "accent": "Cor de Destaque",
-      "accent-content": "Texto sobre Cor de Destaque",
+      "accent": "Cor da Sidebar",
+      "accent-content": "Texto sobre Cor da Sidebar",
       "base-100": "Cor de Fundo",
       "base-200": "Fundo dos Cards",
       "base-300": "Cor das Bordas",

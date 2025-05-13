@@ -29,7 +29,8 @@
       "uploadError": "Falha ao carregar imagem. Atividade atualizada, mas a imagem não foi alterada.",
       "noImageField": "A atividade não tem um campo de imagem. Por favor, tente novamente.",
       "removeImage": "Remover Imagem",
-      "imageAlt": "Imagem"
+      "imageAlt": "Imagem",
+      "dimensionError": "As dimensões da imagem estão incorretas. Por favor, faça o upload de uma imagem com as dimensões corretas"
     }
   },
   "auth": {
@@ -341,8 +342,8 @@
       "primary-content": "Texto sobre Cor Principal",
       "secondary": "Cor Secundária da Marca",
       "secondary-content": "Texto sobre Cor Secundária",
-      "accent": "Cor de Destaque",
-      "accent-content": "Texto sobre Cor de Destaque",
+      "accent": "Cor da Sidebar",
+      "accent-content": "Texto sobre Cor da Sidebar",
       "base-100": "Cor de Fundo",
       "base-200": "Fundo dos Cards",
       "base-300": "Cor das Bordas",

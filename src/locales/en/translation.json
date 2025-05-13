@@ -32,7 +32,8 @@
       "imageAlt": "Image",
       "pwaIcon192Alt": "192x192 PWA Icon",
       "pwaIcon512Alt": "512x512 PWA Icon",
-      "faviconAlt": "32x32 Favicon"
+      "faviconAlt": "32x32 Favicon",
+      "dimensionError": "Image dimensions are incorrect. Please upload an image with the correct dimensions"
     }
   },
   "auth": {
@@ -344,8 +345,8 @@
       "primary-content": "Text on Main Color",
       "secondary": "Secondary Brand Color",
       "secondary-content": "Text on Secondary Color",
-      "accent": "Accent Color (Highlights)",
-      "accent-content": "Text on Accent Color",
+      "accent": "Sidebar Color",
+      "accent-content": "Text on Sidebar Color",
       "base-100": "Background Color",
       "base-200": "Card Background",
       "base-300": "Border Color",
