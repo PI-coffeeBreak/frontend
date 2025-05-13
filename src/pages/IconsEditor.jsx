@@ -60,9 +60,10 @@ export function IconsEditor() {
             defaultValue: 'Used for PWA install. Must be exactly 192x192 pixels. PNG recommended.'
         }),
         favicon: t('iconsEditor.faviconDescription', {
-            defaultValue: 'Used as browser tab icon. Must be 32x32 pixels. PNG, SVG, or ICO supported.'
+            defaultValue: 'Used as browser tab icon. Must be (16x16, 32x32, 48x48) pixels. PNG, SVG, or ICO supported. For best results, upload a .ico file with all standard sizes.'
         })
     };
+
 
     // Fetch manifest and favicon data on component mount
     useEffect(() => {
@@ -321,10 +322,12 @@ export function IconsEditor() {
         // For regular images, check dimensions
         const img = new window.Image();
         img.onload = () => {
-            if (img.width !== 32 || img.height !== 32) {
+            if (img.width !== 16 || img.height !== 16 || img.width !== 32 || img.height !== 32 || img.width !== 48 || img.height !== 48) {
                 showNotification(
+                    t('common.media.dimensionError', { width: 16, height: 16 }) ||
                     t('common.media.dimensionError', { width: 32, height: 32 }) ||
-                    "Image must be exactly 32×32 pixels",
+                    t('common.media.dimensionError', { width: 48, height: 48 }) ||
+                    "Image must be exactly 16×16, 32×32, or 48×48 pixels",
                     "error"
                 );
                 setFaviconError(true);
@@ -469,10 +472,12 @@ export function IconsEditor() {
             </p>
 
             {/* 512x512 Icon Section */}
-            <div className="grid grid-cols-2 gap-8 items-start mb-8">
-                <div>
+            <div className="grid grid-cols-3 gap-8 items-start mb-8">
+                <div className="col-span-2">
                     <h2 className="font-semibold text-lg mb-1">512x512 PWA Icon</h2>
                     <p className="text-sm text-base-content/70 mb-4">{iconDescriptions.pwa512}</p>
+                </div>
+                <div className="flex flex-col items-center justify-center col-span-1">
                     <input
                         type="file"
                         ref={pwaIcon512InputRef}
@@ -485,12 +490,12 @@ export function IconsEditor() {
                     <button
                         type="button"
                         onClick={handlePwaIcon512Click}
-                        className="btn btn-secondary mb-2 rounded-xl w-full"
+                        className="btn btn-secondary mb-2 rounded-xl w-48 mx-auto"
                         aria-controls="pwaIcon512"
                     >
                         {pwaIcon512Preview ? t('common.media.changeImage') : t('common.media.selectImage')}
                     </button>
-                    <div className="relative w-full h-48 bg-base-100 rounded-xl overflow-hidden border border-base-300">
+                    <div className="relative w-48 h-48 bg-base-100 rounded-xl overflow-hidden border border-base-300 mx-auto">
                         {renderPwaIcon512Content()}
                     </div>
                 </div>
@@ -498,10 +503,12 @@ export function IconsEditor() {
             <div className="divider"></div>
 
             {/* 192x192 Icon Section */}
-            <div className="grid grid-cols-2 gap-8 items-start mb-8">
-                <div>
+            <div className="grid grid-cols-3 gap-8 items-start mb-8">
+                <div className="col-span-2">
                     <h2 className="font-semibold text-lg mb-1">192x192 PWA Icon</h2>
                     <p className="text-sm text-base-content/70 mb-4">{iconDescriptions.pwa192}</p>
+                </div>
+                <div className="flex flex-col items-center justify-center col-span-1">
                     <input
                         type="file"
                         ref={pwaIcon192InputRef}
@@ -514,12 +521,12 @@ export function IconsEditor() {
                     <button
                         type="button"
                         onClick={handlePwaIcon192Click}
-                        className="btn btn-secondary mb-2 rounded-xl w-full"
+                        className="btn btn-secondary mb-2 rounded-xl w-48 mx-auto"
                         aria-controls="pwaIcon192"
                     >
                         {pwaIcon192Preview ? t('common.media.changeImage') : t('common.media.selectImage')}
                     </button>
-                    <div className="relative w-full h-48 bg-base-100 rounded-xl overflow-hidden border border-base-300">
+                    <div className="relative w-48 h-48 bg-base-100 rounded-xl overflow-hidden border border-base-300 mx-auto">
                         {renderPwaIcon192Content()}
                     </div>
                 </div>
@@ -527,10 +534,12 @@ export function IconsEditor() {
             <div className="divider"></div>
 
             {/* Favicon Section */}
-            <div className="grid grid-cols-2 gap-8 items-start mb-8">
-                <div>
-                    <h2 className="font-semibold text-lg mb-1">32x32 Favicon</h2>
+            <div className="grid grid-cols-3 gap-8 items-start mb-8">
+                <div className="col-span-2">
+                    <h2 className="font-semibold text-lg mb-1">Favicon</h2>
                     <p className="text-sm text-base-content/70 mb-4">{iconDescriptions.favicon}</p>
+                </div>
+                <div className="flex flex-col items-center justify-center col-span-1">
                     <input
                         type="file"
                         ref={faviconInputRef}
@@ -543,12 +552,12 @@ export function IconsEditor() {
                     <button
                         type="button"
                         onClick={handleFaviconClick}
-                        className="btn btn-secondary mb-2 rounded-xl w-full"
+                        className="btn btn-secondary mb-2 rounded-xl w-48 mx-auto"
                         aria-controls="favicon"
                     >
                         {faviconPreview ? t('common.media.changeImage') : t('common.media.selectImage')}
                     </button>
-                    <div className="relative w-full h-48 bg-base-100 rounded-xl overflow-hidden border border-base-300">
+                    <div className="relative w-48 h-48 bg-base-100 rounded-xl overflow-hidden border border-base-300 mx-auto">
                         {renderFaviconContent()}
                     </div>
                 </div>
