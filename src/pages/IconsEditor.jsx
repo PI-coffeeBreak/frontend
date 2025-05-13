@@ -51,6 +51,19 @@ export function IconsEditor() {
 
     const { fetchManifest, fetchFavicon, updateManifestIcon, updateFavicon } = useManifest();
 
+    // Descriptions for each icon
+    const iconDescriptions = {
+        pwa512: t('iconsEditor.pwa512Description', {
+            defaultValue: 'Used for PWA install. Must be exactly 512x512 pixels. PNG recommended.'
+        }),
+        pwa192: t('iconsEditor.pwa192Description', {
+            defaultValue: 'Used for PWA install. Must be exactly 192x192 pixels. PNG recommended.'
+        }),
+        favicon: t('iconsEditor.faviconDescription', {
+            defaultValue: 'Used as browser tab icon. Must be 32x32 pixels. PNG, SVG, or ICO supported.'
+        })
+    };
+
     // Fetch manifest and favicon data on component mount
     useEffect(() => {
         const fetchData = async () => {
@@ -449,17 +462,23 @@ export function IconsEditor() {
     return (
         <div className="w-full min-h-svh p-2 lg:p-8">
             <h1 className="text-3xl font-bold my-8">{t('iconsEditor.title')}</h1>
-            <div className="grid grid-cols-3 gap-2">
+            <p className="mb-8 text-base-content/70">
+                {t('iconsEditor.description', {
+                    defaultValue: 'Manage your PWA and favicon icons. Supported sizes and formats are listed below.'
+                })}
+            </p>
+
+            {/* 512x512 Icon Section */}
+            <div className="grid grid-cols-2 gap-8 items-start mb-8">
                 <div>
-                    <label htmlFor="pwaIcon512" className="block mb-2 font-medium">
-                        512x512 Image
-                    </label>
+                    <h2 className="font-semibold text-lg mb-1">512x512 PWA Icon</h2>
+                    <p className="text-sm text-base-content/70 mb-4">{iconDescriptions.pwa512}</p>
                     <input
                         type="file"
                         ref={pwaIcon512InputRef}
                         id="pwaIcon512"
                         name="pwaIcon512"
-                        accept="image/*"
+                        accept="image/png,image/*"
                         className="hidden"
                         onChange={handlePwaIcon512Change}
                     />
@@ -475,16 +494,20 @@ export function IconsEditor() {
                         {renderPwaIcon512Content()}
                     </div>
                 </div>
+            </div>
+            <div className="divider"></div>
+
+            {/* 192x192 Icon Section */}
+            <div className="grid grid-cols-2 gap-8 items-start mb-8">
                 <div>
-                    <label htmlFor="pwaIcon192" className="block mb-2 font-medium">
-                        192x192 Image
-                    </label>
+                    <h2 className="font-semibold text-lg mb-1">192x192 PWA Icon</h2>
+                    <p className="text-sm text-base-content/70 mb-4">{iconDescriptions.pwa192}</p>
                     <input
                         type="file"
                         ref={pwaIcon192InputRef}
                         id="pwaIcon192"
                         name="pwaIcon192"
-                        accept="image/*"
+                        accept="image/png,image/*"
                         className="hidden"
                         onChange={handlePwaIcon192Change}
                     />
@@ -500,16 +523,20 @@ export function IconsEditor() {
                         {renderPwaIcon192Content()}
                     </div>
                 </div>
+            </div>
+            <div className="divider"></div>
+
+            {/* Favicon Section */}
+            <div className="grid grid-cols-2 gap-8 items-start mb-8">
                 <div>
-                    <label htmlFor="favicon" className="block mb-2 font-medium">
-                        32x32 Favicon
-                    </label>
+                    <h2 className="font-semibold text-lg mb-1">32x32 Favicon</h2>
+                    <p className="text-sm text-base-content/70 mb-4">{iconDescriptions.favicon}</p>
                     <input
                         type="file"
                         ref={faviconInputRef}
                         id="favicon"
                         name="favicon"
-                        accept="image/*"
+                        accept="image/png,image/svg+xml,image/x-icon,.ico,image/*"
                         className="hidden"
                         onChange={handleFaviconChange}
                     />
@@ -527,6 +554,7 @@ export function IconsEditor() {
                 </div>
             </div>
             <div className="divider"></div>
+
             <div className="flex justify-end gap-4 mt-8">
                 <button
                     type="button"
