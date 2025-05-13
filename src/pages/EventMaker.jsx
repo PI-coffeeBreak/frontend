@@ -8,50 +8,32 @@ export default function EventMaker() {
     
     const cards = useMemo(() => [
         {
-            id: 'event-info',
-            title: t('eventMaker.cards.eventInfo.title'),
-            description: t('eventMaker.cards.eventInfo.description'),
-            icon: FaEdit,
-            path: "edit",
-            color: "indigo",
-            buttonText: t('eventMaker.cards.eventInfo.buttonText')
-        },
-        {
-            id: 'colors',
-            title: t('eventMaker.cards.colors.title'),
-            description: t('eventMaker.cards.colors.description'),
-            icon: FaPalette,
-            path: "colors",
-            color: "fuchsia",
-            buttonText: t('eventMaker.cards.colors.buttonText')
+            id: 'pages',
+            title: t('eventMaker.cards.pages.title'),
+            description: t('eventMaker.cards.pages.description'),
+            icon: FaFileAlt,
+            path: "/instantiate/application/pages",
+            color: "emerald",
+            buttonText: t('eventMaker.cards.pages.buttonText')
         },
         {
             id: 'menus',
             title: t('eventMaker.cards.menus.title'),
             description: t('eventMaker.cards.menus.description'),
             icon: FaBars,
-            path: "menus",
+            path: "/instantiate/application/menus",
             color: "cyan",
             buttonText: t('eventMaker.cards.menus.buttonText')
         },
         {
-            id: 'pages',
-            title: t('eventMaker.cards.pages.title'),
-            description: t('eventMaker.cards.pages.description'),
-            icon: FaFileAlt,
-            path: "pages",
-            color: "emerald",
-            buttonText: t('eventMaker.cards.pages.buttonText')
+            id: 'colors',
+            title: t('eventMaker.cards.colors.title'),
+            description: t('eventMaker.cards.colors.description'),
+            icon: FaPalette,
+            path: "/instantiate/application/colors",
+            color: "fuchsia",
+            buttonText: t('eventMaker.cards.colors.buttonText')
         },
-        {
-            id: 'choose-plugins',
-            title: t('eventMaker.cards.choosePlugins.title'),
-            description: t('eventMaker.cards.choosePlugins.description'),
-            icon: FaPuzzlePiece,
-            path: "choose-plugins",
-            color: "amber",
-            buttonText: t('eventMaker.cards.choosePlugins.buttonText')
-        }
     ], [t]);
 
     return (

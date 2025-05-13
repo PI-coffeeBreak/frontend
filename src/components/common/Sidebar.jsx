@@ -13,7 +13,10 @@ import {
   FaPuzzlePiece,
   FaEdit,
   FaFileAlt,
-  FaBars
+  FaBars,
+  FaRocket,
+  FaCog,
+  FaIcons
 } from "react-icons/fa";
 import { RiApps2AddLine } from "react-icons/ri";
 import DropdownMenu from "./DropdownMenu.jsx";
@@ -66,7 +69,6 @@ export default function Sidebar() {
       keycloak
         .loadUserProfile()
         .then((profile) => {
-          console.log("User profile loaded:", profile);
           setUserProfile(profile);
         })
         .catch((error) => {
@@ -77,7 +79,6 @@ export default function Sidebar() {
 
   useEffect(() => {
     setImageError(false);
-    console.log("Event info changed:", eventInfo);
   }, [eventInfo]);
 
   // Extract plugin-related logic
@@ -215,7 +216,7 @@ export default function Sidebar() {
               </div>
             )}
             <ul className="flex flex-col gap-4">
-              {/* Home button */}
+              {/* Dashboard button */}
               <li>
                 <Link
                   to="/instantiate"
@@ -232,36 +233,33 @@ export default function Sidebar() {
                 </Link>
               </li>
               
-              {/* Management section */}
+              {/* Event section */}
               <DropdownMenu
-                icon={MdSettings}
-                title={t('menu.sections.management.title')}
+                icon={FaRocket}
+                title={t('menu.sections.event.title')}
                 isVisible={isVisible}
-                basePath="management"
+                basePath="event"
                 hasHomepage={true}
                 links={[
-                  { label: t('menu.sections.management.links.users'), path: "management/users", icon: FaUsers },
-                  { label: t('menu.sections.management.links.sessions'), path: "management/sessions", icon: FaCalendarAlt },
+                  { label: t('menu.sections.event.links.users'), path: "/instantiate/event/users", icon: FaUsers },
+                  { label: t('menu.sections.event.links.activities'), path: "/instantiate/event/activities", icon: FaCalendarAlt },
+                  { label: t('menu.sections.event.links.eventInfo'), path: "/instantiate/event/info", icon: FaEdit },
+                  { label: t('menu.sections.event.links.plugins'), path: "/instantiate/event/plugins", icon: FaPuzzlePiece }
                 ]}
               />
               
-              {/* Event Maker section */}
+              {/* Application section */}
               <DropdownMenu
-                icon={FaPen}
-                title={t('menu.sections.eventMaker.title')}
+                icon={FaCog}
+                title={t('menu.sections.application.title')}
                 isVisible={isVisible}
-                basePath="eventmaker"
+                basePath="application"
                 hasHomepage={true}
                 links={[
-                  { label: t('menu.sections.eventMaker.links.eventInfo'), path: "eventmaker/edit", icon: FaEdit },
-                  { label: t('menu.sections.eventMaker.links.colors'), path: "eventmaker/colors", icon: FaPalette },
-                  { label: t('menu.sections.eventMaker.links.menus'), path: "eventmaker/menus", icon: FaBars },
-                  { label: t('menu.sections.eventMaker.links.pages'), path: "eventmaker/pages", icon: FaFileAlt },
-                  {
-                    label: t('menu.sections.eventMaker.links.plugins'),
-                    path: "eventmaker/choose-plugins",
-                    icon: FaPuzzlePiece
-                  },
+                  { label: t('menu.sections.application.links.pages'), path: "/instantiate/application/pages", icon: FaFileAlt },
+                  { label: t('menu.sections.application.links.menus'), path: "/instantiate/application/menus", icon: FaBars },
+                  { label: t('menu.sections.application.links.colors'), path: "/instantiate/application/colors", icon: FaPalette },
+                  { label: t('menu.sections.application.links.icons'), path: "/instantiate/application/icons", icon: FaIcons },
                 ]}
               />
             </ul>

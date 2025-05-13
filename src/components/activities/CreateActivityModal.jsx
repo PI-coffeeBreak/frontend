@@ -6,6 +6,7 @@ import { useActivities } from "../../contexts/ActivitiesContext";
 import { useNotification } from "../../contexts/NotificationContext";
 import { FiUpload } from "react-icons/fi";
 import { FaTrash } from "react-icons/fa";
+import { useTranslation } from "react-i18next";
 
 const FormField = ({ label, id, type = "text", required = false, error, children }) => (
   <div>
@@ -27,7 +28,8 @@ FormField.propTypes = {
 };
 
 
-export function NewSessionModal({ isOpen, onClose, onSubmit }) {
+export function CreateActivityModal({ isOpen, onClose, onSubmit }) {
+  const { t } = useTranslation();
   const stopPropagation = (e) => {
     e.stopPropagation();
   };
@@ -47,7 +49,6 @@ export function NewSessionModal({ isOpen, onClose, onSubmit }) {
     duration: 30,
     type_id: "",
     topic: "",
-    facilitator: "",
     image: null,
   };
 
@@ -84,10 +85,6 @@ export function NewSessionModal({ isOpen, onClose, onSubmit }) {
     if (values.date) {
       validateDate(values.date, newErrors);
     }
-
-    if (values.is_online && !values.meeting_link) {
-      newErrors.meeting_link = "Meeting link is required for online sessions";
-    }
     
     setErrors(newErrors);
     return Object.keys(newErrors).length === 0;
@@ -95,8 +92,8 @@ export function NewSessionModal({ isOpen, onClose, onSubmit }) {
 
   const validateDate = (date, errors) => {
     try {
-      const sessionDate = new Date(date);
-      if (sessionDate < new Date()) {
+      const activityDate = new Date(date);
+      if (activityDate < new Date()) {
         errors.date = "Date cannot be in the past";
       }
     } catch (e) {
@@ -139,7 +136,6 @@ export function NewSessionModal({ isOpen, onClose, onSubmit }) {
       duration: parseInt(values.duration, 10),
       type_id: typeof values.type_id === 'string' ? parseInt(values.type_id, 10) : values.type_id,
       topic: values.topic || "",
-      facilitator: values.facilitator || "",
       ...(imagePreview && { image: values.image })
     };
   };
@@ -153,16 +149,13 @@ export function NewSessionModal({ isOpen, onClose, onSubmit }) {
     
     try {
       const formattedData = formatDataForSubmission();
-
-      console.log("Submitting session data:", formattedData);
-      
       await onSubmit(formattedData);
       resetForm();
       setImagePreview(null);
     } catch (error) {
       console.error("Error submitting form:", error);
       showNotification(
-        error.response?.data?.message || "Failed to create session",
+        error.response?.data?.message || "Failed to create activity",
         "error"
       );
     } finally {
@@ -315,7 +308,7 @@ export function NewSessionModal({ isOpen, onClose, onSubmit }) {
               aria-label="Remove image"
             >
               <FaTrash aria-hidden="true" />
-              <span className="sr-only">Remove image</span>
+              <span className="sr-only">{t('activities.removeImage')}</span>
             </button>
             
             <div className="flex items-center gap-3">
@@ -327,9 +320,9 @@ export function NewSessionModal({ isOpen, onClose, onSubmit }) {
                 />
               </div>
               <div>
-                <p className="font-medium">Image selected</p>
+                <p className="font-medium">{t('activities.imageSelected')}</p>
                 <p className="text-sm text-gray-500">
-                  Click to remove and upload a different image
+                  {t('activities.clickToRemoveAndUploadDifferentImage')}
                 </p>
               </div>
             </div>
@@ -353,7 +346,7 @@ export function NewSessionModal({ isOpen, onClose, onSubmit }) {
     <Modal
       isOpen={isOpen}
       onClose={handleCloseModal}
-      title="Create New Session"
+      title="Create New Activity"
       description=""
     >
       {loading ? (
@@ -370,7 +363,7 @@ export function NewSessionModal({ isOpen, onClose, onSubmit }) {
                 name="name"
                 value={values.name}
                 onChange={handleChangeWithStop}
-                placeholder="Enter the session title"
+                placeholder={t('activities.name')}
                 className={`input input-bordered w-full ${errors.name ? 'input-error' : ''}`}
               />
             </FormField>
@@ -380,7 +373,7 @@ export function NewSessionModal({ isOpen, onClose, onSubmit }) {
                 name="description"
                 value={values.description}
                 onChange={handleChangeWithStop}
-                placeholder="Enter the session description"
+                placeholder={t('activities.description')}
                 className={`textarea textarea-bordered w-full h-24 ${errors.description ? 'textarea-error' : ''}`}
               />
             </FormField>
@@ -401,7 +394,7 @@ export function NewSessionModal({ isOpen, onClose, onSubmit }) {
                 />
               </FormField>
               
-              <FormField label="Duration (minutes)" id="duration">
+              <FormField label={t('activities.duration')} id="duration">
                 <input
                   type="number"
                   id="duration"
@@ -422,18 +415,7 @@ export function NewSessionModal({ isOpen, onClose, onSubmit }) {
                     name="topic"
                     value={values.topic}
                     onChange={handleChangeWithStop}
-                    placeholder="Enter the session topic"
-                    className="input input-bordered w-full"
-                />
-              </FormField>
-              <FormField label="Facilitator" id="facilitator">
-                <input
-                    type="text"
-                    id="facilitator"
-                    name="facilitator"
-                    value={values.facilitator}
-                    onChange={handleChangeWithStop}
-                    placeholder="Enter the facilitator's name"
+                    placeholder={t('activities.topic')}
                     className="input input-bordered w-full"
                 />
               </FormField>
@@ -453,10 +435,10 @@ export function NewSessionModal({ isOpen, onClose, onSubmit }) {
               {isSubmitting ? (
                 <div className="flex items-center gap-2">
                   <span className="loading loading-spinner loading-sm"></span>
-                  <span>Creating...</span>
+                  <span>{t('activities.creating')}</span>
                 </div>
               ) : (
-                "Create Session"
+                t('activities.createButton')
               )}
             </button>
           </div>
@@ -466,10 +448,10 @@ export function NewSessionModal({ isOpen, onClose, onSubmit }) {
   );
 }
 
-NewSessionModal.propTypes = {
+CreateActivityModal.propTypes = {
   isOpen: PropTypes.bool.isRequired,
   onClose: PropTypes.func.isRequired,
   onSubmit: PropTypes.func.isRequired
 };
 
-export default NewSessionModal;
+export default CreateActivityModal;

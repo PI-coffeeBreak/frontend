@@ -2,7 +2,7 @@
   "common": {
     "home": "Home",
     "users": "Users",
-    "sessions": "Sessions",
+    "activities": "Activities",
     "alerts": "Alerts",
     "schedule": "Schedule",
     "plugins": "Plugins",
@@ -12,6 +12,7 @@
     "create": "Create",
     "edit": "Edit",
     "save": "Save",
+    "saving": "Saving...",
     "cancel": "Cancel",
     "delete": "Delete",
     "loading": "Loading...",
@@ -25,8 +26,13 @@
       "imageErrorDetails": "The image may be missing or unavailable",
       "sizeError": "Image size must be less than 50MB",
       "typeError": "Please upload an image file",
+      "uploadError": "Failed to upload image. Activity updated, but image was not changed.",
+      "noImageField": "Activity doesn't have an image field. Please try again.",
       "removeImage": "Remove Image",
-      "imageAlt": "Image"
+      "imageAlt": "Image",
+      "pwaIcon192Alt": "192x192 PWA Icon",
+      "pwaIcon512Alt": "512x512 PWA Icon",
+      "faviconAlt": "32x32 Favicon"
     }
   },
   "auth": {
@@ -44,21 +50,41 @@
     "sections": {
       "home": {
         "title": "Home",
-        "description": "Manage users and sessions",
+        "description": "Manage users and activities",
         "links": {
           "users": "Users",
-          "sessions": "Sessions",
+          "activities": "Activities",
           "alerts": "Alerts"
         },
         "descriptions": {
           "users": "Manage user accounts, roles and permissions",
-          "sessions": "Schedule and organize sessions and activities",
+          "activities": "Schedule and organize activities",
           "alerts": "Create and send notifications to participants"
         },
         "buttons": {
           "users": "Manage Users",
-          "sessions": "View Sessions",
+          "activities": "View Activities",
           "alerts": "Manage Alerts"
+        }
+      },
+      "event": {
+        "title": "Event",
+        "description": "Manage your event settings and components",
+        "links": {
+          "users": "Users",
+          "activities": "Activities",
+          "eventInfo": "Event Info",
+          "plugins": "Manage Plugins"
+        }
+      },
+      "application": {
+        "title": "Application",
+        "description": "Customize and configure your application",
+        "links": {
+          "pages": "Pages",
+          "menus": "Menus",
+          "colors": "Colors",
+          "icons": "Icons"
         }
       },
       "eventMaker": {
@@ -78,10 +104,10 @@
       },
       "management": {
         "title": "Management",
-        "description": "Manage users and sessions",
+        "description": "Manage users and activities",
         "links": {
           "users": "Users",
-          "sessions": "Sessions",
+          "activities": "Activities",
           "alerts": "Alerts"
         }
       }
@@ -98,12 +124,12 @@
     "quickAccess": "Quick Access",
     "cards": {
       "management": {
-        "title": "Management",
-        "description": "Access tools to manage users and sessions for your event."
+        "title": "Event",
+        "description": "Access tools to manage users, activities and plugins for your event."
       },
       "eventMaker": {
-        "title": "Event Maker",
-        "description": "Customize the appearance, content and functionality of your event."
+        "title": "Application",
+        "description": "Customize the appearance, content and functionality of your application."
       }
     }
   },
@@ -135,7 +161,8 @@
       "passwordStrength": "Password Strength",
       "passwordChangeNote": "The user will be prompted to change this password on first login.",
       "generatePassword": "Generate Password",
-      "createUser": "Create User"
+      "createUser": "Create User",
+      "cancel": "Cancel"
     },
     "manageRoles": {
       "title": "Manage Roles",
@@ -173,34 +200,51 @@
     }
   },
   "activities": {
-    "title": "Create Sessions",
-    "sessions": "Sessions",
+    "title": "Create Activities",
+    "activities": "Activities",
     "create": {
-      "title": "Create New Session",
-      "description": "Create a new session manually",
+      "title": "Create New Activity",
+      "description": "Create a new activity manually",
       "name": "Name",
       "date": "Date",
       "duration": "Duration",
       "type": "Type",
       "topic": "Topic",
-      "speaker": "Speaker",
-      "facilitator": "Facilitator",
       "image": "Image"
     },
     "types": {
-      "title": "Create New Session Type",
-      "description": "Create a new session type manually",
-      "name": "Name"
+      "title": "Create New Activity Type",
+      "name": "Name",
+      "namePlaceholder": "Enter activity type name",
+      "color": "Color",
+      "createButton": "Create Activity Type",
+      "creating": "Creating...",
+      "createSuccess": "Activity type created successfully",
+      "createError": "Failed to create activity type"
     },
     "import": {
       "title": "Add with Excel file",
-      "description": "Upload an Excel file to quickly add multiple sessions at once"
+      "description": "Upload an Excel file to quickly add multiple activities at once"
     },
     "filters": {
-      "searchPlaceholder": "Search activities by name or description",
+      "searchPlaceholder": "Search activities",
       "all": "All"
     },
     "delete": "Delete activity",
+    "edit": "Edit activity",
+    "editTitle": "Edit Activity",
+    "deleteConfirmTitle": "Delete Activity",
+    "name": "Name",
+    "description": "Description",
+    "type": "Type",
+    "selectType": "Select a type",
+    "topic": "Topic",
+    "date": "Date & Time",
+    "duration": "Duration",
+    "image": "Image",
+    "currentImage": "Current Image (click browse to change)",
+    "updateSuccess": "Activity updated successfully",
+    "updateError": "Failed to update activity",
     "deleteConfirm": "Are you sure you want to delete this activity?",
     "deleteSuccess": "Activity deleted successfully",
     "deleteError": "Failed to delete activity",
@@ -208,22 +252,17 @@
     "trySearch": "Try changing your search or filters",
     "imageAlt": "Activity image",
     "noImage": "No image",
+    "createButton": "Create",
+    "creating": "Creating...",
+    "imageSelected": "Image selected",
+    "clickToRemoveAndUploadDifferentImage": "Click to remove and upload a different image",
+    "removeImage": "Remove image",
     "permissions": {
       "disabled": "You don't have permission to create activities"
-    },
-    "editSlotsTitle": "Slot Management",
-    "slots": {
-      "title": "slot(s)",
-      "modalTitle": "Edit Slot Count",
-      "limitLabel": "Limit number of slots?",
-      "slotPlaceholder": "Maximum number of participants. E.g. 50",
-      "saveSuccess": "Data updated successfully",
-      "saveError": "Error updating data",
-      "noMetadataInfo": "This activity has no metadata defined yet."
     }
   },
   "eventEditor": {
-    "title": "Event Settings",
+    "title": "Event Information",
     "basicInfo": {
       "title": "Basic Information",
       "eventName": {
@@ -240,11 +279,11 @@
     "dateTime": {
       "title": "Date and Time",
       "startDate": {
-        "label": "Start Date & Time",
+        "label": "Begins",
         "required": "Start date is required"
       },
       "endDate": {
-        "label": "End Date & Time",
+        "label": "Ends",
         "required": "End date is required",
         "invalid": "End date must be after start date"
       }
@@ -285,6 +324,10 @@
   "themeCustomizer": {
     "title": "Event Theme Designer",
     "subtitle": "Customize your event's colors and see how they look in real-time",
+    "pageHeader": {
+      "title": "Theme Customization",
+      "subtitle": "Personalize your event with custom colors to match your brand identity"
+    },
     "tabs": {
       "colors": "Choose Colors",
       "preview": "Preview Your Event"
@@ -293,7 +336,8 @@
     "colorGroups": {
       "brandColors": "Brand Colors",
       "backgroundText": "Background & Text",
-      "statusColors": "Status Colors"
+      "statusColors": "Status Colors",
+      "neutrals": "Neutral Colors"
     },
     "colorNames": {
       "primary": "Main Brand Color",
@@ -334,14 +378,20 @@
     "actions": {
       "reset": "Reset",
       "resetTitle": "Reset to original theme",
-      "save": "Save",
+      "save": "Save Changes",
       "text": "Text"
+    },
+    "success": {
+      "save": "Theme saved successfully"
+    },
+    "error": {
+      "save": "Failed to save theme"
     }
   },
   "menuEditor": {
     "title": "Menu Editor",
     "description": "Manage navigation menu items. Drag and drop to reorder items. Changes will be reflected in your event's navigation.",
-    "searchPlaceholder": "Search menu items...",
+    "searchPlaceholder": "Search menu items",
     "addButton": "Add Item",
     "modal": {
       "add": {
@@ -390,7 +440,7 @@
   "pagesList": {
     "title": "Pages",
     "createButton": "Create Page",
-    "searchPlaceholder": "Search pages...",
+    "searchPlaceholder": "Search pages",
     "filters": {
       "all": "All Pages",
       "enabled": "Enabled",
@@ -484,11 +534,57 @@
       "addNewSection": "Add New Section"
     }
   },
-  "navbar": {
-    "logoAlt": "coffeeBreak Logo",
-    "develop": "Develop",
-    "login": "Login",
-    "logout": "Logout"
+  "management": {
+    "title": "Event",
+    "subtitle": "Manage all aspects of your event through these administrative tools",
+    "cards": {
+      "users": {
+        "title": "Users",
+        "description": "Manage user accounts, roles and permissions. Add new users, edit existing ones or control access to different resources of your event.",
+        "buttonText": "Manage Users"
+      },
+      "activities": {
+        "title": "Activities",
+        "description": "Schedule and organize activities, workshops and event activities. Control schedules, locations and participant registration for all event activities.",
+        "buttonText": "View Activities"
+      },
+      "alerts": {
+        "title": "Alerts",
+        "description": "Create and send notifications to event participants. Keep everyone informed about important updates, schedule changes and announcements.",
+        "buttonText": "Manage Alerts"
+      }
+    }
+  },
+  "eventMaker": {
+    "title": "Application",
+    "subtitle": "Customize and configure your application with these powerful tools",
+    "cards": {
+      "eventInfo": {
+        "title": "Event Info",
+        "description": "Manage your event's basic information.",
+        "buttonText": "Edit Event"
+      },
+      "colors": {
+        "title": "Colors",
+        "description": "Create a unique visual identity for your event by customizing the color scheme. Choose colors that reflect your brand and create the perfect atmosphere.",
+        "buttonText": "Customize Colors"
+      },
+      "menus": {
+        "title": "Menus",
+        "description": "Design your event's navigation structure. Create, organize and customize menu items for an optimal user experience.",
+        "buttonText": "Edit Menus"
+      },
+      "pages": {
+        "title": "Pages",
+        "description": "Create and manage content pages for your event. Create custom layouts to present information effectively.",
+        "buttonText": "Manage Pages"
+      },
+      "choosePlugins": {
+        "title": "Choose Plugins",
+        "description": "Enhance your event with powerful plugins. Add the features you need to create the perfect experience.",
+        "buttonText": "Manage Plugins"
+      }
+    }
   },
   "home": {
     "title": "Plan, Manage and Elevate Your Events with Ease.",
@@ -522,60 +618,18 @@
       }
     }
   },
-  "management": {
-    "title": "Management",
-    "subtitle": "Manage all aspects of your event through these administrative tools",
-    "cards": {
-      "users": {
-        "title": "Users",
-        "description": "Manage user accounts, roles and permissions. Add new users, edit existing ones or control access to different resources of your event.",
-        "buttonText": "Manage Users"
-      },
-      "sessions": {
-        "title": "Sessions",
-        "description": "Schedule and organize sessions, workshops and event activities. Control schedules, locations and participant registration for all event activities.",
-        "buttonText": "View Sessions"
-      },
-      "alerts": {
-        "title": "Alerts",
-        "description": "Create and send notifications to event participants. Keep everyone informed about important updates, schedule changes and announcements.",
-        "buttonText": "Manage Alerts"
-      }
-    }
+  "navbar": {
+    "logoAlt": "coffeeBreak logo",
+    "develop": "Develop",
+    "login": "Login",
+    "logout": "Logout"
   },
-  "eventMaker": {
-    "title": "Event Maker",
-    "subtitle": "Customize and configure your event with these powerful tools",
-    "cards": {
-      "eventInfo": {
-        "title": "Event Info",
-        "description": "Manage your event's basic information.",
-        "buttonText": "Edit Event"
-      },
-      "colors": {
-        "title": "Colors",
-        "description": "Create a unique visual identity for your event by customizing the color scheme. Choose colors that reflect your brand and create the perfect atmosphere.",
-        "buttonText": "Customize Colors"
-      },
-      "menus": {
-        "title": "Menus",
-        "description": "Design your event's navigation structure. Create, organize and customize menu items for an optimal user experience.",
-        "buttonText": "Edit Menus"
-      },
-      "pages": {
-        "title": "Pages",
-        "description": "Create and manage content pages for your event. Create custom layouts to present information effectively.",
-        "buttonText": "Manage Pages"
-      },
-      "choosePlugins": {
-        "title": "Choose Plugins",
-        "description": "Enhance your event with powerful plugins. Add the features you need to create the perfect experience.",
-        "buttonText": "Manage Plugins"
-      }
-    }
+  "instantiateHome": {
+    "title": "Event Dashboard",
+    "subtitle": "Monitor and manage all aspects of your event in one place"
   },
   "feedback": {
-    "title": "Rate this Session",
+    "title": "Rate this Activity",
     "description": "Your opinion helps us improve!",
     "submit": "Submit Feedback",
     "ratingLabel": "Rating:",
@@ -648,5 +702,59 @@
     "removeImageFailed": "Failed to remove image",
     "orderUpdateSuccess": "Order updated successfully",
     "orderUpdateFailed": "Failed to update order"
+  },
+  "validation": {
+    "required": "This field is required",
+    "invalidDate": "Invalid date format",
+    "dateInPast": "Date cannot be in the past",
+    "positiveNumber": "Must be a positive number"
+  },
+  "activitiesFeedback": {
+    "title": "Activities Feedback",
+    "loading": "Loading...",
+    "error": "Error fetching activities.",
+    "averageRating": "Average Rating",
+    "feedbackFor": "Feedback for",
+    "filterByRating": "Filter by Rating",
+    "filterByUserType": "Filter by User Type",
+    "allRatings": "All Ratings",
+    "above": "Above",
+    "below": "Below",
+    "exact": "Exact",
+    "anonymousUsers": "Anonymous Users",
+    "anonymousUser": "Anonymous",
+    "namedUsers": "Named Users",
+    "allUsers": "All Users",
+    "noFeedback": "No feedback available for this activity.",
+    "previous": "Previous",
+    "next": "Next",
+    "page": "Page",
+    "user": "User",
+    "rating": "Rating",
+    "comment": "Comment",
+    "of":"of",
+    "enterRating": "Enter rating"
+  },
+  "iconsEditor": {
+    "title": "Icons Editor",
+    "description": "Manage your PWA and favicon icons. Supported sizes and formats are listed below.",
+    "pwa512Description": "Used for PWA install. Must be exactly 512x512 pixels. PNG recommended.",
+    "pwa192Description": "Used for PWA install. Must be exactly 192x192 pixels. PNG recommended.",
+    "faviconDescription": "Used as browser tab icon. Must be (16x16, 32x32, 48x48) pixels. PNG, SVG, or ICO supported. For best results, upload a .ico file with all standard sizes.",
+    "validation": {
+      "requiredIcons": "All icons are required"
+    },
+    "success": {
+      "save": "Icons saved successfully"
+    },
+    "error": {
+      "save": "Failed to save icons",
+      "upload": "Failed to upload icon",
+      "fetchData": "Failed to fetch icons data"
+    },
+    "actions": {
+      "save": "Save Icons",
+      "saving": "Saving..."
+    }
   }
 }

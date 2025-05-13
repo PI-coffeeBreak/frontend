@@ -27,6 +27,8 @@ import Provider from "./contexts/Provider.jsx";
 import Management from "./pages/Management.jsx";
 import SpeakerManagement from "./pages/plugins/SpeakerManagement.jsx";
 import ActivitySlotsPage from "./pages/plugins/ActivitiesSlotsPage.jsx";
+import ActivitiesFeedback from "./pages/plugins/ActivitiesFeedback.jsx";
+import { IconsEditor } from "./pages/IconsEditor.jsx";
 
 export default function App() {
   return (
@@ -40,22 +42,32 @@ export default function App() {
         </Route>
 
         <Route path="instantiate" element={<PrivateRoute><LayoutInstantiate /></PrivateRoute>}>
+          {/* Dashboard */}
           <Route index element={<Instantiate />} />
-          <Route path="management">
+          
+          {/* Event section */}
+          <Route path="event">
             <Route index element={<Management />} />
             <Route path="users" element={<Users />} />
-            <Route path="sessions" element={<Activities />} />
+            <Route path="activities" element={<Activities />} />
+            <Route path="info" element={<EventEditor />} />
+            <Route path="plugins" element={<Plugins />} />
           </Route>
-          <Route path="eventmaker">
+          
+          {/* Application section */}
+          <Route path="application">
             <Route index element={<EventMaker />} />
-            <Route path="edit" element={<EventEditor />} />
-            <Route path="colors" element={<Colors />} />
+            <Route path="pages">
+              <Route index element={<PagesList />} />
+              <Route path="edit-page/:pageTitle" element={<EditPage />} />
+              <Route path="create-page" element={<CreatePage />} />
+            </Route>
             <Route path="menus" element={<MenuEditor />} />
-            <Route path="pages" element={<PagesList />} />
-            <Route path="choose-plugins" element={<Plugins />} />
-            <Route path="edit-page/:pageTitle" element={<EditPage />} />
-            <Route path="create-page" element={<CreatePage />} />
+            <Route path="colors" element={<Colors />} />
+            <Route path="icons" element={<IconsEditor />} />
           </Route>
+          
+          {/* Plugins section */}
           <Route path="plugins">
             <Route path="alert-system-plugin" element={<Alerts />} />
             <Route path="event-schedule-plugin" element={<Schedule />} />
@@ -63,6 +75,7 @@ export default function App() {
             <Route path="floor-plan-plugin" element={<FloorPlans />} />
             <Route path="speaker-presentation-plugin" element={<SpeakerManagement />} />
             <Route path="registration-system-plugin" element={<ActivitySlotsPage />} />
+            <Route path="activities-feedback-plugin" element={<ActivitiesFeedback />} />
           </Route>
         </Route>
         <Route path="/auth-redirect" element={<AuthRedirect />} />

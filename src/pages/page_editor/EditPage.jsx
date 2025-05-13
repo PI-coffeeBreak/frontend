@@ -96,7 +96,7 @@ export function EditPage() {
                 components: foundPage.components || [],
             });
         } else if (pages.length > 0) {
-            navigate("/instantiate/eventmaker/pages");
+            navigate("/instantiate/application/pages");
         }
     }, [pages, pageTitle, navigate]);
 
@@ -144,12 +144,10 @@ export function EditPage() {
 
         const dataToSave = { ...pageData, page_id: page.page_id };
 
-        console.log("Saving page data:", dataToSave);
-
         updatePage(page.page_id, dataToSave)
             .then(() => {
                 showNotification(t('pageEditor.edit.updateSuccess'), "success");
-                navigate("/instantiate/eventmaker/pages");
+                navigate("/instantiate/application/pages");
             })
             .catch((error) => {
                 console.error("Failed to update the page.", error);

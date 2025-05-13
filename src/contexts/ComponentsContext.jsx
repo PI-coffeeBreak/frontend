@@ -3,6 +3,7 @@ import PropTypes from "prop-types";
 import { baseUrl } from "../consts";
 import { useKeycloak } from "@react-keycloak/web";
 import { axiosWithAuth } from '../utils/axiosWithAuth';
+import { useLocation } from "react-router-dom";
 
 const ComponentsContext = createContext();
 
@@ -10,15 +11,30 @@ export const ComponentsProvider = ({ children }) => {
     const [components, setComponents] = useState([]);
     const [isLoading, setIsLoading] = useState(false);
     const [error, setError] = useState(null);
-    const { keycloak } = useKeycloak();
+    const { keycloak, initialized } = useKeycloak();
+    const location = useLocation();
+
+    const shouldRedirectToLogin = () => {
+        return location.pathname !== '/';
+    };
 
     const fetchComponents = async () => {
+        if (!initialized) {
+            console.log("Keycloak not initialized");
+            return;
+        }
+
+        if (!keycloak?.authenticated && shouldRedirectToLogin()) {
+            console.log("User not authenticated, redirecting to login");
+            keycloak?.login();
+            return;
+        }
+
         setIsLoading(true);
         setError(null);
         try {
             const response = await axiosWithAuth(keycloak).get(`${baseUrl}/components`);
             const componentsData = response.data.components;
-            console.log("Components fetched successfully:", componentsData);
             setComponents(componentsData);
         } catch (err) {
             console.error("Error fetching components:", err);
@@ -66,13 +82,19 @@ export const ComponentsProvider = ({ children }) => {
                     })),
             };
         });
-        console.log("Component list:", componentList);
         return componentList;
     };
 
     useEffect(() => {
-        fetchComponents();
-    }, []);
+        if (initialized) {
+            if (keycloak?.authenticated) {
+                fetchComponents();
+            } else if (shouldRedirectToLogin()) {
+                console.log("User not authenticated, redirecting to login");
+                keycloak?.login();
+            }
+        }
+    }, [initialized, keycloak?.authenticated, location.pathname]);
 
     // Memoize the value object to prevent unnecessary re-renders
     const contextValue = useMemo(

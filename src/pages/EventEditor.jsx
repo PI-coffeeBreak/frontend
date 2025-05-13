@@ -5,7 +5,6 @@ import { useMedia } from "../contexts/MediaContext";
 import { useNotification } from "../contexts/NotificationContext";
 import { useTranslation } from "react-i18next";
 import axios from "axios";
-import { FaRegCalendarAlt, FaMapMarkerAlt, FaImage, FaInfoCircle } from "react-icons/fa";
 import PropTypes from "prop-types";
 import { renderLocationSuggestions as renderLocationSuggestionsUtil } from '../utils/LocationUtils';
 import { ImagePlaceholder } from '../components/common/ImagePlaceholder.jsx';
@@ -242,8 +241,8 @@ export function EventEditor() {
             const eventData = {
                 name: formData.eventName,
                 description: formData.description,
-                start_time: formData.startDate,
-                end_time: formData.endDate,
+                start_time: formData.startDate + "Z",
+                end_time: formData.endDate + "Z",
                 location: formData.location,
             };
 
@@ -291,7 +290,7 @@ export function EventEditor() {
                     console.error('Error deleting old image:', deleteError);
                 }
             }
-            navigate('/instantiate/eventmaker');
+            navigate('/instantiate/event/info');
             
             // Refresh event info to get the latest data
             await getEventInfo();
@@ -323,208 +322,177 @@ export function EventEditor() {
     }
   
     return (
-        <div className="w-full min-h-svh p-8">
-            <div className="max-w-4xl mx-auto">
-                <div className="flex items-center justify-between mb-6">
-                    <h1 className="text-3xl font-bold text-primary">{t('eventEditor.title')}</h1>
-                </div>
-                
-                <form onSubmit={handleSubmit} className="space-y-8">
-                {/* Basic Information */}
-                <div className="card bg-base-200 shadow-lg">
-                    <div className="card-body">
-                    <h2 className="card-title flex items-center gap-2">
-                        <FaInfoCircle className="text-primary" />
-                        {t('eventEditor.basicInfo.title')}
-                    </h2>
-                    
-                    <div className="grid grid-cols-1 gap-4 mt-4">
+        <div className="w-full min-h-svh p-2 lg:p-8">
+            <h1 className="text-3xl font-bold my-8">{t('eventEditor.title')}</h1>
+                <form onSubmit={handleSubmit} className="space-y-16">
+
+                    <div className="grid grid-cols-2">
                         <div>
-                        <label htmlFor="eventName" className="block mb-2 font-medium">
-                            {t('eventEditor.basicInfo.eventName.label')} <span className="text-error">*</span>
-                        </label>
-                        <input
-                            type="text"
-                            id="eventName"
-                            name="eventName"
-                            value={formData.eventName}
-                            onChange={handleInputChange}
-                            placeholder={t('eventEditor.basicInfo.eventName.placeholder')}
-                            className={`input input-bordered w-full ${errors.eventName ? 'input-error' : ''}`}
-                        />
-                        {errors.eventName && <p className="text-error text-sm mt-1">{errors.eventName}</p>}
+                            <h2>
+                                {t('eventEditor.basicInfo.title')}
+                            </h2>
+                            <p className="text-sm text-base-content/70 mt-1">Enter the event name, description, start date, and end date</p>
                         </div>
-                        
-                        <div>
-                        <label htmlFor="description" className="block mb-2 font-medium">
-                            {t('eventEditor.basicInfo.description.label')} <span className="text-error">*</span>
-                        </label>
-                        <textarea
-                            id="description"
-                            name="description"
-                            value={formData.description}
-                            onChange={handleInputChange}
-                            placeholder={t('eventEditor.basicInfo.description.placeholder')}
-                            className={`textarea textarea-bordered w-full h-32 ${errors.description ? 'textarea-error' : ''}`}
-                        />
-                        {errors.description && <p className="text-error text-sm mt-1">{errors.description}</p>}
-                        </div>
-                    </div>
-                    </div>
-                </div>
-                
-                {/* Date and Time */}
-                <div className="card bg-base-200 shadow-lg">
-                    <div className="card-body">
-                    <h2 className="card-title flex items-center gap-2">
-                        <FaRegCalendarAlt className="text-primary" />
-                        {t('eventEditor.dateTime.title')}
-                    </h2>
-                    
-                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mt-4">
-                        <div>
-                        <label htmlFor="startDate" className="block mb-2 font-medium">
-                            {t('eventEditor.dateTime.startDate.label')} <span className="text-error">*</span>
-                        </label>
-                        <input
-                            type="datetime-local"
-                            id="startDate"
-                            name="startDate"
-                            value={formData.startDate}
-                            onChange={handleInputChange}
-                            className={`input input-bordered w-full ${errors.startDate ? 'input-error' : ''}`}
-                        />
-                        {errors.startDate && <p className="text-error text-sm mt-1">{errors.startDate}</p>}
-                        </div>
-                        
-                        <div>
-                        <label htmlFor="endDate" className="block mb-2 font-medium">
-                            {t('eventEditor.dateTime.endDate.label')} <span className="text-error">*</span>
-                        </label>
-                        <input
-                            type="datetime-local"
-                            id="endDate"
-                            name="endDate"
-                            value={formData.endDate}
-                            onChange={handleInputChange}
-                            className={`input input-bordered w-full ${errors.endDate ? 'input-error' : ''}`}
-                        />
-                        {errors.endDate && <p className="text-error text-sm mt-1">{errors.endDate}</p>}
+                        <div className="grid grid-cols-1 gap-4">
+                            <div>
+                                <label htmlFor="eventName" className="block mb-2 font-medium">
+                                    <span className="text-error">*</span>{t('eventEditor.basicInfo.eventName.label')}
+                                </label>
+                                <input
+                                    type="text"
+                                    id="eventName"
+                                    name="eventName"
+                                    value={formData.eventName}
+                                    onChange={handleInputChange}
+                                    placeholder={t('eventEditor.basicInfo.eventName.placeholder')}
+                                    className={`input input-bordered rounded-xl w-full ${errors.eventName ? 'input-error' : ''}`}
+                                />
+                                {errors.eventName && <p className="text-error text-sm mt-1">{errors.eventName}</p>}
+                            </div>
+                            <div>
+                                <label htmlFor="description" className="block mb-2 font-medium">
+                                    <span className="text-error">*</span>{t('eventEditor.basicInfo.description.label')}
+                                </label>
+                                <textarea
+                                    id="description"
+                                    name="description"
+                                    value={formData.description}
+                                    onChange={handleInputChange}
+                                    placeholder={t('eventEditor.basicInfo.description.placeholder')}
+                                    className={`textarea textarea-bordered rounded-xl w-full h-32 ${errors.description ? 'textarea-error' : ''}`}
+                                />
+                                {errors.description && <p className="text-error text-sm mt-1">{errors.description}</p>}
+                            </div>
+                            <div className="grid grid-cols-2 gap-2">
+                                <div>
+                                    <label htmlFor="startDate" className="block mb-2 font-medium">
+                                        <span className="text-error">*</span>{t('eventEditor.dateTime.startDate.label')}
+                                    </label>
+                                    <input
+                                        type="datetime-local"
+                                        id="startDate"
+                                        name="startDate"
+                                        value={formData.startDate}
+                                        onChange={handleInputChange}
+                                        className={`input input-bordered rounded-xl w-full ${errors.startDate ? 'input-error' : ''}`}
+                                    />
+                                    {errors.startDate && <p className="text-error text-sm mt-1">{errors.startDate}</p>}
+                                </div>
+                                <div>
+                                    <label htmlFor="endDate" className="block mb-2 font-medium">
+                                        <span className="text-error">*</span>{t('eventEditor.dateTime.endDate.label')}
+                                    </label>
+                                    <input
+                                        type="datetime-local"
+                                        id="endDate"
+                                        name="endDate"
+                                        value={formData.endDate}
+                                        onChange={handleInputChange}
+                                        className={`input input-bordered rounded-xl w-full ${errors.endDate ? 'input-error' : ''}`}
+                                    />
+                                    {errors.endDate && <p className="text-error text-sm mt-1">{errors.endDate}</p>}
+                                </div>
+                            </div>
                         </div>
                     </div>
+                    <div className="divider"></div>
+
+                    <div className="grid grid-cols-2">
+                        <div>
+                            <h2>
+                                {t('eventEditor.location.title')}
+                            </h2>
+                            <p className="text-sm text-base-content/70 mt-1">Specify where the event will take place, with location suggestions</p>
+                        </div>
+                        <div className="grid grid-cols-1 gap-4">
+                            <div>
+                                <label htmlFor="location" className="block mb-2 font-medium">
+                                    <span className="text-error">*</span>{t('eventEditor.location.label')}
+                                </label>
+                                <input
+                                    type="text"
+                                    id="location"
+                                    name="location"
+                                    value={formData.location}
+                                    onChange={handleLocationChange}
+                                    placeholder={t('eventEditor.location.placeholder')}
+                                    className={`input input-bordered rounded-xl w-full ${errors.location ? 'input-error' : ''}`}
+                                    autoComplete="off"
+                                />
+                                {errors.location && <p className="text-error text-sm mt-1">{errors.location}</p>}
+                                {renderLocationSuggestions()}
+                            </div>
+                        </div>
                     </div>
-                </div>
-                
-                {/* Location */}
-                <div className="card bg-base-200 shadow-lg">
-                    <div className="card-body">
-                    <h2 className="card-title flex items-center gap-2">
-                        <FaMapMarkerAlt className="text-primary" />
-                        {t('eventEditor.location.title')}
-                    </h2>
-                    
-                    <div className="mt-4 relative">
-                        <label htmlFor="location" className="block mb-2 font-medium">
-                            {t('eventEditor.location.label')} <span className="text-error">*</span>
-                        </label>
-                        <input
-                        type="text"
-                        id="location"
-                        name="location"
-                        value={formData.location}
-                        onChange={handleLocationChange}
-                        placeholder={t('eventEditor.location.placeholder')}
-                        className={`input input-bordered w-full ${errors.location ? 'input-error' : ''}`}
-                        autoComplete="off"
-                        />
-                        {errors.location && <p className="text-error text-sm mt-1">{errors.location}</p>}
-                        {renderLocationSuggestions()}
-                    </div>
-                    </div>
-                </div>
-                
-                {/* Event Image */}
-                <div className="card bg-base-200 shadow-lg">
-                    <div className="card-body">
-                        <h2 className="card-title flex items-center gap-2">
-                            <FaImage className="text-primary" />
-                            {t('eventEditor.image.title')}
-                        </h2>
-                    
-                        <div className="mt-4">
+                    <div className="divider"></div>
+
+                    <div className="grid grid-cols-2">
+                        <div>
+                            <h2>
+                                {t('eventEditor.image.title')}
+                            </h2>
+                            <p className="text-sm text-base-content/70 mt-1">Upload or change an image for your event</p>
+                        </div>
+                        <div className="grid grid-cols-1 gap-4">
                             <label htmlFor="eventImage" className="block mb-2 font-medium">
                                 {t('eventEditor.image.label')}
                             </label>
-                            
-                            {/* Hidden file input */}
                             <input
-                            type="file"
-                            ref={fileInputRef}
-                            id="eventImage"
-                            name="eventImage"
-                            accept="image/*"
-                            className="hidden"
-                            onChange={handleImageChange}
+                                type="file"
+                                ref={fileInputRef}
+                                id="eventImage"
+                                name="eventImage"
+                                accept="image/*"
+                                className="hidden"
+                                onChange={handleImageChange}
                             />
-                            
-                            {/* Accessible button to trigger file input */}
                             <button
-                            type="button"
-                            onClick={handleImageClick}
-                            className="btn btn-outline w-full mb-3"
-                            aria-controls="eventImage"
+                                type="button"
+                                onClick={handleImageClick}
+                                className="btn btn-secondary rounded-xl w-full"
+                                aria-controls="eventImage"
                             >
-                            {imagePreview ? t('common.media.changeImage') : t('common.media.selectImage')}
+                                {imagePreview ? t('common.media.changeImage') : t('common.media.selectImage')}
                             </button>
-                            
-                            {/* Image container with extracted rendering logic */}
-                            <div className="relative w-full h-48 bg-base-100 rounded-lg overflow-hidden border border-base-300">
+                            <div className="relative w-full h-48 bg-base-100 rounded-xl overflow-hidden border border-base-300">
                                 {renderImageContent()}
                             </div>
                         </div>
                     </div>
-                </div>
-            
-                {/* Submit Button */}
-                <div className="flex justify-end gap-4">
-                    <button
-                        type="button"
-                        onClick={() => navigate('/instantiate/eventmaker')}
-                        className="btn btn-outline"
-                        disabled={isSubmitting}
-                    >
-                        {t('eventEditor.actions.cancel')}
-                    </button>
-                    <button
-                        type="submit"
-                        className="btn btn-primary"
-                        disabled={isSubmitting}
-                    >
-                        {isSubmitting ? (
-                            <>
-                                <span className="loading loading-spinner loading-sm"></span>
-                                {' '}{t('eventEditor.actions.saving')}
-                            </>
-                        ) : (
-                            t('eventEditor.actions.save')
-                        )}
-                    </button>
-                </div>
-            </form>
+                    <div className="divider"></div>
+
+                    <div className="flex justify-end gap-4">
+                        <button
+                            type="button"
+                            onClick={() => navigate('/instantiate/event/info')}
+                            className="btn btn-secondary rounded-xl"
+                            disabled={isSubmitting}
+                        >
+                            {t('eventEditor.actions.cancel')}
+                        </button>
+                        <button
+                            type="submit"
+                            className="btn btn-primary rounded-xl"
+                            disabled={isSubmitting}
+                        >
+                            {isSubmitting ? (
+                                <>
+                                    <span className="loading loading-spinner loading-sm"></span>
+                                    {' '}{t('eventEditor.actions.saving')}
+                                </>
+                            ) : (
+                                t('eventEditor.actions.save')
+                            )}
+                        </button>
+                    </div>
+                </form>
         </div>
-    </div>
     );
 }
 
-export default EventEditor;
-
 EventEditor.propTypes = {
-    eventInfo: PropTypes.shape({
-        name: PropTypes.string,
-        description: PropTypes.string,
-        start_time: PropTypes.string,
-        end_time: PropTypes.string,
-        location: PropTypes.string,
-        image_id: PropTypes.string
-    }),
+    eventInfo: PropTypes.object.isRequired,
+    isLoading: PropTypes.bool.isRequired,
+    updateEventInfo: PropTypes.func.isRequired,
+    getEventInfo: PropTypes.func.isRequired,
 };

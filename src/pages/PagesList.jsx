@@ -1,11 +1,12 @@
 import React, { useEffect, useState } from "react";
 import { usePages } from "../contexts/PagesContext.jsx";
 import { useNavigate } from "react-router-dom";
-import { FaEdit, FaTrash, FaPlus } from "react-icons/fa";
+import {FaEdit, FaTrash, FaPlus, FaSearch} from "react-icons/fa";
 import { useNotification } from "../contexts/NotificationContext";
 import { axiosWithAuth } from "../utils/axiosWithAuth";
 import { useKeycloak } from "@react-keycloak/web";
 import { useTranslation } from "react-i18next";
+import DeleteConfirmationModal from '../components/common/DeleteConfirmationModal.jsx';
 
 export function PagesList() {
     const { t } = useTranslation();
@@ -18,6 +19,11 @@ export function PagesList() {
     const [filterEnabled, setFilterEnabled] = useState("all"); // "all", "enabled", "disabled"
     const [currentPage, setCurrentPage] = useState(1);
     const itemsPerPage = 5;
+    
+    // Add these states for delete confirmation modal
+    const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
+    const [deletingPageId, setDeletingPageId] = useState(null);
+    const [isDeleting, setIsDeleting] = useState(false);
 
     useEffect(() => {
         getPages();
@@ -25,25 +31,44 @@ export function PagesList() {
 
     const handleEdit = (page) => {
         const pageTitleSlug = encodeURIComponent(page.title);
-        navigate(`/instantiate/eventmaker/edit-page/${pageTitleSlug}`);
+        navigate(`/instantiate/application/pages/edit-page/${pageTitleSlug}`);
     };
 
-    const handleDelete = async (pageId) => {
-        console.log("Deleting page with ID:", pageId);
-        if (window.confirm(t('pagesList.actions.deleteConfirm'))) {
-            try {
-                await deletePage(pageId);
-                showNotification(t('pagesList.actions.deleteSuccess'), "success");
-            } catch (error) {
-                // Properly handle the error by logging it
-                console.error("Error deleting page:", error);
-
-                // Show a more specific error message if possible
-                const errorMessage = error?.message || t('pagesList.actions.deleteError');
-                showNotification(errorMessage, "error");
-
-                getPages();
+    const handleDelete = (pageId) => {
+        setDeletingPageId(pageId);
+        setIsDeleteModalOpen(true);
+    };
+    
+    const closeDeleteModal = () => {
+        setIsDeleteModalOpen(false);
+        setDeletingPageId(null);
+    };
+    
+    const confirmDelete = async () => {
+        if (!deletingPageId) return;
+    
+        setIsDeleting(true);
+        try {
+            await deletePage(deletingPageId);
+            showNotification(t('pagesList.actions.deleteSuccess'), "success");
+    
+            // Refresh the pages list
+            await getPages();
+    
+            // Check if the current page is empty after deletion
+            const totalPagesAfterDeletion = Math.ceil((pages.length - 1) / itemsPerPage);
+            if (currentPage > totalPagesAfterDeletion) {
+                setCurrentPage(totalPagesAfterDeletion); // Redirect to the previous page
             }
+        } catch (error) {
+            console.error("Error deleting page:", error);
+    
+            // Show a more specific error message if possible
+            const errorMessage = error?.message || t('pagesList.actions.deleteError');
+            showNotification(errorMessage, "error");
+        } finally {
+            setIsDeleting(false);
+            closeDeleteModal();
         }
     };
 
@@ -98,7 +123,7 @@ export function PagesList() {
     };
 
     const handleCreate = () => {
-        navigate("/instantiate/eventmaker/create-page");
+        navigate("create-page");
     };
 
     const handleClone = async (page) => {
@@ -140,13 +165,13 @@ export function PagesList() {
     );
 
     return (
-        <div className="w-full min-h-svh p-8">
-            <h1 className="text-3xl font-bold mb-4">{t('pagesList.title')}</h1>
+        <div className="w-full min-h-svh p-2 lg:p-8">
+            <h1 className="text-3xl font-bold my-8">{t('pagesList.title')}</h1>
 
             <div className="mb-4">
                 <button
                     onClick={handleCreate}
-                    className="flex items-center gap-2 px-4 py-2 bg-green-600 text-white rounded-md hover:bg-green-700"
+                    className="btn btn-primary flex items-center gap-2 px-4 py-2 text-white rounded-xl"
                 >
                     <FaPlus />
                     {t('pagesList.createButton')}
@@ -154,35 +179,29 @@ export function PagesList() {
             </div>
 
             <div className="flex flex-col sm:flex-row gap-4 mb-6">
-                <div className="relative flex-1">
+                <label className="input input-bordered rounded-xl flex items-center gap-2">
+                    <FaSearch className="text-gray-400"/>
                     <input
                         type="text"
                         placeholder={t('pagesList.searchPlaceholder')}
                         value={searchTerm}
                         onChange={(e) => setSearchTerm(e.target.value)}
-                        className="w-full p-2 pl-10 border border-gray-300 rounded-md shadow-sm"
+                        className="grow"
                     />
-                    <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5 absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
-                    </svg>
+                </label>
+                <div className="filter">
+                    <input className="btn rounded-xl filter-reset" type="radio" name="metaframeworks" value="all" onClick={(e) => setFilterEnabled(e.target.value)} aria-label="All"/>
+                    <input className="btn btn-secondary rounded-xl" type="radio" name="metaframeworks" value="enabled" onClick={(e) => setFilterEnabled(e.target.value)} aria-label={t('pagesList.filters.enabled')}/>
+                    <input className="btn btn-secondary rounded-xl" type="radio" name="metaframeworks" value="disabled" onClick={(e) => setFilterEnabled(e.target.value)} aria-label={t('pagesList.filters.disabled')}/>
                 </div>
-
-                <select
-                    value={filterEnabled}
-                    onChange={(e) => setFilterEnabled(e.target.value)}
-                    className="p-2 border border-gray-300 rounded-md shadow-sm"
-                >
-                    <option value="all">{t('pagesList.filters.all')}</option>
-                    <option value="enabled">{t('pagesList.filters.enabled')}</option>
-                    <option value="disabled">{t('pagesList.filters.disabled')}</option>
-                </select>
             </div>
 
             {isLoading && <p>{t('pagesList.loading')}</p>}
             {error && <p className="text-red-500">{t('pagesList.error')}</p>}
 
             {!isLoading && pages.length === 0 && (
-                <div className="flex flex-col items-center justify-center p-8 border-2 border-dashed border-gray-300 rounded-lg">
+                <div
+                    className="flex flex-col items-center justify-center p-8 border-2 border-dashed border-gray-300 rounded-lg">
                     <svg xmlns="http://www.w3.org/2000/svg" className="h-16 w-16 text-gray-400 mb-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                         <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
                     </svg>
@@ -202,7 +221,7 @@ export function PagesList() {
                 {paginatedPages.map((page, index) => (
                     <li
                         key={page.page_id || index}
-                        className={`p-4 border border-gray-300 rounded-md shadow-sm hover:shadow-lg transition-shadow ${!page.enabled ? 'bg-gray-50' : ''
+                        className={`p-4 border border-gray-300 rounded-xl ${!page.enabled ? 'bg-gray-50' : ''
                             }`}
                     >
                         <div className="flex justify-between items-center">
@@ -210,8 +229,8 @@ export function PagesList() {
                                 <div className="flex items-center gap-2">
                                     <h2 className="text-xl font-semibold">{page.title}</h2>
                                     <span className={`text-xs px-2 py-1 rounded-full ${page.enabled
-                                        ? 'bg-green-100 text-green-800'
-                                        : 'bg-gray-100 text-gray-800'
+                                        ? 'bg-green-800 text-white '
+                                        : 'bg-secondary/70 text-white '
                                         }`}>
                                         {page.enabled ? t('pagesList.status.enabled') : t('pagesList.status.disabled')}
                                     </span>
@@ -230,21 +249,21 @@ export function PagesList() {
                                 </label>
                                 <button
                                     onClick={() => handleEdit(page)}
-                                    className="text-gray-500 hover:text-blue-500 p-2 rounded-full"
+                                    className="text-gray-500 hover:text-primary p-2 rounded-full"
                                     title={t('pagesList.actions.edit')}
                                 >
                                     <FaEdit />
                                 </button>
                                 <button
                                     onClick={() => handleDelete(page.page_id)}
-                                    className="text-gray-500 hover:text-red-500 p-2 rounded-full"
+                                    className="text-gray-500 hover:text-primary p-2 rounded-full"
                                     title={t('pagesList.actions.delete')}
                                 >
                                     <FaTrash />
                                 </button>
                                 <button
                                     onClick={() => handleClone(page)}
-                                    className="text-gray-500 hover:text-purple-500 p-2 rounded-full"
+                                    className="text-gray-500 hover:text-primary p-2 rounded-full"
                                     title={t('pagesList.actions.clone')}
                                 >
                                     <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -288,6 +307,16 @@ export function PagesList() {
                     </div>
                 </div>
             )}
+
+            {/* Add the DeleteConfirmationModal */}
+            <DeleteConfirmationModal
+                isOpen={isDeleteModalOpen}
+                onClose={closeDeleteModal}
+                onConfirm={confirmDelete}
+                title={t('pagesList.actions.delete')}
+                message={t('pagesList.actions.deleteConfirm')}
+                isLoading={isDeleting}
+            />
         </div>
     );
 }

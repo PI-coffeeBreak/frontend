@@ -23,38 +23,32 @@ export const UsersProvider = ({ children }) => {
     const [userRoles, setUserRoles] = useState({});
     const [userPermissions, setUserPermissions] = useState({});
 
+
+
+
     // Initialize Keycloak Admin Service
     const initKeycloakAdminService = () => {
         if (!initialized || !keycloak?.authenticated || !keycloak?.token) {
-            console.log("Keycloak not initialized or user not authenticated", {
-                initialized,
-                authenticated: keycloak?.authenticated,
-                hasToken: !!keycloak?.token
-            });
             return null;
         }
-        console.log("Initializing KeycloakAdminService with token");
         return new KeycloakAdminService(keycloak.token);
     };
 
     const fetchUsers = async () => {
         if (!initialized || !keycloak?.authenticated) {
-            console.log("Keycloak not initialized or user not authenticated");
             return;
         }
+
 
         setIsLoading(true);
         setError(null);
         try {
-            console.log("Fetching users with auth status:", keycloak.authenticated);
-
             // Fetch all users first
             const allUsersResponse = await axiosWithAuth(keycloak).get(usersBaseUrl);
-            console.log("All users fetched successfully:", allUsersResponse.data);
+
 
             // Then fetch users grouped by role
             const groupedUsersResponse = await axiosWithAuth(keycloak).get(usersRolesUrl);
-            console.log("Users grouped by role fetched successfully:", groupedUsersResponse.data);
 
             // Transform the data
             const flattenedUsers = transformGroupedUsersToFlat(groupedUsersResponse.data, allUsersResponse.data);
@@ -137,7 +131,6 @@ export const UsersProvider = ({ children }) => {
         setIsLoading(true);
         setError(null);
         try {
-            console.log(`Updating role for user with ID ${userId} to ${newRole}`);
 
             const reverseRoleMapping = {
                 Participant: "cb-attendee",
@@ -188,7 +181,6 @@ export const UsersProvider = ({ children }) => {
         setIsLoading(true);
         setError(null);
         try {
-            console.log(`Toggling ban status for user with ID ${userId} to ${shouldBeBanned}`);
 
             setUsers((prevUsers) =>
                 prevUsers.map((user) =>
@@ -233,7 +225,6 @@ export const UsersProvider = ({ children }) => {
 
     // Fetch all available roles and permissions from Keycloak
     const fetchAllRolesAndPermissions = async () => {
-        console.log("Attempting to fetch roles and permissions");
         const adminService = initKeycloakAdminService();
         if (!adminService) {
             console.error("Could not initialize admin service - missing token or authentication");
@@ -243,13 +234,9 @@ export const UsersProvider = ({ children }) => {
         setIsLoading(true);
         setError(null);
         try {
-            console.log("Calling adminService.getAllRoles()");
             const rolesData = await adminService.getAllRoles();
-            console.log("Roles data received:", rolesData);
 
             const { roles, permissions } = adminService.filterRolesAndPermissions(rolesData);
-            console.log("Filtered roles:", roles);
-            console.log("Filtered permissions:", permissions);
 
             setAllRoles(roles);
             setAllPermissions(permissions);
@@ -347,7 +334,6 @@ export const UsersProvider = ({ children }) => {
         setIsLoading(true);
         setError(null);
         try {
-            console.log("Creating new role:", roleName);
             const result = await adminService.createRole(roleName, description);
 
             // Refresh roles after creation
@@ -375,7 +361,6 @@ export const UsersProvider = ({ children }) => {
         setIsLoading(true);
         setError(null);
         try {
-            console.log("Getting permissions for role:", roleName);
             const permissions = await adminService.getRolePermissions(roleName);
             return permissions;
         } catch (error) {
@@ -398,7 +383,6 @@ export const UsersProvider = ({ children }) => {
         setIsLoading(true);
         setError(null);
         try {
-            console.log(`Adding permission ${permission.name} to role ${roleName}`);
             const result = await adminService.addPermissionToRole(roleName, permission);
             return result;
         } catch (error) {
@@ -421,7 +405,6 @@ export const UsersProvider = ({ children }) => {
         setIsLoading(true);
         setError(null);
         try {
-            console.log(`Removing permission ${permission.name} from role ${roleName}`);
             const result = await adminService.removePermissionFromRole(roleName, permission);
             return result;
         } catch (error) {
@@ -475,8 +458,6 @@ export const UsersProvider = ({ children }) => {
         setIsLoading(true);
         setError(null);
         try {
-            console.log("Creating new user with data:", userData);
-
             // Prepare user data for the API
             const userToCreate = {
                 firstName: userData.firstName,
@@ -493,11 +474,8 @@ export const UsersProvider = ({ children }) => {
                 temporary: true
             };
 
-            console.log("Formatted user data for API:", userToCreate);
-
             // Use the dedicated endpoint for user creation
             const response = await axiosWithAuth(keycloak).post(`${usersBaseUrl}`, userToCreate);
-            console.log("User created successfully:", response.data);
 
             // Refresh users list to make sure the new user is in the users array
             await fetchUsers();
@@ -528,8 +506,6 @@ export const UsersProvider = ({ children }) => {
         };
 
         try {
-            console.log(`Creating ${usersData.length} users from bulk import`);
-
             // Format the data for the batch endpoint
             const formattedUsers = usersData.map(user => ({
                 firstName: user.firstName,
@@ -548,7 +524,6 @@ export const UsersProvider = ({ children }) => {
 
             // Use the dedicated batch endpoint
             const response = await axiosWithAuth(keycloak).post(`${usersBaseUrl}/batch`, formattedUsers);
-            console.log("Batch user creation response:", response.data);
 
             // Calculate results based on the response
             if (response.data && Array.isArray(response.data.results)) {
