@@ -260,7 +260,7 @@ export function EditPage() {
             />
 
             <PageActions
-                onBack={() => handleNavigateAway("/instantiate/eventmaker/pages")}
+                onBack={() => handleNavigateAway("/instantiate/application/pages")}
                 onSave={handleUpdatePage}
                 isLoading={isPagesLoading}
                 hasUnsavedChanges={hasUnsavedChanges}
