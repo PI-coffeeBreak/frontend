@@ -15,7 +15,6 @@ import { restrictToVerticalAxis } from '@dnd-kit/modifiers';
 import { DynamicComponentConfiguration } from "../../components/event_maker/pages/DynamicComponentConfiguration";
 import { prepareComponentsWithDefaults } from "../../utils/pageUtils";
 import { useTranslation } from "react-i18next";
-import { PageDescriptionInput } from "../../components/event_maker/pages/inputs/PageDescriptionInput";
 
 // Prevent unnecessary re-renders when dragging
 const MemoizedDynamicComponentConfiguration = React.memo(
