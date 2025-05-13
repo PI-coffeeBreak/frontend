@@ -86,12 +86,13 @@ const ActivitiesFeedback = () => {
             return true;
         })();
 
+        const isAnonymousUser = item.user_id.startsWith('anon');
         const matchesUserType =
             userTypeFilter === 'all'
                 ? true
                 : userTypeFilter === 'anonymous'
-                ? item.user_id.startsWith('anon')
-                : !item.user_id.startsWith('anon');
+                ? isAnonymousUser
+                : !isAnonymousUser;
 
         return matchesRating && matchesUserType;
     });
@@ -102,6 +103,45 @@ const ActivitiesFeedback = () => {
     );
 
     const totalPages = Math.ceil(filteredFeedback.length / itemsPerPage);
+
+    let content;
+
+    if (isLoading) {
+        content = (
+            <div className="flex justify-center my-8">
+                <span className="loading loading-spinner loading-lg">{t('activitiesFeedback.loading')}</span>
+            </div>
+        );
+    } else if (error) {
+        content = (
+            <div className="text-center py-8 bg-base-200 rounded-lg">
+                <p className="text-lg text-gray-500">{t('activitiesFeedback.error')}</p>
+            </div>
+        );
+    } else {
+        content = (
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+                {activities.map((activity) => (
+                    <div
+                        key={activity.id}
+                        className={`bg-base-100 rounded-lg shadow-sm overflow-hidden transition-all duration-300 hover:shadow-lg hover:-translate-y-1 cursor-pointer ${
+                            selectedActivity === activity.name ? 'ring-2 ring-primary' : ''
+                        }`}
+                        onClick={() => fetchFeedback(activity.id, activity.name)}
+                    >
+                        <div className="p-4">
+                            <h4 className="font-bold text-primary mb-2">{activity.name}</h4>
+                            <p className="text-sm text-gray-600 line-clamp-2">{activity.description}</p>
+                            <p className="text-sm text-gray-500 mt-2">
+                                <strong>{t('activitiesFeedback.averageRating')}:</strong>{' '}
+                                {activityRatings[activity.id] || t('activitiesFeedback.loading')}
+                            </p>
+                        </div>
+                    </div>
+                ))}
+            </div>
+        );
+    }
 
     return (
         <div className="w-full min-h-svh p-4 sm:p-8">
@@ -114,36 +154,7 @@ const ActivitiesFeedback = () => {
                     <h2 className="text-xl sm:text-2xl font-semibold">{t('activitiesFeedback.title')}</h2>
                 </div>
 
-                {isLoading ? (
-                    <div className="flex justify-center my-8">
-                        <span className="loading loading-spinner loading-lg">{t('activitiesFeedback.loading')}</span>
-                    </div>
-                ) : error ? (
-                    <div className="text-center py-8 bg-base-200 rounded-lg">
-                        <p className="text-lg text-gray-500">{t('activitiesFeedback.error')}</p>
-                    </div>
-                ) : (
-                    <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
-                        {activities.map((activity) => (
-                            <div
-                                key={activity.id}
-                                className={`bg-base-100 rounded-lg shadow-sm overflow-hidden transition-all duration-300 hover:shadow-lg hover:-translate-y-1 cursor-pointer ${
-                                    selectedActivity === activity.name ? 'ring-2 ring-primary' : ''
-                                }`}
-                                onClick={() => fetchFeedback(activity.id, activity.name)}
-                            >
-                                <div className="p-4">
-                                    <h4 className="font-bold text-primary mb-2">{activity.name}</h4>
-                                    <p className="text-sm text-gray-600 line-clamp-2">{activity.description}</p>
-                                    <p className="text-sm text-gray-500 mt-2">
-                                        <strong>{t('activitiesFeedback.averageRating')}:</strong>{' '}
-                                        {activityRatings[activity.id] || t('activitiesFeedback.loading')}
-                                    </p>
-                                </div>
-                            </div>
-                        ))}
-                    </div>
-                )}
+                {content}
             </div>
 
             {selectedActivity && (
@@ -208,18 +219,21 @@ const ActivitiesFeedback = () => {
                                     >
                                         <p>
                                             <strong>{t('activitiesFeedback.user')}:</strong>{' '}
-                                            {item.user_id.startsWith('anon')
-                                                ? t('activitiesFeedback.anonymousUser')
-                                                : userCache[item.user_id] || (
-                                                      <span>
-                                                          {getUserName(item.user_id).then((userName) => {
-                                                              setUserCache((prev) => ({
-                                                                  ...prev,
-                                                                  [item.user_id]: userName,
-                                                              }));
-                                                          }) || t('activitiesFeedback.loading')}
-                                                      </span>
-                                                  )}
+                                            {item.user_id.startsWith('anon') ? (
+                                                t('activitiesFeedback.anonymousUser')
+                                            ) : (
+                                                userCache[item.user_id] || (
+                                                    <span>
+                                                        {t('activitiesFeedback.loading')}
+                                                        {getUserName(item.user_id).then((userName) => {
+                                                            setUserCache((prev) => ({
+                                                                ...prev,
+                                                                [item.user_id]: userName,
+                                                            }));
+                                                        })}
+                                                    </span>
+                                                )
+                                            )}
                                         </p>
                                         <p>
                                             <strong>{t('activitiesFeedback.rating')}:</strong> {item.rating}
