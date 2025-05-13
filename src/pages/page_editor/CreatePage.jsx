@@ -135,11 +135,14 @@ export function CreatePage() {
                 placeholder={t('pageEditor.common.titlePlaceholder')}
             />
 
+            {/*
+            // add import when uncommenting (similar to title but for description)
             <PageDescriptionInput
                 description={page.description}
                 onChange={(newDescription) => setPage({ ...page, description: newDescription })}
                 placeholder={t('pageEditor.common.descriptionPlaceholder')}
             />
+            */}
 
             <PageContent
                 sections={sections}
