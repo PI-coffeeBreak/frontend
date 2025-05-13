@@ -39,6 +39,7 @@ export function EditPage() {
 
         const currentData = {
             title: page.title,
+            description: page.description,
             components: sections.map((section) => ({
                 ...section.componentData.props,
                 name: section.componentData.name,
@@ -46,9 +47,10 @@ export function EditPage() {
         };
 
         const titleChanged = originalData.title !== currentData.title;
+        const descriptionChanged = originalData.description !== currentData.description;
         const componentsChanged = !compareComponents(originalData.components, currentData.components);
 
-        return titleChanged || componentsChanged;
+        return titleChanged || descriptionChanged || componentsChanged;
     }, [originalData, page, sections]);
 
     // Efeito para detectar mudanças não salvas
@@ -93,6 +95,7 @@ export function EditPage() {
             // Salvar dados originais para comparação
             setOriginalData({
                 title: foundPage.title,
+                description: foundPage.description || "",
                 components: foundPage.components || [],
             });
         } else if (pages.length > 0) {
@@ -122,22 +125,37 @@ export function EditPage() {
     };
 
     const handleUpdatePage = () => {
+        if (!page.title.trim()) {
+            showNotification(t('pageEditor.edit.emptyTitleError'), "error");
+            return;
+        }
+
+        const duplicatePage = pages.find(
+            (p) => p.title === page.title && p.page_id !== page.page_id
+        );
+
+        if (duplicatePage) {
+            showNotification(t('pageEditor.edit.duplicateTitleError'), "error");
+            return;
+        }
+
         // Use the shared utility function to prepare components
         const componentsWithFullProps = prepareComponentsWithDefaults(sections, getComponentSchema);
 
         const pageData = {
             title: page.title,
-            components: componentsWithFullProps
+            description: page.description, // Adiciona a descrição
+            components: componentsWithFullProps,
         };
 
-        // Compare current data with original page data
         const originalComponents = page.components || [];
         const componentsEqual = compareComponents(originalComponents, pageData.components);
-        const originalTitle = pages.find(p => p.page_id === page.page_id)?.title || "";
+        const originalTitle = pages.find((p) => p.page_id === page.page_id)?.title || "";
+        const originalDescription = pages.find((p) => p.page_id === page.page_id)?.description || "";
         const titleEqual = originalTitle === pageData.title;
+        const descriptionEqual = originalDescription === pageData.description;
 
-        // If nothing has changed, show a notification and return early
-        if (titleEqual && componentsEqual) {
+        if (titleEqual && descriptionEqual && componentsEqual) {
             showNotification(t('pageEditor.edit.noChanges'), "info");
             return;
         }
@@ -214,6 +232,15 @@ export function EditPage() {
                 onChange={(newTitle) => setPage({ ...page, title: newTitle })}
                 placeholder={t('pageEditor.common.titlePlaceholder')}
             />
+
+            {/*
+            // add import when uncommenting (similar to title but for description)
+            <PageDescriptionInput
+                description={page.description || ""}
+                onChange={(newDescription) => setPage({ ...page, description: newDescription })}
+                placeholder={t('pageEditor.common.descriptionPlaceholder')}
+            />
+            */}
 
             <PageContent
                 sections={sections}

@@ -107,6 +107,10 @@ export const PagesProvider = ({ children }) => {
         return page ? page.page_id : null;
     };
 
+    const getPageNames = () => {
+        return pages.map((page) => page.title);
+    };
+
     // Memoize the context value
     const contextValue = useMemo(
         () => ({
@@ -117,6 +121,7 @@ export const PagesProvider = ({ children }) => {
             deletePage,
             togglePageEnabled,
             findPageIdByTitle,
+            getPageNames,
             isLoading,
             error,
         }),

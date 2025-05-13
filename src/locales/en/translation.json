@@ -490,7 +490,9 @@
       "updateSuccess": "Page updated successfully!",
       "updateError": "Failed to update the page",
       "unsavedChanges": "You have unsaved changes. Do you really want to leave this page? All changes will be lost.",
-      "saveButton": "Update Page"
+      "saveButton": "Update Page",
+      "emptyTitleError": "Page title is required",
+      "duplicateTitleError": "Page title already exists. Please choose a different title."
     },
     "create": {
       "title": "Create New Page",
@@ -510,12 +512,16 @@
       "dragToReorder": "Drag to reorder",
       "componentSettings": "Component Settings",
       "noComponents": "No components added",
-      "addFirstComponent": "Add your first component"
+      "addFirstComponent": "Add your first component",
+      "descriptionPlaceholder": "Enter a description for your page"
     }
   },
   "components": {
     "pageTitleInput": {
       "label": "Page Title"
+    },
+    "pageDescriptionInput": {
+      "label": "Page Description"
     },
     "dynamicComponentConfiguration": {
       "componentType": "Component Type",

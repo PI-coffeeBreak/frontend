@@ -487,7 +487,9 @@
       "updateSuccess": "Página atualizada com sucesso!",
       "updateError": "Falha ao atualizar a página",
       "unsavedChanges": "Tem alterações não guardadas. Deseja realmente sair desta página? Todas as alterações serão perdidas.",
-      "saveButton": "Atualizar Página"
+      "saveButton": "Atualizar Página",
+      "emptyTitleError": "O título da página não pode estar vazio",
+      "duplicateTitleError": "Já existe uma página com este título. Por favor, escolha outro título."
     },
     "create": {
       "title": "Criar Nova Página",
@@ -507,12 +509,16 @@
       "dragToReorder": "Arraste para reordenar",
       "componentSettings": "Definições do Componente",
       "noComponents": "Nenhum componente adicionado",
-      "addFirstComponent": "Adicione o seu primeiro componente"
+      "addFirstComponent": "Adicione o seu primeiro componente",
+      "descriptionPlaceholder": "Introduza uma descrição para a sua página"
     }
   },
   "components": {
     "pageTitleInput": {
       "label": "Título da Página"
+    },
+    "pageDescriptionInput": {
+      "label": "Descrição da Página"
     },
     "dynamicComponentConfiguration": {
       "componentType": "Tipo de Componente",
