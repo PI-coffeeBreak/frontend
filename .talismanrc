@@ -1,0 +1,11 @@
+fileignoreconfig:
+- filename: package-lock.json
+  checksum: 2806fdc45d3898d60ef9c50c1405f2b070dae27418652320700b4e6cae6587e5
+- filename: src/components/users/UserExcelImport.jsx
+  checksum: e0314cb109ee4ad3b087a3b285aedf1b02c0c8cf9bb6bb8a4230e3f96a84d4cc
+- filename: src/utils/passwordUtils.js
+  checksum: 6c6bd9ce435781c9ea96771c74f53eef36b3830b2b5b45783f4406bcf48eccf9
+- filename: index.html
+  checksum: df739184f12fb6ec5dcd1525dedb6da9ed7d4dbb2d78e50604a168e1df15f1d4
+threshold: medium
+version: "1.0"

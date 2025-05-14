@@ -1,0 +1,766 @@
+{
+  "common": {
+    "home": "Home",
+    "users": "Users",
+    "activities": "Activities",
+    "alerts": "Alerts",
+    "schedule": "Schedule",
+    "plugins": "Plugins",
+    "colors": "Colors",
+    "menus": "Menus",
+    "pages": "Pages",
+    "create": "Create",
+    "edit": "Edit",
+    "save": "Save",
+    "saving": "Saving...",
+    "cancel": "Cancel",
+    "delete": "Delete",
+    "loading": "Loading...",
+    "error": "Error",
+    "success": "Success",
+    "media": {
+      "selectImage": "Select Image",
+      "changeImage": "Change Image",
+      "noImage": "No image selected",
+      "imageError": "Unable to display image",
+      "imageErrorDetails": "The image may be missing or unavailable",
+      "sizeError": "Image size must be less than 50MB",
+      "typeError": "Please upload an image file",
+      "uploadError": "Failed to upload image. Activity updated, but image was not changed.",
+      "noImageField": "Activity doesn't have an image field. Please try again.",
+      "removeImage": "Remove Image",
+      "imageAlt": "Image",
+      "pwaIcon192Alt": "192x192 PWA Icon",
+      "pwaIcon512Alt": "512x512 PWA Icon",
+      "faviconAlt": "32x32 Favicon"
+    }
+  },
+  "auth": {
+    "login": "Login",
+    "logout": "Logout",
+    "setup": "Setup"
+  },
+  "event": {
+    "defaultTitle": "Event",
+    "maker": "Event Maker",
+    "editor": "Event Editor",
+    "setup": "Event Setup"
+  },
+  "menu": {
+    "sections": {
+      "home": {
+        "title": "Home",
+        "description": "Manage users and activities",
+        "links": {
+          "users": "Users",
+          "activities": "Activities",
+          "alerts": "Alerts"
+        },
+        "descriptions": {
+          "users": "Manage user accounts, roles and permissions",
+          "activities": "Schedule and organize activities",
+          "alerts": "Create and send notifications to participants"
+        },
+        "buttons": {
+          "users": "Manage Users",
+          "activities": "View Activities",
+          "alerts": "Manage Alerts"
+        }
+      },
+      "event": {
+        "title": "Event",
+        "description": "Manage your event settings and components",
+        "links": {
+          "users": "Users",
+          "activities": "Activities",
+          "eventInfo": "Event Info",
+          "plugins": "Manage Plugins"
+        }
+      },
+      "application": {
+        "title": "Application",
+        "description": "Customize and configure your application",
+        "links": {
+          "pages": "Pages",
+          "menus": "Menus",
+          "colors": "Colors",
+          "icons": "Icons"
+        }
+      },
+      "eventMaker": {
+        "title": "My Event",
+        "description": "Customize and configure your event",
+        "links": {
+          "eventInfo": "Event Info",
+          "colors": "Colors",
+          "menus": "Menus",
+          "pages": "Pages",
+          "plugins": "Manage Plugins"
+        }
+      },
+      "plugins": {
+        "title": "Plugins",
+        "description": "Manage and configure plugins"
+      },
+      "management": {
+        "title": "Management",
+        "description": "Manage users and activities",
+        "links": {
+          "users": "Users",
+          "activities": "Activities",
+          "alerts": "Alerts"
+        }
+      }
+    },
+    "actions": {
+      "logout": "Logout"
+    }
+  },
+  "instantiate": {
+    "welcome": "Welcome to",
+    "accessTools": "Access all event management tools in one place",
+    "eventDate": "Event Date",
+    "openDashboard": "Open Dashboard",
+    "quickAccess": "Quick Access",
+    "cards": {
+      "management": {
+        "title": "Event",
+        "description": "Access tools to manage users, activities and plugins for your event."
+      },
+      "eventMaker": {
+        "title": "Application",
+        "description": "Customize the appearance, content and functionality of your application."
+      }
+    }
+  },
+  "users": {
+    "title": "Create Users",
+    "searchPlaceholder": "Search users",
+    "table": {
+      "name": "Name",
+      "email": "Email",
+      "role": "Role",
+      "actions": "Actions"
+    },
+    "actions": {
+      "assignRoles": "Assign Roles",
+      "banUser": "Ban User",
+      "unbanUser": "Unban User"
+    },
+    "create": {
+      "title": "Create New User",
+      "description": "Add a new user to the system",
+      "success": "User created successfully!",
+      "firstName": "First Name",
+      "lastName": "Last Name",
+      "email": "Email Address",
+      "role": "Role",
+      "temporaryPassword": "Temporary Password",
+      "hidePassword": "Hide",
+      "showPassword": "Show",
+      "passwordStrength": "Password Strength",
+      "passwordChangeNote": "The user will be prompted to change this password on first login.",
+      "generatePassword": "Generate Password",
+      "createUser": "Create User",
+      "cancel": "Cancel"
+    },
+    "manageRoles": {
+      "title": "Manage Roles",
+      "create": "Create Role",
+      "permissions": "Manage Permissions",
+      "permissionsWarning": "You don't have permission to manage roles. You need one of these roles: realm-admin, create-realm, manage-realm, cb-admin or admin. Role creation may fail with permission error.",
+      "roleName": "Role Name",
+      "roleNamePlaceholder": "organizer",
+      "createRole": "Create Role",
+      "selectRole": "Select Role:",
+      "permissionName": "Permission Name",
+      "description": "Manage the roles and permissions",
+      "actions": "Actions",
+      "noDescription": "No description",
+      "assigned": "Assigned",
+      "assign": "Assign",
+      "noRoles": "No roles available. Create a role first."
+    },
+    "list": {
+      "title": "Users"
+    },
+    "import": {
+      "title": "Add with Excel file",
+      "description": "Upload an Excel file to quickly add multiple users at once",
+      "results": "Import Results",
+      "success": "Successfully imported {{success}} of {{total}} users",
+      "failed": "Failed to import {{failed}} users. Check console for details."
+    },
+    "adminPermissionsWarning": "You don't have administrative permissions to manage user roles and permissions",
+    "roles": {
+      "participant": "Participant",
+      "speaker": "Speaker",
+      "staff": "Staff",
+      "organizer": "Organizer"
+    }
+  },
+  "activities": {
+    "title": "Create Activities",
+    "activities": "Activities",
+    "create": {
+      "title": "Create New Activity",
+      "description": "Create a new activity manually",
+      "name": "Name",
+      "date": "Date",
+      "duration": "Duration",
+      "type": "Type",
+      "topic": "Topic",
+      "image": "Image"
+    },
+    "types": {
+      "title": "Create New Activity Type",
+      "name": "Name",
+      "namePlaceholder": "Enter activity type name",
+      "color": "Color",
+      "createButton": "Create Activity Type",
+      "creating": "Creating...",
+      "createSuccess": "Activity type created successfully",
+      "createError": "Failed to create activity type"
+    },
+    "import": {
+      "title": "Add with Excel file",
+      "description": "Upload an Excel file to quickly add multiple activities at once"
+    },
+    "filters": {
+      "searchPlaceholder": "Search activities",
+      "all": "All"
+    },
+    "delete": "Delete activity",
+    "edit": "Edit activity",
+    "editTitle": "Edit Activity",
+    "deleteConfirmTitle": "Delete Activity",
+    "name": "Name",
+    "description": "Description",
+    "type": "Type",
+    "selectType": "Select a type",
+    "topic": "Topic",
+    "date": "Date & Time",
+    "duration": "Duration",
+    "image": "Image",
+    "currentImage": "Current Image (click browse to change)",
+    "updateSuccess": "Activity updated successfully",
+    "updateError": "Failed to update activity",
+    "deleteConfirm": "Are you sure you want to delete this activity?",
+    "deleteSuccess": "Activity deleted successfully",
+    "deleteError": "Failed to delete activity",
+    "noActivities": "No activities found",
+    "trySearch": "Try changing your search or filters",
+    "imageAlt": "Activity image",
+    "noImage": "No image",
+    "createButton": "Create",
+    "creating": "Creating...",
+    "imageSelected": "Image selected",
+    "clickToRemoveAndUploadDifferentImage": "Click to remove and upload a different image",
+    "removeImage": "Remove image",
+    "permissions": {
+      "disabled": "You don't have permission to create activities"
+    }
+  },
+  "eventEditor": {
+    "title": "Event Information",
+    "basicInfo": {
+      "title": "Basic Information",
+      "eventName": {
+        "label": "Event Name",
+        "placeholder": "Enter the name of your event",
+        "required": "Event name is required"
+      },
+      "description": {
+        "label": "Description",
+        "placeholder": "Describe your event",
+        "required": "Description is required"
+      }
+    },
+    "dateTime": {
+      "title": "Date and Time",
+      "startDate": {
+        "label": "Begins",
+        "required": "Start date is required"
+      },
+      "endDate": {
+        "label": "Ends",
+        "required": "End date is required",
+        "invalid": "End date must be after start date"
+      }
+    },
+    "location": {
+      "title": "Location",
+      "label": "Event Location",
+      "placeholder": "Enter the event venue or address",
+      "required": "Location is required"
+    },
+    "image": {
+      "title": "Event Image",
+      "label": "Event Logo",
+      "selectImage": "Select Image",
+      "changeImage": "Change Image",
+      "noImage": "No image selected",
+      "imageError": "Unable to display image",
+      "imageErrorDetails": "The image may be missing or unavailable",
+      "sizeError": "Image size should be less than 50MB",
+      "typeError": "Please upload an image file"
+    },
+    "actions": {
+      "cancel": "Cancel",
+      "save": "Save Changes",
+      "saving": "Saving..."
+    },
+    "validation": {
+      "requiredFields": "Please correct the errors in the form"
+    },
+    "success": {
+      "update": "Event updated successfully"
+    },
+    "error": {
+      "update": "Failed to update event",
+      "imageUpload": "Failed to upload image. Event will be updated without image changes."
+    }
+  },
+  "themeCustomizer": {
+    "title": "Event Theme Designer",
+    "subtitle": "Customize your event's colors and see how they look in real-time",
+    "pageHeader": {
+      "title": "Theme Customization",
+      "subtitle": "Personalize your event with custom colors to match your brand identity"
+    },
+    "tabs": {
+      "colors": "Choose Colors",
+      "preview": "Preview Your Event"
+    },
+    "instructions": "Click on any color below to change it. You'll see your changes in the 'Preview Your Event' tab.",
+    "colorGroups": {
+      "brandColors": "Brand Colors",
+      "backgroundText": "Background & Text",
+      "statusColors": "Status Colors",
+      "neutrals": "Neutral Colors"
+    },
+    "colorNames": {
+      "primary": "Main Brand Color",
+      "primary-content": "Text on Main Color",
+      "secondary": "Secondary Brand Color",
+      "secondary-content": "Text on Secondary Color",
+      "accent": "Accent Color (Highlights)",
+      "accent-content": "Text on Accent Color",
+      "base-100": "Background Color",
+      "base-200": "Card Background",
+      "base-300": "Border Color",
+      "base-content": "Main Text Color",
+      "info": "Information Color",
+      "info-content": "Text on Information Color",
+      "success": "Success Color",
+      "success-content": "Text on Success Color",
+      "warning": "Warning Color",
+      "warning-content": "Text on Warning Color",
+      "error": "Error Color",
+      "error-content": "Text on Error Color",
+      "neutral": "Neutral Color",
+      "neutral-content": "Text on Neutral Color"
+    },
+    "preview": {
+      "title": "TEDx Aveiro",
+      "talks": "Talks",
+      "eventLocation": "Event Location",
+      "attendees": "Attendees",
+      "tickets": "tickets",
+      "sponsors": "Sponsors",
+      "eventUpdates": "Event Updates",
+      "eventStart": "Event is about to start",
+      "coffeeBreak": "Coffee Break in 10 minutes",
+      "talkDelay": "Talk x staring hour was delayed from 15:00 to 17:00",
+      "eventSchedule": "Event Schedule",
+      "contactOrganizer": "Contact Organizer"
+    },
+    "actions": {
+      "reset": "Reset",
+      "resetTitle": "Reset to original theme",
+      "save": "Save Changes",
+      "text": "Text"
+    },
+    "success": {
+      "save": "Theme saved successfully"
+    },
+    "error": {
+      "save": "Failed to save theme"
+    }
+  },
+  "menuEditor": {
+    "title": "Menu Editor",
+    "description": "Manage navigation menu items. Drag and drop to reorder items. Changes will be reflected in your event's navigation.",
+    "searchPlaceholder": "Search menu items",
+    "addButton": "Add Item",
+    "modal": {
+      "add": {
+        "title": "Add New Item",
+        "label": "Label",
+        "labelPlaceholder": "Item label",
+        "url": "URL / Path",
+        "urlPlaceholder": "/path/to/page",
+        "cancel": "Cancel",
+        "add": "Add"
+      },
+      "edit": {
+        "title": "Edit Item",
+        "cancel": "Cancel",
+        "update": "Update"
+      }
+    },
+    "actions": {
+      "edit": "Edit",
+      "delete": "Delete",
+      "addSuccess": "Item added successfully!",
+      "addError": "Failed to add item. Please try again.",
+      "updateSuccess": "Item updated successfully!",
+      "updateError": "Failed to update item. Please try again.",
+      "deleteConfirm": "Are you sure you want to delete this item?",
+      "deleteSuccess": "Item deleted successfully!",
+      "deleteError": "Failed to delete item. Please try again.",
+      "orderSuccess": "Menu order updated successfully!",
+      "orderError": "Failed to update menu order. Please try again."
+    },
+    "validation": {
+      "requiredFields": "Label and URL are required.",
+      "invalidData": "Invalid data format. Please try again.",
+      "reload": "Try Again"
+    },
+    "emptyState": {
+      "title": "No items found",
+      "description": {
+        "default": "Start by adding your first item.",
+        "search": "No results for \"{{searchTerm}}\""
+      },
+      "clearSearch": "Clear search",
+      "addFirstItem": "Add Item"
+    }
+  },
+  "pagesList": {
+    "title": "Pages",
+    "createButton": "Create Page",
+    "searchPlaceholder": "Search pages",
+    "filters": {
+      "all": "All Pages",
+      "enabled": "Enabled",
+      "disabled": "Disabled"
+    },
+    "table": {
+      "title": "Title",
+      "description": "Description",
+      "status": "Status",
+      "actions": "Actions"
+    },
+    "status": {
+      "enabled": "Enabled",
+      "disabled": "Disabled"
+    },
+    "actions": {
+      "edit": "Edit",
+      "delete": "Delete",
+      "clone": "Clone",
+      "toggleEnabled": "Enable/Disable",
+      "deleteConfirm": "Are you sure you want to delete this page?",
+      "deleteSuccess": "Page deleted successfully!",
+      "deleteError": "Failed to delete page. Please try again.",
+      "toggleSuccess": "Page {{status}} successfully!",
+      "toggleError": "Failed to {{action}} page. Please try again.",
+      "cloneSuccess": "Page cloned successfully!",
+      "cloneError": "Failed to clone page. Please try again."
+    },
+    "emptyState": {
+      "title": "No pages found",
+      "description": {
+        "default": "Start by creating your first page.",
+        "search": "No results for \"{{searchTerm}}\""
+      },
+      "clearSearch": "Clear search",
+      "createFirstPage": "Create First Page"
+    },
+    "loading": "Loading pages...",
+    "error": "Error loading pages"
+  },
+  "pageEditor": {
+    "edit": {
+      "title": "Edit Page",
+      "subtitle": "Edit your page components and content",
+      "loading": "Loading page...",
+      "noChanges": "No changes detected",
+      "updateSuccess": "Page updated successfully!",
+      "updateError": "Failed to update the page",
+      "unsavedChanges": "You have unsaved changes. Do you really want to leave this page? All changes will be lost.",
+      "saveButton": "Update Page",
+      "emptyTitleError": "Page title is required",
+      "duplicateTitleError": "Page title already exists. Please choose a different title."
+    },
+    "create": {
+      "title": "Create New Page",
+      "subtitle": "Design your new page by adding and organizing components",
+      "unsavedChanges": "You have unsaved changes. Are you sure you want to leave?",
+      "titleRequired": "Page title is required",
+      "createSuccess": "Page created successfully!",
+      "createError": "Failed to create page. Please try again.",
+      "loading": "Loading...",
+      "saveButton": "Save Page"
+    },
+    "common": {
+      "backButton": "Back",
+      "titlePlaceholder": "Enter page title",
+      "addComponent": "Add Component",
+      "removeComponent": "Remove Component",
+      "dragToReorder": "Drag to reorder",
+      "componentSettings": "Component Settings",
+      "noComponents": "No components added",
+      "addFirstComponent": "Add your first component",
+      "descriptionPlaceholder": "Enter a description for your page"
+    }
+  },
+  "components": {
+    "pageTitleInput": {
+      "label": "Page Title"
+    },
+    "pageDescriptionInput": {
+      "label": "Page Description"
+    },
+    "dynamicComponentConfiguration": {
+      "componentType": "Component Type",
+      "editProperties": "Edit Properties",
+      "componentPreview": "Component Preview",
+      "sourceType": "Source Type",
+      "uploadMedia": "Upload Media",
+      "externalUrl": "External URL",
+      "error": {
+        "missingData": "Error: Component data missing"
+      }
+    },
+    "pageContent": {
+      "noSections": "No sections added yet",
+      "startBuilding": "Start building your page by clicking \"Add New Section\" below to add content components.",
+      "addNewSection": "Add New Section"
+    }
+  },
+  "management": {
+    "title": "Event",
+    "subtitle": "Manage all aspects of your event through these administrative tools",
+    "cards": {
+      "users": {
+        "title": "Users",
+        "description": "Manage user accounts, roles and permissions. Add new users, edit existing ones or control access to different resources of your event.",
+        "buttonText": "Manage Users"
+      },
+      "activities": {
+        "title": "Activities",
+        "description": "Schedule and organize activities, workshops and event activities. Control schedules, locations and participant registration for all event activities.",
+        "buttonText": "View Activities"
+      },
+      "alerts": {
+        "title": "Alerts",
+        "description": "Create and send notifications to event participants. Keep everyone informed about important updates, schedule changes and announcements.",
+        "buttonText": "Manage Alerts"
+      }
+    }
+  },
+  "eventMaker": {
+    "title": "Application",
+    "subtitle": "Customize and configure your application with these powerful tools",
+    "cards": {
+      "eventInfo": {
+        "title": "Event Info",
+        "description": "Manage your event's basic information.",
+        "buttonText": "Edit Event"
+      },
+      "colors": {
+        "title": "Colors",
+        "description": "Create a unique visual identity for your event by customizing the color scheme. Choose colors that reflect your brand and create the perfect atmosphere.",
+        "buttonText": "Customize Colors"
+      },
+      "menus": {
+        "title": "Menus",
+        "description": "Design your event's navigation structure. Create, organize and customize menu items for an optimal user experience.",
+        "buttonText": "Edit Menus"
+      },
+      "pages": {
+        "title": "Pages",
+        "description": "Create and manage content pages for your event. Create custom layouts to present information effectively.",
+        "buttonText": "Manage Pages"
+      },
+      "choosePlugins": {
+        "title": "Choose Plugins",
+        "description": "Enhance your event with powerful plugins. Add the features you need to create the perfect experience.",
+        "buttonText": "Manage Plugins"
+      }
+    }
+  },
+  "home": {
+    "title": "Plan, Manage and Elevate Your Events with Ease.",
+    "subtitle": "coffeeBreak. makes event management easy. Plan, organize and execute events without complication, all in one place. Simple tools, smart resources and a seamless experience for amazing events.",
+    "getStarted": "Get Started",
+    "learnMore": "Learn More",
+    "loading": "Loading...",
+    "features": {
+      "title": "Manage Events Effortlessly",
+      "subtitle": "Everything you need to plan and execute your event without complications.",
+      "dashboard": {
+        "title": "Site Dashboard",
+        "description": "A complete platform to configure, monitor and collect data from your events."
+      },
+      "customizable": {
+        "title": "Customizable Resources",
+        "description": "A variety of additional modules to customize your event experience as you wish."
+      },
+      "mobile": {
+        "title": "Mobile App",
+        "description": "A perfect extension of your event, reflecting everything configured on the site."
+      }
+    },
+    "newsletter": {
+      "title": "Want to receive our updates? Subscribe to our newsletter.",
+      "placeholder": "Enter your email",
+      "button": "Notify me",
+      "privacy": {
+        "text": "We respect your data. Read our",
+        "link": "privacy policy"
+      }
+    }
+  },
+  "navbar": {
+    "logoAlt": "coffeeBreak logo",
+    "develop": "Develop",
+    "login": "Login",
+    "logout": "Logout"
+  },
+  "instantiateHome": {
+    "title": "Event Dashboard",
+    "subtitle": "Monitor and manage all aspects of your event in one place"
+  },
+  "feedback": {
+    "title": "Rate this Activity",
+    "description": "Your opinion helps us improve!",
+    "submit": "Submit Feedback",
+    "ratingLabel": "Rating:",
+    "commentLabel": "Comment:",
+    "commentPlaceholder": "Write your comment here..."
+  },
+  "floorPlans": {
+    "title": "Floor Plan Management",
+    "reorder": "Reorder All",
+    "exitReorder": "Exit Order Mode",
+    "add": "Add Floor Plan",
+    "dragHint": "Floor Plans order can be changed by dragging and dropping them.",
+    "noPlans": "No Floor Plans yet.",
+    "noDetails": "No details available yet",
+    "confirmDelete": "Delete this floor plan?"
+  },
+  "pagination": {
+    "previous": "Previous",
+    "next": "Next",
+    "page": "Page {{page}} of {{totalPages}}"
+  },
+  "table": {
+    "order": "Order",
+    "drag": "Drag",
+    "image": "Image",
+    "name": "Name",
+    "details": "Details",
+    "actions": "Actions"
+  },
+  "actions": {
+    "edit": "Edit",
+    "delete": "Delete",
+    "close": "Close"
+  },
+  "floorPlanModal": {
+    "editTitle": "Edit Floor Plan",
+    "addTitle": "Add Floor Plan",
+    "removeImage": "Remove image",
+    "noImageToRemove": "No image to remove",
+    "onlyInternalImages": "Only internal managed images can be removed",
+    "name": "Name",
+    "dragAndDrop": "Drag and drop your image here or",
+    "browse": "Browse",
+    "maxFileSize": "Maximum file size: 5MB",
+    "selectImageInputType": "Select Image Input Type",
+    "details": "Details",
+    "cancel": "Cancel",
+    "update": "Update",
+    "add": "Add",
+    "imageUrl": "Image URL",
+    "uploadFile": "Upload File",
+    "optional": "Optional",
+    "imageSelected": "Image selected",
+    "clickTrashIcon": "Click the trash icon to",
+    "removeExistingImage": "remove the existing image",
+    "nameRequired": "Name is required",
+    "nameExists": "A floor plan with this name already exists",
+    "preview": "Preview",
+    "imageUrlRequired": "Image URL is required"
+  },
+    "notifications": {
+    "loadFailed": "Failed to load Floor Plans",
+    "createSuccess": "Floor Plan Created",
+    "createFailed": "Creation failed",
+    "updateSuccess": "Floor Plan Updated",
+    "updateFailed": "Update failed",
+    "deleteSuccess": "Floor Plan Deleted",
+    "deleteFailed": "Deletion failed",
+    "removeImageSuccess": "Image removed",
+    "removeImageFailed": "Failed to remove image",
+    "orderUpdateSuccess": "Order updated successfully",
+    "orderUpdateFailed": "Failed to update order"
+  },
+  "validation": {
+    "required": "This field is required",
+    "invalidDate": "Invalid date format",
+    "dateInPast": "Date cannot be in the past",
+    "positiveNumber": "Must be a positive number"
+  },
+  "activitiesFeedback": {
+    "title": "Activities Feedback",
+    "loading": "Loading...",
+    "error": "Error fetching activities.",
+    "averageRating": "Average Rating",
+    "feedbackFor": "Feedback for",
+    "filterByRating": "Filter by Rating",
+    "filterByUserType": "Filter by User Type",
+    "allRatings": "All Ratings",
+    "above": "Above",
+    "below": "Below",
+    "exact": "Exact",
+    "anonymousUsers": "Anonymous Users",
+    "anonymousUser": "Anonymous",
+    "namedUsers": "Named Users",
+    "allUsers": "All Users",
+    "noFeedback": "No feedback available for this activity.",
+    "previous": "Previous",
+    "next": "Next",
+    "page": "Page",
+    "user": "User",
+    "rating": "Rating",
+    "comment": "Comment",
+    "of":"of",
+    "enterRating": "Enter rating"
+  },
+  "iconsEditor": {
+    "title": "Icons Editor",
+    "description": "Manage your PWA and favicon icons. Supported sizes and formats are listed below.",
+    "pwa512Description": "Used for PWA install. Must be exactly 512x512 pixels. PNG recommended.",
+    "pwa192Description": "Used for PWA install. Must be exactly 192x192 pixels. PNG recommended.",
+    "faviconDescription": "Used as browser tab icon. Must be (16x16, 32x32, 48x48) pixels. PNG, SVG, or ICO supported. For best results, upload a .ico file with all standard sizes.",
+    "validation": {
+      "requiredIcons": "All icons are required"
+    },
+    "success": {
+      "save": "Icons saved successfully"
+    },
+    "error": {
+      "save": "Failed to save icons",
+      "upload": "Failed to upload icon",
+      "fetchData": "Failed to fetch icons data"
+    },
+    "actions": {
+      "save": "Save Icons",
+      "saving": "Saving..."
+    }
+  }
+}
