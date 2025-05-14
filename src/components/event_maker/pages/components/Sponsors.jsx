@@ -13,7 +13,7 @@ export function SponsorsComponent({
     display_sponsor_description = false
 }) {
   // Use provided sponsors and levels or fallback to example data for preview
-  const displaySponsors = sponsors.length > 0 ? sponsors : [
+  const displaySponsors = Array.isArray(sponsors) && sponsors.length > 0 ? sponsors : [
     {
       id: 1,
       name: "Example Sponsor",
@@ -56,7 +56,7 @@ export function SponsorsComponent({
     }
   ];
 
-  const displayLevels = levels.length > 0 ? levels : [
+  const displayLevels = Array.isArray(levels) && levels.length > 0 ? levels : [
     {
       id: 1,
       name: "Gold"
