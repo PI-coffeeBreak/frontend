@@ -20,7 +20,7 @@ export const PluginsProvider = ({ children }) => {
     // Fetch plugins
     const fetchPlugins = async () => {
         try {
-            const response = await axiosWithAuth(keycloak).get(pluginsBaseUrl);
+            const response = await axiosWithAuth(keycloak).get(`${pluginsBaseUrl}/`);
             setPlugins(response.data);
         } catch (error) {
             console.error("Error fetching plugins:", error);
@@ -30,7 +30,7 @@ export const PluginsProvider = ({ children }) => {
     // Fetch plugin configurations
     const fetchPluginsConfig = async () => {
         try {
-            const response = await axiosWithAuth(keycloak).get(pluginsConfigBaseUrl);
+            const response = await axiosWithAuth(keycloak).get(`${pluginsConfigBaseUrl}/`);
             setPluginsConfig(response.data);
         } catch (error) {
             console.error("Error fetching plugin configurations:", error);

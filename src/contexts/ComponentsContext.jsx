@@ -33,7 +33,7 @@ export const ComponentsProvider = ({ children }) => {
         setIsLoading(true);
         setError(null);
         try {
-            const response = await axiosWithAuth(keycloak).get(`${baseUrl}/components`);
+            const response = await axiosWithAuth(keycloak).get(`${baseUrl}/components/`);
             const componentsData = response.data.components;
             setComponents(componentsData);
         } catch (err) {

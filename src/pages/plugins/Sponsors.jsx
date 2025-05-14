@@ -7,8 +7,8 @@ import { useNotification } from '../../contexts/NotificationContext.jsx';
 import { useMedia } from '../../contexts/MediaContext.jsx';
 
 const API_ENDPOINTS = {
-  LEVELS: `${baseUrl}/sponsors-promotion-plugin/sponsors/levels/`,
-  SPONSORS: `${baseUrl}/sponsors-promotion-plugin/sponsors/`
+  LEVELS: `${baseUrl}/sponsors-promotion-plugin/sponsors/levels`,
+  SPONSORS: `${baseUrl}/sponsors-promotion-plugin/sponsors`
 };
 
 // Change from default export to named export
@@ -56,7 +56,7 @@ export function Sponsors() {
     setError(null);
     
     try {
-      const response = await axiosWithAuth(keycloak).get(API_ENDPOINTS.LEVELS);
+      const response = await axiosWithAuth(keycloak).get(`${API_ENDPOINTS.LEVELS}/`);
       
       if (Array.isArray(response.data)) {
         setLevels(response.data);
@@ -88,7 +88,7 @@ export function Sponsors() {
     setError(null);
     
     try {
-      const response = await axiosWithAuth(keycloak).get(API_ENDPOINTS.SPONSORS);
+      const response = await axiosWithAuth(keycloak).get(`${API_ENDPOINTS.SPONSORS}/`);
       
       if (Array.isArray(response.data)) {
         setSponsors(response.data);
@@ -123,7 +123,7 @@ export function Sponsors() {
     
     setIsLoading(prev => ({ ...prev, levels: true }));
     try {
-      const response = await axiosWithAuth(keycloak).post(API_ENDPOINTS.LEVELS, {
+      const response = await axiosWithAuth(keycloak).post(`${API_ENDPOINTS.LEVELS}/`, {
         name: newLevelName
       });
       
@@ -165,7 +165,7 @@ export function Sponsors() {
     if (window.confirm("Are you sure you want to delete this level?")) {
       setIsLoading(prev => ({ ...prev, levels: true }));
       try {
-        await axiosWithAuth(keycloak).delete(`${API_ENDPOINTS.LEVELS}${levelId}`);
+        await axiosWithAuth(keycloak).delete(`${API_ENDPOINTS.LEVELS}/${levelId}`);
         setLevels(prevLevels => prevLevels.filter(level => level.id !== levelId));
         showNotification("Sponsor level deleted successfully", "success");
       } catch (err) {
@@ -281,7 +281,7 @@ export function Sponsors() {
     setIsLoading(prev => ({ ...prev, sponsors: true }));
     try {
       // First create the sponsor with empty image
-      const response = await axiosWithAuth(keycloak).post(API_ENDPOINTS.SPONSORS, {
+      const response = await axiosWithAuth(keycloak).post(`${API_ENDPOINTS.SPONSORS}/`, {
         ...sponsorForm,
         logo_url: logoInputType === 'file' ? '' : sponsorForm.logo_url
       });
@@ -319,7 +319,7 @@ export function Sponsors() {
     setIsLoading(prev => ({ ...prev, sponsors: true }));
     try {
       const response = await axiosWithAuth(keycloak).put(
-        `${API_ENDPOINTS.SPONSORS}${selectedSponsor.id}`, 
+        `${API_ENDPOINTS.SPONSORS}/${selectedSponsor.id}`, 
         sponsorForm
       );
 
@@ -352,7 +352,7 @@ export function Sponsors() {
     if (window.confirm("Are you sure you want to delete this sponsor?")) {
       setIsLoading(prev => ({ ...prev, sponsors: true }));
       try {
-        await axiosWithAuth(keycloak).delete(`${API_ENDPOINTS.SPONSORS}${sponsorId}`);
+        await axiosWithAuth(keycloak).delete(`${API_ENDPOINTS.SPONSORS}/${sponsorId}`);
         setSponsors(prevSponsors => prevSponsors.filter(sponsor => sponsor.id !== sponsorId));
         showNotification("Sponsor deleted successfully", "success");
       } catch (err) {
@@ -422,7 +422,7 @@ export function Sponsors() {
     setIsLoading(prev => ({ ...prev, levels: true }));
     try {
       const response = await axiosWithAuth(keycloak).put(
-        `${API_ENDPOINTS.LEVELS}${editingLevel.id}`,
+        `${API_ENDPOINTS.LEVELS}/${editingLevel.id}`,
         { name: editingLevel.name }
       );
       
