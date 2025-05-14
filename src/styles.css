@@ -2,12 +2,8 @@
 
 @custom-variant dark (&:is(.dark *));
 @plugin "daisyui";
-@plugin "daisyui/theme" {
-    name: "mytheme";
-    default: true;
-    prefersdark: false;
-    color-scheme: light;
 
+:root {
     --color-base-100: oklch(98% 0.01 240);
     --color-base-200: oklch(87.5% 0.004 108.23);
     --color-base-300: oklch(87.5% 0.004 108.23);
@@ -45,6 +41,7 @@
     --depth: 0;
     --noise: 0;
 }
+
 :where(:root:has(.modal-open, .modal[open], .modal:target, .modal-toggle:checked, .drawer:not(.drawer-open) > .drawer-toggle:checked)) {
     scrollbar-gutter: stable;
     background-image: linear-gradient(var(--color-base-100), var(--color-base-100));
