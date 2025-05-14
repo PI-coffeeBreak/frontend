@@ -156,7 +156,7 @@ export function FloorPlans() {
   const fetchFloorPlans = async () => {
     setLoading(true);
     try {
-      const { data } = await axiosWithAuth(keycloak).get(apiUrl);
+      const { data } = await axiosWithAuth(keycloak).get(`${apiUrl}/`);
       const resolved = data.map((fp) => ({
         ...fp,
         image: resolveImageUrl(fp.image),
@@ -179,7 +179,7 @@ export function FloorPlans() {
         details: form.details,
         image: form.file ? "" : form.image.trim(),
       };
-      const { data } = await axiosWithAuth(keycloak).post(apiUrl, body);
+      const { data } = await axiosWithAuth(keycloak).post(`${apiUrl}/`, body);
       if (form.file && data.image && !data.image.startsWith("http")) {
         await uploadToMediaService(data.image, form.file);
       }
@@ -305,7 +305,7 @@ export function FloorPlans() {
   
     try {
       const orders = updatedFloorPlans.map((fp) => ({ id: fp.id, order: fp.order }));
-      await axiosWithAuth(keycloak).patch(`${apiUrl}/order`, orders);
+      await axiosWithAuth(keycloak).patch(`${apiUrl}/order/`, orders);
       showNotification(t("notifications.orderUpdateSuccess"), "success");
     } catch (err) {
       console.error(err);

@@ -139,7 +139,7 @@ export default function EventSetup() {
                 // Get the event ID from the response
                 const eventId = response.data.id;
                 
-                const event = await axiosWithAuth(keycloak).get(`${baseUrl}/event-info/event/`);
+                const event = await axiosWithAuth(keycloak).get(`${baseUrl}/event-info/event`);
 
                 // Upload image if one is selected
                 if (formData.image) {

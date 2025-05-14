@@ -17,7 +17,7 @@ export const PagesProvider = ({ children }) => {
         setIsLoading(true);
         setError(null);
         try {
-            const response = await axiosWithAuth(keycloak).get(`${baseUrl}/pages/all`);
+            const response = await axiosWithAuth(keycloak).get(`${baseUrl}/pages/all/`);
             setPages(response.data);
             return response.data;
         } catch (err) {
@@ -34,7 +34,7 @@ export const PagesProvider = ({ children }) => {
         setError(null);
         try {
             const api = axiosWithAuth(keycloak);
-            const response = await api.post(`${baseUrl}/pages`, pageData);
+            const response = await api.post(`${baseUrl}/pages/`, pageData);
             setPages((prevPages) => [...prevPages, response.data]);
             return response.data;
         } catch (err) {
