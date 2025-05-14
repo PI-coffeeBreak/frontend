@@ -65,16 +65,15 @@ export default function Instantiate() {
                     )}
                 </div>
 
-                {/* App preview phone mockup */}
-                <div className="mb-10 flex flex-col md:flex-row gap-6">
-                    <div className="hidden sm:block md:w-1/2 flex justify-center">
+                <div className="mb-10 gap-6">
+                    {/* <div className="hidden sm:block md:w-1/2 flex justify-center">
                         <iframe
-                            src="http://localhost:5175/app/"
+                            src=""
                             className="w-2/3 h-[750px] border-0 rounded-lg shadow-lg"
                             title="Mobile App Preview"
                         ></iframe>
-                    </div>
-                    <div className="w-full md:w-1/2 flex justify-start flex-col gap-6">
+                    </div> */}
+                    <div className="w-full flex justify-start flex-col gap-6">
                         {sectionCards.map(card => (
                             <Link
                                 key={card.id}

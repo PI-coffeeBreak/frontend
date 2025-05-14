@@ -3,12 +3,12 @@ name: Build and Push Docker Image to GHCR
 on:
   push:
     branches:
-      - SCRUM-250-Setup-event-app-Docker-image
+      - SCRUM-251-Setup-frontend-Docker-image
     tags:
       - 'v*'
 
 env:
-  IMAGE_NAME: event-app
+  IMAGE_NAME: admin-frontend
   REGISTRY_OWNER: pi-coffeebreak
   REGISTRY: ghcr.io
 
