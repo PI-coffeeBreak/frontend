@@ -1,7 +1,6 @@
 import { createContext, useContext, useState, useEffect, useMemo } from "react";
 import PropTypes from "prop-types";
 import { useKeycloak } from "@react-keycloak/web";
-import axios from "axios";
 import { baseUrl } from "../consts";
 import { axiosWithAuth } from "../utils/axiosWithAuth";
 import KeycloakAdminService from "../services/KeycloakAdminService";
@@ -24,8 +23,6 @@ export const UsersProvider = ({ children }) => {
     const [userPermissions, setUserPermissions] = useState({});
 
 
-
-
     // Initialize Keycloak Admin Service
     const initKeycloakAdminService = () => {
         if (!initialized || !keycloak?.authenticated || !keycloak?.token) {
@@ -38,7 +35,6 @@ export const UsersProvider = ({ children }) => {
         if (!initialized || !keycloak?.authenticated) {
             return;
         }
-
 
         setIsLoading(true);
         setError(null);

@@ -1,4 +1,5 @@
 import React from "react";
+import PropTypes from "prop-types";
 import { ReactKeycloakProvider } from '@react-keycloak/web';
 import { BrowserRouter as Router } from "react-router-dom";
 
@@ -63,6 +64,10 @@ export const Provider = ({ children }) => {
       </ReactKeycloakProvider>
     </Router>
   );
+};
+
+Provider.propTypes = {
+  children: PropTypes.node.isRequired,
 };
 
 export default Provider;

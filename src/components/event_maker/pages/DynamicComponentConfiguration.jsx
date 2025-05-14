@@ -104,6 +104,13 @@ function createMediaInput(propertyName, label, value, onChange, isRequired) {
     );
 }
 
+MediaInput.propTypes = {
+    propertyName: PropTypes.string.isRequired,
+    label: PropTypes.string.isRequired,
+    value: PropTypes.any,
+    onChange: PropTypes.func.isRequired
+};
+
 function createColorSelector(propertyName, enumDef, value, propertySchema, onChange) {
     const colorOptions = enumDef.enum.map(value => ({
         value,
@@ -124,6 +131,13 @@ function createColorSelector(propertyName, enumDef, value, propertySchema, onCha
     );
 }
 
+ColorSelector.propTypes = {
+    propertyName: PropTypes.string.isRequired,
+    value: PropTypes.any,
+    onChange: PropTypes.func.isRequired,
+    options: PropTypes.arrayOf(PropTypes.object).isRequired
+};
+
 function createSelectInput(propertyName, label, value, options, onChange, propertySchema, isRequired) {
     return (
         <SelectInput
@@ -137,6 +151,14 @@ function createSelectInput(propertyName, label, value, options, onChange, proper
     );
 }
 
+SelectInput.propTypes = {
+    propertyName: PropTypes.string.isRequired,
+    label: PropTypes.string.isRequired,
+    value: PropTypes.any,
+    options: PropTypes.arrayOf(PropTypes.object).isRequired,
+    onChange: PropTypes.func.isRequired
+};
+
 function formatEnumOptions(enumValues) {
     return enumValues.map(value => ({
         value,
@@ -147,6 +169,10 @@ function formatEnumOptions(enumValues) {
             : value
     }));
 }
+
+formatEnumOptions.propTypes = {
+    enumValues: PropTypes.arrayOf(PropTypes.string).isRequired
+};
 
 // Create array input that delegates each item to PropertyInput
 function createArrayInput(propertyName, label, value, onChange, propertySchema, isRequired, schema) {
@@ -208,6 +234,17 @@ function createArrayInput(propertyName, label, value, onChange, propertySchema, 
     );
 }
 
+createArrayInput.propTypes = {
+    propertyName: PropTypes.string.isRequired,
+    label: PropTypes.string.isRequired,
+    value: PropTypes.any,
+    onChange: PropTypes.func.isRequired,
+    propertySchema: PropTypes.object.isRequired,
+    isRequired: PropTypes.bool,
+    schema: PropTypes.object
+};
+
+
 function handleEnumReference(propertyName, schema, propertySchema, value, onChange, label, isRequired) {
     const enumName = propertySchema.$ref.split('/').pop();
     const enumDef = schema?.$defs?.[enumName];
@@ -228,6 +265,14 @@ function handleEnumReference(propertyName, schema, propertySchema, value, onChan
         isRequired
     );
 }
+
+handleEnumReference.propTypes = {
+    propertyName: PropTypes.string.isRequired,
+    schema: PropTypes.object.isRequired,
+    propertySchema: PropTypes.object.isRequired,
+    value: PropTypes.any,
+    onChange: PropTypes.func.isRequired,
+};
 
 // Add centralized input renderer
 function renderInput(propertyName, propertySchema, value, onChange, isRequired, schema) {
@@ -290,6 +335,16 @@ function renderInput(propertyName, propertySchema, value, onChange, isRequired, 
     );
 }
 
+renderInput.propTypes = {
+    propertyName: PropTypes.string.isRequired,
+    propertySchema: PropTypes.object.isRequired,
+    value: PropTypes.any,
+    onChange: PropTypes.func.isRequired,
+    isRequired: PropTypes.bool,
+    schema: PropTypes.object
+};
+
+
 function createBasicInput(type, propertyName, label, value, onChange, propertySchema, isRequired, description) {
     switch (type) {
         case "string":
@@ -337,6 +392,18 @@ function createBasicInput(type, propertyName, label, value, onChange, propertySc
     }
 }
 
+createBasicInput.propTypes = {
+    type: PropTypes.string.isRequired,
+    propertyName: PropTypes.string.isRequired,
+    label: PropTypes.string.isRequired,
+    value: PropTypes.any,
+    onChange: PropTypes.func.isRequired,
+    propertySchema: PropTypes.object.isRequired,
+    isRequired: PropTypes.bool,
+    description: PropTypes.string
+};
+
+
 function PropertyInput({ propertyName, propertySchema, value, onChange, isRequired, schema }) {
 
     // Skip reserved properties, const, and const types
@@ -347,6 +414,15 @@ function PropertyInput({ propertyName, propertySchema, value, onChange, isRequir
     // Delegate to unified renderer
     return renderInput(propertyName, propertySchema, value, onChange, isRequired, schema);
 }
+
+PropertyInput.propTypes = {
+    propertyName: PropTypes.string.isRequired,
+    propertySchema: PropTypes.object.isRequired,
+    value: PropTypes.any,
+    onChange: PropTypes.func.isRequired,
+    isRequired: PropTypes.bool,
+    schema: PropTypes.object
+};
 
 export function DynamicComponentConfiguration({ id, componentData = { name: "", props: {} }, onComponentTypeChange, onComponentPropsChange, onRemove }) {
     const { t } = useTranslation();
