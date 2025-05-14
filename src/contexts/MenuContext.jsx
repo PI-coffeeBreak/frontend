@@ -176,7 +176,7 @@ export const MenuProvider = ({ children }) => {
         setIsLoading(true);
         setError(null);
         try {
-            const response = await axiosWithAuth(keycloak).post(`${menuBaseUrl}/option`, optionData);
+            const response = await axiosWithAuth(keycloak).post(`${menuBaseUrl}/option/`, optionData);
 
             const newOption = response.data;
             setMenuOptions(prevOptions => [...(prevOptions || []), newOption]);
@@ -278,7 +278,7 @@ export const MenuProvider = ({ children }) => {
         setIsLoading(true);
         setError(null);
         try {
-            const response = await axiosWithAuth(keycloak).put(`${menuBaseUrl}/options`, reorderedOptions);
+            const response = await axiosWithAuth(keycloak).put(`${menuBaseUrl}/options/`, reorderedOptions);
 
             // Update the local state with the reordered menu options
             console.log("Setting new order in state:", reorderedOptions);

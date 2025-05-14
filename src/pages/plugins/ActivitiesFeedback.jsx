@@ -22,7 +22,7 @@ const ActivitiesFeedback = () => {
 
     const fetchFeedback = async (activityId, activityName) => {
         try {
-            const response = await axios.get(`${baseUrl}/activities-feedback-plugin/feedback_activities/${activityId}/all`);
+            const response = await axios.get(`${baseUrl}/activities-feedback-plugin/feedback_activities/${activityId}/all/`);
             setFeedback(response.data);
             setSelectedActivity(activityName);
             setFeedbackError(null);
@@ -35,7 +35,7 @@ const ActivitiesFeedback = () => {
 
     const fetchActivityRating = async (activityId) => {
         try {
-            const response = await axios.get(`${baseUrl}/activities-feedback-plugin/feedback_activities/${activityId}/all`);
+            const response = await axios.get(`${baseUrl}/activities-feedback-plugin/feedback_activities/${activityId}/all/`);
             const feedbacks = response.data;
 
             if (feedbacks.length > 0) {

@@ -40,11 +40,11 @@ export const UsersProvider = ({ children }) => {
         setError(null);
         try {
             // Fetch all users first
-            const allUsersResponse = await axiosWithAuth(keycloak).get(usersBaseUrl);
+            const allUsersResponse = await axiosWithAuth(keycloak).get(`${usersBaseUrl}/`);
 
 
             // Then fetch users grouped by role
-            const groupedUsersResponse = await axiosWithAuth(keycloak).get(usersRolesUrl);
+            const groupedUsersResponse = await axiosWithAuth(keycloak).get(`${usersRolesUrl}/`);
 
             // Transform the data
             const flattenedUsers = transformGroupedUsersToFlat(groupedUsersResponse.data, allUsersResponse.data);
@@ -471,7 +471,7 @@ export const UsersProvider = ({ children }) => {
             };
 
             // Use the dedicated endpoint for user creation
-            const response = await axiosWithAuth(keycloak).post(`${usersBaseUrl}`, userToCreate);
+            const response = await axiosWithAuth(keycloak).post(`${usersBaseUrl}/`, userToCreate);
 
             // Refresh users list to make sure the new user is in the users array
             await fetchUsers();
@@ -519,7 +519,7 @@ export const UsersProvider = ({ children }) => {
             }));
 
             // Use the dedicated batch endpoint
-            const response = await axiosWithAuth(keycloak).post(`${usersBaseUrl}/batch`, formattedUsers);
+            const response = await axiosWithAuth(keycloak).post(`${usersBaseUrl}/batch/`, formattedUsers);
 
             // Calculate results based on the response
             if (response.data && Array.isArray(response.data.results)) {

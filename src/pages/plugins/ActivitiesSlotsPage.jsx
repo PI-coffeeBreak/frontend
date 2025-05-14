@@ -37,7 +37,7 @@ export default function ActivitySlotsPage() {
         try {
           const [metadataRes, slotsRes] = await Promise.all([
             axios.get(`${apiBase}/metadata/${id}`),
-            axios.get(`${apiBase}/register/${id}/available-slots`)
+            axios.get(`${apiBase}/register/${id}/available-slots/`)
           ]);
 
           result[id] = {
@@ -62,7 +62,7 @@ export default function ActivitySlotsPage() {
     try {
       const [metadataRes, slotsRes] = await Promise.all([
         axios.get(`${apiBase}/metadata/${activityId}`),
-        axios.get(`${apiBase}/register/${activityId}/available-slots`)
+        axios.get(`${apiBase}/register/${activityId}/available-slots/`)
       ]);
 
       setActivityData((prev) => ({

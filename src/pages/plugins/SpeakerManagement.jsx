@@ -8,7 +8,7 @@ import { useKeycloak } from "@react-keycloak/web";
 import { baseUrl } from '../../consts.js';
 
 const API_ENDPOINTS = {
-  SPEAKERS: `${baseUrl}/speaker-presentation-plugin/speakers/`,
+  SPEAKERS: `${baseUrl}/speaker-presentation-plugin/speakers`,
 };
 
 const truncateText = (text, maxLength = 80) => {
@@ -86,7 +86,7 @@ const SpeakerManagement = () => {
     setLoading(true);
     setError(null);
     try {
-      const response = await axiosWithAuth(keycloak).get(API_ENDPOINTS.SPEAKERS);
+      const response = await axiosWithAuth(keycloak).get(`${API_ENDPOINTS.SPEAKERS}/`);
       
       if (Array.isArray(response.data)) {
         const normalizedSpeakers = response.data.map(speaker => ({
@@ -140,7 +140,7 @@ const SpeakerManagement = () => {
         activity_id: speakerData.activity_id || null
       };
       
-      const response = await axiosWithAuth(keycloak).post(API_ENDPOINTS.SPEAKERS, payload);
+      const response = await axiosWithAuth(keycloak).post(`${API_ENDPOINTS.SPEAKERS}/`, payload);
       
       return { success: true, data: response.data };
     } catch (err) {
@@ -177,7 +177,7 @@ const SpeakerManagement = () => {
       }
       
       const response = await axiosWithAuth(keycloak).patch(
-        `${API_ENDPOINTS.SPEAKERS}${id}/`, 
+        `${API_ENDPOINTS.SPEAKERS}/${id}/`, 
         payload,
         {
           headers: {
@@ -209,7 +209,7 @@ const SpeakerManagement = () => {
   const deleteSpeaker = async (id) => {
     setLoading(true);
     try {
-      await axiosWithAuth(keycloak).delete(`${API_ENDPOINTS.SPEAKERS}${id}/`);
+      await axiosWithAuth(keycloak).delete(`${API_ENDPOINTS.SPEAKERS}/${id}/`);
       return { success: true };
     } catch (err) {
       const errorMessage = err.response?.data?.detail || 'Failed to delete speaker';

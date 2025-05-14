@@ -27,7 +27,7 @@ export const ActivitiesProvider = ({ children }) => {
         setIsLoading(true);
         setError(null);
         try {
-            const response = await axiosWithAuth(keycloak).get(activitiesBaseUrl);
+            const response = await axiosWithAuth(keycloak).get(`${activitiesBaseUrl}/`);
             const data = response.data;
 
             const calendarEvents = data.filter(
@@ -57,7 +57,7 @@ export const ActivitiesProvider = ({ children }) => {
         setIsLoading(true);
         setError(null);
         try {
-            const response = await axiosWithAuth(keycloak).get(activityTypesBaseUrl);
+            const response = await axiosWithAuth(keycloak).get(`${activityTypesBaseUrl}/`);
             setActivityTypes(response.data);
         } catch (error) {
             console.error("Error fetching activity types:", error);
@@ -135,7 +135,7 @@ export const ActivitiesProvider = ({ children }) => {
         setIsLoading(true);
         setError(null);
         try {
-            const response = await axiosWithAuth(keycloak).post(`${baseUrl}/activity-types`, typeData);
+            const response = await axiosWithAuth(keycloak).post(`${baseUrl}/activity-types/`, typeData);
             setActivityTypes(prev => [...prev, response.data]);
             return response.data;
         } catch (error) {
@@ -157,7 +157,7 @@ export const ActivitiesProvider = ({ children }) => {
         setError(null);
         try {
             const response = await axiosWithAuth(keycloak).post(
-                `${baseUrl}/activities/batch`,
+                `${baseUrl}/activities/batch/`,
                 activitiesData,
                 {
                     headers: {

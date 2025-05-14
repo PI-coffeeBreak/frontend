@@ -19,7 +19,7 @@ export const AlertsProvider = ({ children }) => {
         setIsLoading(true);
         setError(null);
         try {
-            const response = await axiosWithAuth(keycloak).get(`${alertsBaseUrl}/template`);
+            const response = await axiosWithAuth(keycloak).get(`${alertsBaseUrl}/template/`);
             setTemplates(response.data);
             return response.data;
         } catch (err) {
@@ -51,7 +51,7 @@ export const AlertsProvider = ({ children }) => {
         setIsLoading(true);
         setError(null);
         try {
-            const response = await axiosWithAuth(keycloak).post(`${alertsBaseUrl}/template`, templateData);
+            const response = await axiosWithAuth(keycloak).post(`${alertsBaseUrl}/template/`, templateData);
             setTemplates(prevTemplates => [...prevTemplates, response.data]);
             return response.data;
         } catch (err) {
@@ -74,7 +74,7 @@ export const AlertsProvider = ({ children }) => {
                 high_priority: alertData.priority === "High"
             };
 
-            const response = await axiosWithAuth(keycloak).post(`${alertsBaseUrl}/alert`, formattedData);
+            const response = await axiosWithAuth(keycloak).post(`${alertsBaseUrl}/alert/`, formattedData);
 
             return response.data;
         } catch (err) {

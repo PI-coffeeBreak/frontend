@@ -105,7 +105,7 @@ export function PagesList() {
                 };
 
                 await axiosInstance.post(
-                    `${import.meta.env.VITE_API_BASE_URL}/ui/menu/option`,
+                    `${import.meta.env.VITE_API_BASE_URL}/ui/menu/option/`,
                     menuOption
                 );
             } else {
