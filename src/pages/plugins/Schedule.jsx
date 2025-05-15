@@ -235,7 +235,7 @@ export default function DragDropCalendar() {
 
     return (
         <div className="flex flex-col p-4 sm:p-6 lg:p-8 h-[calc(100vh-64px)]">
-            <div className="py-2">
+            <div className="">
                 <div className="flex justify-between items-center">
                     <h1 className="text-3xl font-bold my-8">Event Schedule</h1>
                     <button

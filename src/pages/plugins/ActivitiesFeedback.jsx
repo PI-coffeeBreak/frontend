@@ -11,6 +11,7 @@ const ActivitiesFeedback = () => {
     const { fetchUserById } = useUsers();
     const [feedback, setFeedback] = useState([]);
     const [selectedActivity, setSelectedActivity] = useState(null);
+    const [selectedActivityId, setSelectedActivityId] = useState(null);
     const [feedbackError, setFeedbackError] = useState(null);
     const [currentPage, setCurrentPage] = useState(1);
     const [userCache, setUserCache] = useState({});
@@ -25,11 +26,13 @@ const ActivitiesFeedback = () => {
             const response = await axios.get(`${baseUrl}/activities-feedback-plugin/feedback_activities/${activityId}/all/`);
             setFeedback(response.data);
             setSelectedActivity(activityName);
+            setSelectedActivityId(activityId);
             setFeedbackError(null);
             setCurrentPage(1);
         } catch (err) {
             console.error(t('activitiesFeedback.error'), err);
             setFeedbackError(t('activitiesFeedback.error'));
+            setSelectedActivityId(null);
         }
     };
 
@@ -39,16 +42,33 @@ const ActivitiesFeedback = () => {
             const feedbacks = response.data;
 
             if (feedbacks.length > 0) {
+                const ratingCounts = [0, 0, 0, 0, 0]; // Index 0 => rating 1, Index 4 => rating 5
+                feedbacks.forEach((feedback) => {
+                    if (feedback.rating >= 1 && feedback.rating <= 5) {
+                        ratingCounts[feedback.rating - 1]++;
+                    }
+                });
+
+                const total = feedbacks.length;
+                const percentages = ratingCounts.map(count => ((count / total) * 100).toFixed(1));
+
                 const averageRating =
-                    feedbacks.reduce((sum, feedback) => sum + feedback.rating, 0) / feedbacks.length;
+                    feedbacks.reduce((sum, feedback) => sum + feedback.rating, 0) / total;
+
                 setActivityRatings((prev) => ({
                     ...prev,
-                    [activityId]: averageRating.toFixed(1),
+                    [activityId]: {
+                        average: averageRating.toFixed(1),
+                        percentages,
+                    },
                 }));
             } else {
                 setActivityRatings((prev) => ({
                     ...prev,
-                    [activityId]: t('activitiesFeedback.noFeedback'),
+                    [activityId]: {
+                        average: t('activitiesFeedback.noFeedback'),
+                        percentages: [],
+                    },
                 }));
             }
         } catch (err) {
@@ -137,7 +157,7 @@ const ActivitiesFeedback = () => {
                             <p className="text-sm text-gray-600 line-clamp-2">{activity.description}</p>
                             <p className="text-sm text-gray-500 mt-2">
                                 <strong>{t('activitiesFeedback.averageRating')}:</strong>{' '}
-                                {activityRatings[activity.id] || t('activitiesFeedback.loading')}
+                                {activityRatings[activity.id]?.average || t('activitiesFeedback.loading')}
                             </p>
                         </div>
                     </button>
@@ -147,32 +167,39 @@ const ActivitiesFeedback = () => {
     }
 
     return (
-        <div className="w-full min-h-svh p-4 sm:p-8">
-            <h1 className="text-2xl sm:text-3xl font-bold mb-4 sm:mb-6 text-primary">
+        <div className="w-full min-h-screen p-4 sm:p-6 lg:p-8">
+            <h1 className="text-3xl font-bold my-8">
                 {t('activitiesFeedback.title')}
             </h1>
 
-            <div className="mb-6">
-                <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 sm:gap-0 mb-4">
-                    <h2 className="text-xl sm:text-2xl font-semibold">{t('activitiesFeedback.title')}</h2>
-                </div>
 
-                {content}
-            </div>
+            {content}
 
             {selectedActivity && (
                 <div className="mt-8">
                     <h2 className="text-xl sm:text-2xl font-semibold mb-4">
-                        {t('activitiesFeedback.feedbackFor')}: {selectedActivity}
+                        {t('activitiesFeedback.feedbackFor')} {selectedActivity}
                     </h2>
+                    <div className="mb-4 text-sm text-gray-500">
+                      <p>
+                        <strong>{t('activitiesFeedback.averageRating')}:</strong>{' '}
+                        {activityRatings[selectedActivityId]?.average || t('activitiesFeedback.loading')}
+                      </p>
+                      {activityRatings[selectedActivityId]?.percentages && (
+                        <div className="mt-1">
+                          {activityRatings[selectedActivityId].percentages.map((percent, index) => (
+                            <p key={index} className="flex items-center gap-1">
+                              {'★'.repeat(index + 1)}: {percent}%
+                            </p>
+                          ))}
+                        </div>
+                      )}
+                    </div>
 
                     <div className="flex flex-wrap gap-4 mb-6">
                         <div>
-                            <label className="block text-sm font-medium mb-1">
-                                {t('activitiesFeedback.filterByRating')}:
-                            </label>
                             <select
-                                className="select select-bordered mb-2"
+                                className="select select-bordered rounded-xl mb-2"
                                 value={ratingFilterType}
                                 onChange={(e) => setRatingFilterType(e.target.value)}
                             >
@@ -184,7 +211,7 @@ const ActivitiesFeedback = () => {
                             {ratingFilterType !== 'all' && (
                                 <input
                                     type="number"
-                                    className="input input-bordered"
+                                    className="input input-bordered rounded-xl"
                                     placeholder={t('activitiesFeedback.enterFeedback')}
                                     value={ratingFilterValue || ''}
                                     onChange={(e) => setRatingFilterValue(Number(e.target.value))}
@@ -192,11 +219,8 @@ const ActivitiesFeedback = () => {
                             )}
                         </div>
                         <div>
-                            <label className="block text-sm font-medium mb-1">
-                                {t('activitiesFeedback.filterByUserType')}:
-                            </label>
                             <select
-                                className="select select-bordered"
+                                className="select select-bordered rounded-xl"
                                 value={userTypeFilter}
                                 onChange={(e) => setUserTypeFilter(e.target.value)}
                             >

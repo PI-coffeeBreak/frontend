@@ -125,8 +125,8 @@ export default function Alerts() {
     }
 
     return (
-        <div className="w-full min-h-svh p-2 lg:p-8">
-            <h1 className="text-3xl font-bold">Create Alerts</h1>
+        <div className="w-full min-h-screen p-4 sm:p-6 lg:p-8">
+            <h1 className="text-3xl font-bold my-8">Create Alerts</h1>
             
             <CreateAlertCards 
                 onOpenAlertModal={openAlertModal}
