@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState } from "react";
 import PropTypes from "prop-types";
 import { Modal } from "../common/Modal";
 import { useForm } from "../../hooks/useForm";
@@ -17,18 +17,6 @@ export function CreateActivityTypeModal({ isOpen, onClose, onSubmit }) {
   const { showNotification } = useNotification();
   const {activityTypes, deleteActivityType} = useActivities()
   const [activeTab, setActiveTab] = useState("create");
-
-
-  const handleEdit = (activity) => {
-    setErrors({});
-    // Populate form fields for editing
-    resetForm({
-      type: activity.type,
-      color: activity.color
-    });
-    // You can store the ID to distinguish between create and update
-  };
-
 
   const handleDelete = async (id) => {
     try {

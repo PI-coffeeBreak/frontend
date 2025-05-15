@@ -210,10 +210,6 @@ export default function DragDropCalendar() {
 
     const [selectedType, setSelectedType] = useState("");
 
-    const handleResetFilters = () => {
-        setSelectedType("");
-    };
-
     const filteredActivities = outsideActivities.filter(activity => {
         const matchesSearch = !searchQuery ||
             activity.name.toLowerCase().includes(searchQuery.toLowerCase()) ||

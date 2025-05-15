@@ -187,11 +187,14 @@ const ActivitiesFeedback = () => {
                       </p>
                       {activityRatings[selectedActivityId]?.percentages && (
                         <div className="mt-1">
-                          {activityRatings[selectedActivityId].percentages.map((percent, index) => (
-                            <p key={index} className="flex items-center gap-1">
-                              {'★'.repeat(index + 1)}: {percent}%
-                            </p>
-                          ))}
+                          {activityRatings[selectedActivityId]?.percentages.map((percent, index) => {
+                              const key = `rating-${index + 1}-${percent}`;
+                              return (
+                                <p key={key} className="flex items-center gap-1">
+                                  {'★'.repeat(index + 1)}: {percent}%
+                                </p>
+                              );
+                          })}
                         </div>
                       )}
                     </div>
