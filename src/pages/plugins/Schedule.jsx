@@ -1,4 +1,5 @@
 import { useEffect, useRef, useState } from "react";
+import DeleteConfirmationModal from "../../components/common/DeleteConfirmationModal.jsx";
 import FullCalendar from "@fullcalendar/react";
 import interactionPlugin, { Draggable } from "@fullcalendar/interaction";
 import dayGridPlugin from "@fullcalendar/daygrid";
@@ -8,6 +9,7 @@ import { useActivities } from "../../contexts/ActivitiesContext.jsx";
 import { useNotification } from "../../contexts/NotificationContext.jsx";
 import { FaCalendarAlt, FaChevronDown, FaChevronUp, FaSearch, FaTimes } from "react-icons/fa";
 import { useEvent } from "../../contexts/EventContext";
+import {t} from "i18next";
 
 // Helper functions remain unchanged
 const findActivityById = (activities, activityId) => {
@@ -48,6 +50,9 @@ export default function DragDropCalendar() {
     const [activeFilter, setActiveFilter] = useState(null);
     const [searchQuery, setSearchQuery] = useState('');
     const { eventInfo } = useEvent();
+
+    const [deleteModalOpen, setDeleteModalOpen] = useState(false);
+    const [activityToRemove, setActivityToRemove] = useState(null);
 
     const {
         activities,
@@ -116,7 +121,7 @@ export default function DragDropCalendar() {
             // Create a localized ISO string that preserves the time exactly as displayed
             const startTime = info.event.start;
             const localISOString = formatToLocalISOString(startTime);
-            
+
             await updateActivity(activityId, { date: localISOString });
         }
     };
@@ -136,13 +141,13 @@ export default function DragDropCalendar() {
 
     const handleEventDrop = async (info) => {
         const activityId = parseInt(info.event.extendedProps["data-id"]);
-        
+
         // Create a localized ISO string that preserves the time exactly as displayed
         const startTime = info.event.start;
         const localISOString = formatToLocalISOString(startTime);
-        
+
         await updateActivity(activityId, { date: localISOString });
-        
+
         setCalendarActivities((prev) =>
             prev.map((act) =>
                 act.id === activityId ? { ...act, date: localISOString } : act
@@ -150,21 +155,38 @@ export default function DragDropCalendar() {
         );
     };
 
-    const handleEventClick = async (info) => {
-        if (confirm(`Remove activity "${info.event.title}" from the schedule?`)) {
-            const activityId = parseInt(info.event.extendedProps["data-id"]);
+    const handleEventClick = (info) => {
+        const activityId = parseInt(info.event.extendedProps["data-id"]);
+        const activityTitle = info.event.title;
+        setActivityToRemove({ id: activityId, title: activityTitle, event: info.event });
+        setDeleteModalOpen(true);
+    };
 
-            await updateActivity(activityId, { date: null });
+    const confirmRemoveActivity = async () => {
+        if (activityToRemove) {
+            const { id, event } = activityToRemove;
 
-            setCalendarActivities((prev) => prev.filter((act) => act.id !== activityId));
-            setOutsideActivities((prev) => [
-                ...prev,
-                activities.find((act) => act.id === activityId),
-            ]);
+            await updateActivity(id, { date: null });
 
-            info.event.remove();
+            setCalendarActivities((prev) => prev.filter((act) => act.id !== id));
+            setOutsideActivities((prev) => {
+                const isAlreadyPresent = prev.some((act) => act.id === id);
+                return isAlreadyPresent
+                    ? prev
+                    : [...prev, activities.find((act) => act.id === id)];
+            });
+
+            event.remove();
+            setActivityToRemove(null);
+            setDeleteModalOpen(false);
         }
     };
+
+    useEffect(() => {
+        if (calendarRef.current) {
+            calendarRef.current.getApi().updateSize();
+        }
+    }, [activitiesCollapsed]);
 
     const handleDelete = async (id) => {
         if (window.confirm("Are you sure you want to delete this activity?")) {
@@ -186,21 +208,21 @@ export default function DragDropCalendar() {
         setActivitiesCollapsed(!activitiesCollapsed);
     };
 
-    const handleFilterClick = (typeId) => {
-        // If clicking the active filter or "All", clear the filter
-        if (typeId === activeFilter || typeId === "all") {
-            setActiveFilter(null);
-        } else {
-            setActiveFilter(typeId);
-        }
+    const [selectedType, setSelectedType] = useState("");
+
+    const handleResetFilters = () => {
+        setSelectedType("");
     };
 
-    // Filter the activities based on the active filter and search query
-    const filteredActivities = outsideActivities
-    .filter(activity => 
-        (!activeFilter || activity.type_id === activeFilter) && 
-        (!searchQuery || activity.name.toLowerCase().includes(searchQuery.toLowerCase()))
-    );
+    const filteredActivities = outsideActivities.filter(activity => {
+        const matchesSearch = !searchQuery ||
+            activity.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
+            activity.description?.toLowerCase().includes(searchQuery.toLowerCase());
+
+        const matchesType = !selectedType || activity.type_id.toString() === selectedType;
+
+        return matchesSearch && matchesType;
+    });
 
     // Calculate statistics
     const totalScheduledActivities = calendarActivities.length;
@@ -209,18 +231,16 @@ export default function DragDropCalendar() {
     const hours = Math.floor(totalActivitiesDuration / 60);
     const minutes = totalActivitiesDuration % 60;
 
+
+
     return (
-        <div className="flex flex-col pt-8 h-[calc(100vh-64px)]">
-            {/* Page header */}
-            <div className="bg-base-100 py-2 px-4 shadow-sm border-b">
+        <div className="flex flex-col p-4 sm:p-6 lg:p-8 h-[calc(100vh-64px)]">
+            <div className="py-2">
                 <div className="flex justify-between items-center">
-                    <h1 className="text-xl font-bold flex items-center gap-2">
-                        <FaCalendarAlt className="text-primary" />
-                        Event Schedule
-                    </h1>
+                    <h1 className="text-3xl font-bold my-8">Event Schedule</h1>
                     <button
                         onClick={toggleActivitiesPanel}
-                        className="btn btn-sm btn-outline"
+                        className="btn btn-sm btn-secondary rounded-xl"
                     >
                         {activitiesCollapsed ? "Show Activities" : "Hide Activities"}
                         {activitiesCollapsed ? (
@@ -235,62 +255,64 @@ export default function DragDropCalendar() {
             {/* Main content */}
             <div className="flex flex-col flex-grow overflow-hidden">
                 {/* Activities panel row */}
-                <div className={`transition-all duration-300 bg-base-100 border-b ${
+                <div className={`transition-all duration-300 bg-base-100 ${
                     activitiesCollapsed
-                        ? "max-h-0 py-0 overflow-hidden"
-                        : "flex flex-row w-full overflow-hidden py-1"
+                        ? "h-0"
+                        : "flex flex-row w-full"
                 }`}>
                     {/* Activities panel */}
-                    <div 
+                    <div
                         id="draggable-activities"
                         className="flex-grow w-0 overflow-y-auto"
                     >
-                        <div className="container mx-auto px-3">
-                            <div className="flex justify-between items-center mb-1">
-                                <h3 className="font-bold text-sm">Available Activities</h3>
-                                <div className="flex gap-1 flex-wrap justify-end">
-                                    <button 
-                                        className={`btn btn-xs ${activeFilter === null ? 'btn-primary' : 'btn-ghost'}`}
-                                        onClick={() => handleFilterClick("all")}
+                        <div className="mx-auto">
+                            <div className="flex gap-4">
+                                <div>
+                                    <label className="input input-bordered w-full rounded-xl flex items-center gap-2">
+                                        <FaSearch className="text-gray-400"/>
+                                        <input
+                                            type="text"
+                                            className="grow"
+                                            placeholder="Search activities"
+                                            value={searchQuery}
+                                            onChange={(e) => setSearchQuery(e.target.value)}
+                                        />
+                                    </label>
+                                </div>
+                                <div className="filter">
+                                    <select
+                                        className="select select-bordered rounded-xl"
+                                        value={selectedType}
+                                        onChange={(e) => setSelectedType(e.target.value)}
                                     >
-                                        All
-                                    </button>
-                                    {activityTypes.map((type) => (
-                                        <button
-                                            key={type.id}
-                                            className={`btn btn-xs ${activeFilter === type.id ? 'ring-2 ring-offset-1' : ''}`}
-                                            style={{ 
-                                                backgroundColor: type.color || "inherit",
-                                                opacity: activeFilter === null || activeFilter === type.id ? 1 : 0.6 
-                                            }}
-                                            onClick={() => handleFilterClick(type.id)}
-                                        >
-                                            {type.type}
-                                        </button>
-                                    ))}
+                                        <option value="">All</option>
+                                        {activityTypes.map((type) => (
+                                            <option key={type.id} value={type.id}>
+                                                {type.type}
+                                            </option>
+                                        ))}
+                                    </select>
                                 </div>
-                            </div>
-                            <div className="mb-2 flex items-center gap-2">
-                                <div className="flex-1 relative">
-                                    <input 
-                                        type="text" 
-                                        placeholder="Search activities..." 
-                                        className="input input-sm input-bordered w-full pl-8" 
-                                        value={searchQuery}
-                                        onChange={(e) => setSearchQuery(e.target.value)}
-                                    />
-                                    <FaSearch className="absolute left-3 top-2.5 text-base-content/40" />
+                                <div className="grid grid-cols-3 gap-2 w-full">
+                                    <div className="bg-secondary flex items-center pl-2 gap-2 rounded-xl">
+                                        <h1 className="text-secondary-content  font-light">Scheduled</h1>
+                                        <div className="text-secondary-content text-xl font-bold">{totalScheduledActivities}</div>
+                                    </div>
+                                    <div className="bg-secondary flex items-center pl-2 gap-2 rounded-xl">
+                                        <h1 className="text-secondary-content  font-light">Unscheduled</h1>
+                                        <div className="text-secondary-content text-xl font-bold">{totalUnscheduledActivities}</div>
+                                    </div>
+                                    <div className="bg-secondary flex items-center pl-2 gap-2 rounded-xl">
+                                        <h1 className="text-secondary-content  font-light">Total Duration</h1>
+                                        <div className="text-secondary-content text-xl font-bold">{hours}h {minutes}</div>
+                                    </div>
                                 </div>
-                                {searchQuery && (
-                                    <button className="btn btn-sm btn-ghost" onClick={() => setSearchQuery('')}>
-                                        <FaTimes />
-                                    </button>
-                                )}
+
                             </div>
                             <div className="flex-grow overflow-hidden">
                                 {/* Horizontal scrolling container */}
                                 <div className="overflow-x-auto pb-2 hide-scrollbar max-w-full">
-                                    <div className="flex flex-row flex-nowrap gap-2 w-max">
+                                    <div className="flex flex-row flex-nowrap mt-4 gap-2 w-max">
                                         {filteredActivities.map((activity) => (
                                             <Activity
                                                 key={activity.id}
@@ -310,12 +332,12 @@ export default function DragDropCalendar() {
                                             />
                                         ))}
                                         {filteredActivities.length === 0 && (
-                                            <div className="p-1 bg-base-200 rounded-lg text-center w-full">
-                                                <p className="text-base-content/70 text-sm">
-                                                    {activeFilter 
-                                                        ? "No activities match the selected filter." 
-                                                        : "No unscheduled activities available."}
-                                                </p>
+                                            <div className="min-w-full flex justify-center items-center py-12">
+                                                <div className="text-center mx-auto">
+                                                    <FaSearch className="mx-auto text-3xl text-gray-400 mb-4" />
+                                                    <p className="text-xl text-gray-500">{t('activities.noActivities')}</p>
+                                                    <p className="text-gray-400">{t('activities.trySearch')}</p>
+                                                </div>
                                             </div>
                                         )}
                                     </div>
@@ -323,25 +345,8 @@ export default function DragDropCalendar() {
                             </div>
                         </div>
                     </div>
-                    
-                    {/* Stats panel - unchanged */}
-                    <div className="w-48 md:w-64 px-2 py-1 border-l flex flex-col justify-center bg-base-200">
-                        <h3 className="font-bold text-xs mb-1">Statistics</h3>
-                        <div className="flex flex-col gap-2">
-                            <div className="stat p-0">
-                                <div className="stat-title text-xs">Scheduled</div>
-                                <div className="stat-value text-sm">{totalScheduledActivities}</div>
-                            </div>
-                            <div className="stat p-0">
-                                <div className="stat-title text-xs">Unscheduled</div>
-                                <div className="stat-value text-sm">{totalUnscheduledActivities}</div>
-                            </div>
-                            <div className="stat p-0">
-                                <div className="stat-title text-xs">Total Duration</div>
-                                <div className="stat-value text-sm">{hours}h {minutes}m</div>
-                            </div>
-                        </div>
-                    </div>
+
+
                 </div>
 
                 {/* Calendar container */}
@@ -390,16 +395,16 @@ export default function DragDropCalendar() {
                                 hour12: false,
                                 timeZone: "local",
                             }}
-                            forceEventDuration={true} 
+                            forceEventDuration={true}
                             defaultTimedEventDuration={"00:30:00"}
                             events={calendarActivities.map((activity) => {
                                 const startDate = new Date(activity.date);
                                 const durationInMs = activity.duration * 60000;
                                 const endDate = new Date(startDate.getTime() + durationInMs);
-                                
+
                                 const activityType = activityTypes.find(type => type.id === activity.type_id);
                                 const backgroundColor = activityType?.color || '#3788d8';
-                                
+
                                 return {
                                     id: activity.id,
                                     title: activity.name,
@@ -420,6 +425,13 @@ export default function DragDropCalendar() {
                     </div>
                 </div>
             </div>
+            <DeleteConfirmationModal
+                isOpen={deleteModalOpen}
+                onClose={() => setDeleteModalOpen(false)}
+                onConfirm={confirmRemoveActivity}
+                title={`Remove Activity`}
+                message={`Are you sure you want to remove "${activityToRemove?.title}" from the schedule?`}
+            />
             <style>{`
                 .hide-scrollbar::-webkit-scrollbar {
                     height: 6px;

@@ -212,6 +212,27 @@ export const ActivitiesProvider = ({ children }) => {
         }
     }
 
+    const deleteActivityType = async (activityTypeId) => {
+        if (!initialized || !keycloak?.authenticated) {
+            console.log("Keycloak not initialized or user not authenticated");
+            return null;
+        }
+
+        setIsLoading(true);
+        setError(null);
+        try {
+            await axiosWithAuth(keycloak).delete(`${activityTypesBaseUrl}/${activityTypeId}`);
+            setActivityTypes(prev => prev.filter(activityType => activityType.id !== activityTypeId));
+            return true;
+        } catch (error) {
+            console.error("Error deleting activity type:", error);
+            setError("Failed to delete activity type. Please try again.");
+            throw error;
+        } finally {
+            setIsLoading(false);
+        }
+    }
+
     const deleteActivity = async (activityId) => {
         if (!initialized || !keycloak?.authenticated) {
             console.log("Keycloak not initialized or user not authenticated");
@@ -267,6 +288,7 @@ export const ActivitiesProvider = ({ children }) => {
             setOutsideActivities,
             createActivityType,
             deleteActivity,
+            deleteActivityType,
         }),
         [
             activities,
