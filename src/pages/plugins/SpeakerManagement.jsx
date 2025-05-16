@@ -178,7 +178,11 @@ const SpeakerManagement = () => {
           role: speaker.role || '',
           description: speaker.description || '',
           image_uuid: speaker.image,
-          activity_id: speaker.activity_id
+          activity_id: speaker.activity_id,
+          linkedin: speaker.linkedin || '',
+          facebook: speaker.facebook || '',
+          instagram: speaker.instagram || '',
+          youtube: speaker.youtube || ''
         }));
         setSpeakers(normalizedSpeakers);
       } else if (response.data && typeof response.data === 'object') {
@@ -189,7 +193,11 @@ const SpeakerManagement = () => {
           role: speaker.role || '',
           description: speaker.description || '',
           image_uuid: speaker.image,
-          activity_id: speaker.activity_id
+          activity_id: speaker.activity_id,
+          linkedin: speaker.linkedin || '',
+          facebook: speaker.facebook || '',
+          instagram: speaker.instagram || '',
+          youtube: speaker.youtube || ''
         }));
         setSpeakers(normalizedSpeakers);
       } else {
