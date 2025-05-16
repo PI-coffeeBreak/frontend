@@ -213,6 +213,7 @@
       "image": "Image"
     },
     "types": {
+      "existing": "Existing Activity Types",
       "title": "Create New Activity Type",
       "name": "Name",
       "namePlaceholder": "Enter activity type name",
@@ -220,7 +221,9 @@
       "createButton": "Create Activity Type",
       "creating": "Creating...",
       "createSuccess": "Activity type created successfully",
-      "createError": "Failed to create activity type"
+      "createError": "Failed to create activity type",
+      "createTab": "Create Activity Type",
+      "existingTab": "Delete Activity Type"
     },
     "import": {
       "title": "Add with Excel file",

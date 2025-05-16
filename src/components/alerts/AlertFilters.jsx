@@ -8,14 +8,14 @@ export function AlertFilters({
   return (
     <div className="flex mt-4 gap-4">
       <div>
-        <label className="input input-bordered flex items-center gap-2">
+        <label className="input input-bordered rounded-xl flex items-center gap-2">
           <FaSearch className="text-gray-400"/>
           <input
-            type="text"
-            className="grow"
-            placeholder="Search templates"
-            value={searchQuery}
-            onChange={(e) => onSearchChange(e.target.value)}
+              type="text"
+              className="grow"
+              placeholder="Search templates"
+              value={searchQuery}
+              onChange={(e) => onSearchChange(e.target.value)}
           />
         </label>
       </div>
