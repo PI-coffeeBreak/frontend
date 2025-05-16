@@ -33,6 +33,10 @@ const prepareSpeakerData = (formData, imageToUpload) => {
     role: formData.role,
     description: formData.description,
     activity_id: formData.activity_id || null,
+    linkedin: formData.linkedin || null,
+    facebook: formData.facebook || null,
+    instagram: formData.instagram || null,
+    youtube: formData.youtube || null,
   };
 
   if (!imageToUpload && !formData.image_uuid) {
@@ -40,6 +44,79 @@ const prepareSpeakerData = (formData, imageToUpload) => {
   }
   
   return speakerData;
+};
+
+const SocialMediaLinks = ({ links, className = "" }) => {
+  const socialIcons = {
+    linkedin: {
+      icon: "M19 0h-14c-2.761 0-5 2.239-5 5v14c0 2.761 2.239 5 5 5h14c2.762 0 5-2.239 5-5v-14c0-2.761-2.238-5-5-5zm-11 19h-3v-11h3v11zm-1.5-12.268c-.966 0-1.75-.79-1.75-1.764s.784-1.764 1.75-1.764 1.75.79 1.75 1.764-.783 1.764-1.75 1.764zm13.5 12.268h-3v-5.604c0-3.368-4-3.113-4 0v5.604h-3v-11h3v1.765c1.396-2.586 7-2.777 7 2.476v6.759z",
+      label: "LinkedIn Profile"
+    },
+    facebook: {
+      icon: "M9 8h-3v4h3v12h5v-12h3.642l.358-4h-4v-1.667c0-.955.192-1.333 1.115-1.333h2.885v-5h-3.808c-3.596 0-5.192 1.583-5.192 4.615v3.385z",
+      label: "Facebook Profile"
+    },
+    instagram: {
+      icon: "M12 2.163c3.204 0 3.584.012 4.85.07 3.252.148 4.771 1.691 4.919 4.919.058 1.265.069 1.645.069 4.849 0 3.205-.012 3.584-.069 4.849-.149 3.225-1.664 4.771-4.919 4.919-1.266.058-1.644.07-4.85.07-3.204 0-3.584-.012-4.849-.07-3.26-.149-4.771-1.699-4.919-4.92-.058-1.265-.07-1.644-.07-4.849 0-3.204.013-3.583.07-4.849.149-3.227 1.664-4.771 4.919-4.919 1.266-.057 1.645-.069 4.849-.069zm0-2.163c-3.259 0-3.667.014-4.947.072-4.358.2-6.78 2.618-6.98 6.98-.059 1.281-.073 1.689-.073 4.948 0 3.259.014 3.668.072 4.948.2 4.358 2.618 6.78 6.98 6.98 1.281.058 1.689.072 4.948.072 3.259 0 3.668-.014 4.948-.072 4.354-.2 6.782-2.618 6.979-6.98.059-1.28.073-1.689.073-4.948 0-3.259-.014-3.667-.072-4.947-.196-4.354-2.617-6.78-6.979-6.98-1.281-.059-1.69-.073-4.949-.073zm0 5.838c-3.403 0-6.162 2.759-6.162 6.162s2.759 6.163 6.162 6.163 6.162-2.759 6.162-6.163c0-3.403-2.759-6.162-6.162-6.162zm0 10.162c-2.209 0-4-1.79-4-4 0-2.209 1.791-4 4-4s4 1.791 4 4c0 2.21-1.791 4-4 4zm6.406-11.845c-.796 0-1.441.645-1.441 1.44s.645 1.44 1.441 1.44c.795 0 1.439-.645 1.439-1.44s-.644-1.44-1.439-1.44z",
+      label: "Instagram Profile"
+    },
+    youtube: {
+      icon: "M19.615 3.184c-3.604-.246-11.631-.245-15.23 0-3.897.266-4.356 2.62-4.385 8.816.029 6.185.484 8.549 4.385 8.816 3.6.245 11.626.246 15.23 0 3.897-.266 4.356-2.62 4.385-8.816-.029-6.185-.484-8.549-4.385-8.816zm-10.615 12.816v-8l8 3.993-8 4.007z",
+      label: "YouTube Channel"
+    }
+  };
+
+  return (
+    <div className={`flex gap-1 ${className}`}>
+      {Object.entries(links).map(([platform, url]) => 
+        url && (
+          <a
+            key={platform}
+            href={url}
+            target="_blank"
+            rel="noopener noreferrer"
+            className="btn btn-ghost btn-xs"
+            aria-label={socialIcons[platform].label}
+          >
+            <svg className="w-4 h-4" fill="currentColor" viewBox="0 0 24 24">
+              <path d={socialIcons[platform].icon} />
+            </svg>
+          </a>
+        )
+      )}
+    </div>
+  );
+};
+
+const SOCIAL_MEDIA_PATTERNS = {
+  linkedin: {
+    pattern: /^https?:\/\/(www\.)?linkedin\.com\/(in|company)\/[a-zA-Z0-9-]+(\/)?$/,
+    message: 'Please enter a valid LinkedIn profile URL (e.g., https://linkedin.com/in/username)'
+  },
+  facebook: {
+    pattern: /^https?:\/\/(www\.)?facebook\.com\/[a-zA-Z0-9.]+(\/)?$/,
+    message: 'Please enter a valid Facebook profile URL (e.g., https://facebook.com/username)'
+  },
+  instagram: {
+    pattern: /^https?:\/\/(www\.)?instagram\.com\/[a-zA-Z0-9._]+(\/)?$/,
+    message: 'Please enter a valid Instagram profile URL (e.g., https://instagram.com/username)'
+  },
+  youtube: {
+    pattern: /^https?:\/\/(www\.)?(youtube\.com\/(@|channel\/|c\/)[a-zA-Z0-9-]+|youtu\.be\/[a-zA-Z0-9-]+)(\/)?$/,
+    message: 'Please enter a valid YouTube URL (e.g., https://youtube.com/@username)'
+  }
+};
+
+const validateSocialMediaUrl = (platform, url) => {
+  if (!url) return { isValid: true, message: '' };
+  
+  const { pattern, message } = SOCIAL_MEDIA_PATTERNS[platform];
+  const isValid = pattern.test(url);
+  
+  return {
+    isValid,
+    message: isValid ? '' : message
+  };
 };
 
 const SpeakerManagement = () => {
@@ -58,6 +135,10 @@ const SpeakerManagement = () => {
     description: '',
     image: null,
     activity_id: null,
+    linkedin: '',
+    facebook: '',
+    instagram: '',
+    youtube: '',
   });
   const [imagePreview, setImagePreview] = useState(null);
   const [activitySearchQuery, setActivitySearchQuery] = useState('');
@@ -82,6 +163,8 @@ const SpeakerManagement = () => {
     onConfirm: null,
   });
 
+  const [errors, setErrors] = useState({});
+
   const fetchSpeakers = async () => {
     setLoading(true);
     setError(null);
@@ -95,7 +178,11 @@ const SpeakerManagement = () => {
           role: speaker.role || '',
           description: speaker.description || '',
           image_uuid: speaker.image,
-          activity_id: speaker.activity_id
+          activity_id: speaker.activity_id,
+          linkedin: speaker.linkedin || '',
+          facebook: speaker.facebook || '',
+          instagram: speaker.instagram || '',
+          youtube: speaker.youtube || ''
         }));
         setSpeakers(normalizedSpeakers);
       } else if (response.data && typeof response.data === 'object') {
@@ -106,7 +193,11 @@ const SpeakerManagement = () => {
           role: speaker.role || '',
           description: speaker.description || '',
           image_uuid: speaker.image,
-          activity_id: speaker.activity_id
+          activity_id: speaker.activity_id,
+          linkedin: speaker.linkedin || '',
+          facebook: speaker.facebook || '',
+          instagram: speaker.instagram || '',
+          youtube: speaker.youtube || ''
         }));
         setSpeakers(normalizedSpeakers);
       } else {
@@ -137,7 +228,11 @@ const SpeakerManagement = () => {
         name: speakerData.name,
         role: speakerData.role || '',
         description: speakerData.description || '',
-        activity_id: speakerData.activity_id || null
+        activity_id: speakerData.activity_id || null,
+        linkedin: speakerData.linkedin || null,
+        facebook: speakerData.facebook || null,
+        instagram: speakerData.instagram || null,
+        youtube: speakerData.youtube || null,
       };
       
       const response = await axiosWithAuth(keycloak).post(`${API_ENDPOINTS.SPEAKERS}/`, payload);
@@ -168,6 +263,10 @@ const SpeakerManagement = () => {
         role: speakerData.role || '',
         description: speakerData.description || '',
         activity_id: speakerData.activity_id || null,
+        linkedin: speakerData.linkedin || null,
+        facebook: speakerData.facebook || null,
+        instagram: speakerData.instagram || null,
+        youtube: speakerData.youtube || null,
       };
       
       if (speakerData.image === null) {
@@ -238,6 +337,7 @@ const SpeakerManagement = () => {
   
   const handleInputChange = (e) => {
     const { name, value, files } = e.target;
+    
     if (name === 'image') {
       if (files?.[0]) {
         setFormData((prev) => ({ ...prev, [name]: files[0] }));
@@ -249,7 +349,19 @@ const SpeakerManagement = () => {
         reader.readAsDataURL(files[0]);
       }
     } else {
-      setFormData((prev) => ({ ...prev, [name]: value }));
+      // Validate social media URLs
+      if (Object.keys(SOCIAL_MEDIA_PATTERNS).includes(name)) {
+        const { isValid, message } = validateSocialMediaUrl(name, value);
+        setErrors(prev => ({
+          ...prev,
+          [name]: isValid ? '' : message
+        }));
+      }
+      
+      setFormData(prev => ({
+        ...prev,
+        [name]: value
+      }));
     }
   };
 
@@ -279,6 +391,10 @@ const SpeakerManagement = () => {
       description: '',
       image: null,
       activity_id: null,
+      linkedin: '',
+      facebook: '',
+      instagram: '',
+      youtube: '',
     });
     setImagePreview(null);
     setActivitySearchQuery('');
@@ -309,6 +425,10 @@ const SpeakerManagement = () => {
       image: null,
       image_uuid: speaker.image_uuid,
       activity_id: speaker.activity_id || null,
+      linkedin: speaker.linkedin || '',
+      facebook: speaker.facebook || '',
+      instagram: speaker.instagram || '',
+      youtube: speaker.youtube || '',
     });
 
     setActivitySearchQuery(activityName);
@@ -327,6 +447,12 @@ const SpeakerManagement = () => {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+
+    // Validate all fields before submission
+    if (!validateStep(1)) {
+      showNotification('Please fix the errors in the form before submitting', 'error');
+      return;
+    }
 
     if (!formData.name.trim()) {
       showNotification('Speaker name is required', 'error');
@@ -459,7 +585,11 @@ const SpeakerManagement = () => {
       name: speaker.name,
       description: speaker.description,
       activity: activities.find(a => a.id === speaker.activity_id)?.name || '',
-      image_url: speaker.image_uuid ? getMediaUrl(speaker.image_uuid) : ''
+      image_url: speaker.image_uuid ? getMediaUrl(speaker.image_uuid) : '',
+      linkedin: speaker.linkedin || '',
+      facebook: speaker.facebook || '',
+      instagram: speaker.instagram || '',
+      youtube: speaker.youtube || ''
     }));
     
     const blob = new Blob([JSON.stringify(exportData, null, 2)], { type: 'application/json' });
@@ -504,6 +634,41 @@ const SpeakerManagement = () => {
     (currentPage - 1) * itemsPerPage,
     currentPage * itemsPerPage
   );
+
+  const validateStep = (step) => {
+    const newErrors = {};
+
+    switch (step) {
+      case 1:
+        if (!formData.name) newErrors.eventName = 'Event name is required';
+        if (!formData.description) newErrors.description = 'Description is required';
+        break;
+      case 2:
+        // Image is optional, so no validation needed
+        break;
+      case 3:
+        if (!formData.startDate) newErrors.startDate = 'Start date is required';
+        if (!formData.endDate) newErrors.endDate = 'End date is required';
+        if (new Date(formData.endDate) < new Date(formData.startDate)) {
+          newErrors.endDate = 'End date must be after start date';
+        }
+        if (!formData.location) newErrors.location = 'Location is required';
+        break;
+    }
+
+    // Validate social media URLs if they are not empty
+    Object.keys(SOCIAL_MEDIA_PATTERNS).forEach(platform => {
+      if (formData[platform]) {
+        const { isValid, message } = validateSocialMediaUrl(platform, formData[platform]);
+        if (!isValid) {
+          newErrors[platform] = message;
+        }
+      }
+    });
+
+    setErrors(newErrors);
+    return Object.keys(newErrors).length === 0;
+  };
 
   if (loading) {
     return (
@@ -626,6 +791,58 @@ const SpeakerManagement = () => {
                   className="textarea textarea-bordered w-full h-24"
                   required
                 />
+              </div>
+
+              <div className="form-control w-full mb-4">
+                <label className="label">
+                  <span className="label-text">Social Media Links (optional)</span>
+                </label>
+                <div className="grid grid-cols-2 gap-4">
+                  <div>
+                    <input
+                      type="url"
+                      name="linkedin"
+                      value={formData.linkedin}
+                      onChange={handleInputChange}
+                      placeholder="LinkedIn URL"
+                      className={`input input-bordered w-full ${errors.linkedin ? 'input-error' : ''}`}
+                    />
+                    {errors.linkedin && <p className="text-error text-sm mt-1">{errors.linkedin}</p>}
+                  </div>
+                  <div>
+                    <input
+                      type="url"
+                      name="facebook"
+                      value={formData.facebook}
+                      onChange={handleInputChange}
+                      placeholder="Facebook URL"
+                      className={`input input-bordered w-full ${errors.facebook ? 'input-error' : ''}`}
+                    />
+                    {errors.facebook && <p className="text-error text-sm mt-1">{errors.facebook}</p>}
+                  </div>
+                  <div>
+                    <input
+                      type="url"
+                      name="instagram"
+                      value={formData.instagram}
+                      onChange={handleInputChange}
+                      placeholder="Instagram URL"
+                      className={`input input-bordered w-full ${errors.instagram ? 'input-error' : ''}`}
+                    />
+                    {errors.instagram && <p className="text-error text-sm mt-1">{errors.instagram}</p>}
+                  </div>
+                  <div>
+                    <input
+                      type="url"
+                      name="youtube"
+                      value={formData.youtube}
+                      onChange={handleInputChange}
+                      placeholder="YouTube URL"
+                      className={`input input-bordered w-full ${errors.youtube ? 'input-error' : ''}`}
+                    />
+                    {errors.youtube && <p className="text-error text-sm mt-1">{errors.youtube}</p>}
+                  </div>
+                </div>
               </div>
 
               <div className="form-control w-full mb-4">
@@ -787,8 +1004,7 @@ const SpeakerManagement = () => {
                   if (e.key === 'Enter') {
                     setConfirmModal({ show: false, message: '', onConfirm: null });
                   }
-                }
-                }
+                }}
                 tabIndex={0}
                 aria-label="Cancel confirmation"
               >
@@ -859,6 +1075,12 @@ const SpeakerManagement = () => {
                     >
                       Activity {getSortIndicator('activity')}
                     </th>
+                    <th 
+                      className="uppercase text-xs font-semibold text-base-content/60 cursor-pointer"
+                      onClick={() => handleSort('social')}
+                    >
+                      Social Media {getSortIndicator('social')}
+                    </th>
                     <th className="uppercase text-xs font-semibold text-base-content/60">Actions</th>
                   </tr>
                 </thead>
@@ -895,6 +1117,16 @@ const SpeakerManagement = () => {
                           ? activities.find((a) => a.id === speaker.activity_id)?.name ||
                             `Activity #${speaker.activity_id}`
                           : '—'}
+                      </td>
+                      <td className="text-base-content/70">
+                        <SocialMediaLinks 
+                          links={{
+                            linkedin: speaker.linkedin,
+                            facebook: speaker.facebook,
+                            instagram: speaker.instagram,
+                            youtube: speaker.youtube
+                          }}
+                        />
                       </td>
                       <td>
                         <div className="flex gap-2">
