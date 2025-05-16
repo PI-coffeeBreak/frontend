@@ -449,15 +449,14 @@ export function Sponsors() {
   };
 
   return (
-    <div className="w-full min-h-svh p-4 sm:p-8">
-      <h1 className="text-2xl sm:text-3xl font-bold mb-4 sm:mb-6 text-primary">Sponsors Management</h1>
-      
-      {/* Levels Section */}
+    <div className="w-full min-h-screen p-4 sm:p-6 lg:p-8">
+      <h1 className="text-3xl font-bold my-8">Sponsors Management</h1>
+
       <div className="mb-8 sm:mb-12">
         <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 sm:gap-0 mb-4">
           <h2 className="text-xl sm:text-2xl font-semibold">Sponsor Levels</h2>
           <button 
-            className="btn btn-primary btn-sm w-full sm:w-auto"
+            className="btn btn-primary rounded-xl w-full sm:w-auto"
             onClick={() => setIsAddingLevel(true)}
           >
             <FaPlus className="mr-2" /> Add Level
@@ -617,7 +616,7 @@ export function Sponsors() {
 
             {/* Add Sponsor Button */}
             <button 
-              className="btn btn-primary btn-sm w-full sm:w-auto"
+              className="btn btn-primary rounded-xl w-full sm:w-auto"
               onClick={() => {
                 if (levels.length === 0) {
                   showNotification("Please create at least one level first", "warning");
