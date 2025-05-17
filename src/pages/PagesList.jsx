@@ -8,6 +8,7 @@ import { useKeycloak } from "@react-keycloak/web";
 import { useTranslation } from "react-i18next";
 import DeleteConfirmationModal from '../components/common/DeleteConfirmationModal.jsx';
 import { useMenus } from "../contexts/MenuContext.jsx";
+import { baseUrl } from '../consts';
 
 export function PagesList() {
     const { t } = useTranslation();
@@ -105,20 +106,20 @@ export function PagesList() {
                 };
 
                 await axiosInstance.post(
-                    `${import.meta.env.VITE_API_BASE_URL}/ui/menu/option/`,
+                    `${baseUrl}/ui/menu/option`,
                     menuOption
                 );
             } else {
                 // Get menu options and find the one with matching label
                 const { data: menu } = await axiosInstance.get(
-                    `${import.meta.env.VITE_API_BASE_URL}/ui/menu`
+                    `${baseUrl}/ui/menu`
                 );
 
                 const menuOption = menu.options.find(opt => opt.label === page.title);
                 if (menuOption) {
                     // Remove menu option by ID
                     await axiosInstance.delete(
-                        `${import.meta.env.VITE_API_BASE_URL}/ui/menu/option/${menuOption.id}`
+                        `${baseUrl}/ui/menu/option/${menuOption.id}`
                     );
                 }
             }
