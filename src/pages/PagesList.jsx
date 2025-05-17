@@ -106,7 +106,7 @@ export function PagesList() {
                 };
 
                 await axiosInstance.post(
-                    `${baseUrl}/ui/menu/option`,
+                    `${baseUrl}/ui/menu/option/`,
                     menuOption
                 );
             } else {

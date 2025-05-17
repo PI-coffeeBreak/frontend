@@ -5,6 +5,7 @@ import { useTranslation } from "react-i18next";
 import { useMedia } from "../contexts/MediaContext.jsx";
 import { useNotification } from "../contexts/NotificationContext.jsx";
 import { useManifest } from "../contexts/ManifestContext";
+import { baseUrl } from "../consts";
 
 export function IconsEditor() {
     const { registerMedia, uploadMedia, getMediaUrl } = useMedia();
@@ -90,7 +91,7 @@ export function IconsEditor() {
                     const faviconPath = faviconData.url;
                     setFaviconId(faviconPath);
                     setFaviconType(faviconData.type);
-                    if (!userChangedFavicon) setFaviconPreview(`${faviconPath.startsWith('http') ? '' : 'http://localhost'}${faviconPath}`);
+                    if (!userChangedFavicon) setFaviconPreview(faviconPath.startsWith('http') ? faviconPath : `${baseUrl}${faviconPath}`);
                 }
                 setInitialValues({
                     pwaIcon192Id: icon192 ? icon192.src.split('/').pop() : null,
@@ -108,7 +109,7 @@ export function IconsEditor() {
             }
         };
         fetchData();
-    }, [fetchManifest, fetchFavicon, getMediaUrl, showNotification, t]);
+    }, []);
 
     // Check for changes whenever any icon is modified
     useEffect(() => {
@@ -302,30 +303,44 @@ export function IconsEditor() {
             showNotification(t('common.media.sizeError'), "error");
             return;
         }
+
         // Allow image/svg+xml and image/x-icon (ico) and all image/*
         const isSvg = file.type === 'image/svg+xml';
         const isIco = file.type === 'image/x-icon' || file.name.endsWith('.ico');
+        const isPng = file.type === 'image/png';
         if (!file.type.startsWith('image/') && !isSvg && !isIco) {
             showNotification(t('common.media.typeError'), "error");
             return;
         }
         const objectUrl = URL.createObjectURL(file);
         // For SVG and ICO files, skip dimension check
-        if (isSvg || isIco) {
+        if (isSvg || isIco || isPng) {
             setFaviconPreview(objectUrl);
             setUserChangedFavicon(true);
             setFaviconError(false);
             setFaviconFile(file);
             return;
         }
-        // For regular images, check dimensions
+        // For PNG images, check dimensions
         const img = new window.Image();
         img.onload = () => {
-            if (img.width !== 16 || img.height !== 16 || img.width !== 32 || img.height !== 32 || img.width !== 48 || img.height !== 48) {
+            // Allow any of the standard favicon sizes
+            const validSizes = [
+                { width: 16, height: 16 },
+                { width: 32, height: 32 },
+                { width: 48, height: 48 }
+            ];
+            
+            const isValidSize = validSizes.some(size => 
+                img.width === size.width && img.height === size.height
+            );
+
+            if (!isValidSize) {
                 showNotification(
-                    t('common.media.dimensionError', { width: 16, height: 16 }) ||
-                    t('common.media.dimensionError', { width: 32, height: 32 }) ||
-                    t('common.media.dimensionError', { width: 48, height: 48 }) ||
+                    t('common.media.dimensionError', { 
+                        width: '16/32/48', 
+                        height: '16/32/48' 
+                    }) ||
                     "Image must be exactly 16×16, 32×32, or 48×48 pixels",
                     "error"
                 );

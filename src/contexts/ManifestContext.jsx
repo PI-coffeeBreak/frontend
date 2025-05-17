@@ -1,4 +1,4 @@
-import React, { createContext, useContext } from "react";
+import React, { createContext, useContext, useMemo } from "react";
 import { baseUrl } from "../consts";
 import axios from "axios";
 import { axiosWithAuth } from "../utils/axiosWithAuth";
@@ -9,44 +9,47 @@ const ManifestContext = createContext();
 
 export function ManifestProvider({ children }) {
     const { keycloak } = useKeycloak();
-    // Fetch the manifest.json
-    const fetchManifest = async () => {
-        const response = await axios.get(`${baseUrl}/manifest.json`);
-        return response.data;
-    };
 
-    // Fetch the favicon
-    const fetchFavicon = async () => {
-        const response = await axios.get(`${baseUrl}/favicon/`);
-        return response.data;
-    };
+    const contextValue = useMemo(() => {
+        // Fetch the manifest.json
+        const fetchManifest = async () => {
+            const response = await axios.get(`${baseUrl}/manifest.json`);
+            return response.data;
+        };
 
-    // Update an icon in the manifest
-    const updateManifestIcon = async ({ src, sizes, type }) => {
-        return axiosWithAuth(keycloak).post(`${baseUrl}/manifest/icon`, { src, sizes, type });
-    };
+        // Fetch the favicon
+        const fetchFavicon = async () => {
+            const response = await axios.get(`${baseUrl}/favicon/`);
+            return response.data;
+        };
 
-    // Optionally, get a specific icon by size from the manifest
-    const getManifestIcon = (manifest, size) => {
-        if (!manifest?.icons) return null;
-        return manifest.icons.find(icon => icon.sizes === size);
-    };
+        // Update an icon in the manifest
+        const updateManifestIcon = async ({ src, sizes, type }) => {
+            return axiosWithAuth(keycloak).post(`${baseUrl}/manifest/icon`, { src, sizes, type });
+        };
 
-    const updateFavicon = async (favicon) => {
-        return axiosWithAuth(keycloak).put(`${baseUrl}/favicon/`, favicon);
-    };
+        // Optionally, get a specific icon by size from the manifest
+        const getManifestIcon = (manifest, size) => {
+            if (!manifest?.icons) return null;
+            return manifest.icons.find(icon => icon.sizes === size);
+        };
 
-    return (
-        <ManifestContext.Provider
-        value={{
+        const updateFavicon = async (favicon) => {
+            return axiosWithAuth(keycloak).put(`${baseUrl}/favicon/`, favicon);
+        };
+
+        return {
             fetchManifest,
             fetchFavicon,
             updateManifestIcon,
             getManifestIcon,
             updateFavicon
-        }}
-        >
-        {children}
+        };
+    }, [keycloak]); // Only recreate if keycloak changes
+
+    return (
+        <ManifestContext.Provider value={contextValue}>
+            {children}
         </ManifestContext.Provider>
     );
 }
