@@ -104,7 +104,7 @@ export function CreatePage() {
 
             const axiosInstance = axiosWithAuth(keycloak);
             await axiosInstance.post(
-                `${baseUrl}/ui/menu/option`,
+                `${baseUrl}/ui/menu/option/`,
                 menuOption
             );
 
