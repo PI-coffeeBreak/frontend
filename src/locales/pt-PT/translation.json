@@ -11,8 +11,8 @@
     "pages": "Páginas",
     "create": "Criar",
     "edit": "Editar",
-    "save": "Save",
-    "saving": "Saving...",
+    "save": "Guardar",
+    "saving": "A guardar...",
     "cancel": "Cancelar",
     "delete": "Eliminar",
     "loading": "A carregar...",
@@ -179,7 +179,12 @@
       "noDescription": "Sem descrição",
       "assigned": "Atribuído",
       "assign": "Atribuir",
-      "noRoles": "Nenhuma função disponível. Crie uma função primeiro."
+      "noRoles": "Nenhuma função disponível. Crie uma função primeiro.",
+      "edit": "Editar Função",
+      "editSuccess": "Função editada com sucesso",
+      "editError": "Falha ao editar função",
+      "deleteSuccess": "Função eliminada com sucesso",
+      "deleteError": "Falha ao eliminar função"
     },
     "list": {
       "title": "Lista de Utilizadores"

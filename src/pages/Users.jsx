@@ -16,7 +16,8 @@ import {
     FaExclamationTriangle,
     FaSearch,
     FaEye,
-    FaEyeSlash
+    FaEyeSlash,
+    FaEdit
 } from "react-icons/fa";
 import KeycloakAdminService from "../services/KeycloakAdminService";
 import { UserExcelImport } from "../components/users/UserExcelImport";
@@ -51,7 +52,9 @@ export default function Users() {
         removePermissionFromRole,
         // User creation function
         createUser,
-        createMultipleUsers
+        createMultipleUsers,
+        updateRoleName,
+        deleteRole
     } = useUsers();
 
     // Local state for UI controls
@@ -87,6 +90,10 @@ export default function Users() {
     // Excel import state
     const [isExcelImportOpen, setIsExcelImportOpen] = useState(false);
     const [importStats, setImportStats] = useState(null);
+
+    const [editRoleName, setEditRoleName] = useState({});
+    const [roleEditError, setRoleEditError] = useState("");
+    const [roleEditSuccess, setRoleEditSuccess] = useState("");
 
     // Calculate password strength
     const calculatePasswordStrength = (password) => {
@@ -510,6 +517,41 @@ export default function Users() {
         }
     };
 
+    const handleEditRoleName = (roleId, value) => {
+        setEditRoleName(prev => ({ ...prev, [roleId]: value }));
+    };
+
+    const handleSaveRoleName = async (role) => {
+        setRoleEditError("");
+        setRoleEditSuccess("");
+        try {
+            await updateRoleName(role.name, editRoleName[role.id]);
+            setRoleEditSuccess(t('users.manageRoles.editSuccess'));
+            await fetchAllRolesAndPermissions();
+        } catch (error) {
+            setRoleEditError(t('users.manageRoles.editError'));
+        }
+    };
+
+    const handleDeleteRole = async (role) => {
+        setRoleEditError("");
+        setRoleEditSuccess("");
+        try {
+            await deleteRole(role.name);
+            setRoleEditSuccess(t('users.manageRoles.deleteSuccess'));
+            await fetchAllRolesAndPermissions();
+        } catch (error) {
+            setRoleEditError(t('users.manageRoles.deleteError'));
+        }
+    };
+
+    const closeRoleManagementModal = () => {
+    setRoleEditError("");
+    setRoleEditSuccess("");
+    setRoleCreationError("");
+    document.getElementById('role_management_modal').close();
+};
+
     return (
         <div className="w-full min-h-screen p-4 sm:p-6 lg:p-8">
             <div className="max-w-7xl mx-auto">
@@ -678,21 +720,31 @@ export default function Users() {
                 <dialog id="role_management_modal" className="modal">
                     <div className="modal-box max-w-4xl">
                         <form method="dialog">
-                            <button className="btn btn-sm btn-circle btn-ghost absolute right-2 top-2">✕</button>
+                            <button className="btn btn-sm btn-circle btn-ghost absolute right-2 top-2" type="button" onClick={closeRoleManagementModal}>✕</button>
                         </form>
                         <h3 className="font-bold text-lg mb-4">{t('users.manageRoles.title')}</h3>
 
                         {/* Tabs */}
-                        <div className="tabs tabs-boxed mb-4">
+                        <div className="flex gap-2 mb-4">
                             <button
-                                className={`tab ${roleManagementTab === "create" ? "tab-active" : ""}`}
+                                className={`btn btn-sm ${roleManagementTab === "create" ? "btn-primary" : "btn-ghost"}`}
                                 onClick={() => setRoleManagementTab("create")}
+                                type="button"
                             >
                                 <FaPlus className="mr-2" /> {t('users.manageRoles.create')}
                             </button>
                             <button
-                                className={`tab ${roleManagementTab === "permissions" ? "tab-active" : ""}`}
+                                className={`btn btn-sm ${roleManagementTab === "edit" ? "btn-primary" : "btn-ghost"}`}
+                                onClick={() => setRoleManagementTab("edit")}
+                                type="button"
+                                disabled={allRoles.length === 0}
+                            >
+                                <FaEdit className="mr-2" /> {t('users.manageRoles.edit')}
+                            </button>
+                            <button
+                                className={`btn btn-sm ${roleManagementTab === "permissions" ? "btn-primary" : "btn-ghost"}`}
                                 onClick={() => setRoleManagementTab("permissions")}
+                                type="button"
                                 disabled={allRoles.length === 0}
                             >
                                 <FaKey className="mr-2" /> {t('users.manageRoles.permissions')}
@@ -810,9 +862,48 @@ export default function Users() {
                             </div>
                         )}
 
+                        {/* Edit Role Tab */}
+                        {roleManagementTab === "edit" && (
+                            <div className="space-y-4">
+                                {roleEditError && (
+                                    <div className="alert alert-error">
+                                        <span>{roleEditError}</span>
+                                    </div>
+                                )}
+                                {roleEditSuccess && (
+                                    <div className="alert alert-success">
+                                        <span>{roleEditSuccess}</span>
+                                    </div>
+                                )}
+                                {allRoles.map(role => (
+                                    <div key={role.id} className="flex items-center gap-2">
+                                        <input
+                                            type="text"
+                                            className="input input-bordered"
+                                            value={editRoleName[role.id] !== undefined ? editRoleName[role.id] : role.displayName || role.name}
+                                            onChange={e => handleEditRoleName(role.id, e.target.value)}
+                                        />
+                                        <button
+                                            className="btn btn-primary btn-sm"
+                                            onClick={() => handleSaveRoleName(role)}
+                                            disabled={!editRoleName[role.id] || editRoleName[role.id] === (role.displayName || role.name)}
+                                        >
+                                            {t('common.save')}
+                                        </button>
+                                        <button
+                                            className="btn btn-error btn-sm"
+                                            onClick={() => handleDeleteRole(role)}
+                                        >
+                                            <FaTrash />
+                                        </button>
+                                    </div>
+                                ))}
+                            </div>
+                        )}
+
                         <div className="modal-action">
                             <form method="dialog">
-                                <button className="btn">{t('common.close')}</button>
+                                <button className="btn" type="button" onClick={closeRoleManagementModal}>{t('common.close')}</button>
                             </form>
                         </div>
                     </div>

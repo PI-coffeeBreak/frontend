@@ -179,7 +179,12 @@
       "noDescription": "No description",
       "assigned": "Assigned",
       "assign": "Assign",
-      "noRoles": "No roles available. Create a role first."
+      "noRoles": "No roles available. Create a role first.",
+      "edit": "Edit Role",
+      "editSuccess": "Role updated successfully",
+      "editError": "Failed to update role",
+      "deleteSuccess": "Role deleted successfully",
+      "deleteError": "Failed to delete role"
     },
     "list": {
       "title": "Users"

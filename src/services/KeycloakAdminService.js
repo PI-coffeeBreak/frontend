@@ -224,6 +224,59 @@ class KeycloakAdminService {
     }
   }
 
+  async renameRole(oldRoleName, newRoleName) {
+    try {
+      // Get the old role
+      const oldRole = await this.getRoleByName(oldRoleName);
+
+      // Get the old role's permissions (composite roles)
+      const oldComposites = await this.getRolePermissions(oldRoleName);
+
+      // Create the new role
+      await this.createRole(newRoleName, oldRole.description);
+
+      // Add the old role's permissions to the new role
+      for (const perm of oldComposites) {
+        await this.addPermissionToRole(newRoleName, perm);
+      }
+
+      // Copy the role to all users
+      // Get all users in the realm
+      const usersResponse = await this.client.get(`${this.baseUrl}/users?max=10000`);
+      const allUsers = usersResponse.data;
+
+      // For each user, check if they have the old role and assign the new role
+      for (const user of allUsers) {
+        const userRoles = await this.getUserRoles(user.id);
+        if (userRoles.some(r => r.name === oldRoleName)) {
+          // Get the new role object
+          const newRoleObj = await this.getRoleByName(newRoleName);
+          await this.assignRoleToUser(user.id, newRoleObj);
+        }
+      }
+
+      // Delete the old role
+      await this.deleteRole(oldRoleName);
+
+      return { success: true };
+    } catch (error) {
+      console.error(`Error renaming role from ${oldRoleName} to ${newRoleName}:`, error);
+      throw error;
+    }
+  }
+  
+    // Delete a role
+    async deleteRole(roleName) {
+      try {
+        await this.client.delete(`${this.baseUrl}/roles/${roleName}`);
+        return { success: true };
+      } catch (error) {
+        console.error(`Error deleting role ${roleName}:`, error);
+        console.error("Error details:", error.response?.data || "No response data");
+        throw error;
+      }
+    }
+
   // Get role by name
   async getRoleByName(roleName) {
     try {      
@@ -311,4 +364,4 @@ class KeycloakAdminService {
   }
 }
 
-export default KeycloakAdminService; 
+export default KeycloakAdminService;

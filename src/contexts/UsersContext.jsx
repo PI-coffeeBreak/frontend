@@ -346,6 +346,52 @@ export const UsersProvider = ({ children }) => {
         }
     };
 
+    // Update a role's display name
+    const updateRoleName = async (oldRoleName, newRoleName) => {
+        const adminService = initKeycloakAdminService();
+        if (!adminService) {
+            console.error("Could not initialize admin service - missing token or authentication");
+            return;
+        }
+    
+        setIsLoading(true);
+        setError(null);
+        try {
+            const result = await adminService.renameRole(oldRoleName, newRoleName);
+            await fetchAllRolesAndPermissions(); // Refresh roles after renaming
+            return result;
+        } catch (error) {
+            console.error("Error renaming role:", error);
+            setError("Failed to rename role. Please try again later.");
+            throw error;
+        } finally {
+            setIsLoading(false);
+        }
+    };
+    
+    // Delete a role
+    const deleteRole = async (roleName) => {
+        const adminService = initKeycloakAdminService();
+        if (!adminService) {
+            console.error("Could not initialize admin service - missing token or authentication");
+            return;
+        }
+    
+        setIsLoading(true);
+        setError(null);
+        try {
+            const result = await adminService.deleteRole(roleName);
+            await fetchAllRolesAndPermissions(); // Update roles after deletion
+            return result;
+        } catch (error) {
+            console.error("Error deleting role:", error);
+            setError("Failed to delete role. Please try again later.");
+            throw error;
+        } finally {
+            setIsLoading(false);
+        }
+    };
+
     // Get permissions for a specific role
     const getRolePermissions = async (roleName) => {
         const adminService = initKeycloakAdminService();
@@ -584,6 +630,8 @@ export const UsersProvider = ({ children }) => {
             removeRoleFromUser,
             // New role management functions
             createRole,
+            updateRoleName,   // <--- adiciona aqui
+            deleteRole,       // <--- adiciona aqui
             getRolePermissions,
             addPermissionToRole,
             removePermissionFromRole,
