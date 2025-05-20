@@ -1,17 +1,20 @@
 import React from "react";
 import PropTypes from "prop-types";
-import { getColorVariable } from "./utils";
+import { useTheme } from "../../../../contexts/ThemeContext.jsx";
+import { getThemeColorValue } from "./utils.js";
 
 export function Title({
     text = "Default Title",
-    color = "primary-content",
+    color = "base-content",
     bold = false,
     italic = false,
     underline = false,
-    className = "",
 }) {
+    const { theme } = useTheme();
+    const textColor = getThemeColorValue(theme, color);
+
     const styles = {
-        color: getColorVariable(color),
+        color: textColor,
         fontWeight: bold ? "bold" : "normal",
         fontStyle: italic ? "italic" : "normal",
         textDecoration: underline ? "underline" : "none",
@@ -19,7 +22,7 @@ export function Title({
 
     return (
         <h1
-            className={`text-2xl ${className}`}
+            className={`text-2xl`}
             style={styles}
         >
             {text}
