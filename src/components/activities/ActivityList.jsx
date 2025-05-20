@@ -7,7 +7,7 @@ import { useActivities } from "../../contexts/ActivitiesContext";
 import { useNotification } from "../../contexts/NotificationContext";
 import DeleteConfirmationModal from '../common/DeleteConfirmationModal.jsx';
 
-export function ActivityList({ activities, onDelete, onEdit, mode = 'delete' }) {
+export function ActivityList({ activities, activityTypes, onDelete, onEdit, mode = 'delete' }) {
   const { t } = useTranslation();
   const { deleteActivity } = useActivities();
   const { showNotification } = useNotification();
@@ -73,6 +73,7 @@ export function ActivityList({ activities, onDelete, onEdit, mode = 'delete' }) 
             onEdit={mode === 'edit' || mode === 'both' ? onEdit : undefined}
             mode={mode}
             metadata={activity.metadata}
+            activityTypes={activityTypes}
           />
         ))}
       </div>
@@ -93,6 +94,7 @@ export function ActivityList({ activities, onDelete, onEdit, mode = 'delete' }) 
 
 ActivityList.propTypes = {
   activities: PropTypes.array.isRequired,
+  activityTypes: PropTypes.array.isRequired,
   onDelete: PropTypes.func,
   onEdit: PropTypes.func,
   mode: PropTypes.oneOf(['edit', 'delete', 'both'])

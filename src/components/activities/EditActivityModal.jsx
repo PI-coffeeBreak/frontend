@@ -6,6 +6,7 @@ import { useMedia } from "../../contexts/MediaContext";
 import { useNotification } from "../../contexts/NotificationContext";
 import { Modal } from "../common/Modal";
 import { FaTrash, FaImage } from "react-icons/fa";
+import { utcToLocalDatetimeLocal, localDatetimeLocalToUTC } from '../../utils/date';
 
 const FormField = ({ label, id, type = "text", required = false, error, children }) => (
   <div>
@@ -59,14 +60,11 @@ export function EditActivityModal({ isOpen, onClose, activity }) {
 
   useEffect(() => {
     if (activity) {
-      // Format the date for the input field
       let formattedDate = "";
       if (activity.date) {
-        const date = new Date(activity.date);
-        // Format to YYYY-MM-DDTHH:MM
-        formattedDate = date.toISOString().slice(0, 16);
+        formattedDate = utcToLocalDatetimeLocal(activity.date);
+        console.log("Formatted date:", formattedDate);
       }
-      
       setFormData({
         name: activity.name || "",
         description: activity.description || "",
@@ -163,7 +161,7 @@ export function EditActivityModal({ isOpen, onClose, activity }) {
       topic: formData.topic || "",
     };
 
-    if (formData.date) payload.date = formData.date;
+    if (formData.date) payload.date = localDatetimeLocalToUTC(formData.date);
     if (formData.duration) payload.duration = parseInt(formData.duration, 10);
 
     return payload;

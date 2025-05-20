@@ -231,7 +231,8 @@
       "createSuccess": "Activity type created successfully",
       "createError": "Failed to create activity type",
       "createTab": "Create Activity Type",
-      "existingTab": "Delete Activity Type"
+      "existingTab": "Delete Activity Type",
+      "deleteSuccess": "Activity type deleted successfully"
     },
     "import": {
       "title": "Add with Excel file",

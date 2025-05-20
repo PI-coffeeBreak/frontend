@@ -2,8 +2,13 @@ import React, { useState, useRef, useEffect } from "react";
 import PropTypes from "prop-types";
 import { FaChevronDown, FaChevronUp } from "react-icons/fa";
 import { ColorThemeLayout } from "./ColorThemeLayout.jsx";
+import { useTheme } from '../../contexts/ThemeContext.jsx';
+import { getThemeColorValue } from "./pages/components/utils.js";
 
 function ColorCircle({ color }) {
+  const { theme } = useTheme();
+  const bgColor = getThemeColorValue(theme, color) || '#fff';
+
   return (
     <ColorThemeLayout>
       <span
@@ -11,8 +16,8 @@ function ColorCircle({ color }) {
           width: '16px',
           height: '16px',
           borderRadius: '50%',
-          border: '1px solid black',
-          backgroundColor: color,
+          border: `1px solid`,
+          backgroundColor: bgColor,
           display: 'inline-block',
           marginRight: '8px'
         }}

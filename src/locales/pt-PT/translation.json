@@ -229,7 +229,8 @@
       "createSuccess": "Tipo de atividade criado com sucesso",
       "createError": "Falha ao criar tipo de atividade",
       "createTab": "Criar Tipo de Atividade",
-      "existingTab": "Eliminar Tipo de Atividade"
+      "existingTab": "Eliminar Tipo de Atividade",
+      "deleteSuccess": "Tipo de atividade eliminado"
     },
     "import": {
       "title": "Importar Atividades",
