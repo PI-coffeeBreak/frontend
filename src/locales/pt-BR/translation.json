@@ -124,12 +124,12 @@
     "quickAccess": "Acesso Rápido",
     "cards": {
       "management": {
-        "title": "Gestão",
-        "description": "Acesse ferramentas para gerenciar usuários, atividades e alertas do seu evento."
+        "title": "Evento",
+        "description": "Acesse ferramentas para gerenciar usuários, atividades e plugins do seu evento."
       },
       "eventMaker": {
-        "title": "Event Maker",
-        "description": "Personalize a aparência, conteúdo e funcionalidade do seu evento."
+        "title": "Aplicação",
+        "description": "Personalize a aparência, conteúdo e funcionalidade da sua aplicação."
       }
     }
   },
@@ -171,11 +171,11 @@
       "permissionsWarning": "Você não tem permissão para gerenciar funções. Você precisa de uma destas funções: realm-admin, create-realm, manage-realm, cb-admin ou admin. A criação de função pode falhar com erro de permissão.",
       "roleName": "Nome da Função",
       "roleNamePlaceholder": "organizador",
-      "createRole": "Create Role",
-      "selectRole": "Select Role:",
-      "permissionName": "Permission Name",
-      "description": "Manage the roles and permissions",
-      "actions": "Actions",
+      "createRole": "Criar Função",
+      "selectRole": "Selecionar Função:",
+      "permissionName": "Nome da Permissão",
+      "description": "Gerenciar funções e permissões",
+      "actions": "Ações",
       "noDescription": "Sem descrição",
       "assigned": "Atribuída",
       "assign": "Atribuir",
@@ -213,14 +213,18 @@
       "image": "Imagem"
     },
     "types": {
+      "existing": "Tipos de Atividade Existentes",
       "title": "Criar Novo Tipo de Atividade",
+      "description": "Criar e gerenciar diferentes tipos de atividades para seu evento",
       "name": "Nome",
       "namePlaceholder": "Digite o nome do tipo de atividade",
       "color": "Cor",
       "createButton": "Criar Tipo de Atividade",
       "creating": "Criando...",
       "createSuccess": "Tipo de atividade criado com sucesso",
-      "createError": "Falha ao criar tipo de atividade"
+      "createError": "Falha ao criar tipo de atividade",
+      "createTab": "Criar Tipo de Atividade",
+      "existingTab": "Excluir Tipo de Atividade"
     },
     "import": {
       "title": "Adicionar com arquivo Excel",
@@ -502,7 +506,8 @@
       "createSuccess": "Página criada com sucesso!",
       "createError": "Falha ao criar a página. Por favor, tente novamente.",
       "loading": "Carregando...",
-      "saveButton": "Salvar Página"
+      "saveButton": "Salvar Página",
+      "duplicateTitleError": "Já existe uma página com este título. Por favor, escolha outro título."
     },
     "common": {
       "backButton": "Voltar",
@@ -513,7 +518,8 @@
       "componentSettings": "Configurações do Componente",
       "noComponents": "Nenhum componente adicionado",
       "addFirstComponent": "Adicione seu primeiro componente",
-      "descriptionPlaceholder": "Digite uma descrição para sua página"
+      "descriptionPlaceholder": "Digite uma descrição para sua página",
+      "duplicateTitleError": "Já existe uma página com este título. Por favor, escolha outro título."
     }
   },
   "components": {
@@ -622,29 +628,6 @@
         "text": "Respeitamos seus dados. Leia nossa",
         "link": "política de privacidade"
       }
-    },
-    "footer": {
-      "tagline": "Não há evento sem um coffeeBreak",
-      "services": {
-        "title": "Serviços",
-        "branding": "Branding",
-        "design": "Design",
-        "marketing": "Marketing",
-        "advertisement": "Publicidade"
-      },
-      "company": {
-        "title": "Empresa",
-        "about": "Sobre nós",
-        "contact": "Contato",
-        "jobs": "Trabalhos",
-        "press": "Kit de imprensa"
-      },
-      "legal": {
-        "title": "Legal",
-        "terms": "Termos de uso",
-        "privacy": "Política de privacidade",
-        "cookies": "Política de cookies"
-      }
     }
   },
   "navbar": {
@@ -719,7 +702,7 @@
     "preview": "Pré-visualização",
     "imageUrlRequired": "A URL da imagem é obrigatória"
   },
-    "notifications": {
+  "notifications": {
     "loadFailed": "Falha ao carregar as Plantas",
     "createSuccess": "Planta criada com sucesso",
     "createFailed": "Falha na criação",
@@ -738,31 +721,31 @@
     "dateInPast": "A data não pode ser no passado",
     "positiveNumber": "Deve ser um número positivo"
   },
-    "activitiesFeedback": {
-      "title": "Feedback das Atividades",
-      "loading": "Carregando...",
-      "error": "Erro ao buscar atividades.",
-      "averageRating": "Classificação Média",
-      "feedbackFor": "Feedback para",
-      "filterByRating": "Filtrar por Classificação",
-      "filterByUserType": "Filtrar por Tipo de Usuário",
-      "allRatings": "Todas as Classificações",
-      "above": "Acima",
-      "below": "Abaixo",
-      "exact": "Exato",
-      "anonymousUsers": "Usuários Anônimos",
-      "anonymousUser": "Anônimo",
-      "namedUsers": "Usuários com sessão",
-      "allUsers": "Todos os Usuários",
-      "noFeedback": "Nenhum feedback disponível para esta atividade.",
-      "previous": "Anterior",
-      "next": "Próximo",
-      "page": "Página",
-      "user": "Usuário",
-      "rating": "Classificação",
-      "comment": "Comentário",
-      "of": "de",
-      "enterRating": "Digite a classificação"
+  "activitiesFeedback": {
+    "title": "Feedback das Atividades",
+    "loading": "Carregando...",
+    "error": "Erro ao buscar atividades.",
+    "averageRating": "Classificação Média",
+    "feedbackFor": "Feedback para",
+    "filterByRating": "Filtrar por Classificação",
+    "filterByUserType": "Filtrar por Tipo de Usuário",
+    "allRatings": "Todas as Classificações",
+    "above": "Acima",
+    "below": "Abaixo",
+    "exact": "Exato",
+    "anonymousUsers": "Usuários Anônimos",
+    "anonymousUser": "Anônimo",
+    "namedUsers": "Usuários com sessão",
+    "allUsers": "Todos os Usuários",
+    "noFeedback": "Nenhum feedback disponível para esta atividade.",
+    "previous": "Anterior",
+    "next": "Próximo",
+    "page": "Página",
+    "user": "Usuário",
+    "rating": "Classificação",
+    "comment": "Comentário",
+    "of": "de",
+    "enterRating": "Digite a classificação"
   },
   "iconsEditor": {
     "title": "Editor de Ícones",
