@@ -101,10 +101,10 @@ export default function DragDropCalendar() {
 
             return () => {
                 clearTimeout(timer);
-                if (draggableRef.current) {
+                if (draggableRef.current && typeof draggableRef.current.destroy === 'function') {
                     draggableRef.current.destroy();
-                    draggableRef.current = null;
                 }
+                draggableRef.current = null;
             };
         }
     }, [activities]);
@@ -264,7 +264,7 @@ export default function DragDropCalendar() {
                         <div className="mx-auto">
                             <div className="flex gap-4">
                                 <div>
-                                    <label className="input input-bordered w-full rounded-xl flex items-center gap-2">
+                                    <label className="input input-bordered w-64 rounded-xl flex items-center gap-2">
                                         <FaSearch className="text-gray-400"/>
                                         <input
                                             type="text"
@@ -275,7 +275,7 @@ export default function DragDropCalendar() {
                                         />
                                     </label>
                                 </div>
-                                <div className="filter">
+                                <div className="filter w-32">
                                     <select
                                         className="select select-bordered rounded-xl"
                                         value={selectedType}

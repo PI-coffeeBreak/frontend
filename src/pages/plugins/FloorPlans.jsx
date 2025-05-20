@@ -170,7 +170,9 @@ export function FloorPlans() {
     }
   };
 
-  useEffect(fetchFloorPlans, []);
+  useEffect(() => {
+    fetchFloorPlans();
+  }, []);
 
   const handleCreate = async (form) => {
     try {
