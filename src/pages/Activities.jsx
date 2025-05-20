@@ -200,6 +200,7 @@ export default function Activities() {
 
               <ActivityList
                 activities={mappedActivities}
+                activityTypes={activityTypes}
                 onEdit={handleEditActivity}
                 onDelete={handleDeleteClick}
                 mode="both"

@@ -224,7 +224,8 @@
       "createSuccess": "Tipo de atividade criado com sucesso",
       "createError": "Falha ao criar tipo de atividade",
       "createTab": "Criar Tipo de Atividade",
-      "existingTab": "Excluir Tipo de Atividade"
+      "existingTab": "Excluir Tipo de Atividade",
+      "deleteSucess": "Tipo de atividade excluído com sucesso"
     },
     "import": {
       "title": "Adicionar com arquivo Excel",
