@@ -4,7 +4,7 @@ import { FaTrash, FaEdit } from 'react-icons/fa';
 import { useState, useEffect } from 'react';
 import { useMedia } from '../../contexts/MediaContext.jsx';
 
-export default function Activity({ id, title, description, image, category, type, onDelete, onEdit, mode, metadata }) {
+export default function Activity({ id, title, description, image, category, type, onDelete, onEdit, mode, metadata, activityTypes}) {
   const { t } = useTranslation();
   const { getMediaUrl } = useMedia();
   const [imageUrl, setImageUrl] = useState(null);
@@ -34,6 +34,14 @@ export default function Activity({ id, title, description, image, category, type
   const handleImageError = () => {
     setImageError(true);
   };
+
+  const typeObj = activityTypes.find(t => t.type === type);
+
+  const badgeStyle = {
+  backgroundColor: typeObj?.color || '#3788d8',
+  borderColor: typeObj?.color || '#3788d8',
+  color: '#ffffff'
+};
 
   return (
     <div
@@ -125,7 +133,9 @@ export default function Activity({ id, title, description, image, category, type
         <h1 className="font-bold text-secondary text-sm">{title}</h1>
         <p className="text-sm mt-2 text-gray-600">{description}</p>
         <div className="mt-1 flex flex-wrap gap-2">
-          <span className="badge badge-secondary">{type}</span>
+          <span className="badge rounded-xl" style={badgeStyle}>
+            {type}
+          </span>
           {category && <span className="badge badge-primary">{category}</span>}
           {metadata?.is_restricted && (
             <span className="badge badge-outline">
@@ -152,7 +162,13 @@ Activity.propTypes = {
     is_restricted: PropTypes.bool,
     slots: PropTypes.number,
     registered: PropTypes.number
-  })
+  }),
+  activityTypes: PropTypes.arrayOf(
+    PropTypes.shape({
+      type: PropTypes.string.isRequired,
+      color: PropTypes.string
+    })
+  )
 };
 
 Activity.defaultProps = {
@@ -162,5 +178,6 @@ Activity.defaultProps = {
   onDelete: null,
   onEdit: null,
   mode: 'delete',
-  metadata: null
+  metadata: null,
+  activityTypes: []
 };
