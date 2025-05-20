@@ -7,6 +7,7 @@ import { useNotification } from "../../contexts/NotificationContext";
 import { FiUpload } from "react-icons/fi";
 import { FaTrash } from "react-icons/fa";
 import { useTranslation } from "react-i18next";
+import { toUTCISOString, utcToLocalDatetimeLocal, localDatetimeLocalToUTC } from '../../utils/date';
 
 const FormField = ({ label, id, type = "text", required = false, error, children }) => (
   <div>
@@ -26,7 +27,6 @@ FormField.propTypes = {
   error: PropTypes.string,
   children: PropTypes.node.isRequired
 };
-
 
 export function CreateActivityModal({ isOpen, onClose, onSubmit }) {
   const { t } = useTranslation();
@@ -132,7 +132,7 @@ export function CreateActivityModal({ isOpen, onClose, onSubmit }) {
     return {
       name: values.name,
       description: values.description,
-      date: values.date ? new Date(values.date).toISOString() : undefined,
+      date: values.date ? localDatetimeLocalToUTC(values.date) : undefined,
       duration: parseInt(values.duration, 10),
       type_id: typeof values.type_id === 'string' ? parseInt(values.type_id, 10) : values.type_id,
       topic: values.topic || "",
