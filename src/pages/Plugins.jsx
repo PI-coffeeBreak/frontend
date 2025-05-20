@@ -2,7 +2,6 @@ import React, { useState } from "react";
 import PropTypes from 'prop-types';
 import {FaCog, FaSearch} from "react-icons/fa";
 import { AiOutlineLoading3Quarters } from "react-icons/ai";
-import Pagination from "../components/common/Pagination.jsx";
 import PluginSettingsModal from "../components/plugins/PluginSettingsModal.jsx";
 import { usePlugins } from "../contexts/PluginsContext";
 

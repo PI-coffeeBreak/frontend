@@ -2,7 +2,6 @@ import React, { useState, useEffect } from "react";
 import { useUsers } from "../contexts/UsersContext";
 import { useKeycloak } from "@react-keycloak/web";
 import { useTranslation } from "react-i18next";
-import Pagination from "../components/common/Pagination.jsx";
 import CreateCard from "../components/common/CreateCard.jsx";
 import {
     FaUsers,
@@ -15,7 +14,9 @@ import {
     FaShieldAlt,
     FaKey,
     FaExclamationTriangle,
-    FaSearch
+    FaSearch,
+    FaEye,
+    FaEyeSlash
 } from "react-icons/fa";
 import KeycloakAdminService from "../services/KeycloakAdminService";
 import { UserExcelImport } from "../components/users/UserExcelImport";
@@ -413,7 +414,7 @@ export default function Users() {
         }
 
         try {
-            const result = await createUser(newUserData);
+            await createUser(newUserData);
             setCreateSuccess(true);
 
             // Get a default role to reset the form
@@ -983,21 +984,24 @@ export default function Users() {
                                 <label className="label">
                                     <span className="label-text">{t('users.create.temporaryPassword')}</span>
                                 </label>
-                                <div className="input-group">
+                                <div className="input-group relative">
                                     <input
                                         type={showPassword ? "text" : "password"}
                                         name="temporaryPassword"
-                                        className={`input input-bordered w-full ${formErrors.temporaryPassword ? 'input-error' : ''}`}
+                                        className={`input input-bordered w-full pr-10 ${formErrors.temporaryPassword ? 'input-error' : ''}`}
                                         value={newUserData.temporaryPassword}
                                         onChange={handleInputChange}
                                     />
-                                    <button
-                                        type="button"
-                                        className="btn btn-square"
+                                    <span
+                                        className="absolute right-3 top-1/2 -translate-y-1/2 cursor-pointer text-gray-400 hover:text-primary"
                                         onClick={togglePasswordVisibility}
+                                        title={showPassword ? t('users.create.hidePassword') : t('users.create.showPassword')}
+                                        aria-label={showPassword ? t('users.create.hidePassword') : t('users.create.showPassword')}
+                                        tabIndex={0}
+                                        role="button"
                                     >
-                                        {showPassword ? t('users.create.hidePassword') : t('users.create.showPassword')}
-                                    </button>
+                                        {showPassword ? <FaEyeSlash size={20} /> : <FaEye size={20} />}
+                                    </span>
                                 </div>
 
                                 {/* Password strength indicator */}
