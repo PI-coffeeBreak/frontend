@@ -117,7 +117,7 @@ function createColorSelector(propertyName, enumDef, value, propertySchema, onCha
         label: value.split('-').map(word =>
             word.charAt(0).toUpperCase() + word.slice(1)
         ).join(' '),
-        color: `var(--color-${value})`
+        color: value
     }));
 
     return (
@@ -464,7 +464,9 @@ export function DynamicComponentConfiguration({ id, componentData = { name: "", 
                 <div className="mb-2 text-sm font-medium">
                     {t('components.dynamicComponentConfiguration.componentPreview')}
                 </div>
-                <div className="p-4 bg-base-100 rounded border border-base-300">
+                <div
+                    className="p-4 rounded border border-base-300 bg-base-100"
+                >
                     <ComponentToRender {...componentData.props} />
                 </div>
             </div>

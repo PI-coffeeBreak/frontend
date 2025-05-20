@@ -21,3 +21,14 @@ export const getColorVariable = (color) => {
   const baseColor = color.replace("text-", "");
   return `var(--color-${baseColor})`;
 };
+
+/**
+ * Gets the actual color value from theme for a given color key
+ * @param {Object} theme - The theme object
+ * @param {string} colorKey - The color key (e.g. 'base-content')
+ * @returns {string} The actual color value
+ */
+export const getThemeColorValue = (theme, colorKey) => {
+  const themeKey = colorKey.replace(/_/g, '-');
+  return theme?.[themeKey] || '#000';
+};

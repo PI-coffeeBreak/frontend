@@ -1,7 +1,7 @@
 import React from "react";
 import PropTypes from "prop-types";
 import { useTheme } from "../../../../contexts/ThemeContext";
-import { getThemeColor } from "./utils";
+import { getThemeColorValue } from "./utils";
 
 export function Button({
     text = "Click Me",
@@ -13,8 +13,8 @@ export function Button({
     disabled = false,
 }) {
     const { theme } = useTheme();
-    const bgColor = getThemeColor(theme, backgroundColor);
-    const txtColor = getThemeColor(theme, textColor);
+    const bgColor = getThemeColorValue(theme, backgroundColor);
+    const txtColor = getThemeColorValue(theme, textColor);
 
     return (
         <button
