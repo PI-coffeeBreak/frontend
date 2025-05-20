@@ -29,7 +29,10 @@
       "uploadError": "Falha ao carregar imagem. Atividade atualizada, mas a imagem não foi alterada.",
       "noImageField": "A atividade não tem um campo de imagem. Por favor, tente novamente.",
       "removeImage": "Remover Imagem",
-      "imageAlt": "Imagem"
+      "imageAlt": "Imagem",
+      "pwaIcon192Alt": "Ícone PWA 192x192",
+      "pwaIcon512Alt": "Ícone PWA 512x512",
+      "faviconAlt": "Favicon 32x32"
     }
   },
   "auth": {
@@ -121,12 +124,12 @@
     "quickAccess": "Acesso Rápido",
     "cards": {
       "management": {
-        "title": "Gestão",
-        "description": "Aceda a ferramentas para gerir utilizadores, atividades e alertas do seu evento."
+        "title": "Evento",
+        "description": "Aceda a ferramentas para gerir utilizadores, atividades e extensões do seu evento."
       },
       "eventMaker": {
-        "title": "Event Maker",
-        "description": "Personalize a aparência, conteúdo e funcionalidade do seu evento."
+        "title": "Aplicação",
+        "description": "Personalize a aparência, conteúdo e funcionalidade da sua aplicação."
       }
     }
   },
@@ -210,14 +213,18 @@
       "image": "Imagem"
     },
     "types": {
+      "existing": "Tipos de Atividade Existentes",
       "title": "Tipos de Atividade",
+      "description": "Criar e gerir diferentes tipos de atividades para o seu evento",
       "name": "Nome",
       "namePlaceholder": "Introduza o nome do tipo de atividade",
       "color": "Cor",
       "createButton": "Criar Tipo de Atividade",
       "creating": "A criar...",
       "createSuccess": "Tipo de atividade criado com sucesso",
-      "createError": "Falha ao criar tipo de atividade"
+      "createError": "Falha ao criar tipo de atividade",
+      "createTab": "Criar Tipo de Atividade",
+      "existingTab": "Eliminar Tipo de Atividade"
     },
     "import": {
       "title": "Importar Atividades",
@@ -499,7 +506,8 @@
       "createSuccess": "Página criada com sucesso!",
       "createError": "Falha ao criar a página. Por favor, tente novamente.",
       "loading": "A carregar...",
-      "saveButton": "Guardar Página"
+      "saveButton": "Guardar Página",
+      "duplicateTitleError": "Já existe uma página com este título. Por favor, escolha outro título."
     },
     "common": {
       "backButton": "Voltar",
@@ -510,7 +518,8 @@
       "componentSettings": "Definições do Componente",
       "noComponents": "Nenhum componente adicionado",
       "addFirstComponent": "Adicione o seu primeiro componente",
-      "descriptionPlaceholder": "Introduza uma descrição para a sua página"
+      "descriptionPlaceholder": "Introduza uma descrição para a sua página",
+      "duplicateTitleError": "Já existe uma página com este título. Por favor, escolha outro título."
     }
   },
   "components": {

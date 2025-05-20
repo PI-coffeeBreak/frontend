@@ -215,6 +215,7 @@
     "types": {
       "existing": "Existing Activity Types",
       "title": "Create New Activity Type",
+      "description": "Create and manage different types of activities for your event",
       "name": "Name",
       "namePlaceholder": "Enter activity type name",
       "color": "Color",
