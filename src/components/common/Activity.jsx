@@ -168,7 +168,7 @@ Activity.propTypes = {
       type: PropTypes.string.isRequired,
       color: PropTypes.string
     })
-  ).isRequired
+  )
 };
 
 Activity.defaultProps = {
