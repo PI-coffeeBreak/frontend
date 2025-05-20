@@ -26,6 +26,7 @@ import { useEvent } from "../../contexts/EventContext.jsx";
 import { useMedia } from "../../contexts/MediaContext.jsx";
 import PropTypes from "prop-types";
 import { useTranslation } from "react-i18next";
+import { useTheme } from "../../contexts/ThemeContext.jsx";
 
 const Breadcrumbs = ({ pathnames }) => (
   <ul className="flex gap-2">
@@ -62,6 +63,7 @@ export default function Sidebar() {
   const [imageError, setImageError] = useState(false);
   const navigationRef = useRef(null);
   const navigate = useNavigate();
+  const { theme } = useTheme();
 
   // Fetch user profile from Keycloak when initialized
   useEffect(() => {
@@ -127,6 +129,7 @@ export default function Sidebar() {
       return (
         <div
           className={`overflow-hidden flex-shrink-0 rounded-xl border-2 border-white shadow-md hover:scale-110 hover:shadow-lg transition-all duration-300 ${sizeClass}`}
+          style={{ backgroundColor: theme.accent }}
         >
           <img
             src={`${eventImageUrl}?v=${Date.now()}`}
