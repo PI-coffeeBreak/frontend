@@ -308,7 +308,7 @@ const SpeakerManagement = () => {
   const deleteSpeaker = async (id) => {
     setLoading(true);
     try {
-      await axiosWithAuth(keycloak).delete(`${API_ENDPOINTS.SPEAKERS}/${id}/`);
+      await axiosWithAuth(keycloak).delete(`${API_ENDPOINTS.SPEAKERS}/${id}`);
       return { success: true };
     } catch (err) {
       const errorMessage = err.response?.data?.detail || 'Failed to delete speaker';
