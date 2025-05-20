@@ -10,6 +10,7 @@ import { useNotification } from "../../contexts/NotificationContext.jsx";
 import { FaCalendarAlt, FaChevronDown, FaChevronUp, FaSearch, FaTimes } from "react-icons/fa";
 import { useEvent } from "../../contexts/EventContext";
 import {t} from "i18next";
+import { localDatetimeLocalToUTC } from '../../utils/date';
 
 // Helper functions remain unchanged
 const findActivityById = (activities, activityId) => {
@@ -118,11 +119,12 @@ export default function DragDropCalendar() {
             setCalendarActivities((prev) => [...prev, activity]);
             setOutsideActivities((prev) => prev.filter((act) => act.id !== activityId));
 
-            // Create a localized ISO string that preserves the time exactly as displayed
+            // Create a local datetime-local string and convert to UTC ISO string
             const startTime = info.event.start;
-            const localISOString = formatToLocalISOString(startTime);
+            const localDatetimeLocal = `${startTime.getFullYear()}-${String(startTime.getMonth() + 1).padStart(2, '0')}-${String(startTime.getDate()).padStart(2, '0')}T${String(startTime.getHours()).padStart(2, '0')}:${String(startTime.getMinutes()).padStart(2, '0')}`;
+            const utcISOString = localDatetimeLocalToUTC(localDatetimeLocal);
 
-            await updateActivity(activityId, { date: localISOString });
+            await updateActivity(activityId, { date: utcISOString });
         }
     };
 
@@ -142,15 +144,16 @@ export default function DragDropCalendar() {
     const handleEventDrop = async (info) => {
         const activityId = parseInt(info.event.extendedProps["data-id"]);
 
-        // Create a localized ISO string that preserves the time exactly as displayed
+        // Create a local datetime-local string and convert to UTC ISO string
         const startTime = info.event.start;
-        const localISOString = formatToLocalISOString(startTime);
+        const localDatetimeLocal = `${startTime.getFullYear()}-${String(startTime.getMonth() + 1).padStart(2, '0')}-${String(startTime.getDate()).padStart(2, '0')}T${String(startTime.getHours()).padStart(2, '0')}:${String(startTime.getMinutes()).padStart(2, '0')}`;
+        const utcISOString = localDatetimeLocalToUTC(localDatetimeLocal);
 
-        await updateActivity(activityId, { date: localISOString });
+        await updateActivity(activityId, { date: utcISOString });
 
         setCalendarActivities((prev) =>
             prev.map((act) =>
-                act.id === activityId ? { ...act, date: localISOString } : act
+                act.id === activityId ? { ...act, date: utcISOString } : act
             )
         );
     };
