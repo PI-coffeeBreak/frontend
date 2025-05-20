@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from "react";
 import { usePages } from "../contexts/PagesContext.jsx";
 import { useNavigate } from "react-router-dom";
-import {FaEdit, FaTrash, FaPlus, FaSearch} from "react-icons/fa";
+import {FaEdit, FaTrash, FaPlus, FaSearch, FaQuestionCircle} from "react-icons/fa";
 import { useNotification } from "../contexts/NotificationContext";
 import { axiosWithAuth } from "../utils/axiosWithAuth";
 import { useKeycloak } from "@react-keycloak/web";
@@ -9,6 +9,7 @@ import { useTranslation } from "react-i18next";
 import DeleteConfirmationModal from '../components/common/DeleteConfirmationModal.jsx';
 import { useMenus } from "../contexts/MenuContext.jsx";
 import { baseUrl } from '../consts';
+import { PageGuide } from '../components/event_maker/pages/PageGuide';
 
 export function PagesList() {
     const { t } = useTranslation();
@@ -182,7 +183,17 @@ export function PagesList() {
 
     return (
         <div className="w-full min-h-svh p-2 lg:p-8">
-            <h1 className="text-3xl font-bold my-8">{t('pagesList.title')}</h1>
+            <div className="flex justify-between items-center mb-8">
+                <h1 className="text-3xl font-bold">{t('pagesList.title')}</h1>
+                <button
+                    onClick={() => document.getElementById('guide-modal').showModal()}
+                    className="btn btn-ghost gap-2"
+                    title={t('pageGuide.title')}
+                >
+                    <FaQuestionCircle />
+                    {t('pageGuide.title')}
+                </button>
+            </div>
 
             <div className="mb-4">
                 <button
@@ -216,20 +227,20 @@ export function PagesList() {
             {error && <p className="text-red-500">{t('pagesList.error')}</p>}
 
             {!isLoading && pages.length === 0 && (
-                <div
-                    className="flex flex-col items-center justify-center p-8 border-2 border-dashed border-gray-300 rounded-lg">
-                    <svg xmlns="http://www.w3.org/2000/svg" className="h-16 w-16 text-gray-400 mb-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
-                    </svg>
-                    <h3 className="text-lg font-medium text-gray-700 mb-2">{t('pagesList.emptyState.title')}</h3>
-                    {/*<p className="text-gray-500 text-center mb-4">{t('pagesList.emptyState.description.default')}</p>*/}
-                    <button
-                        onClick={handleCreate}
-                        className="flex items-center gap-2 px-4 py-2 bg-green-600 text-white rounded-md hover:bg-green-700"
-                    >
-                        <FaPlus />
-                        {t('pagesList.emptyState.createFirstPage')}
-                    </button>
+                <div className="space-y-8">
+                    <div className="flex flex-col items-center justify-center p-8 border-2 border-dashed border-gray-300 rounded-lg">
+                        <svg xmlns="http://www.w3.org/2000/svg" className="h-16 w-16 text-gray-400 mb-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+                        </svg>
+                        <h3 className="text-lg font-medium text-gray-700 mb-2">{t('pagesList.emptyState.title')}</h3>
+                        <button
+                            onClick={handleCreate}
+                            className="flex items-center gap-2 px-4 py-2 bg-green-600 text-white rounded-md hover:bg-green-700"
+                        >
+                            <FaPlus />
+                            {t('pagesList.emptyState.createFirstPage')}
+                        </button>
+                    </div>
                 </div>
             )}
 
@@ -237,21 +248,16 @@ export function PagesList() {
                 {paginatedPages.map((page, index) => (
                     <li
                         key={page.page_id || index}
-                        className={`p-4 border border-gray-300 rounded-xl ${!page.enabled ? 'bg-gray-50' : ''
-                            }`}
+                        className={`p-4 border border-gray-300 rounded-xl ${!page.enabled ? 'bg-gray-50' : ''}`}
                     >
                         <div className="flex justify-between items-center">
                             <div>
                                 <div className="flex items-center gap-2">
                                     <h2 className="text-xl font-semibold">{page.title}</h2>
-                                    <span className={`text-xs px-2 py-1 rounded-full ${page.enabled
-                                        ? 'bg-green-800 text-white '
-                                        : 'bg-secondary/70 text-white '
-                                        }`}>
+                                    <span className={`text-xs px-2 py-1 rounded-full ${page.enabled ? 'bg-green-800 text-white' : 'bg-secondary/70 text-white'}`}>
                                         {page.enabled ? t('pagesList.status.enabled') : t('pagesList.status.disabled')}
                                     </span>
                                 </div>
-                                {/*<p className="text-gray-500">{page.description || t('pagesList.table.description')}</p>*/}
                             </div>
                             <div className="flex items-center space-x-2">
                                 <label className="flex items-center gap-2">
@@ -302,7 +308,6 @@ export function PagesList() {
                         >
                             «
                         </button>
-
                         {Array.from({ length: totalPages }, (_, i) => i + 1).map((pageNumber) => (
                             <button
                                 key={`page-${pageNumber}`}
@@ -312,7 +317,6 @@ export function PagesList() {
                                 {pageNumber}
                             </button>
                         ))}
-
                         <button
                             className="join-item btn"
                             onClick={() => setCurrentPage(Math.min(totalPages, currentPage + 1))}
@@ -324,7 +328,6 @@ export function PagesList() {
                 </div>
             )}
 
-            {/* Add the DeleteConfirmationModal */}
             <DeleteConfirmationModal
                 isOpen={isDeleteModalOpen}
                 onClose={closeDeleteModal}
@@ -333,6 +336,22 @@ export function PagesList() {
                 message={t('pagesList.actions.deleteConfirm')}
                 isLoading={isDeleting}
             />
+
+            {/* Guide Modal */}
+            <dialog id="guide-modal" className="modal">
+                <div className="modal-box max-w-4xl">
+                    <button
+                        onClick={() => document.getElementById('guide-modal').close()}
+                        className="btn btn-sm btn-circle btn-ghost absolute right-2 top-2"
+                    >
+                        ✕
+                    </button>
+                    <PageGuide />
+                </div>
+                <form method="dialog" className="modal-backdrop">
+                    <button onClick={() => document.getElementById('guide-modal').close()}>close</button>
+                </form>
+            </dialog>
         </div>
     );
 }

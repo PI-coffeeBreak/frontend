@@ -774,5 +774,70 @@
       "save": "Save Icons",
       "saving": "Saving..."
     }
+  },
+  "pageGuide": {
+    "title": "How to Use Pages",
+    "creating": {
+      "title": "Creating Pages",
+      "description": "Start by clicking the \"Create Page\" button. Give your page a title and start adding components to build your content."
+    },
+    "components": {
+      "title": "Available Components",
+      "basic": {
+        "description": "Basic Components",
+        "title": "Titles",
+        "titleDesc": "Create clear headings and section titles",
+        "text": "Text",
+        "textDesc": "Add text to describe your content",
+        "image": "Image",
+        "imageDesc": "Add an image to your content",
+        "button": "Button",
+        "buttonDesc": "Add a button to your content"
+      },
+      "plugins": {
+        "description": "Plugin Components",
+        "alert": "Alert",
+        "alertDesc": "Add an alert to your content",
+        "location": "Location",
+        "locationDesc": "Add a map and address to your content",
+        "sponsors": "Sponsors",
+        "sponsorsDesc": "Add sponsor information to your content",
+        "feedback": "Feedback Form",
+        "feedbackDesc": "Add a feedback form to your content"
+      }
+    },
+    "managing": {
+      "title": "Managing Pages",
+      "search": {
+        "title": "Search & Filter",
+        "description": "Use the search bar to find pages quickly. Filter pages by their status (enabled/disabled)."
+      },
+      "status": {
+        "title": "Page Status",
+        "description": "Toggle page visibility using the enable/disable switch. Disabled pages won't appear in the menu."
+      }
+    },
+    "actions": {
+      "title": "Page Actions",
+      "edit": {
+        "title": "Editing",
+        "reorder": "Drag and drop to reorder components",
+        "configure": "Click components to configure their properties",
+        "remove": "Remove components you don't need"
+      },
+      "manage": {
+        "title": "Management",
+        "clone": "Clone pages to create similar content",
+        "delete": "Delete pages you no longer need",
+        "save": "Save changes regularly to avoid losing work"
+      }
+    },
+    "tips": {
+      "title": "Pro Tips",
+      "plan": "Plan your page structure before adding components",
+      "preview": "Preview your page regularly to ensure it looks right",
+      "save": "Save your work frequently to avoid losing changes",
+      "test": "Test your page on different devices to ensure it works well"
+    }
   }
 }

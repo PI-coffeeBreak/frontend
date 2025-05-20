@@ -774,5 +774,70 @@
       "save": "Salvar Ícones",
       "saving": "Salvando..."
     }
+  },
+  "pageGuide": {
+    "title": "Como Usar Páginas",
+    "creating": {
+      "title": "Criar Páginas",
+      "description": "Comece clicando no botão \"Criar Página\". Dê um título à sua página e comece a adicionar componentes para construir o seu conteúdo."
+    },
+    "components": {
+      "title": "Componentes Disponíveis",
+      "basic": {
+        "description": "Componentes Básicos",
+        "title": "Títulos",
+        "titleDesc": "Crie títulos claros e títulos de seções",
+        "text": "Texto",
+        "textDesc": "Adicione texto para descrever seu conteúdo",
+        "image": "Imagem",
+        "imageDesc": "Adicione uma imagem ao seu conteúdo",
+        "button": "Botão",
+        "buttonDesc": "Adicione um botão ao seu conteúdo"
+      },
+      "plugins": {
+        "description": "Componentes de Plugin",
+        "alert": "Alerta",
+        "alertDesc": "Adicione um alerta ao seu conteúdo",
+        "location": "Localização",
+        "locationDesc": "Adicione um mapa e um endereço ao seu conteúdo",
+        "sponsors": "Patrocinadores",
+        "sponsorsDesc": "Adicione informações de patrocínio ao seu conteúdo",
+        "feedback": "Formulário de Feedback",
+        "feedbackDesc": "Adicione um formulário de feedback ao seu conteúdo"
+      }
+    },
+    "managing": {
+      "title": "Gerenciando Páginas",
+      "search": {
+        "title": "Pesquisar e Filtrar",
+        "description": "Use a barra de pesquisa para encontrar páginas rapidamente. Filtre páginas por seu status (habilitado/desabilitado)."
+      },
+      "status": {
+        "title": "Status da Página",
+        "description": "Use o botão de alternância para habilitar/desabilitar a visibilidade da página. Páginas desabilitadas não aparecerão no menu."
+      }
+    },
+    "actions": {
+      "title": "Ações da Página",
+      "edit": {
+        "title": "Editar",
+        "reorder": "Arraste e solte para reordenar componentes",
+        "configure": "Clique nos componentes para configurar suas propriedades",
+        "remove": "Remova componentes que não precisar"
+      },
+      "manage": {
+        "title": "Gerenciar",
+        "clone": "Clone páginas para criar conteúdo similar",
+        "delete": "Exclua páginas que não precisar",
+        "save": "Salve suas alterações regularmente para evitar perder seu trabalho"
+      }
+    },
+    "tips": {
+      "title": "Dicas de Pro",
+      "plan": "Planeje a estrutura da sua página antes de adicionar componentes",
+      "preview": "Pré-visualize sua página regularmente para garantir que ela esteja correta",
+      "save": "Salve seu trabalho frequentemente para evitar perder suas alterações",
+      "test": "Teste sua página em diferentes dispositivos para garantir que ela funcione bem"
+    }
   }
 }

@@ -774,5 +774,70 @@
       "save": "Guardar Ícones",
       "saving": "A guardar..."
     }
+  },
+  "pageGuide": {
+    "title": "Como Usar Páginas",
+    "creating": {
+      "title": "Criar Páginas",
+      "description": "Comece clicando no botão \"Criar Página\". Dê um título à sua página e comece a adicionar componentes para construir o seu conteúdo."
+    },
+    "components": {
+      "title": "Componentes Disponíveis",
+      "basic": {
+        "description": "Componentes Básicos",
+        "title": "Títulos",
+        "titleDesc": "Crie títulos claros e seções de página",
+        "text": "Texto",
+        "textDesc": "Adicione texto para descrever o seu conteúdo",
+        "image": "Imagem",
+        "imageDesc": "Adicione imagens para ilustrar o seu conteúdo",
+        "button": "Botão",
+        "buttonDesc": "Adicione botões para interações"
+      },
+      "plugins": {
+        "description": "Componentes Especiais",
+        "alert": "Alerta",
+        "alertDesc": "Adicione alertas para destacar informações importantes",
+        "location": "Localização",
+        "locationDesc": "Adicione mapas e endereços para localizações",
+        "sponsors": "Patrocinadores",
+        "sponsorsDesc": "Adicione patrocinadores para destacar suas parcerias",
+        "feedback": "Formulário de Feedback",
+        "feedbackDesc": "Adicione formulários de feedback para coletar opiniões dos utilizadores"
+      }
+    },
+    "managing": {
+      "title": "Gerir Páginas",
+      "search": {
+        "title": "Pesquisar e Filtrar",
+        "description": "Use a barra de pesquisa para encontrar páginas rapidamente. Filtre páginas pelo seu estado (ativado/desativado)."
+      },
+      "status": {
+        "title": "Estado da Página",
+        "description": "Alterne a visibilidade da página usando o interruptor ativar/desativar. Páginas desativadas não aparecerão no menu."
+      }
+    },
+    "actions": {
+      "title": "Ações da Página",
+      "edit": {
+        "title": "Edição",
+        "reorder": "Arraste e solte para reordenar componentes",
+        "configure": "Clique nos componentes para configurar suas propriedades",
+        "remove": "Remova componentes que não precisa"
+      },
+      "manage": {
+        "title": "Gestão",
+        "clone": "Clone páginas para criar conteúdo similar",
+        "delete": "Elimine páginas que não precisa mais",
+        "save": "Guarde as alterações regularmente para evitar perder trabalho"
+      }
+    },
+    "tips": {
+      "title": "Dicas Profissionais",
+      "plan": "Planeje a estrutura da sua página antes de adicionar componentes",
+      "preview": "Visualize sua página regularmente para garantir que está correta",
+      "save": "Guarde seu trabalho frequentemente para evitar perder alterações",
+      "test": "Teste sua página em diferentes dispositivos para garantir que funciona bem"
+    }
   }
 }
