@@ -171,7 +171,7 @@ export function CreateActivityTypeModal({ isOpen, onClose, onSubmit }) {
                         className="btn btn-sm btn-error rounded-xl"
                         onClick={() => handleDelete(activity.id)}
                       >
-                        {t("common.delete")}
+                        {t("common.actions.delete")}
                       </button>
                     </div>
                   </li>

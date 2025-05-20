@@ -551,7 +551,7 @@ export default function Users() {
                             className="btn btn-sm"
                             onClick={() => setImportStats(null)}
                         >
-                            {t('common.dismiss')}
+                            {t('common.actions.dismiss')}
                         </button>
                     </div>
                 )}
@@ -562,7 +562,7 @@ export default function Users() {
 
                 <div className="flex flex-col sm:flex-row gap-4 mt-4">
                     <div className="w-full sm:w-auto ">
-                        <label htmlFor="searchUsers" className="sr-only">{t('users.searchLabel')}</label>
+                        <label htmlFor="searchUsers" className="sr-only">{t('users.searchPlaceholder')}</label>
                         <div className="input w-full rounded-xl">
                             <FaSearch className="text-gray-400"/>
                             <input
@@ -608,7 +608,7 @@ export default function Users() {
                                                         <div className="mask mask-squircle w-8 h-8 sm:w-12 sm:h-12">
                                                             <img
                                                                 src={user.avatar ? user.avatar : "/placeholder.jpg"}
-                                                                alt={`${t('users.avatar')} ${user.firstName}`}
+                                                                alt={`${t('common.media.imageAlt')} ${user.firstName}`}
                                                             />
                                                         </div>
                                                     </div>
@@ -811,7 +811,7 @@ export default function Users() {
 
                         <div className="modal-action">
                             <form method="dialog">
-                                <button className="btn">{t('common.close')}</button>
+                                <button className="btn">{t('common.actions.close')}</button>
                             </form>
                         </div>
                     </div>
@@ -1040,7 +1040,7 @@ export default function Users() {
                                     {t('users.create.createUser')}
                                 </button>
                                 <button type="button" className="btn" onClick={() => document.getElementById('create_user_modal').close()}>
-                                    {t('common.cancel')}
+                                    {t('common.actions.cancel')}
                                 </button>
                             </div>
                         </form>

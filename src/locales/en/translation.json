@@ -1,23 +1,28 @@
 {
   "common": {
-    "home": "Home",
-    "users": "Users",
-    "activities": "Activities",
-    "alerts": "Alerts",
-    "schedule": "Schedule",
-    "plugins": "Plugins",
-    "colors": "Colors",
-    "menus": "Menus",
-    "pages": "Pages",
-    "create": "Create",
-    "edit": "Edit",
-    "save": "Save",
-    "saving": "Saving...",
-    "cancel": "Cancel",
-    "delete": "Delete",
-    "loading": "Loading...",
-    "error": "Error",
-    "success": "Success",
+    "actions": {
+      "create": "Create",
+      "edit": "Edit",
+      "save": "Save",
+      "saving": "Saving...",
+      "cancel": "Cancel",
+      "delete": "Delete",
+      "loading": "Loading...",
+      "error": "Error",
+      "success": "Success",
+      "close": "Close"
+    },
+    "navigation": {
+      "home": "Home",
+      "users": "Users",
+      "activities": "Activities",
+      "alerts": "Alerts",
+      "schedule": "Schedule",
+      "plugins": "Plugins",
+      "colors": "Colors",
+      "menus": "Menus",
+      "pages": "Pages"
+    },
     "media": {
       "selectImage": "Select Image",
       "changeImage": "Change Image",
@@ -136,6 +141,8 @@
   "users": {
     "title": "Create Users",
     "searchPlaceholder": "Search users",
+    "searchLabel": "Search users",
+    "avatar": "User Avatar",
     "table": {
       "name": "Name",
       "email": "Email",

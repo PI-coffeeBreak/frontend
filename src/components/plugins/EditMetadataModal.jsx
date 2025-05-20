@@ -126,10 +126,10 @@ export default function EditMetadataModal({ activityId, activityName, onUpdate }
 
           <div className="modal-action">
             <button type="submit" className="btn btn-primary" disabled={isLoading}>
-              {isLoading ? <span className="loading loading-spinner"></span> : t("common.save")}
+              {isLoading ? <span className="loading loading-spinner"></span> : t("common.actions.save")}
             </button>
             <button type="button" className="btn" onClick={handleCancel}>
-              {t("common.cancel")}
+              {t("common.actions.cancel")}
             </button>
           </div>
         </form>

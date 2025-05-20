@@ -47,7 +47,7 @@ export default function Instantiate() {
                 <div className="flex flex-col lg:flex-row justify-between items-start mb-8">
                     <div>
                         <h1 className="text-4xl font-bold mb-2 text-primary">
-                            {isLoading ? t('common.loading') : `${t('instantiate.welcome')} ${eventInfo?.name || t('event.defaultTitle')}`}
+                            {isLoading ? t('common.actions.loading') : `${t('instantiate.welcome')} ${eventInfo?.name || t('event.defaultTitle')}`}
                         </h1>
                         <p className="text-lg text-base-content/70">
                             {t('instantiate.accessTools')}
