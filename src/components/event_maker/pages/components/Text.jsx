@@ -1,17 +1,19 @@
 import React from "react";
 import PropTypes from "prop-types";
-import { getColorVariable } from "./utils";
-
+import { useTheme } from "../../../../contexts/ThemeContext.jsx";
+import { getThemeColorValue } from "./utils.js";
 export function Text({
     text = "Default Text",
-    color = "primary-content",
+    color = "base-content",
     bold = false,
     italic = false,
     underline = false,
-    className = "",
 }) {
+    const { theme } = useTheme();
+    const textColor = getThemeColorValue(theme, color);
+
     const styles = {
-        color: getColorVariable(color),
+        color: textColor,
         fontWeight: bold ? "bold" : "normal",
         fontStyle: italic ? "italic" : "normal",
         textDecoration: underline ? "underline" : "none",
@@ -19,7 +21,6 @@ export function Text({
 
     return (
         <p
-            className={className}
             style={styles}
         >
             {text}
@@ -32,6 +33,5 @@ Text.propTypes = {
     color: PropTypes.string,
     bold: PropTypes.bool,
     italic: PropTypes.bool,
-    underline: PropTypes.bool,
-    className: PropTypes.string,
+    underline: PropTypes.bool
 }; 

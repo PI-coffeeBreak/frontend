@@ -10,7 +10,7 @@ import Alerts from "./pages/plugins/Alerts.jsx";
 import Activities from "./pages/Activities.jsx";
 import Schedule from "./pages/plugins/Schedule.jsx";
 import Plugins from "./pages/Plugins.jsx";
-import Colors from "./pages/Colors.jsx";
+import { ThemeCustomizer } from "./components/event_maker/ThemeCustomizer.jsx";
 import PrivateRoute from "./PrivateRoute.js";
 import { PagesList } from "./pages/PagesList.jsx";
 import { MenuEditor } from "./pages/MenuEditor.jsx";
@@ -63,7 +63,7 @@ export default function App() {
               <Route path="create-page" element={<CreatePage />} />
             </Route>
             <Route path="menus" element={<MenuEditor />} />
-            <Route path="colors" element={<Colors />} />
+            <Route path="colors" element={<ThemeCustomizer />} />
             <Route path="icons" element={<IconsEditor />} />
           </Route>
           
