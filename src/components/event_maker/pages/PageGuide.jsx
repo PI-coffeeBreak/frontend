@@ -94,6 +94,28 @@ ListItem.propTypes = {
     description: PropTypes.string.isRequired
 };
 
+const ComponentList = ({ items }) => (
+    <ul className="space-y-3">
+        {items.map((item, index) => (
+            <ListItem
+                key={index}
+                icon={<span className="font-medium text-primary group-hover:scale-110 transition-transform duration-200">•</span>}
+                title={item.title}
+                description={item.description}
+            />
+        ))}
+    </ul>
+);
+
+ComponentList.propTypes = {
+    items: PropTypes.arrayOf(
+        PropTypes.shape({
+            title: PropTypes.string.isRequired,
+            description: PropTypes.string.isRequired
+        })
+    ).isRequired
+};
+
 export function PageGuide() {
     const { t } = useTranslation();
     const [activeSection, setActiveSection] = useState('creating');
@@ -101,6 +123,48 @@ export function PageGuide() {
     const handleSectionClick = (section) => {
         setActiveSection(activeSection === section ? null : section);
     };
+
+    const basicComponents = [
+        {
+            title: t('pageGuide.components.basic.title', 'Title'),
+            description: t('pageGuide.components.basic.titleDesc', 'Create clear headings and section titles')
+        },
+        {
+            title: t('pageGuide.components.basic.text', 'Text'),
+            description: t('pageGuide.components.basic.textDesc', 'Add paragraphs and formatted content')
+        },
+        {
+            title: t('pageGuide.components.basic.image', 'Image'),
+            description: t('pageGuide.components.basic.imageDesc', 'Display images with optional captions')
+        },
+        {
+            title: t('pageGuide.components.basic.video', 'Video'),
+            description: t('pageGuide.components.basic.videoDesc', 'Display videos to your participants')
+        },
+        {
+            title: t('pageGuide.components.basic.location', 'Location'),
+            description: t('pageGuide.components.basic.locationDesc', 'Show maps and venue information')
+        }
+    ];
+
+    const pluginComponents = [
+        {
+            title: t('pageGuide.components.plugins.alert', 'Alert'),
+            description: t('pageGuide.components.plugins.alertDesc', 'Display important notices and warnings')
+        },
+        {
+            title: t('pageGuide.components.plugins.speaker', 'Speaker'),
+            description: t('pageGuide.components.plugins.speakerDesc', 'Display speakers list')
+        },
+        {
+            title: t('pageGuide.components.plugins.sponsors', 'Sponsors'),
+            description: t('pageGuide.components.plugins.sponsorsDesc', 'Display sponsor logos and information')
+        },
+        {
+            title: t('pageGuide.components.plugins.feedback', 'Feedback Form'),
+            description: t('pageGuide.components.plugins.feedbackDesc', 'Collect user feedback and ratings')
+        }
+    ];
 
     return (
         <div className="bg-base-100 p-4 rounded-xl max-w-4xl mx-auto">
@@ -176,61 +240,14 @@ export function PageGuide() {
                                 title={t('pageGuide.components.basic.description', 'Basic Components')}
                                 icon={<FaDesktop className="text-primary" />}
                             >
-                                <ul className="space-y-3">
-                                    <ListItem
-                                        icon={<span className="font-medium text-primary group-hover:scale-110 transition-transform duration-200">•</span>}
-                                        title={t('pageGuide.components.basic.title', 'Title')}
-                                        description={t('pageGuide.components.basic.titleDesc', 'Create clear headings and section titles')}
-                                    />
-                                    <ListItem
-                                        icon={<span className="font-medium text-primary group-hover:scale-110 transition-transform duration-200">•</span>}
-                                        title={t('pageGuide.components.basic.text', 'Text')}
-                                        description={t('pageGuide.components.basic.textDesc', 'Add paragraphs and formatted content')}
-                                    />
-                                    <ListItem
-                                        icon={<span className="font-medium text-primary group-hover:scale-110 transition-transform duration-200">•</span>}
-                                        title={t('pageGuide.components.basic.image', 'Image')}
-                                        description={t('pageGuide.components.basic.imageDesc', 'Display images with optional captions')}
-                                    />
-                                    <ListItem
-                                        icon={<span className="font-medium text-primary group-hover:scale-110 transition-transform duration-200">•</span>}
-                                        title={t('pageGuide.components.basic.video', 'Video')}
-                                        description={t('pageGuide.components.basic.videoDesc', 'Display videos to your participants')}
-                                    />
-                                    <ListItem
-                                        icon={<span className="font-medium text-primary group-hover:scale-110 transition-transform duration-200">•</span>}
-                                        title={t('pageGuide.components.basic.location', 'Location')}
-                                        description={t('pageGuide.components.basic.locationDesc', 'Show maps and venue information')}
-                                    />
-                                </ul>
+                                <ComponentList items={basicComponents} />
                             </InfoCard>
 
                             <InfoCard
                                 title={t('pageGuide.components.plugins.description', 'Plugins/Extensions Components')}
                                 icon={<FaMobileAlt className="text-primary" />}
                             >
-                                <ul className="space-y-3">
-                                    <ListItem
-                                        icon={<span className="font-medium text-primary group-hover:scale-110 transition-transform duration-200">•</span>}
-                                        title={t('pageGuide.components.plugins.alert', 'Alert')}
-                                        description={t('pageGuide.components.plugins.alertDesc', 'Display important notices and warnings')}
-                                    />
-                                    <ListItem
-                                        icon={<span className="font-medium text-primary group-hover:scale-110 transition-transform duration-200">•</span>}
-                                        title={t('pageGuide.components.plugins.speaker', 'Speaker')}
-                                        description={t('pageGuide.components.plugins.speakerDesc', 'Display speakers list')}
-                                    />
-                                    <ListItem
-                                        icon={<span className="font-medium text-primary group-hover:scale-110 transition-transform duration-200">•</span>}
-                                        title={t('pageGuide.components.plugins.sponsors', 'Sponsors')}
-                                        description={t('pageGuide.components.plugins.sponsorsDesc', 'Display sponsor logos and information')}
-                                    />
-                                    <ListItem
-                                        icon={<span className="font-medium text-primary group-hover:scale-110 transition-transform duration-200">•</span>}
-                                        title={t('pageGuide.components.plugins.feedback', 'Feedback Form')}
-                                        description={t('pageGuide.components.plugins.feedbackDesc', 'Collect user feedback and ratings')}
-                                    />
-                                </ul>
+                                <ComponentList items={pluginComponents} />
                             </InfoCard>
                         </div>
                     </div>
