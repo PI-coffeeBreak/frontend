@@ -814,44 +814,59 @@
     "introduction": "This guide will help you understand how to create and manage pages in your event. Pages are custom sections where you can display information, collect data, or provide specific functionality to your event participants. You can add various components to build interactive and informative pages that enhance your event experience.",
     "creating": {
       "title": "Creating Pages",
-      "description": "Start by clicking the \"Create Page\" button. Give your page a title and start adding components to build your content."
+      "description": "Start by clicking the \"Create Page\" button. Give your page a title and start adding components to build your content.",
+      "bestPractices": "Best Practices",
+      "practice1": "Choose a clear, descriptive title",
+      "practice2": "Plan your content structure before adding components",
+      "practice3": "Start with basic components and enhance gradually"
     },
     "components": {
       "title": "Available Components",
+      "explanation": "Components are the building blocks of your pages. Each component represents a specific type of content or functionality that you can add to your page. Think of them as pre-built elements that you can customize to create your desired layout and content.",
+      "pluginDisclaimer": {
+        "title": "Plugin Configuration",
+        "description": "Some plugins may require additional configuration through their dedicated pages. You can access these settings by clicking the external link icon (↗️) next to the plugin in the Plugins page or in the side panel \"plugins\" menu."
+      },
       "basic": {
         "description": "Basic Components",
-        "title": "Titles",
+        "title": "Title",
         "titleDesc": "Create clear headings and section titles",
         "text": "Text",
-        "textDesc": "Add any text to your content",
+        "textDesc": "Add paragraphs and formatted content",
         "image": "Image",
-        "imageDesc": "Display images to embelish your content",
+        "imageDesc": "Display images with optional captions",
         "video": "Video",
         "videoDesc": "Display videos to your participants",
         "location": "Location",
         "locationDesc": "Show maps and venue information"
       },
       "plugins": {
-        "description": "Plugin Components",
+        "description": "Plugins/Extensions Components",
         "alert": "Alert",
-        "alertDesc": "Display important information to your participants",
+        "alertDesc": "Display important notices and warnings",
         "speaker": "Speaker",
         "speakerDesc": "Display speakers list",
         "sponsors": "Sponsors",
-        "sponsorsDesc": "Display sponsors list",
+        "sponsorsDesc": "Display sponsor logos and information",
         "feedback": "Feedback Form",
-        "feedbackDesc": "Make your participants give feedback about your event"
+        "feedbackDesc": "Collect user feedback and ratings"
       }
     },
     "managing": {
       "title": "Managing Pages",
       "search": {
         "title": "Search & Filter",
-        "description": "Use the search bar to find pages quickly. Filter pages by their status (enabled/disabled)."
+        "description": "Use the search bar to find pages quickly. Filter pages by their status (enabled/disabled).",
+        "tip1": "Search by page title",
+        "tip2": "Filter to show all, enabled, or disabled pages",
+        "tip3": "Combine search and filters for precise results"
       },
       "status": {
         "title": "Page Status",
-        "description": "Toggle page visibility using the enable/disable switch. Disabled pages won't appear in the menu."
+        "description": "Toggle page visibility using the enable/disable switch. Disabled pages won't appear in the menu.",
+        "tip1": "Enable pages when they're ready for viewing",
+        "tip2": "Disable pages during maintenance or updates",
+        "tip3": "Check page status before making changes"
       }
     },
     "actions": {
@@ -859,22 +874,32 @@
       "edit": {
         "title": "Editing",
         "reorder": "Drag and drop to reorder components",
-        "configure": "Click components to configure their properties",
-        "remove": "Remove components you don't need"
+        "reorderDesc": "Change the order of components by dragging them",
+        "configure": "Configure component properties",
+        "configureDesc": "Click components to edit their settings",
+        "remove": "Remove components",
+        "removeDesc": "Delete components you don't need"
       },
       "manage": {
         "title": "Management",
-        "clone": "Clone pages to create similar content",
-        "delete": "Delete pages you no longer need",
-        "save": "Save changes regularly to avoid losing work"
+        "clone": "Clone pages",
+        "cloneDesc": "Create copies of existing pages",
+        "delete": "Delete pages",
+        "deleteDesc": "Remove pages you no longer need",
+        "save": "Save changes",
+        "saveDesc": "Regularly save your work to avoid losing changes"
       }
     },
     "tips": {
       "title": "Pro Tips",
-      "plan": "Plan your page structure before adding components",
-      "preview": "Preview your page regularly to ensure it looks right",
-      "save": "Save your work frequently to avoid losing changes",
-      "test": "Test your page on different devices to ensure it works well"
+      "plan": "Plan your page structure",
+      "planDesc": "Sketch your layout before adding components",
+      "preview": "Preview regularly",
+      "previewDesc": "Check how your page looks as you build it",
+      "save": "Save frequently",
+      "saveDesc": "Don't risk losing your work",
+      "test": "Test on different devices",
+      "testDesc": "Ensure your page works well everywhere"
     }
   }
 }

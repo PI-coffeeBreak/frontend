@@ -777,47 +777,62 @@
   },
   "pageGuide": {
     "title": "Como Usar Páginas",
-    "introduction": "Este guia ajudará você a entender como criar e gerenciar páginas em seu evento. Páginas são seções personalizadas onde você pode exibir informações, coletar dados ou fornecer funcionalidades específicas aos participantes do seu evento. Você pode adicionar vários componentes para criar páginas interativas e informativas que aprimoram sua experiência de evento.",
+    "introduction": "Este guia ajudará a entender como criar e gerir páginas no seu evento. Páginas são secções personalizadas onde pode exibir informações, recolher dados ou fornecer funcionalidades específicas aos participantes do seu evento. Pode adicionar vários componentes para criar páginas interativas e informativas que melhoram a experiência do seu evento.",
     "creating": {
       "title": "Criar Páginas",
-      "description": "Comece clicando no botão \"Criar Página\". Dê um título à sua página e comece a adicionar componentes para construir o seu conteúdo."
+      "description": "Comece por clicar no botão \"Criar Página\". Dê um título à sua página e comece a adicionar componentes para construir o seu conteúdo.",
+      "bestPractices": "Melhores Práticas",
+      "practice1": "Escolha um título claro e descritivo",
+      "practice2": "Planeie a estrutura do conteúdo antes de adicionar componentes",
+      "practice3": "Comece com componentes básicos e melhore gradualmente"
     },
     "components": {
       "title": "Componentes Disponíveis",
+      "explanation": "Componentes são os blocos de construção das suas páginas. Cada componente representa um tipo específico de conteúdo ou funcionalidade que pode adicionar à sua página. Pense neles como elementos pré-construídos que pode personalizar para criar o layout e conteúdo desejados.",
+      "pluginDisclaimer": {
+        "title": "Configuração de Extensões",
+        "description": "Algumas extensões podem exigir configuração adicional através das suas páginas dedicadas. Pode aceder a estas configurações clicando no ícone de link externo (↗️) ao lado da extensão na página de Extensões ou no menu lateral \"plugins\"."
+      },
       "basic": {
         "description": "Componentes Básicos",
-        "title": "Títulos",
-        "titleDesc": "Crie títulos claros e seções de página",
+        "title": "Título",
+        "titleDesc": "Crie títulos claros e títulos de secções",
         "text": "Texto",
-        "textDesc": "Adicione texto para descrever o seu conteúdo",
+        "textDesc": "Adicione parágrafos e conteúdo formatado",
         "image": "Imagem",
-        "imageDesc": "Exiba imagens para embelezar o seu conteúdo",
+        "imageDesc": "Exiba imagens com legendas opcionais",
         "video": "Vídeo",
-        "videoDesc": "Exiba vídeos para seus participantes",
+        "videoDesc": "Exiba vídeos para os seus participantes",
         "location": "Localização",
-        "locationDesc": "Exiba mapas e informações de local"
+        "locationDesc": "Mostre mapas e informações do local"
       },
       "plugins": {
-        "description": "Componentes Especiais",
+        "description": "Componentes de Extensões",
         "alert": "Alerta",
-        "alertDesc": "Exiba informações importantes para seus participantes",
-        "location": "Localização",
-        "locationDesc": "Exiba mapas e informações de local",
+        "alertDesc": "Exiba avisos e alertas importantes",
+        "speaker": "Orador",
+        "speakerDesc": "Exiba lista de oradores",
         "sponsors": "Patrocinadores",
-        "sponsorsDesc": "Exiba lista de patrocinadores",
+        "sponsorsDesc": "Exiba logótipos e informações dos patrocinadores",
         "feedback": "Formulário de Feedback",
-        "feedbackDesc": "Faça seus participantes darem feedback sobre seu evento"
+        "feedbackDesc": "Recolha feedback e avaliações dos utilizadores"
       }
     },
     "managing": {
       "title": "Gerir Páginas",
       "search": {
         "title": "Pesquisar e Filtrar",
-        "description": "Use a barra de pesquisa para encontrar páginas rapidamente. Filtre páginas pelo seu estado (ativado/desativado)."
+        "description": "Use a barra de pesquisa para encontrar páginas rapidamente. Filtre páginas pelo seu estado (ativado/desativado).",
+        "tip1": "Pesquise pelo título da página",
+        "tip2": "Filtre para mostrar todas, ativadas ou desativadas",
+        "tip3": "Combine pesquisa e filtros para resultados precisos"
       },
       "status": {
         "title": "Estado da Página",
-        "description": "Alterne a visibilidade da página usando o interruptor ativar/desativar. Páginas desativadas não aparecerão no menu."
+        "description": "Alterne a visibilidade da página usando o botão ativar/desativar. Páginas desativadas não aparecerão no menu.",
+        "tip1": "Ative páginas quando estiverem prontas para visualização",
+        "tip2": "Desative páginas durante manutenção ou atualizações",
+        "tip3": "Verifique o estado da página antes de fazer alterações"
       }
     },
     "actions": {
@@ -825,22 +840,32 @@
       "edit": {
         "title": "Edição",
         "reorder": "Arraste e solte para reordenar componentes",
-        "configure": "Clique nos componentes para configurar suas propriedades",
-        "remove": "Remova componentes que não precisa"
+        "reorderDesc": "Altere a ordem dos componentes arrastando-os",
+        "configure": "Configure propriedades dos componentes",
+        "configureDesc": "Clique nos componentes para editar as suas configurações",
+        "remove": "Remova componentes",
+        "removeDesc": "Elimine componentes que não precisa"
       },
       "manage": {
         "title": "Gestão",
-        "clone": "Clone páginas para criar conteúdo similar",
-        "delete": "Elimine páginas que não precisa mais",
-        "save": "Guarde as alterações regularmente para evitar perder trabalho"
+        "clone": "Clone páginas",
+        "cloneDesc": "Crie cópias de páginas existentes",
+        "delete": "Elimine páginas",
+        "deleteDesc": "Remova páginas que não precisa mais",
+        "save": "Guarde alterações",
+        "saveDesc": "Guarde o seu trabalho regularmente para evitar perder alterações"
       }
     },
     "tips": {
       "title": "Dicas Profissionais",
-      "plan": "Planeje a estrutura da sua página antes de adicionar componentes",
-      "preview": "Visualize sua página regularmente para garantir que está correta",
-      "save": "Guarde seu trabalho frequentemente para evitar perder alterações",
-      "test": "Teste sua página em diferentes dispositivos para garantir que funciona bem"
+      "plan": "Planeie a estrutura da página",
+      "planDesc": "Esboce o seu layout antes de adicionar componentes",
+      "preview": "Visualize regularmente",
+      "previewDesc": "Verifique como a sua página está a ficar durante a construção",
+      "save": "Guarde frequentemente",
+      "saveDesc": "Não arrisque perder o seu trabalho",
+      "test": "Teste em diferentes dispositivos",
+      "testDesc": "Garanta que a sua página funcione bem em todos os lugares"
     }
   }
 }

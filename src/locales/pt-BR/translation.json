@@ -780,67 +780,92 @@
     "introduction": "Este guia ajudará você a entender como criar e gerenciar páginas em seu evento. Páginas são seções personalizadas onde você pode exibir informações, coletar dados ou fornecer funcionalidades específicas aos participantes do seu evento. Você pode adicionar vários componentes para criar páginas interativas e informativas que aprimoram sua experiência de evento.",
     "creating": {
       "title": "Criar Páginas",
-      "description": "Comece clicando no botão \"Criar Página\". Dê um título à sua página e comece a adicionar componentes para construir o seu conteúdo."
+      "description": "Comece clicando no botão \"Criar Página\". Dê um título à sua página e comece a adicionar componentes para construir o seu conteúdo.",
+      "bestPractices": "Melhores Práticas",
+      "practice1": "Escolha um título claro e descritivo",
+      "practice2": "Planeje a estrutura do conteúdo antes de adicionar componentes",
+      "practice3": "Comece com componentes básicos e melhore gradualmente"
     },
     "components": {
       "title": "Componentes Disponíveis",
+      "explanation": "Componentes são os blocos de construção das suas páginas. Cada componente representa um tipo específico de conteúdo ou funcionalidade que você pode adicionar à sua página. Pense neles como elementos pré-construídos que você pode personalizar para criar o layout e conteúdo desejados.",
+      "pluginDisclaimer": {
+        "title": "Configuração de Plugins",
+        "description": "Alguns plugins podem exigir configuração adicional através de suas páginas dedicadas. Você pode acessar essas configurações clicando no ícone de link externo (↗️) ao lado do plugin na página de Plugins ou no menu lateral \"plugins\"."
+      },
       "basic": {
         "description": "Componentes Básicos",
-        "title": "Títulos",
+        "title": "Título",
         "titleDesc": "Crie títulos claros e títulos de seções",
         "text": "Texto",
-        "textDesc": "Adicione texto para descrever seu conteúdo",
+        "textDesc": "Adicione parágrafos e conteúdo formatado",
         "image": "Imagem",
-        "imageDesc": "Exiba imagens para embelezar seu conteúdo",
+        "imageDesc": "Exiba imagens com legendas opcionais",
         "video": "Vídeo",
         "videoDesc": "Exiba vídeos para seus participantes",
         "location": "Localização",
-        "locationDesc": "Exiba mapas e informações de local"
+        "locationDesc": "Mostre mapas e informações do local"
       },
       "plugins": {
-        "description": "Componentes de Plugin",
+        "description": "Componentes de Plugins/Extensões",
         "alert": "Alerta",
-        "alertDesc": "Exiba informações importantes para seus participantes",
+        "alertDesc": "Exiba avisos e alertas importantes",
         "speaker": "Palestrante",
         "speakerDesc": "Exiba lista de palestrantes",
         "sponsors": "Patrocinadores",
-        "sponsorsDesc": "Exiba lista de patrocinadores",
+        "sponsorsDesc": "Exiba logos e informações dos patrocinadores",
         "feedback": "Formulário de Feedback",
-        "feedbackDesc": "Faça seus participantes darem feedback sobre seu evento"
+        "feedbackDesc": "Colete feedback e avaliações dos usuários"
       }
     },
     "managing": {
       "title": "Gerenciando Páginas",
       "search": {
         "title": "Pesquisar e Filtrar",
-        "description": "Use a barra de pesquisa para encontrar páginas rapidamente. Filtre páginas por seu status (habilitado/desabilitado)."
+        "description": "Use a barra de pesquisa para encontrar páginas rapidamente. Filtre páginas por seu status (habilitado/desabilitado).",
+        "tip1": "Pesquise pelo título da página",
+        "tip2": "Filtre para mostrar todas, habilitadas ou desabilitadas",
+        "tip3": "Combine pesquisa e filtros para resultados precisos"
       },
       "status": {
         "title": "Status da Página",
-        "description": "Use o botão de alternância para habilitar/desabilitar a visibilidade da página. Páginas desabilitadas não aparecerão no menu."
+        "description": "Alterne a visibilidade da página usando o botão habilitar/desabilitar. Páginas desabilitadas não aparecerão no menu.",
+        "tip1": "Habilite páginas quando estiverem prontas para visualização",
+        "tip2": "Desabilite páginas durante manutenção ou atualizações",
+        "tip3": "Verifique o status da página antes de fazer alterações"
       }
     },
     "actions": {
       "title": "Ações da Página",
       "edit": {
-        "title": "Editar",
+        "title": "Edição",
         "reorder": "Arraste e solte para reordenar componentes",
-        "configure": "Clique nos componentes para configurar suas propriedades",
-        "remove": "Remova componentes que não precisar"
+        "reorderDesc": "Altere a ordem dos componentes arrastando-os",
+        "configure": "Configure propriedades dos componentes",
+        "configureDesc": "Clique nos componentes para editar suas configurações",
+        "remove": "Remova componentes",
+        "removeDesc": "Exclua componentes que você não precisa"
       },
       "manage": {
-        "title": "Gerenciar",
-        "clone": "Clone páginas para criar conteúdo similar",
-        "delete": "Exclua páginas que não precisar",
-        "save": "Salve suas alterações regularmente para evitar perder seu trabalho"
+        "title": "Gerenciamento",
+        "clone": "Clone páginas",
+        "cloneDesc": "Crie cópias de páginas existentes",
+        "delete": "Exclua páginas",
+        "deleteDesc": "Remova páginas que você não precisa mais",
+        "save": "Salve alterações",
+        "saveDesc": "Salve seu trabalho regularmente para evitar perder alterações"
       }
     },
     "tips": {
-      "title": "Dicas de Pro",
-      "plan": "Planeje a estrutura da sua página antes de adicionar componentes",
-      "preview": "Pré-visualize sua página regularmente para garantir que ela esteja correta",
-      "save": "Salve seu trabalho frequentemente para evitar perder suas alterações",
-      "test": "Teste sua página em diferentes dispositivos para garantir que ela funcione bem"
+      "title": "Dicas Profissionais",
+      "plan": "Planeje a estrutura da página",
+      "planDesc": "Esboce seu layout antes de adicionar componentes",
+      "preview": "Visualize regularmente",
+      "previewDesc": "Verifique como sua página está ficando durante a construção",
+      "save": "Salve frequentemente",
+      "saveDesc": "Não arrisque perder seu trabalho",
+      "test": "Teste em diferentes dispositivos",
+      "testDesc": "Garanta que sua página funcione bem em todos os lugares"
     }
   }
 }
