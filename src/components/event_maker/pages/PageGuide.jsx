@@ -22,25 +22,34 @@ import {
 } from 'react-icons/fa';
 
 // Extracted components
-const AccordionSection = ({ section, icon, title, isActive, onToggle, children }) => (
-    <div className={`collapse bg-base-200 transition-all duration-200 ${isActive ? 'collapse-open' : 'collapse-close'}`}>
-        <div 
-            className="collapse-title text-xl font-semibold flex items-center gap-2 cursor-pointer hover:bg-base-300 transition-colors duration-200"
-            onClick={onToggle}
-        >
-            {icon}
-            <span>{title}</span>
-            {isActive ? (
-                <FaChevronDown className="ml-auto text-primary transition-transform duration-200" />
-            ) : (
-                <FaChevronRight className="ml-auto text-primary transition-transform duration-200" />
-            )}
+const PageGuideSection = ({ title, icon, children, isActive, onToggle }) => {
+    return (
+        <div className={`collapse bg-base-200 transition-all duration-200 ${isActive ? 'collapse-open' : 'collapse-close'}`}>
+            <button 
+                className="collapse-title text-xl font-semibold flex items-center gap-2 w-full text-left hover:bg-base-300 transition-colors duration-200"
+                onClick={onToggle}
+                aria-expanded={isActive}
+                aria-controls={`section-${title.toLowerCase().replace(/\s+/g, '-')}`}
+            >
+                {icon}
+                <span>{title}</span>
+                {isActive ? (
+                    <FaChevronDown className="ml-auto text-primary transition-transform duration-200" aria-hidden="true" />
+                ) : (
+                    <FaChevronRight className="ml-auto text-primary transition-transform duration-200" aria-hidden="true" />
+                )}
+            </button>
+            <div 
+                id={`section-${title.toLowerCase().replace(/\s+/g, '-')}`}
+                className="collapse-content"
+                role="region"
+                aria-labelledby={`section-${title.toLowerCase().replace(/\s+/g, '-')}-title`}
+            >
+                {children}
+            </div>
         </div>
-        <div className="collapse-content">
-            {children}
-        </div>
-    </div>
-);
+    );
+};
 
 const InfoCard = ({ title, icon, children }) => (
     <div className="bg-base-100 p-4 rounded-lg shadow-sm">
@@ -85,10 +94,9 @@ export function PageGuide() {
             
             <div className="space-y-2">
                 {/* Creating Pages */}
-                <AccordionSection
-                    section="creating"
-                    icon={<FaPlus className="text-primary" />}
+                <PageGuideSection
                     title={t('pageGuide.creating.title', 'Creating Pages')}
+                    icon={<FaPlus className="text-primary" />}
                     isActive={activeSection === 'creating'}
                     onToggle={() => handleSectionClick('creating')}
                 >
@@ -107,13 +115,12 @@ export function PageGuide() {
                             </ul>
                         </InfoCard>
                     </div>
-                </AccordionSection>
+                </PageGuideSection>
 
                 {/* Available Components */}
-                <AccordionSection
-                    section="components"
-                    icon={<FaDesktop className="text-primary" />}
+                <PageGuideSection
                     title={t('pageGuide.components.title', 'Available Components')}
+                    icon={<FaDesktop className="text-primary" />}
                     isActive={activeSection === 'components'}
                     onToggle={() => handleSectionClick('components')}
                 >
@@ -204,13 +211,12 @@ export function PageGuide() {
                             </InfoCard>
                         </div>
                     </div>
-                </AccordionSection>
+                </PageGuideSection>
 
                 {/* Managing Pages */}
-                <AccordionSection
-                    section="managing"
-                    icon={<FaEdit className="text-primary" />}
+                <PageGuideSection
                     title={t('pageGuide.managing.title', 'Managing Pages')}
+                    icon={<FaEdit className="text-primary" />}
                     isActive={activeSection === 'managing'}
                     onToggle={() => handleSectionClick('managing')}
                 >
@@ -242,13 +248,12 @@ export function PageGuide() {
                             </ul>
                         </InfoCard>
                     </div>
-                </AccordionSection>
+                </PageGuideSection>
 
                 {/* Page Actions */}
-                <AccordionSection
-                    section="actions"
-                    icon={<FaClone className="text-primary" />}
+                <PageGuideSection
                     title={t('pageGuide.actions.title', 'Page Actions')}
+                    icon={<FaClone className="text-primary" />}
                     isActive={activeSection === 'actions'}
                     onToggle={() => handleSectionClick('actions')}
                 >
@@ -298,13 +303,12 @@ export function PageGuide() {
                             </ul>
                         </InfoCard>
                     </div>
-                </AccordionSection>
+                </PageGuideSection>
 
                 {/* Tips */}
-                <AccordionSection
-                    section="tips"
-                    icon={<FaLightbulb className="text-primary" />}
+                <PageGuideSection
                     title={t('pageGuide.tips.title', 'Pro Tips')}
+                    icon={<FaLightbulb className="text-primary" />}
                     isActive={activeSection === 'tips'}
                     onToggle={() => handleSectionClick('tips')}
                 >
@@ -336,7 +340,7 @@ export function PageGuide() {
                             <p className="text-base-content/70">{t('pageGuide.tips.testDesc', 'Ensure your page works well everywhere')}</p>
                         </InfoCard>
                     </div>
-                </AccordionSection>
+                </PageGuideSection>
             </div>
         </div>
     );
