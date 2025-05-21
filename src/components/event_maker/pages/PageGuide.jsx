@@ -51,6 +51,12 @@ export function PageGuide() {
                 <h2 className="text-2xl font-bold">{t('pageGuide.title', 'How to Use Pages')}</h2>
             </div>
             
+            <div className="my-6 mx-2 text-justify text-base-content/80">
+                <p className="">
+                    {t('pageGuide.introduction', 'This guide will help you understand how to create and manage pages in your event. Pages are custom sections where you can display information, collect data, or provide specific functionality to your event participants. You can add various components to build interactive and informative pages that enhance your event experience.')}
+                </p>
+            </div>
+            
             <div className="space-y-2">
                 {/* Creating Pages */}
                 <div className={`collapse bg-base-200 transition-all duration-200 ${activeSection === 'creating' ? 'collapse-open' : 'collapse-close'}`}>
@@ -87,6 +93,24 @@ export function PageGuide() {
                         t('pageGuide.components.title', 'Available Components')
                     )}
                     <div className="collapse-content">
+                        <div className="bg-base-100 p-4 rounded-lg shadow-sm mb-4">
+                            <p className="text-base-content/80">
+                                {t('pageGuide.components.explanation', 'Components are the building blocks of your pages. Each component represents a specific type of content or functionality that you can add to your page. Think of them as pre-built elements that you can customize to create your desired layout and content.')}
+                            </p>
+                        </div>
+                        <div className="bg-base-100 p-4 rounded-lg shadow-sm mb-4 border-l-4 border-primary">
+                            <div className="flex items-start gap-2">
+                                <FaExclamationTriangle className="text-primary mt-1 flex-shrink-0" />
+                                <div>
+                                    <p className="font-medium text-base-content/90">
+                                        {t('pageGuide.components.pluginDisclaimer.title', 'Plugin Configuration')}
+                                    </p>
+                                    <p className="text-sm text-base-content/70 mt-1">
+                                        {t('pageGuide.components.pluginDisclaimer.description', 'Some plugins may require additional configuration through their dedicated pages. You can access these settings by clicking the external link icon (↗️) next to the plugin in the Plugins page or in the side panel "plugins" menu.')}
+                                    </p>
+                                </div>
+                            </div>
+                        </div>
                         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                             <div className="bg-base-100 p-4 rounded-lg shadow-sm">
                                 <h4 className="font-medium mb-3 flex items-center gap-2">
@@ -118,8 +142,15 @@ export function PageGuide() {
                                     <li className="flex items-start gap-2 group hover:bg-base-200 p-2 rounded-lg transition-colors duration-200">
                                         <span className="font-medium text-primary group-hover:scale-110 transition-transform duration-200">•</span>
                                         <div>
-                                            <span className="font-medium">{t('pageGuide.components.basic.button', 'Button')}</span>
-                                            <p className="text-sm text-base-content/70">{t('pageGuide.components.basic.buttonDesc', 'Create call-to-action buttons')}</p>
+                                            <span className="font-medium">{t('pageGuide.components.basic.video', 'Video')}</span>
+                                            <p className="text-sm text-base-content/70">{t('pageGuide.components.basic.videoDesc', 'Display videos to your participants')}</p>
+                                        </div>
+                                    </li>
+                                    <li className="flex items-start gap-2 group hover:bg-base-200 p-2 rounded-lg transition-colors duration-200">
+                                        <span className="font-medium text-primary group-hover:scale-110 transition-transform duration-200">•</span>
+                                        <div>
+                                            <span className="font-medium">{t('pageGuide.components.basic.location', 'Location')}</span>
+                                            <p className="text-sm text-base-content/70">{t('pageGuide.components.basic.locationDesc', 'Show maps and venue information')}</p>
                                         </div>
                                     </li>
                                 </ul>
@@ -127,7 +158,7 @@ export function PageGuide() {
                             <div className="bg-base-100 p-4 rounded-lg shadow-sm">
                                 <h4 className="font-medium mb-3 flex items-center gap-2">
                                     <FaMobileAlt className="text-primary" />
-                                    {t('pageGuide.components.plugins.description', 'Special Components')}
+                                    {t('pageGuide.components.plugins.description', 'Plugins/Extensions Components')}
                                 </h4>
                                 <ul className="space-y-3">
                                     <li className="flex items-start gap-2 group hover:bg-base-200 p-2 rounded-lg transition-colors duration-200">
@@ -140,8 +171,8 @@ export function PageGuide() {
                                     <li className="flex items-start gap-2 group hover:bg-base-200 p-2 rounded-lg transition-colors duration-200">
                                         <span className="font-medium text-primary group-hover:scale-110 transition-transform duration-200">•</span>
                                         <div>
-                                            <span className="font-medium">{t('pageGuide.components.plugins.location', 'Location')}</span>
-                                            <p className="text-sm text-base-content/70">{t('pageGuide.components.plugins.locationDesc', 'Show maps and venue information')}</p>
+                                            <span className="font-medium">{t('pageGuide.components.plugins.speaker', 'Speaker')}</span>
+                                            <p className="text-sm text-base-content/70">{t('pageGuide.components.plugins.speakerDesc', 'Display speakers list')}</p>
                                         </div>
                                     </li>
                                     <li className="flex items-start gap-2 group hover:bg-base-200 p-2 rounded-lg transition-colors duration-200">

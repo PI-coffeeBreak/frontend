@@ -777,6 +777,7 @@
   },
   "pageGuide": {
     "title": "Como Usar Páginas",
+    "introduction": "Este guia ajudará você a entender como criar e gerenciar páginas em seu evento. Páginas são seções personalizadas onde você pode exibir informações, coletar dados ou fornecer funcionalidades específicas aos participantes do seu evento. Você pode adicionar vários componentes para criar páginas interativas e informativas que aprimoram sua experiência de evento.",
     "creating": {
       "title": "Criar Páginas",
       "description": "Comece clicando no botão \"Criar Página\". Dê um título à sua página e comece a adicionar componentes para construir o seu conteúdo."
@@ -790,20 +791,22 @@
         "text": "Texto",
         "textDesc": "Adicione texto para descrever seu conteúdo",
         "image": "Imagem",
-        "imageDesc": "Adicione uma imagem ao seu conteúdo",
-        "button": "Botão",
-        "buttonDesc": "Adicione um botão ao seu conteúdo"
+        "imageDesc": "Exiba imagens para embelezar seu conteúdo",
+        "video": "Vídeo",
+        "videoDesc": "Exiba vídeos para seus participantes",
+        "location": "Localização",
+        "locationDesc": "Exiba mapas e informações de local"
       },
       "plugins": {
         "description": "Componentes de Plugin",
         "alert": "Alerta",
-        "alertDesc": "Adicione um alerta ao seu conteúdo",
-        "location": "Localização",
-        "locationDesc": "Adicione um mapa e um endereço ao seu conteúdo",
+        "alertDesc": "Exiba informações importantes para seus participantes",
+        "speaker": "Palestrante",
+        "speakerDesc": "Exiba lista de palestrantes",
         "sponsors": "Patrocinadores",
-        "sponsorsDesc": "Adicione informações de patrocínio ao seu conteúdo",
+        "sponsorsDesc": "Exiba lista de patrocinadores",
         "feedback": "Formulário de Feedback",
-        "feedbackDesc": "Adicione um formulário de feedback ao seu conteúdo"
+        "feedbackDesc": "Faça seus participantes darem feedback sobre seu evento"
       }
     },
     "managing": {

@@ -777,6 +777,7 @@
   },
   "pageGuide": {
     "title": "Como Usar Páginas",
+    "introduction": "Este guia ajudará você a entender como criar e gerenciar páginas em seu evento. Páginas são seções personalizadas onde você pode exibir informações, coletar dados ou fornecer funcionalidades específicas aos participantes do seu evento. Você pode adicionar vários componentes para criar páginas interativas e informativas que aprimoram sua experiência de evento.",
     "creating": {
       "title": "Criar Páginas",
       "description": "Comece clicando no botão \"Criar Página\". Dê um título à sua página e comece a adicionar componentes para construir o seu conteúdo."
@@ -790,20 +791,22 @@
         "text": "Texto",
         "textDesc": "Adicione texto para descrever o seu conteúdo",
         "image": "Imagem",
-        "imageDesc": "Adicione imagens para ilustrar o seu conteúdo",
-        "button": "Botão",
-        "buttonDesc": "Adicione botões para interações"
+        "imageDesc": "Exiba imagens para embelezar o seu conteúdo",
+        "video": "Vídeo",
+        "videoDesc": "Exiba vídeos para seus participantes",
+        "location": "Localização",
+        "locationDesc": "Exiba mapas e informações de local"
       },
       "plugins": {
         "description": "Componentes Especiais",
         "alert": "Alerta",
-        "alertDesc": "Adicione alertas para destacar informações importantes",
+        "alertDesc": "Exiba informações importantes para seus participantes",
         "location": "Localização",
-        "locationDesc": "Adicione mapas e endereços para localizações",
+        "locationDesc": "Exiba mapas e informações de local",
         "sponsors": "Patrocinadores",
-        "sponsorsDesc": "Adicione patrocinadores para destacar suas parcerias",
+        "sponsorsDesc": "Exiba lista de patrocinadores",
         "feedback": "Formulário de Feedback",
-        "feedbackDesc": "Adicione formulários de feedback para coletar opiniões dos utilizadores"
+        "feedbackDesc": "Faça seus participantes darem feedback sobre seu evento"
       }
     },
     "managing": {

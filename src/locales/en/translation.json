@@ -127,6 +127,40 @@
     "eventDate": "Event Date",
     "openDashboard": "Open Dashboard",
     "quickAccess": "Quick Access",
+    "getStarted": {
+      "title": "Get Started Now",
+      "description": "Follow these steps to set up your event platform. We recommend following this order to ensure a smooth configuration process.",
+      "eventSetup": {
+        "title": "Event Setup",
+        "description": "Start by configuring your event details, including name, dates, and location. This information will be used throughout your event platform.",
+        "button": "Configure Event"
+      },
+      "colors": {
+        "title": "Theme & Colors",
+        "description": "Customize your event's visual identity by choosing colors that match your brand. This will affect the entire platform's appearance.",
+        "button": "Customize Colors"
+      },
+      "pages": {
+        "title": "Create Pages",
+        "description": "Build your event's content by creating pages. Add information about your event, speakers, schedule, and more using our component-based editor.",
+        "button": "Manage Pages"
+      },
+      "menus": {
+        "title": "Configure Menus",
+        "description": "Organize your navigation by creating menus. Add links to your pages and external resources to help participants find information easily.",
+        "button": "Edit Menus"
+      },
+      "plugins": {
+        "title": "Add Plugins",
+        "description": "Enhance your event with additional features. Choose from various plugins to add functionality like floor plans, feedback forms, and more.",
+        "button": "Manage Plugins"
+      },
+      "preview": {
+        "title": "Preview & Test",
+        "description": "Review your event platform from a participant's perspective. Test all features and ensure everything works as expected before launching.",
+        "button": "Preview Event"
+      }
+    },
     "cards": {
       "management": {
         "title": "Event",
@@ -777,6 +811,7 @@
   },
   "pageGuide": {
     "title": "How to Use Pages",
+    "introduction": "This guide will help you understand how to create and manage pages in your event. Pages are custom sections where you can display information, collect data, or provide specific functionality to your event participants. You can add various components to build interactive and informative pages that enhance your event experience.",
     "creating": {
       "title": "Creating Pages",
       "description": "Start by clicking the \"Create Page\" button. Give your page a title and start adding components to build your content."
@@ -788,22 +823,24 @@
         "title": "Titles",
         "titleDesc": "Create clear headings and section titles",
         "text": "Text",
-        "textDesc": "Add text to describe your content",
+        "textDesc": "Add any text to your content",
         "image": "Image",
-        "imageDesc": "Add an image to your content",
-        "button": "Button",
-        "buttonDesc": "Add a button to your content"
+        "imageDesc": "Display images to embelish your content",
+        "video": "Video",
+        "videoDesc": "Display videos to your participants",
+        "location": "Location",
+        "locationDesc": "Show maps and venue information"
       },
       "plugins": {
         "description": "Plugin Components",
         "alert": "Alert",
-        "alertDesc": "Add an alert to your content",
-        "location": "Location",
-        "locationDesc": "Add a map and address to your content",
+        "alertDesc": "Display important information to your participants",
+        "speaker": "Speaker",
+        "speakerDesc": "Display speakers list",
         "sponsors": "Sponsors",
-        "sponsorsDesc": "Add sponsor information to your content",
+        "sponsorsDesc": "Display sponsors list",
         "feedback": "Feedback Form",
-        "feedbackDesc": "Add a feedback form to your content"
+        "feedbackDesc": "Make your participants give feedback about your event"
       }
     },
     "managing": {

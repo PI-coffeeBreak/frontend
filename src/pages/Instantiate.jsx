@@ -65,6 +65,112 @@ export default function Instantiate() {
                     )}
                 </div>
 
+                {/* Get Started Now Section */}
+                <div className="shadow-lg p-2 rounded-lg mt-8 mb-8">
+                    <div className="collapse collapse-arrow bg-base-100">
+                        <input type="checkbox" className="peer" defaultChecked /> 
+                        <div className="collapse-title text-xl font-bold text-primary flex items-center gap-2">
+                            <FaRocket className="text-primary" />
+                            {t('instantiate.getStarted.title', 'Get Started Now')}
+                        </div>
+                        <div className="collapse-content">
+                            <p className="text-base-content/70 mb-6">
+                                {t('instantiate.getStarted.description', 'Follow these steps to set up your event platform. We recommend following this order to ensure a smooth configuration process.')}
+                            </p>
+                            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                                <div className="space-y-4">
+                                    <div className="bg-base-200 p-4 rounded-lg shadow-sm">
+                                        <h3 className="font-semibold mb-2 flex items-center gap-2">
+                                            <span className="text-primary">1.</span>
+                                            {t('instantiate.getStarted.eventSetup.title', 'Event Setup')}
+                                        </h3>
+                                        <p className="text-base-content/70 mb-4">
+                                            {t('instantiate.getStarted.eventSetup.description', 'Start by configuring your event details, including name, dates, and location. This information will be used throughout your event platform.')}
+                                        </p>
+                                        <Link 
+                                            to="/instantiate/event/info" 
+                                            className="btn btn-primary btn-sm"
+                                        >
+                                            {t('instantiate.getStarted.eventSetup.button', 'Configure Event')}
+                                        </Link>
+                                    </div>
+                                    <div className="bg-base-200 p-4 rounded-lg shadow-sm">
+                                        <h3 className="font-semibold mb-2 flex items-center gap-2">
+                                            <span className="text-primary">2.</span>
+                                            {t('instantiate.getStarted.colors.title', 'Theme & Colors')}
+                                        </h3>
+                                        <p className="text-base-content/70 mb-4">
+                                            {t('instantiate.getStarted.colors.description', 'Customize your event\'s visual identity by choosing colors that match your brand. This will affect the entire platform\'s appearance.')}
+                                        </p>
+                                        <Link 
+                                            to="/instantiate/application/colors" 
+                                            className="btn btn-primary btn-sm"
+                                        >
+                                            {t('instantiate.getStarted.colors.button', 'Customize Colors')}
+                                        </Link>
+                                    </div>
+                                    <div className="bg-base-200 p-4 rounded-lg shadow-sm">
+                                        <h3 className="font-semibold mb-2 flex items-center gap-2">
+                                            <span className="text-primary">3.</span>
+                                            {t('instantiate.getStarted.pages.title', 'Create Pages')}
+                                        </h3>
+                                        <p className="text-base-content/70 mb-4">
+                                            {t('instantiate.getStarted.pages.description', 'Build your event\'s content by creating pages. Add information about your event, speakers, schedule, and more using our component-based editor.')}
+                                        </p>
+                                        <Link 
+                                            to="/instantiate/application/pages" 
+                                            className="btn btn-primary btn-sm"
+                                        >
+                                            {t('instantiate.getStarted.pages.button', 'Manage Pages')}
+                                        </Link>
+                                    </div>
+                                </div>
+                                <div className="space-y-4">
+                                    <div className="bg-base-200 p-4 rounded-lg shadow-sm">
+                                        <h3 className="font-semibold mb-2 flex items-center gap-2">
+                                            <span className="text-primary">4.</span>
+                                            {t('instantiate.getStarted.menus.title', 'Configure Menus')}
+                                        </h3>
+                                        <p className="text-base-content/70 mb-4">
+                                            {t('instantiate.getStarted.menus.description', 'Organize your navigation by creating menus. Add links to your pages and external resources to help participants find information easily.')}
+                                        </p>
+                                        <Link 
+                                            to="/instantiate/application/menus" 
+                                            className="btn btn-primary btn-sm"
+                                        >
+                                            {t('instantiate.getStarted.menus.button', 'Edit Menus')}
+                                        </Link>
+                                    </div>
+                                    <div className="bg-base-200 p-4 rounded-lg shadow-sm">
+                                        <h3 className="font-semibold mb-2 flex items-center gap-2">
+                                            <span className="text-primary">5.</span>
+                                            {t('instantiate.getStarted.plugins.title', 'Add Plugins')}
+                                        </h3>
+                                        <p className="text-base-content/70 mb-4">
+                                            {t('instantiate.getStarted.plugins.description', 'Enhance your event with additional features. Choose from various plugins to add functionality like floor plans, feedback forms, and more.')}
+                                        </p>
+                                        <Link 
+                                            to="/instantiate/event/plugins" 
+                                            className="btn btn-primary btn-sm"
+                                        >
+                                            {t('instantiate.getStarted.plugins.button', 'Manage Plugins')}
+                                        </Link>
+                                    </div>
+                                    <div className="bg-base-200 p-4 rounded-lg shadow-sm">
+                                        <h3 className="font-semibold mb-2 flex items-center gap-2">
+                                            <span className="text-primary">6.</span>
+                                            {t('instantiate.getStarted.preview.title', 'Preview & Test')}
+                                        </h3>
+                                        <p className="text-base-content/70 mb-4">
+                                            {t('instantiate.getStarted.preview.description', 'Review your event platform from a participant\'s perspective. Test all features and ensure everything works as expected before launching.')}
+                                        </p>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
                 <div className="mb-10 gap-6">
                     {/* <div className="hidden sm:block md:w-1/2 flex justify-center">
                         <iframe
@@ -99,7 +205,6 @@ export default function Instantiate() {
                         ))}
                     </div>
                 </div>
-
 
             </div>
         </div>
