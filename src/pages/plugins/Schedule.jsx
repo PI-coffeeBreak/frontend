@@ -7,10 +7,10 @@ import timeGridPlugin from "@fullcalendar/timegrid";
 import Activity from "../../components/common/Activity.jsx";
 import { useActivities } from "../../contexts/ActivitiesContext.jsx";
 import { useNotification } from "../../contexts/NotificationContext.jsx";
-import { FaCalendarAlt, FaChevronDown, FaChevronUp, FaSearch, FaTimes } from "react-icons/fa";
+import { FaChevronDown, FaChevronUp, FaSearch } from "react-icons/fa";
 import { useEvent } from "../../contexts/EventContext";
 import {t} from "i18next";
-import { localDatetimeLocalToUTC } from '../../utils/date';
+import { localDatetimeLocalToUTC, utcToLocalDatetimeLocal } from '../../utils/date';
 
 // Helper functions remain unchanged
 const findActivityById = (activities, activityId) => {
@@ -48,7 +48,6 @@ const formatToLocalISOString = (date) => {
 export default function DragDropCalendar() {
     const calendarRef = useRef(null);
     const [activitiesCollapsed, setActivitiesCollapsed] = useState(false);
-    const [activeFilter, setActiveFilter] = useState(null);
     const [searchQuery, setSearchQuery] = useState('');
     const { eventInfo } = useEvent();
 
@@ -63,14 +62,13 @@ export default function DragDropCalendar() {
         fetchActivities,
         fetchActivityTypes,
         updateActivity,
-        deleteActivity, // Added this since it's used in handleDelete
+        deleteActivity,
         setCalendarActivities,
         setOutsideActivities,
     } = useActivities();
 
     const { showNotification } = useNotification();
 
-    // Existing useEffects remain unchanged
     useEffect(() => {
         fetchActivityTypes();
         fetchActivities();
@@ -78,11 +76,9 @@ export default function DragDropCalendar() {
 
     useEffect(() => {
         if (activities.length > 0 && calendarRef.current) {
-            // Use ref to track if draggable is initialized
             const draggableRef = { current: null };
 
             const timer = setTimeout(() => {
-                // Only initialize if not already initialized
                 if (!draggableRef.current) {
                     draggableRef.current = new Draggable(document.getElementById('draggable-activities'), {
                         itemSelector: ".fc-event",
@@ -110,7 +106,7 @@ export default function DragDropCalendar() {
         }
     }, [activities]);
 
-    // Existing event handlers remain unchanged
+    // Insert activity into calendar
     const handleEventReceive = async (info) => {
         const activityId = parseInt(info.event.extendedProps["data-id"]);
         const activity = findActivityById(activities, activityId);
@@ -119,7 +115,6 @@ export default function DragDropCalendar() {
             setCalendarActivities((prev) => [...prev, activity]);
             setOutsideActivities((prev) => prev.filter((act) => act.id !== activityId));
 
-            // Create a local datetime-local string and convert to UTC ISO string
             const startTime = info.event.start;
             const localDatetimeLocal = `${startTime.getFullYear()}-${String(startTime.getMonth() + 1).padStart(2, '0')}-${String(startTime.getDate()).padStart(2, '0')}T${String(startTime.getHours()).padStart(2, '0')}:${String(startTime.getMinutes()).padStart(2, '0')}`;
             const utcISOString = localDatetimeLocalToUTC(localDatetimeLocal);
@@ -128,6 +123,7 @@ export default function DragDropCalendar() {
         }
     };
 
+    // Resize activity
     const handleEventResize = async (info) => {
         const activityId = parseInt(info.event.extendedProps["data-id"]);
         const newDuration = Math.round((info.event.end - info.event.start) / 60000);
@@ -141,23 +137,18 @@ export default function DragDropCalendar() {
         );
     };
 
+    // Change date of activity
     const handleEventDrop = async (info) => {
         const activityId = parseInt(info.event.extendedProps["data-id"]);
 
-        // Create a local datetime-local string and convert to UTC ISO string
         const startTime = info.event.start;
         const localDatetimeLocal = `${startTime.getFullYear()}-${String(startTime.getMonth() + 1).padStart(2, '0')}-${String(startTime.getDate()).padStart(2, '0')}T${String(startTime.getHours()).padStart(2, '0')}:${String(startTime.getMinutes()).padStart(2, '0')}`;
         const utcISOString = localDatetimeLocalToUTC(localDatetimeLocal);
 
         await updateActivity(activityId, { date: utcISOString });
-
-        setCalendarActivities((prev) =>
-            prev.map((act) =>
-                act.id === activityId ? { ...act, date: utcISOString } : act
-            )
-        );
     };
 
+    // Delete activity
     const handleEventClick = (info) => {
         const activityId = parseInt(info.event.extendedProps["data-id"]);
         const activityTitle = info.event.title;
@@ -229,8 +220,6 @@ export default function DragDropCalendar() {
     const totalActivitiesDuration = calendarActivities.reduce((total, act) => total + (act.duration || 0), 0);
     const hours = Math.floor(totalActivitiesDuration / 60);
     const minutes = totalActivitiesDuration % 60;
-
-
 
     return (
         <div className="flex flex-col p-4 sm:p-6 lg:p-8 h-[calc(100vh-64px)]">
@@ -328,6 +317,7 @@ export default function DragDropCalendar() {
                                                 data-id={activity.id}
                                                 data-title={activity.name}
                                                 style={{ width: '180px' }}
+                                                activityTypes={activityTypes}
                                             />
                                         ))}
                                         {filteredActivities.length === 0 && (
@@ -344,8 +334,6 @@ export default function DragDropCalendar() {
                             </div>
                         </div>
                     </div>
-
-
                 </div>
 
                 {/* Calendar container */}
@@ -368,7 +356,7 @@ export default function DragDropCalendar() {
                             eventResize={handleEventResize}
                             eventClick={handleEventClick}
                             slotDuration={"00:15:00"}
-                            slotLabelInterval={"00:30:00"}
+                            slotLabelInterval={"01:00:00"}
                             slotMinTime="00:00:00"
                             slotMaxTime="24:00:00"
                             snapDuration={"00:01:00"}
@@ -397,9 +385,9 @@ export default function DragDropCalendar() {
                             forceEventDuration={true}
                             defaultTimedEventDuration={"00:30:00"}
                             events={calendarActivities.map((activity) => {
-                                const startDate = new Date(activity.date);
+                                const startDate = utcToLocalDatetimeLocal(activity.date);
                                 const durationInMs = activity.duration * 60000;
-                                const endDate = new Date(startDate.getTime() + durationInMs);
+                                const endDate = new Date(new Date(startDate).getTime() + durationInMs);
 
                                 const activityType = activityTypes.find(type => type.id === activity.type_id);
                                 const backgroundColor = activityType?.color || '#3788d8';
