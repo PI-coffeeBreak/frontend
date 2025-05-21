@@ -199,7 +199,7 @@ export default function Sidebar() {
               }`}
             >
               <h1 className="font-bold text-lg">
-                {eventLoading ? t('common.loading') : eventInfo?.name || t('event.defaultTitle')}
+                {eventLoading ? t('common.actions.loading') : eventInfo?.name || t('event.defaultTitle')}
               </h1>
               <p className="text-md text-base-content">
                 {eventInfo?.subtitle || t('event.defaultTitle')}

@@ -1,6 +1,7 @@
 import React, { useState } from "react";
 import PropTypes from 'prop-types';
-import {FaCog, FaSearch} from "react-icons/fa";
+import { useNavigate } from 'react-router-dom';
+import {FaCog, FaSearch, FaExternalLinkAlt} from "react-icons/fa";
 import { AiOutlineLoading3Quarters } from "react-icons/ai";
 import Pagination from "../components/common/Pagination.jsx";
 import PluginSettingsModal from "../components/plugins/PluginSettingsModal.jsx";
@@ -38,29 +39,51 @@ ToggleSwitch.propTypes = {
 };
 
 // Table row component for plugins
-const PluginRow = ({ plugin, loadingPlugin, onToggle, openSettings, hasSettings }) => (
-    <tr className="hover:bg-gray-50">
-        <td className="p-3">{plugin.name}</td>
-        <td className="p-3">{plugin.description}</td>
-        <td className="p-3 text-center">
-            <ToggleSwitch
-                isChecked={plugin.is_loaded}
-                isLoading={loadingPlugin === plugin.name}
-                onToggle={() => onToggle(plugin)}
-            />
-        </td>
-        <td className="p-3 text-center">
-            {hasSettings && (
-                <button
-                    onClick={() => openSettings(plugin)}
-                    className="text-gray-700 hover:text-black"
-                >
-                    <FaCog className="text-lg" />
-                </button>
-            )}
-        </td>
-    </tr>
-);
+const PluginRow = ({ plugin, loadingPlugin, onToggle, openSettings, hasSettings }) => {
+    const navigate = useNavigate();
+
+    const handleConfigClick = () => {
+        navigate(`/instantiate/plugins/${plugin.title.toLowerCase()}`);
+    };
+
+    return (
+        <tr className="hover:bg-gray-50">
+            <td className="p-3">{plugin.name}</td>
+            <td className="p-3">{plugin.description}</td>
+            <td className="p-3 text-center">
+                <ToggleSwitch
+                    isChecked={plugin.is_loaded}
+                    isLoading={loadingPlugin === plugin.name}
+                    onToggle={() => onToggle(plugin)}
+                />
+            </td>
+            <td className="p-3 text-center">
+                {plugin.is_loaded && (
+                <div className="flex items-center justify-center gap-2">
+                    {hasSettings && (
+                        <button
+                            onClick={() => openSettings(plugin)}
+                            className="text-gray-700 hover:text-primary transition-colors duration-200"
+                            title="Open Settings Modal"
+                        >
+                            <FaCog className="text-lg" />
+                        </button>
+                    )}
+                    {plugin.config_page && (
+                        <button
+                            onClick={handleConfigClick}
+                            className="text-gray-700 hover:text-primary transition-colors duration-200"
+                            title="Go to Plugin Configuration"
+                        >
+                            <FaExternalLinkAlt className="text-lg" />
+                        </button>
+                    )}
+                </div>
+                )}
+            </td>
+        </tr>
+    );
+};
 
 PluginRow.propTypes = {
   plugin: PropTypes.shape({
@@ -124,7 +147,7 @@ export default function Plugins() {
 
     return (
         <div className="w-full min-h-svh p-2 lg:p-8">
-            <h1 className="text-3xl font-bold my-8">Plugins</h1>
+            <h1 className="text-3xl font-bold my-8">Plugins/Extensions</h1>
             <div className="mb-6 flex flex-wrap gap-4 items-center">
                 <label className="input input-bordered rounded-xl flex items-center gap-2">
                     <FaSearch className="text-gray-400"/>
@@ -148,7 +171,7 @@ export default function Plugins() {
                             <th>Name</th>
                             <th>Description</th>
                             <th>Enable</th>
-                            <th></th>
+                            <th>Config/Page</th>
                         </tr>
                     </thead>
 
