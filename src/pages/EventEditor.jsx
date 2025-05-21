@@ -9,7 +9,7 @@ import PropTypes from "prop-types";
 import { renderLocationSuggestions as renderLocationSuggestionsUtil } from '../utils/LocationUtils';
 import { ImagePlaceholder } from '../components/common/ImagePlaceholder.jsx';
 import { ImageError } from '../components/event_maker/ImageError.jsx';
-
+import { utcToLocalDatetimeLocal } from '../utils/date.js';
 export function EventEditor() {
     const { t } = useTranslation();
     const { 
@@ -48,8 +48,8 @@ export function EventEditor() {
         setFormData({
             eventName: eventInfo.name || "",
             description: eventInfo.description || "",
-            startDate: eventInfo.start_time ? formatDateForInput(eventInfo.start_time) : "",
-            endDate: eventInfo.end_time ? formatDateForInput(eventInfo.end_time) : "",
+            startDate: eventInfo.start_time ? formatDateForInput(utcToLocalDatetimeLocal(eventInfo.start_time)) : "",
+            endDate: eventInfo.end_time ? formatDateForInput(utcToLocalDatetimeLocal(eventInfo.end_time)) : "",
             location: eventInfo.location || "",
             image: null,
             removeImage: false

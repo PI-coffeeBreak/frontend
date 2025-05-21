@@ -87,9 +87,11 @@ const PluginRow = ({ plugin, loadingPlugin, onToggle, openSettings, hasSettings 
 
 PluginRow.propTypes = {
   plugin: PropTypes.shape({
+    title: PropTypes.string.isRequired,
     name: PropTypes.string.isRequired,
     description: PropTypes.string.isRequired,
     is_loaded: PropTypes.bool.isRequired,
+    config_page: PropTypes.string,
   }).isRequired,
   loadingPlugin: PropTypes.string,
   onToggle: PropTypes.func.isRequired,
