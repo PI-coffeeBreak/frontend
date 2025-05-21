@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import { useTranslation } from 'react-i18next';
+import { PropTypes } from 'prop-types';
 import { 
     FaPlus, 
     FaEdit, 
@@ -7,8 +8,7 @@ import {
     FaClone, 
     FaToggleOn, 
     FaSearch, 
-    FaArrowUp, 
-    FaArrowDown,
+    FaArrowUp,
     FaInfoCircle,
     FaExclamationTriangle,
     FaCheckCircle,
@@ -51,6 +51,14 @@ const PageGuideSection = ({ title, icon, children, isActive, onToggle }) => {
     );
 };
 
+PageGuideSection.propTypes = {
+    title: PropTypes.string.isRequired,
+    icon: PropTypes.node.isRequired,
+    children: PropTypes.node.isRequired,
+    isActive: PropTypes.bool.isRequired,
+    onToggle: PropTypes.func.isRequired
+};
+
 const InfoCard = ({ title, icon, children }) => (
     <div className="bg-base-100 p-4 rounded-lg shadow-sm">
         <h4 className="font-medium mb-3 flex items-center gap-2">
@@ -61,6 +69,12 @@ const InfoCard = ({ title, icon, children }) => (
     </div>
 );
 
+InfoCard.propTypes = {
+    title: PropTypes.string.isRequired,
+    icon: PropTypes.node.isRequired,
+    children: PropTypes.node.isRequired
+};
+
 const ListItem = ({ icon, title, description }) => (
     <li className="flex items-start gap-2 group hover:bg-base-200 p-2 rounded-lg transition-colors duration-200">
         {icon}
@@ -70,6 +84,12 @@ const ListItem = ({ icon, title, description }) => (
         </div>
     </li>
 );
+
+ListItem.propTypes = {
+    icon: PropTypes.node.isRequired,
+    title: PropTypes.string.isRequired,
+    description: PropTypes.string.isRequired
+};
 
 export function PageGuide() {
     const { t } = useTranslation();
