@@ -1,23 +1,28 @@
 {
   "common": {
-    "home": "Home",
-    "users": "Users",
-    "activities": "Activities",
-    "alerts": "Alerts",
-    "schedule": "Schedule",
-    "plugins": "Plugins",
-    "colors": "Colors",
-    "menus": "Menus",
-    "pages": "Pages",
-    "create": "Create",
-    "edit": "Edit",
-    "save": "Save",
-    "saving": "Saving...",
-    "cancel": "Cancel",
-    "delete": "Delete",
-    "loading": "Loading...",
-    "error": "Error",
-    "success": "Success",
+    "actions": {
+      "create": "Create",
+      "edit": "Edit",
+      "save": "Save",
+      "saving": "Saving...",
+      "cancel": "Cancel",
+      "delete": "Delete",
+      "loading": "Loading...",
+      "error": "Error",
+      "success": "Success",
+      "close": "Close"
+    },
+    "navigation": {
+      "home": "Home",
+      "users": "Users",
+      "activities": "Activities",
+      "alerts": "Alerts",
+      "schedule": "Schedule",
+      "plugins": "Plugins",
+      "colors": "Colors",
+      "menus": "Menus",
+      "pages": "Pages"
+    },
     "media": {
       "selectImage": "Select Image",
       "changeImage": "Change Image",
@@ -122,6 +127,40 @@
     "eventDate": "Event Date",
     "openDashboard": "Open Dashboard",
     "quickAccess": "Quick Access",
+    "getStarted": {
+      "title": "Get Started Now",
+      "description": "Follow these steps to set up your event platform. We recommend following this order to ensure a smooth configuration process.",
+      "eventSetup": {
+        "title": "Event Setup",
+        "description": "Start by configuring your event details, including name, dates, and location. This information will be used throughout your event platform.",
+        "button": "Configure Event"
+      },
+      "colors": {
+        "title": "Theme & Colors",
+        "description": "Customize your event's visual identity by choosing colors that match your brand. This will affect the entire platform's appearance.",
+        "button": "Customize Colors"
+      },
+      "pages": {
+        "title": "Create Pages",
+        "description": "Build your event's content by creating pages. Add information about your event, speakers, schedule, and more using our component-based editor.",
+        "button": "Manage Pages"
+      },
+      "menus": {
+        "title": "Configure Menus",
+        "description": "Organize your navigation by creating menus. Add links to your pages and external resources to help participants find information easily.",
+        "button": "Edit Menus"
+      },
+      "plugins": {
+        "title": "Add Plugins",
+        "description": "Enhance your event with additional features. Choose from various plugins to add functionality like floor plans, feedback forms, and more.",
+        "button": "Manage Plugins"
+      },
+      "preview": {
+        "title": "Preview & Test",
+        "description": "Review your event platform from a participant's perspective. Test all features and ensure everything works as expected before launching.",
+        "button": "Preview Event"
+      }
+    },
     "cards": {
       "management": {
         "title": "Event",
@@ -136,6 +175,8 @@
   "users": {
     "title": "Create Users",
     "searchPlaceholder": "Search users",
+    "searchLabel": "Search users",
+    "avatar": "User Avatar",
     "table": {
       "name": "Name",
       "email": "Email",
@@ -766,6 +807,99 @@
     "actions": {
       "save": "Save Icons",
       "saving": "Saving..."
+    }
+  },
+  "pageGuide": {
+    "title": "How to Use Pages",
+    "introduction": "This guide will help you understand how to create and manage pages in your event. Pages are custom sections where you can display information, collect data, or provide specific functionality to your event participants. You can add various components to build interactive and informative pages that enhance your event experience.",
+    "creating": {
+      "title": "Creating Pages",
+      "description": "Start by clicking the \"Create Page\" button. Give your page a title and start adding components to build your content.",
+      "bestPractices": "Best Practices",
+      "practice1": "Choose a clear, descriptive title",
+      "practice2": "Plan your content structure before adding components",
+      "practice3": "Start with basic components and enhance gradually"
+    },
+    "components": {
+      "title": "Available Components",
+      "explanation": "Components are the building blocks of your pages. Each component represents a specific type of content or functionality that you can add to your page. Think of them as pre-built elements that you can customize to create your desired layout and content.",
+      "pluginDisclaimer": {
+        "title": "Plugin Configuration",
+        "description": "Some plugins may require additional configuration through their dedicated pages. You can access these settings by clicking the external link icon (↗️) next to the plugin in the Plugins page or in the side panel \"plugins\" menu."
+      },
+      "basic": {
+        "description": "Basic Components",
+        "title": "Title",
+        "titleDesc": "Create clear headings and section titles",
+        "text": "Text",
+        "textDesc": "Add paragraphs and formatted content",
+        "image": "Image",
+        "imageDesc": "Display images with optional captions",
+        "video": "Video",
+        "videoDesc": "Display videos to your participants",
+        "location": "Location",
+        "locationDesc": "Show maps and venue information"
+      },
+      "plugins": {
+        "description": "Plugins/Extensions Components",
+        "alert": "Alert",
+        "alertDesc": "Display important notices and warnings",
+        "speaker": "Speaker",
+        "speakerDesc": "Display speakers list",
+        "sponsors": "Sponsors",
+        "sponsorsDesc": "Display sponsor logos and information",
+        "feedback": "Feedback Form",
+        "feedbackDesc": "Collect user feedback and ratings"
+      }
+    },
+    "managing": {
+      "title": "Managing Pages",
+      "search": {
+        "title": "Search & Filter",
+        "description": "Use the search bar to find pages quickly. Filter pages by their status (enabled/disabled).",
+        "tip1": "Search by page title",
+        "tip2": "Filter to show all, enabled, or disabled pages",
+        "tip3": "Combine search and filters for precise results"
+      },
+      "status": {
+        "title": "Page Status",
+        "description": "Toggle page visibility using the enable/disable switch. Disabled pages won't appear in the menu.",
+        "tip1": "Enable pages when they're ready for viewing",
+        "tip2": "Disable pages during maintenance or updates",
+        "tip3": "Check page status before making changes"
+      }
+    },
+    "actions": {
+      "title": "Page Actions",
+      "edit": {
+        "title": "Editing",
+        "reorder": "Drag and drop to reorder components",
+        "reorderDesc": "Change the order of components by dragging them",
+        "configure": "Configure component properties",
+        "configureDesc": "Click components to edit their settings",
+        "remove": "Remove components",
+        "removeDesc": "Delete components you don't need"
+      },
+      "manage": {
+        "title": "Management",
+        "clone": "Clone pages",
+        "cloneDesc": "Create copies of existing pages",
+        "delete": "Delete pages",
+        "deleteDesc": "Remove pages you no longer need",
+        "save": "Save changes",
+        "saveDesc": "Regularly save your work to avoid losing changes"
+      }
+    },
+    "tips": {
+      "title": "Pro Tips",
+      "plan": "Plan your page structure",
+      "planDesc": "Sketch your layout before adding components",
+      "preview": "Preview regularly",
+      "previewDesc": "Check how your page looks as you build it",
+      "save": "Save frequently",
+      "saveDesc": "Don't risk losing your work",
+      "test": "Test on different devices",
+      "testDesc": "Ensure your page works well everywhere"
     }
   }
 }

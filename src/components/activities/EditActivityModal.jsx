@@ -452,7 +452,7 @@ export function EditActivityModal({ isOpen, onClose, activity }) {
             className="btn btn-ghost btn-sm"
             disabled={isSubmitting}
           >
-            {t('common.cancel')}
+            {t('common.actions.cancel')}
           </button>
           <button
             type="submit"
@@ -462,10 +462,10 @@ export function EditActivityModal({ isOpen, onClose, activity }) {
             {isSubmitting ? (
               <>
                 <span className="loading loading-spinner loading-xs"></span>
-                {t('common.saving')}
+                {t('common.actions.saving')}
               </>
             ) : (
-              t('common.save')
+              t('common.actions.save')
             )}
           </button>
         </div>
