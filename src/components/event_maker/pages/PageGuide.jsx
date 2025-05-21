@@ -23,13 +23,17 @@ import {
 
 // Extracted components
 const PageGuideSection = ({ title, icon, children, isActive, onToggle }) => {
+    const sectionId = `section-${title.toLowerCase().replace(/\s+/g, '-')}`;
+    const titleId = `${sectionId}-title`;
+
     return (
         <div className={`collapse bg-base-200 transition-all duration-200 ${isActive ? 'collapse-open' : 'collapse-close'}`}>
             <button 
                 className="collapse-title text-xl font-semibold flex items-center gap-2 w-full text-left hover:bg-base-300 transition-colors duration-200"
                 onClick={onToggle}
                 aria-expanded={isActive}
-                aria-controls={`section-${title.toLowerCase().replace(/\s+/g, '-')}`}
+                aria-controls={sectionId}
+                id={titleId}
             >
                 {icon}
                 <span>{title}</span>
@@ -39,14 +43,13 @@ const PageGuideSection = ({ title, icon, children, isActive, onToggle }) => {
                     <FaChevronRight className="ml-auto text-primary transition-transform duration-200" aria-hidden="true" />
                 )}
             </button>
-            <div 
-                id={`section-${title.toLowerCase().replace(/\s+/g, '-')}`}
+            <section 
+                id={sectionId}
                 className="collapse-content"
-                role="region"
-                aria-labelledby={`section-${title.toLowerCase().replace(/\s+/g, '-')}-title`}
+                aria-labelledby={titleId}
             >
                 {children}
-            </div>
+            </section>
         </div>
     );
 };
