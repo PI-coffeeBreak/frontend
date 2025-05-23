@@ -787,7 +787,15 @@
     "rating": "Rating",
     "comment": "Comment",
     "of":"of",
-    "enterRating": "Enter rating"
+    "enterRating": "Enter rating",
+    "backToActivities": "Back to Activities",
+    "reviews": "reviews",
+    "showing": "Showing",
+    "tryDifferentFilters": "Try different filters to see more results",
+    "searchActivities": "Search activities...",
+    "noActivitiesFound": "No activities found",
+    "tryDifferentSearch": "Try a different search term",
+    "ratingDistribution": "Rating Distribution"
   },
   "iconsEditor": {
     "title": "Icons Editor",

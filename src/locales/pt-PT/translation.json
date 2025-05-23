@@ -752,8 +752,16 @@
       "user": "Utilizador",
       "rating": "Classificação",
       "comment": "Comentário",
-      "of": "de",
-      "enterFeedback": "Introduza a classificação"
+      "of":"de",
+      "enterRating": "Introduza a classificação",
+      "backToActivities": "Voltar para Atividades",
+      "reviews": "avaliações",
+      "showing": "Mostrando",
+      "tryDifferentFilters": "Tente diferentes filtros para ver mais resultados",
+      "searchActivities": "Pesquisar atividades...",
+      "noActivitiesFound": "Nenhuma atividade encontrada",
+      "tryDifferentSearch": "Tente uma pesquisa diferente",
+      "ratingDistribution": "Distribuição de Avaliações"
   },
   "iconsEditor": {
     "title": "Editor de Ícones",
