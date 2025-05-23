@@ -38,7 +38,9 @@
       "pwaIcon192Alt": "Ícone PWA 192x192",
       "pwaIcon512Alt": "Ícone PWA 512x512",
       "faviconAlt": "Favicon 32x32"
-    }
+    },
+    "search": "Pesquisar",
+    "loading": "A carregar..."
   },
   "auth": {
     "login": "Entrar",
@@ -127,12 +129,56 @@
     "eventDate": "Data do evento",
     "openDashboard": "Abrir Painel",
     "quickAccess": "Acesso Rápido",
-    "cards": {
-      "management": {
-        "title": "Evento",
-        "description": "Aceda a ferramentas para gerir utilizadores, atividades e extensões do seu evento."
+    "getStarted": {
+      "title": "Comece agora",
+      "description": "Siga esses passos para configurar sua plataforma de evento. Recomendamos seguir esta ordem para garantir um processo de configuração suave.",
+      "allCompleted": "Todos os passos completos",
+      "eventSetup": {
+        "title": "Configuração do Evento",
+        "description": "Comece configurando os detalhes do seu evento, incluindo nome, datas e local. Esta informação será usada em toda a sua plataforma de evento.",
+        "button": "Configurar Evento"
       },
-      "eventMaker": {
+      "colors": {
+        "title": "Tema & Cores",
+        "description": "Personalize a identidade visual do seu evento escolhendo cores que combinem com sua marca. Isso afetará a aparência de toda a plataforma.",
+        "button": "Personalizar Cores"
+      },
+      "pages": {
+        "title": "Criar Páginas",
+        "description": "Construa o conteúdo do seu evento criando páginas. Adicione informações sobre seu evento, palestrantes, programação e muito mais usando nosso editor baseado em componentes.",
+        "button": "Gerenciar Páginas"
+      },
+      "menus": {
+        "title": "Configurar Menus",
+        "description": "Organize sua navegação criando menus. Adicione links para suas páginas e recursos externos para ajudar os participantes a encontrar informações facilmente.",
+        "button": "Editar Menus"
+      },
+      "plugins": {
+        "title": "Adicionar Plugins",
+        "description": "Aumente as funcionalidades do seu evento com recursos adicionais. Escolha entre vários plugins para adicionar funcionalidades como planos de piso, formulários de feedback e muito mais.",
+        "button": "Gerenciar Plugins"
+      },
+      "icons": {
+        "title": "Personalizar Ícones",
+        "description": "Personalize os ícones da sua Aplicação para criar uma experiência visual única e coesa. Escolha e personalize ícones que combinem com o estilo do seu evento.",
+        "button": "Editar Ícones"
+      },
+      "results": {
+        "title": "Verifique sua aplicação de evento",
+        "description": "Abra sua aplicação de evento em uma nova aba para ver como ela funciona."
+      },
+      "resetProgress": "Reiniciar Progresso",
+      "preview": {
+        "title": "Verifique a sua aplicação de evento",
+        "description": "Abra a sua aplicação de evento num novo separador para ver como está e funciona."
+      }
+    },
+    "cards": {
+      "event": {
+        "title": "Evento",
+        "description": "Acesse ferramentas para gerenciar utilizadores, atividades e plugins do seu evento."
+      },
+      "application": {
         "title": "Aplicação",
         "description": "Personalize a aparência, conteúdo e funcionalidade da sua aplicação."
       }
@@ -750,8 +796,16 @@
       "user": "Utilizador",
       "rating": "Classificação",
       "comment": "Comentário",
-      "of": "de",
-      "enterFeedback": "Introduza a classificação"
+      "of":"de",
+      "enterRating": "Introduza a classificação",
+      "backToActivities": "Voltar para Atividades",
+      "reviews": "avaliações",
+      "showing": "Mostrando",
+      "tryDifferentFilters": "Tente diferentes filtros para ver mais resultados",
+      "searchActivities": "Pesquisar atividades...",
+      "noActivitiesFound": "Nenhuma atividade encontrada",
+      "tryDifferentSearch": "Tente uma pesquisa diferente",
+      "ratingDistribution": "Distribuição de Avaliações"
   },
   "iconsEditor": {
     "title": "Editor de Ícones",
@@ -866,6 +920,104 @@
       "saveDesc": "Não arrisque perder o seu trabalho",
       "test": "Teste em diferentes dispositivos",
       "testDesc": "Garanta que a sua página funcione bem em todos os lugares"
+    }
+  },
+  "alerts": {
+    "title": "Enviar Alertas",
+    "templates": {
+      "title": "Modelos de Alertas"
+    }
+  },
+  "createAlert": {
+    "title": "Enviar um alerta",
+    "description": "Envie um novo alerta para notificar os utilizadores sobre um evento futuro."
+  },
+  "createTemplate": {
+    "title": "Criar um Modelo",
+    "description": "Crie um modelo para enviar alertas de forma mais eficiente."
+  },
+  "success": {
+    "templateCreated": "Modelo criado com sucesso",
+    "templateUpdated": "Modelo atualizado com sucesso",
+    "alertCreated": "Alerta enviado com sucesso"
+  },
+  "errors": {
+    "loadTemplates": "Falha ao carregar modelos",
+    "requiredFields": "Campos obrigatórios faltando",
+    "createTemplate": "Falha ao criar modelo",
+    "updateTemplate": "Falha ao atualizar modelo",
+    "createAlert": "Falha ao enviar alerta"
+  },
+  "speakers": {
+    "title": "Gerenciamento de Palestrantes",
+    "addSpeaker": "Adicionar Palestrante",
+    "export": "Exportar",
+    "searchPlaceholder": "Pesquisar palestrantes...",
+    "allActivities": "Todas as Atividades",
+    "noSpeakers": "Nenhum palestrante encontrado. Adicione seu primeiro palestrante usando o botão acima.",
+    "table": {
+      "photo": "Foto",
+      "name": "Nome",
+      "role": "Cargo",
+      "description": "Descrição",
+      "activity": "Atividade",
+      "socialMedia": "Redes Sociais",
+      "actions": "Ações"
+    },
+    "modal": {
+      "addTitle": "Adicionar Novo Palestrante",
+      "editTitle": "Editar Palestrante",
+      "name": "Nome",
+      "namePlaceholder": "Digite o nome do palestrante",
+      "role": "Cargo",
+      "rolePlaceholder": "Digite o cargo do palestrante",
+      "description": "Descrição",
+      "descriptionPlaceholder": "Digite a descrição do palestrante",
+      "socialMedia": "Links de Redes Sociais (opcional)",
+      "linkedin": "URL do LinkedIn",
+      "facebook": "URL do Facebook",
+      "instagram": "URL do Instagram",
+      "youtube": "URL do YouTube",
+      "activity": "Atividade Associada (opcional)",
+      "activityPlaceholder": "Pesquisar por uma atividade",
+      "noActivities": "Nenhuma atividade encontrada",
+      "image": "Imagem",
+      "imageHint": "Recomendado: Imagem quadrada, pelo menos 300x300px",
+      "clearImage": "Limpar Imagem",
+      "cancel": "Cancelar",
+      "saveChanges": "Salvar Alterações",
+      "addSpeaker": "Adicionar Palestrante"
+    },
+    "validation": {
+      "nameRequired": "Nome do palestrante é obrigatório",
+      "descriptionRequired": "Descrição é obrigatória",
+      "linkedinInvalid": "Por favor, insira uma URL de perfil do LinkedIn válida (exemplo: https://linkedin.com/in/username)",
+      "facebookInvalid": "Por favor, insira uma URL de perfil do Facebook válida (exemplo: https://facebook.com/username)",
+      "instagramInvalid": "Por favor, insira uma URL de perfil do Instagram válida (exemplo: https://instagram.com/username)",
+      "youtubeInvalid": "Por favor, insira uma URL do YouTube válida (exemplo: https://youtube.com/@username)"
+    },
+    "confirmDelete": {
+      "title": "Confirmação",
+      "message": "Tem certeza que deseja excluir este palestrante?",
+      "cancel": "Cancelar",
+      "confirm": "Confirmar"
+    },
+    "loading": "Carregando palestrantes...",
+    "tryAgain": "Tentar Novamente",
+    "success": {
+      "created": "Palestrante adicionado com sucesso!",
+      "updated": "Palestrante atualizado com sucesso!",
+      "deleted": "Palestrante excluído com sucesso!",
+      "imageUploaded": "Imagem enviada com sucesso"
+    },
+    "error": {
+      "fetch": "Falha ao buscar palestrantes. Por favor, tente novamente.",
+      "create": "Falha ao adicionar palestrante",
+      "update": "Falha ao atualizar palestrante",
+      "delete": "Falha ao excluir palestrante",
+      "imageUpload": "Palestrante salvo, mas a imagem não foi enviada",
+      "noImageUuid": "Erro: Nenhum UUID de imagem recebido da API",
+      "invalidFile": "Erro: Objeto de arquivo inválido"
     }
   }
 }
