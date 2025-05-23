@@ -927,5 +927,77 @@
       "updateTemplate": "Failed to update template",
       "createAlert": "Failed to send alert"
     }
+  },
+  "speakers": {
+    "title": "Speaker Management",
+    "addSpeaker": "Add Speaker",
+    "export": "Export",
+    "searchPlaceholder": "Search speakers...",
+    "allActivities": "All Activities",
+    "noSpeakers": "No speakers found. Add your first speaker using the button above.",
+    "table": {
+      "photo": "Photo",
+      "name": "Name",
+      "role": "Role",
+      "description": "Description",
+      "activity": "Activity",
+      "socialMedia": "Social Media",
+      "actions": "Actions"
+    },
+    "modal": {
+      "addTitle": "Add New Speaker",
+      "editTitle": "Edit Speaker",
+      "name": "Name",
+      "namePlaceholder": "Enter speaker name",
+      "role": "Role",
+      "rolePlaceholder": "Enter speaker role",
+      "description": "Description",
+      "descriptionPlaceholder": "Enter speaker description",
+      "socialMedia": "Social Media Links (optional)",
+      "linkedin": "LinkedIn URL",
+      "facebook": "Facebook URL",
+      "instagram": "Instagram URL",
+      "youtube": "YouTube URL",
+      "activity": "Associated Activity (optional)",
+      "activityPlaceholder": "Search for an activity",
+      "noActivities": "No activities found",
+      "image": "Image",
+      "imageHint": "Recommended: Square image, at least 300x300px",
+      "clearImage": "Clear Image",
+      "cancel": "Cancel",
+      "saveChanges": "Save Changes",
+      "addSpeaker": "Add Speaker"
+    },
+    "validation": {
+      "nameRequired": "Speaker name is required",
+      "descriptionRequired": "Description is required",
+      "linkedinInvalid": "Please enter a valid LinkedIn profile URL (e.g., https://linkedin.com/in/username)",
+      "facebookInvalid": "Please enter a valid Facebook profile URL (e.g., https://facebook.com/username)",
+      "instagramInvalid": "Please enter a valid Instagram profile URL (e.g., https://instagram.com/username)",
+      "youtubeInvalid": "Please enter a valid YouTube URL (e.g., https://youtube.com/@username)"
+    },
+    "confirmDelete": {
+      "title": "Confirmation",
+      "message": "Are you sure you want to delete this speaker?",
+      "cancel": "Cancel",
+      "confirm": "Confirm"
+    },
+    "loading": "Loading speakers...",
+    "tryAgain": "Try Again",
+    "success": {
+      "created": "Speaker added successfully!",
+      "updated": "Speaker updated successfully!",
+      "deleted": "Speaker deleted successfully!",
+      "imageUploaded": "Image uploaded successfully"
+    },
+    "error": {
+      "fetch": "Failed to fetch speakers. Please try again.",
+      "create": "Failed to add speaker",
+      "update": "Failed to update speaker",
+      "delete": "Failed to delete speaker",
+      "imageUpload": "Speaker saved, but image upload failed",
+      "noImageUuid": "Error: No image UUID received from API",
+      "invalidFile": "Error: Invalid file object"
+    }
   }
 }

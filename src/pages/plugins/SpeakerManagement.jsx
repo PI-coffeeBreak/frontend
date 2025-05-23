@@ -6,6 +6,7 @@ import { useMedia } from '../../contexts/MediaContext.jsx';
 import { axiosWithAuth } from '../../utils/axiosWithAuth.js';
 import { useKeycloak } from "@react-keycloak/web";
 import { baseUrl } from '../../consts.js';
+import { useTranslation } from 'react-i18next';
 
 const API_ENDPOINTS = {
   SPEAKERS: `${baseUrl}/speaker-presentation-plugin/speakers`,
@@ -120,6 +121,7 @@ const validateSocialMediaUrl = (platform, url) => {
 };
 
 const SpeakerManagement = () => {
+  const { t } = useTranslation();
   const { keycloak } = useKeycloak();
   const { activities, fetchActivities } = useActivities();
   const { showNotification } = useNotification();
@@ -276,7 +278,7 @@ const SpeakerManagement = () => {
       }
       
       const response = await axiosWithAuth(keycloak).patch(
-        `${API_ENDPOINTS.SPEAKERS}/${id}/`, 
+        `${API_ENDPOINTS.SPEAKERS}/${id}`, 
         payload,
         {
           headers: {
@@ -548,7 +550,7 @@ const SpeakerManagement = () => {
   const handleRemoveImage = async () => {
     if (formData.image_uuid) {
       try {
-        await axiosWithAuth(keycloak).delete(`${baseUrl}/media/${formData.image_uuid}/`);
+        await axiosWithAuth(keycloak).delete(`${baseUrl}/media/${formData.image_uuid}`);
       } catch (err) {
         console.error('Error removing image:', err);
       }
@@ -674,7 +676,7 @@ const SpeakerManagement = () => {
     return (
       <div className="flex items-center justify-center min-h-screen">
         <span className="loading loading-spinner loading-lg text-primary"></span>
-        <span className="ml-2 text-lg">Loading speakers...</span>
+        <span className="ml-2 text-lg">{t('speakers.loading')}</span>
       </div>
     );
   }
@@ -684,11 +686,11 @@ const SpeakerManagement = () => {
       <div className="flex flex-col items-center justify-center min-h-screen">
         <div className="alert alert-error mb-4">
           <FiRefreshCw className="w-6 h-6" />
-          <span>{error}</span>
+          <span>{t('speakers.error.fetch')}</span>
         </div>
         <button className="btn btn-primary" onClick={fetchSpeakers}>
           <FiRefreshCw className="mr-2" />
-          Try Again
+          {t('speakers.tryAgain')}
         </button>
       </div>
     );
@@ -701,15 +703,15 @@ const SpeakerManagement = () => {
   return (
     <div className="p-6">
       <div className="flex justify-between items-center mb-6">
-        <h1 className="text-3xl font-bold">Speaker Management</h1>
+        <h1 className="text-3xl font-bold">{t('speakers.title')}</h1>
         <div className="flex gap-2">
           <button onClick={exportSpeakers} className="btn btn-outline">
             <FiDownload className="mr-2" />
-            Export
+            {t('speakers.export')}
           </button>
           <button onClick={handleShowAddModal} className="btn btn-primary">
             <FiPlus className="mr-2" />
-            Add Speaker
+            {t('speakers.addSpeaker')}
           </button>
         </div>
       </div>
@@ -719,7 +721,7 @@ const SpeakerManagement = () => {
           <div className="input-group">
             <input
               type="text"
-              placeholder="Search speakers..."
+              placeholder={t('speakers.searchPlaceholder')}
               className="input input-bordered w-full"
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
@@ -732,7 +734,7 @@ const SpeakerManagement = () => {
           value={filterActivity || ''}
           onChange={(e) => setFilterActivity(e.target.value ? Number(e.target.value) : null)}
         >
-          <option value="">All Activities</option>
+          <option value="">{t('speakers.allActivities')}</option>
           {activities.map(activity => (
             <option key={activity.id} value={activity.id}>{activity.name}</option>
           ))}
@@ -743,13 +745,13 @@ const SpeakerManagement = () => {
         <div className="modal modal-open">
           <div className="modal-box max-w-2xl">
             <h3 className="font-bold text-lg mb-4">
-              {editMode ? 'Edit Speaker' : 'Add New Speaker'}
+              {editMode ? t('speakers.modal.editTitle') : t('speakers.modal.addTitle')}
             </h3>
 
             <form onSubmit={handleSubmit}>
               <div className="form-control w-full mb-4">
                 <label htmlFor="speaker-name" className="label">
-                  <span className="label-text">Name</span>
+                  <span className="label-text">{t('speakers.modal.name')}</span>
                 </label>
                 <input
                   id="speaker-name"
@@ -757,7 +759,7 @@ const SpeakerManagement = () => {
                   name="name"
                   value={formData.name}
                   onChange={handleInputChange}
-                  placeholder="Enter speaker name"
+                  placeholder={t('speakers.modal.namePlaceholder')}
                   className="input input-bordered w-full"
                   required
                 />
@@ -765,7 +767,7 @@ const SpeakerManagement = () => {
 
               <div className="form-control w-full mb-4">
                 <label htmlFor="speaker-role" className="label">
-                  <span className="label-text">Role</span>
+                  <span className="label-text">{t('speakers.modal.role')}</span>
                 </label>
                 <input
                   id="speaker-role"
@@ -773,21 +775,21 @@ const SpeakerManagement = () => {
                   name="role"
                   value={formData.role}
                   onChange={handleInputChange}
-                  placeholder="Enter speaker role"
+                  placeholder={t('speakers.modal.rolePlaceholder')}
                   className="input input-bordered w-full"
                 />
               </div>
 
               <div className="form-control w-full mb-4">
                 <label htmlFor="speaker-description" className="label">
-                  <span className="label-text">Description</span>
+                  <span className="label-text">{t('speakers.modal.description')}</span>
                 </label>
                 <textarea
                   id="speaker-description"
                   name="description"
                   value={formData.description}
                   onChange={handleInputChange}
-                  placeholder="Enter speaker description"
+                  placeholder={t('speakers.modal.descriptionPlaceholder')}
                   className="textarea textarea-bordered w-full h-24"
                   required
                 />
@@ -795,7 +797,7 @@ const SpeakerManagement = () => {
 
               <div className="form-control w-full mb-4">
                 <label className="label">
-                  <span className="label-text">Social Media Links (optional)</span>
+                  <span className="label-text">{t('speakers.modal.socialMedia')}</span>
                 </label>
                 <div className="grid grid-cols-2 gap-4">
                   <div>
@@ -804,7 +806,7 @@ const SpeakerManagement = () => {
                       name="linkedin"
                       value={formData.linkedin}
                       onChange={handleInputChange}
-                      placeholder="LinkedIn URL"
+                      placeholder={t('speakers.modal.linkedin')}
                       className={`input input-bordered w-full ${errors.linkedin ? 'input-error' : ''}`}
                     />
                     {errors.linkedin && <p className="text-error text-sm mt-1">{errors.linkedin}</p>}
@@ -815,7 +817,7 @@ const SpeakerManagement = () => {
                       name="facebook"
                       value={formData.facebook}
                       onChange={handleInputChange}
-                      placeholder="Facebook URL"
+                      placeholder={t('speakers.modal.facebook')}
                       className={`input input-bordered w-full ${errors.facebook ? 'input-error' : ''}`}
                     />
                     {errors.facebook && <p className="text-error text-sm mt-1">{errors.facebook}</p>}
@@ -826,7 +828,7 @@ const SpeakerManagement = () => {
                       name="instagram"
                       value={formData.instagram}
                       onChange={handleInputChange}
-                      placeholder="Instagram URL"
+                      placeholder={t('speakers.modal.instagram')}
                       className={`input input-bordered w-full ${errors.instagram ? 'input-error' : ''}`}
                     />
                     {errors.instagram && <p className="text-error text-sm mt-1">{errors.instagram}</p>}
@@ -837,7 +839,7 @@ const SpeakerManagement = () => {
                       name="youtube"
                       value={formData.youtube}
                       onChange={handleInputChange}
-                      placeholder="YouTube URL"
+                      placeholder={t('speakers.modal.youtube')}
                       className={`input input-bordered w-full ${errors.youtube ? 'input-error' : ''}`}
                     />
                     {errors.youtube && <p className="text-error text-sm mt-1">{errors.youtube}</p>}
@@ -847,7 +849,7 @@ const SpeakerManagement = () => {
 
               <div className="form-control w-full mb-4">
                 <label htmlFor="activity-search" className="label">
-                  <span className="label-text">Associated Activity (optional)</span>
+                  <span className="label-text">{t('speakers.modal.activity')}</span>
                 </label>
                 <div className="relative">
                   <div className="input-group w-full">
@@ -857,7 +859,7 @@ const SpeakerManagement = () => {
                       value={activitySearchQuery}
                       onChange={handleActivitySearch}
                       onClick={() => setShowActivityDropdown(true)}
-                      placeholder="Search for an activity"
+                      placeholder={t('speakers.modal.activityPlaceholder')}
                       className="input input-bordered w-full pl-10"
                     />
                     <FiSearch className="absolute left-3 top-3 text-gray-400" />
@@ -887,7 +889,7 @@ const SpeakerManagement = () => {
                           </li>
                         ))
                       ) : (
-                        <li className="text-sm text-gray-500 py-2 px-4">No activities found</li>
+                        <li className="text-sm text-gray-500 py-2 px-4">{t('speakers.modal.noActivities')}</li>
                       )}
                     </ul>
                   )}
@@ -895,7 +897,7 @@ const SpeakerManagement = () => {
                 {formData.activity_id && (
                   <div className="mt-2">
                     <span className="badge badge-primary flex items-center gap-1">
-                      <span className="text-xs opacity-80">Activity:</span>
+                      <span className="text-xs opacity-80">{t('speakers.modal.activity')}:</span>
                       {activities.find((a) => a.id === formData.activity_id)?.name || formData.activity_id}
                     </span>
                   </div>
@@ -904,7 +906,7 @@ const SpeakerManagement = () => {
 
               <div className="form-control w-full mb-6">
                 <label htmlFor="speaker-image" className="label flex justify-between">
-                  <span className="label-text">Image</span>
+                  <span className="label-text">{t('speakers.modal.image')}</span>
                   {imagePreview && (
                     <button 
                       type="button" 
@@ -919,7 +921,7 @@ const SpeakerManagement = () => {
                         }
                       }}
                     >
-                      Clear Image
+                      {t('speakers.modal.clearImage')}
                     </button>
                   )}
                 </label>
@@ -955,7 +957,7 @@ const SpeakerManagement = () => {
                       className="file-input file-input-bordered w-full"
                     />
                     <p className="text-xs text-base-content/70 mt-1">
-                      Recommended: Square image, at least 300x300px
+                      {t('speakers.modal.imageHint')}
                     </p>
                   </div>
                 </div>
@@ -970,10 +972,10 @@ const SpeakerManagement = () => {
                     setShowSpeakerModal(false);
                   }}
                 >
-                  Cancel
+                  {t('speakers.modal.cancel')}
                 </button>
                 <button type="submit" className="btn btn-primary" disabled={loading}>
-                  {editMode ? 'Save Changes' : 'Add Speaker'}
+                  {editMode ? t('speakers.modal.saveChanges') : t('speakers.modal.addSpeaker')}
                 </button>
               </div>
             </form>
@@ -994,8 +996,8 @@ const SpeakerManagement = () => {
       {confirmModal.show && (
         <div className="modal modal-open">
           <div className="modal-box">
-            <h3 className="font-bold text-lg">Confirmation</h3>
-            <p className="py-4">{confirmModal.message}</p>
+            <h3 className="font-bold text-lg">{t('speakers.confirmDelete.title')}</h3>
+            <p className="py-4">{t('speakers.confirmDelete.message')}</p>
             <div className="modal-action">
               <button 
                 className="btn btn-ghost" 
@@ -1008,7 +1010,7 @@ const SpeakerManagement = () => {
                 tabIndex={0}
                 aria-label="Cancel confirmation"
               >
-                Cancel
+                {t('speakers.confirmDelete.cancel')}
               </button>
               <button 
                 className="btn btn-error" 
@@ -1017,7 +1019,7 @@ const SpeakerManagement = () => {
                   setConfirmModal({ show: false, message: '', onConfirm: null });
                 }}
               >
-                Confirm
+                {t('speakers.confirmDelete.confirm')}
               </button>
             </div>
           </div>
@@ -1036,13 +1038,13 @@ const SpeakerManagement = () => {
 
       <div className="card bg-base-100 shadow-xl">
         <div className="card-body">
-          <h2 className="text-2xl font-semibold mb-6">All Speakers</h2>
+          <h2 className="text-2xl font-semibold mb-6">{t('speakers.title')}</h2>
 
           {!speakers || speakers.length === 0 ? (
             <div className="text-center py-8">
               <div className="alert alert-info">
                 <FiUser className="w-6 h-6" />
-                <span>No speakers found. Add your first speaker using the button above.</span>
+                <span>{t('speakers.noSpeakers')}</span>
               </div>
             </div>
           ) : (
@@ -1050,38 +1052,38 @@ const SpeakerManagement = () => {
               <table className="table w-full">
                 <thead>
                   <tr>
-                    <th className="uppercase text-xs font-semibold text-base-content/60">Photo</th>
+                    <th className="uppercase text-xs font-semibold text-base-content/60">{t('speakers.table.photo')}</th>
                     <th 
                       className="uppercase text-xs font-semibold text-base-content/60 cursor-pointer"
                       onClick={() => handleSort('name')}
                     >
-                      Name {getSortIndicator('name')}
+                      {t('speakers.table.name')} {getSortIndicator('name')}
                     </th>
                     <th 
                       className="uppercase text-xs font-semibold text-base-content/60 cursor-pointer"
                       onClick={() => handleSort('role')}
                     >
-                      Role {getSortIndicator('role')}
+                      {t('speakers.table.role')} {getSortIndicator('role')}
                     </th>
                     <th 
                       className="uppercase text-xs font-semibold text-base-content/60 cursor-pointer"
                       onClick={() => handleSort('description')}
                     >
-                      Description {getSortIndicator('description')}
+                      {t('speakers.table.description')} {getSortIndicator('description')}
                     </th>
                     <th 
                       className="uppercase text-xs font-semibold text-base-content/60 cursor-pointer"
                       onClick={() => handleSort('activity')}
                     >
-                      Activity {getSortIndicator('activity')}
+                      {t('speakers.table.activity')} {getSortIndicator('activity')}
                     </th>
                     <th 
                       className="uppercase text-xs font-semibold text-base-content/60 cursor-pointer"
                       onClick={() => handleSort('social')}
                     >
-                      Social Media {getSortIndicator('social')}
+                      {t('speakers.table.socialMedia')} {getSortIndicator('social')}
                     </th>
-                    <th className="uppercase text-xs font-semibold text-base-content/60">Actions</th>
+                    <th className="uppercase text-xs font-semibold text-base-content/60">{t('speakers.table.actions')}</th>
                   </tr>
                 </thead>
                 <tbody>
