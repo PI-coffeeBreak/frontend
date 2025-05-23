@@ -867,5 +867,31 @@
       "test": "Teste em diferentes dispositivos",
       "testDesc": "Garanta que a sua página funcione bem em todos os lugares"
     }
+  },
+  "alerts": {
+    "title": "Enviar Alertas",
+    "templates": {
+      "title": "Modelos de Alertas"
+    }
+  },
+  "createAlert": {
+    "title": "Enviar um alerta",
+    "description": "Envie um novo alerta para notificar os utilizadores sobre um evento futuro."
+  },
+  "createTemplate": {
+    "title": "Criar um Modelo",
+    "description": "Crie um modelo para enviar alertas de forma mais eficiente."
+  },
+  "success": {
+    "templateCreated": "Modelo criado com sucesso",
+    "templateUpdated": "Modelo atualizado com sucesso",
+    "alertCreated": "Alerta enviado com sucesso"
+  },
+  "errors": {
+    "loadTemplates": "Falha ao carregar modelos",
+    "requiredFields": "Campos obrigatórios faltando",
+    "createTemplate": "Falha ao criar modelo",
+    "updateTemplate": "Falha ao atualizar modelo",
+    "createAlert": "Falha ao enviar alerta"
   }
 }
