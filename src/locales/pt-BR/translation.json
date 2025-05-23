@@ -134,7 +134,11 @@
         "title": "Evento",
         "description": "Acesse ferramentas para gerenciar usuários, atividades e plugins do seu evento."
       },
-      "eventMaker": {
+      "event": {
+        "title": "Evento",
+        "description": "Acesse ferramentas para gerenciar usuários, atividades e plugins do seu evento."
+      },
+      "application": {
         "title": "Aplicação",
         "description": "Personalize a aparência, conteúdo e funcionalidade da sua aplicação."
       }

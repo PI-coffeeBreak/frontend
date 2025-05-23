@@ -164,11 +164,11 @@
       }
     },
     "cards": {
-      "management": {
+      "event": {
         "title": "Event",
         "description": "Access tools to manage users, activities and plugins for your event."
       },
-      "eventMaker": {
+      "application": {
         "title": "Application",
         "description": "Customize the appearance, content and functionality of your application."
       }

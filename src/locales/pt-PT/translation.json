@@ -130,11 +130,11 @@
     "openDashboard": "Abrir Painel",
     "quickAccess": "Acesso Rápido",
     "cards": {
-      "management": {
+      "event": {
         "title": "Evento",
-        "description": "Aceda a ferramentas para gerir utilizadores, atividades e extensões do seu evento."
+        "description": "Acesse ferramentas para gerenciar utilizadores, atividades e plugins do seu evento."
       },
-      "eventMaker": {
+      "application": {
         "title": "Aplicação",
         "description": "Personalize a aparência, conteúdo e funcionalidade da sua aplicação."
       }
