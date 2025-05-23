@@ -38,7 +38,9 @@
       "pwaIcon192Alt": "Ícone PWA 192x192",
       "pwaIcon512Alt": "Ícone PWA 512x512",
       "faviconAlt": "Favicon 32x32"
-    }
+    },
+    "search": "Pesquisar",
+    "loading": "Carregando..."
   },
   "auth": {
     "login": "Entrar",

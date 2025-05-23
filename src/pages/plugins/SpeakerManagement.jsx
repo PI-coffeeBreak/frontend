@@ -1157,35 +1157,37 @@ const SpeakerManagement = () => {
         </div>
       </div>
 
-      <div className="flex justify-center mt-6">
-        <div className="join">
-          <button 
-            className="join-item btn"
-            onClick={() => setCurrentPage(Math.max(1, currentPage - 1))}
-            disabled={currentPage === 1}
-          >
-            «
-          </button>
-          
-          {Array.from({ length: totalPages }, (_, i) => i + 1).map(page => (
+      {totalPages > 1 && (
+        <div className="flex justify-center mt-6">
+          <div className="join">
             <button 
-              key={page}
-              className={`join-item btn ${currentPage === page ? 'btn-active' : ''}`}
-              onClick={() => setCurrentPage(page)}
+              className="join-item btn"
+              onClick={() => setCurrentPage(Math.max(1, currentPage - 1))}
+              disabled={currentPage === 1}
             >
-              {page}
+              «
             </button>
-          ))}
-          
-          <button 
-            className="join-item btn"
-            onClick={() => setCurrentPage(Math.min(totalPages, currentPage + 1))}
-            disabled={currentPage === totalPages}
-          >
-            »
-          </button>
+            
+            {Array.from({ length: totalPages }, (_, i) => i + 1).map(page => (
+              <button 
+                key={page}
+                className={`join-item btn ${currentPage === page ? 'btn-active' : ''}`}
+                onClick={() => setCurrentPage(page)}
+              >
+                {page}
+              </button>
+            ))}
+            
+            <button 
+              className="join-item btn"
+              onClick={() => setCurrentPage(Math.min(totalPages, currentPage + 1))}
+              disabled={currentPage === totalPages}
+            >
+              »
+            </button>
+          </div>
         </div>
-      </div>
+      )}
     </div>
   );
 };
