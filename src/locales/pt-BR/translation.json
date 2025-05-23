@@ -129,6 +129,50 @@
     "eventDate": "Data do evento",
     "openDashboard": "Abrir Painel",
     "quickAccess": "Acesso Rápido",
+    "getStarted": {
+      "title": "Comece agora",
+      "description": "Siga esses passos para configurar sua plataforma de evento. Recomendamos seguir esta ordem para garantir um processo de configuração suave.",
+      "allCompleted": "Todos os passos completos",
+      "eventSetup": {
+        "title": "Configuração do Evento",
+        "description": "Comece configurando os detalhes do seu evento, incluindo nome, datas e local. Esta informação será usada em toda a sua plataforma de evento.",
+        "button": "Configurar Evento"
+      },
+      "colors": {
+        "title": "Tema & Cores",
+        "description": "Personalize a identidade visual do seu evento escolhendo cores que combinem com sua marca. Isso afetará a aparência de toda a plataforma.",
+        "button": "Personalizar Cores"
+      },
+      "pages": {
+        "title": "Criar Páginas",
+        "description": "Construa o conteúdo do seu evento criando páginas. Adicione informações sobre seu evento, palestrantes, programação e muito mais usando nosso editor baseado em componentes.",
+        "button": "Gerenciar Páginas"
+      },
+      "menus": {
+        "title": "Configurar Menus",
+        "description": "Organize sua navegação criando menus. Adicione links para suas páginas e recursos externos para ajudar os participantes a encontrar informações facilmente.",
+        "button": "Editar Menus"
+      },
+      "plugins": {
+        "title": "Adicionar Plugins",
+        "description": "Aumente as funcionalidades do seu evento com recursos adicionais. Escolha entre vários plugins para adicionar funcionalidades como planos de piso, formulários de feedback e muito mais.",
+        "button": "Gerenciar Plugins"
+      },
+      "icons": {
+        "title": "Personalizar Ícones",
+        "description": "Personalize os ícones da sua Aplicação para criar uma experiência visual única e coesa. Escolha e personalize ícones que combinem com o estilo do seu evento.",
+        "button": "Editar Ícones"
+      },
+      "results": {
+        "title": "Verifique sua aplicação de evento",
+        "description": "Abra sua aplicação de evento em uma nova aba para ver como ela funciona."
+      },
+      "resetProgress": "Reiniciar Progresso",
+      "preview": {
+        "title": "Verifique sua aplicação de evento",
+        "description": "Abra sua aplicação de evento em uma nova aba para ver como ela está e funciona."
+      }
+    },
     "cards": {
       "management": {
         "title": "Evento",

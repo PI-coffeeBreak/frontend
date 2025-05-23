@@ -132,6 +132,7 @@
     "getStarted": {
       "title": "Get Started Now",
       "description": "Follow these steps to set up your event platform. We recommend following this order to ensure a smooth configuration process.",
+      "allCompleted": "All steps completed",
       "eventSetup": {
         "title": "Event Setup",
         "description": "Start by configuring your event details, including name, dates, and location. This information will be used throughout your event platform.",
@@ -157,10 +158,19 @@
         "description": "Enhance your event with additional features. Choose from various plugins to add functionality like floor plans, feedback forms, and more.",
         "button": "Manage Plugins"
       },
+      "icons": {
+        "title": "Customize Icons",
+        "description": "Personalize your event's Application icons to create a unique and cohesive visual experience. Choose and customize icons that match your event's style.",
+        "button": "Edit Icons"
+      },
+      "results": {
+        "title": "Check your event application",
+        "description": "Open your event application in a new tab to see how it looks and works."
+      },
+      "resetProgress": "Reset Progress",
       "preview": {
-        "title": "Preview & Test",
-        "description": "Review your event platform from a participant's perspective. Test all features and ensure everything works as expected before launching.",
-        "button": "Preview Event"
+        "title": "Check your event application",
+        "description": "Open your event application in a new tab to see how it looks and works."
       }
     },
     "cards": {
