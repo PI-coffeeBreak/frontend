@@ -91,19 +91,19 @@ const SocialMediaLinks = ({ links, className = "" }) => {
 
 const SOCIAL_MEDIA_PATTERNS = {
   linkedin: {
-    pattern: /^https?:\/\/(www\.)?linkedin\.com\/(in|company)\/[a-zA-Z0-9-]+(\/)?$/,
+    pattern: /^https?:\/\/(www\.|[a-z]{2}\.)?linkedin\.com\/(in|company)\/[a-zA-Z0-9\u00C0-\u017F\-_%]+(\/)?$/,
     message: 'Please enter a valid LinkedIn profile URL (e.g., https://linkedin.com/in/username)'
   },
   facebook: {
-    pattern: /^https?:\/\/(www\.)?facebook\.com\/[a-zA-Z0-9.]+(\/)?$/,
+    pattern: /^https?:\/\/(www\.)?facebook\.com\/[a-zA-Z0-9\u00C0-\u017F\-_.%]+(\/)?$/,
     message: 'Please enter a valid Facebook profile URL (e.g., https://facebook.com/username)'
   },
   instagram: {
-    pattern: /^https?:\/\/(www\.)?instagram\.com\/[a-zA-Z0-9._]+(\/)?$/,
+    pattern: /^https?:\/\/(www\.)?instagram\.com\/[a-zA-Z0-9\u00C0-\u017F\-_.%]+(\/)?$/,
     message: 'Please enter a valid Instagram profile URL (e.g., https://instagram.com/username)'
   },
   youtube: {
-    pattern: /^https?:\/\/(www\.)?(youtube\.com\/(@|channel\/|c\/)[a-zA-Z0-9-]+|youtu\.be\/[a-zA-Z0-9-]+)(\/)?$/,
+    pattern: /^https?:\/\/(www\.)?(youtube\.com\/(@|channel\/|c\/)[a-zA-Z0-9\u00C0-\u017F\-_%]+|youtu\.be\/[a-zA-Z0-9\u00C0-\u017F\-_%]+)(\/)?$/,
     message: 'Please enter a valid YouTube URL (e.g., https://youtube.com/@username)'
   }
 };
