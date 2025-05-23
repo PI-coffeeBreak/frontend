@@ -276,7 +276,7 @@ const SpeakerManagement = () => {
       }
       
       const response = await axiosWithAuth(keycloak).patch(
-        `${API_ENDPOINTS.SPEAKERS}/${id}/`, 
+        `${API_ENDPOINTS.SPEAKERS}/${id}`, 
         payload,
         {
           headers: {
