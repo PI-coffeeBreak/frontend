@@ -348,8 +348,6 @@ export function FloorPlans() {
     } catch (err) {
       console.error(err);
       showNotification(t("notifications.orderUpdateFailed"), "error");
-      // Revert the order if the update fails
-      setFloorPlans(floorPlans);
     }
   };
 
