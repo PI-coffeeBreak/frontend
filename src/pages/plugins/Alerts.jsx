@@ -6,8 +6,10 @@ import { AlertTemplateModal } from "../../components/alerts/AlertTemplateModal.j
 import { CreateAlertModal } from "../../components/alerts/CreateAlertModal.jsx";
 import { useAlerts } from "../../contexts/AlertsContext.jsx";
 import { useNotification } from "../../contexts/NotificationContext.jsx";
+import { useTranslation } from "react-i18next";
 
 export default function Alerts() {
+    const { t } = useTranslation();
     const [editingTemplate, setEditingTemplate] = useState(null);
     const [searchQuery, setSearchQuery] = useState("");
     const { templates, getAlertTemplates, createAlertTemplate, updateAlertTemplate, createAlert, isLoading } = useAlerts();
@@ -27,7 +29,7 @@ export default function Alerts() {
             await getAlertTemplates();
         } catch (error) {
             console.error("Failed to load templates:", error);
-            showNotification("Failed to load templates", "error");
+            showNotification(t('alerts.errors.loadTemplates'), "error");
         }
     };
 
@@ -61,7 +63,7 @@ export default function Alerts() {
         const templateMessage = formData.get('templateMessage');
 
         if (!templateTitle || !templateMessage) {
-            showNotification("Template title and message are required", "error");
+            showNotification(t('alerts.errors.requiredFields'), "error");
             return;
         }
 
@@ -71,19 +73,19 @@ export default function Alerts() {
                     name: templateTitle,
                     template: templateMessage
                 });
-                showNotification("Template updated successfully", "success");
+                showNotification(t('alerts.success.templateUpdated'), "success");
                 setEditingTemplate(null);
             } else {
                 await createAlertTemplate({
                     name: templateTitle,
                     template: templateMessage
                 });
-                showNotification("Template created successfully", "success");
+                showNotification(t('alerts.success.templateCreated'), "success");
             }
             closeTemplateModal();
         } catch (error) {
             console.error("Error with template:", error);
-            showNotification(`Failed to ${editingTemplate ? 'update' : 'create'} template`, "error");
+            showNotification(t(editingTemplate ? 'alerts.errors.updateTemplate' : 'alerts.errors.createTemplate'), "error");
         }
     };
 
@@ -95,7 +97,7 @@ export default function Alerts() {
         const highPriority = formData.get('highPriority');
 
         if (!alertMessage || !highPriority) {
-            showNotification("Message and high priority setting are required", "error");
+            showNotification(t('alerts.errors.requiredFields'), "error");
             return;
         }
 
@@ -107,11 +109,11 @@ export default function Alerts() {
                 template_id: selectedTemplate || null
             });
             
-            showNotification("Alert created successfully", "success");
+            showNotification(t('alerts.success.alertCreated'), "success");
             closeAlertModal();
         } catch (error) {
             console.error("Error creating alert:", error);
-            showNotification("Failed to create alert", "error");
+            showNotification(t('alerts.errors.createAlert'), "error");
         }
     };
 
@@ -126,14 +128,14 @@ export default function Alerts() {
 
     return (
         <div className="w-full min-h-screen p-4 sm:p-6 lg:p-8">
-            <h1 className="text-3xl font-bold my-8">Create Alerts</h1>
+            <h1 className="text-3xl font-bold my-8">{t('alerts.title')}</h1>
             
             <CreateAlertCards 
                 onOpenAlertModal={openAlertModal}
                 onOpenTemplateModal={openTemplateModal}
             />
             
-            <h1 className="text-3xl font-bold mt-8">Alert Templates</h1>
+            <h1 className="text-3xl font-bold mt-8">{t('alerts.templates.title')}</h1>
             
             <AlertFilters
                 searchQuery={searchQuery}
