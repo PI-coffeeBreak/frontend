@@ -139,7 +139,6 @@ export function Sponsors() {
     logoInputType,
     logoFile,
     logoPreview,
-    logoMediaRef,
     handleInputChange,
     handleLogoFileChange,
     resetLogoState,
