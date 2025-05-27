@@ -12,6 +12,103 @@ const API_ENDPOINTS = {
   SPONSORS: `${baseUrl}/sponsors-promotion-plugin/sponsors`
 };
 
+// Custom hook for sponsor form handling
+const useSponsorForm = (initialLevelId = 0) => {
+  const [sponsorForm, setSponsorForm] = useState({
+    name: '',
+    logo_url: '',
+    website_url: '',
+    description: '',
+    level_id: initialLevelId
+  });
+  const [logoInputType, setLogoInputType] = useState('url');
+  const [logoFile, setLogoFile] = useState(null);
+  const [logoPreview, setLogoPreview] = useState(null);
+  const logoMediaRef = useRef(null);
+  const { showNotification } = useNotification();
+
+  const handleInputChange = (e) => {
+    const { name, value } = e.target;
+    setSponsorForm(prev => ({
+      ...prev,
+      [name]: value
+    }));
+  };
+
+  const handleLogoFileChange = (e) => {
+    const file = e.target.files[0];
+    if (file) {
+      if (file.size > 5 * 1024 * 1024) { // 5MB limit
+        showNotification("File size should be less than 5MB", "error");
+        return;
+      }
+
+      if (!file.type.startsWith('image/')) {
+        showNotification("Please upload an image file", "error");
+        return;
+      }
+
+      setLogoFile(file);
+      logoMediaRef.current = file;
+      setLogoPreview(URL.createObjectURL(file));
+      setSponsorForm(prev => ({
+        ...prev,
+        logo_url: '' // Clear URL when file is selected
+      }));
+    }
+  };
+
+  const resetLogoState = () => {
+    logoMediaRef.current = null;
+    setLogoInputType('url');
+    setSponsorForm(prev => ({
+      ...prev,
+      logo_url: ''
+    }));
+  };
+
+  const resetForm = (newLevelId = initialLevelId) => {
+    setSponsorForm({
+      name: '',
+      logo_url: '',
+      website_url: '',
+      description: '',
+      level_id: newLevelId
+    });
+    logoMediaRef.current = null;
+    setLogoFile(null);
+    setLogoPreview(null);
+    setLogoInputType('url');
+  };
+
+  const setFormData = (data) => {
+    setSponsorForm({
+      name: data.name,
+      logo_url: data.logo_url || '',
+      website_url: data.website_url || '',
+      description: data.description || '',
+      level_id: data.level_id
+    });
+    if (data.logo_url) {
+      setLogoPreview(data.logo_url);
+    }
+  };
+
+  return {
+    sponsorForm,
+    logoInputType,
+    logoFile,
+    logoPreview,
+    logoMediaRef,
+    handleInputChange,
+    handleLogoFileChange,
+    resetLogoState,
+    resetForm,
+    setFormData,
+    setLogoInputType
+  };
+};
+
 // Change from default export to named export
 export function Sponsors() {
   // State management
@@ -31,23 +128,25 @@ export function Sponsors() {
   const [editingLevel, setEditingLevel] = useState(null);
   const [searchQuery, setSearchQuery] = useState('');
   
-  // Form state for new/edit sponsor
-  const [sponsorForm, setSponsorForm] = useState({
-    name: '',
-    logo_url: '',
-    website_url: '',
-    description: '',
-    level_id: 0
-  });
-  
   // Authentication and notification
   const { keycloak } = useKeycloak();
   const { showNotification } = useNotification();
   const { getMediaUrl, uploadMedia } = useMedia();
-  const logoMediaRef = useRef(null);
-  const [logoInputType, setLogoInputType] = useState('url');
-  const [logoFile, setLogoFile] = useState(null);
-  const [logoPreview, setLogoPreview] = useState(null);
+  
+  // Use the custom hook for sponsor form handling
+  const {
+    sponsorForm,
+    logoInputType,
+    logoFile,
+    logoPreview,
+    logoMediaRef,
+    handleInputChange,
+    handleLogoFileChange,
+    resetLogoState,
+    resetForm,
+    setFormData,
+    setLogoInputType
+  } = useSponsorForm(levels.length > 0 ? levels[0].id : 0);
   
   // Fetch data on component mount
   useEffect(() => {
@@ -176,63 +275,35 @@ export function Sponsors() {
     }
   };
 
-  // Input change handler for sponsor form
-  const handleSponsorInputChange = (e) => {
-    const { name, value } = e.target;
-    setSponsorForm(prev => ({
-      ...prev,
-      [name]: value
+  // Edit sponsor - populate form with existing sponsor data
+  const handleEditSponsor = (sponsor) => {
+    setFormData(sponsor);
+    setSelectedSponsor(sponsor);
+    setIsEditingSponsor(true);
+  };
+
+  // Start editing level
+  const startEditingLevel = (level) => {
+    setEditingLevel(level);
+    setIsEditingLevel(true);
+  };
+
+  // Filter sponsors based on search query
+  const filteredSponsorsByLevel = useMemo(() => {
+    const query = searchQuery.toLowerCase().trim();
+    
+    return levels.map(level => ({
+      ...level,
+      sponsors: sponsors
+        .filter(sponsor => sponsor.level_id === level.id)
+        .filter(sponsor => 
+          !query || 
+          sponsor.name.toLowerCase().includes(query) ||
+          sponsor.description?.toLowerCase().includes(query) ||
+          sponsor.website_url?.toLowerCase().includes(query)
+        )
     }));
-  };
-
-  // Handle file selection
-  const handleLogoFileChange = (e) => {
-    const file = e.target.files[0];
-    if (file) {
-      if (file.size > 5 * 1024 * 1024) { // 5MB limit
-        showNotification("File size should be less than 5MB", "error");
-        return;
-      }
-
-      if (!file.type.startsWith('image/')) {
-        showNotification("Please upload an image file", "error");
-        return;
-      }
-
-      setLogoFile(file);
-      logoMediaRef.current = file;
-      setLogoPreview(URL.createObjectURL(file));
-      setSponsorForm(prev => ({
-        ...prev,
-        logo_url: '' // Clear URL when file is selected
-      }));
-    }
-  };
-
-  // Reset logo-related state
-  const resetLogoState = () => {
-    logoMediaRef.current = null;
-    setLogoInputType('url');
-    setSponsorForm(prev => ({
-      ...prev,
-      logo_url: ''
-    }));
-  };
-
-  // Reset sponsor form
-  const resetSponsorForm = () => {
-    setSponsorForm({
-      name: '',
-      logo_url: '',
-      website_url: '',
-      description: '',
-      level_id: levels.length > 0 ? levels[0].id : 0
-    });
-    logoMediaRef.current = null;
-    setLogoFile(null);
-    setLogoPreview(null);
-    setLogoInputType('url');
-  };
+  }, [sponsors, levels, searchQuery]);
 
   // Helper function to get the correct logo URL
   const getLogoUrl = (url) => {
@@ -277,7 +348,7 @@ export function Sponsors() {
 
       setSponsors(prevSponsors => [...prevSponsors, updatedSponsor]);
       showNotification(`Sponsor "${sponsorForm.name}" created successfully`, "success");
-      resetSponsorForm();
+      resetForm();
       setIsAddingSponsor(false);
     } catch (err) {
       console.error("Error creating sponsor:", err);
@@ -313,7 +384,7 @@ export function Sponsors() {
       );
       
       showNotification(`Sponsor "${sponsorForm.name}" updated successfully`, "success");
-      resetSponsorForm();
+      resetForm();
       setIsEditingSponsor(false);
       setSelectedSponsor(null);
     } catch (err) {
@@ -323,42 +394,6 @@ export function Sponsors() {
       setIsLoading(prev => ({ ...prev, sponsors: false }));
     }
   };
-
-  // Edit sponsor - populate form with existing sponsor data
-  const handleEditSponsor = (sponsor) => {
-    setSponsorForm({
-      name: sponsor.name,
-      logo_url: sponsor.logo_url || '',
-      website_url: sponsor.website_url || '',
-      description: sponsor.description || '',
-      level_id: sponsor.level_id
-    });
-    setSelectedSponsor(sponsor);
-    setIsEditingSponsor(true);
-  };
-
-  // Start editing level
-  const startEditingLevel = (level) => {
-    setEditingLevel(level);
-    setIsEditingLevel(true);
-  };
-
-  // Filter sponsors based on search query
-  const filteredSponsorsByLevel = useMemo(() => {
-    const query = searchQuery.toLowerCase().trim();
-    
-    return levels.map(level => ({
-      ...level,
-      sponsors: sponsors
-        .filter(sponsor => sponsor.level_id === level.id)
-        .filter(sponsor => 
-          !query || 
-          sponsor.name.toLowerCase().includes(query) ||
-          sponsor.description?.toLowerCase().includes(query) ||
-          sponsor.website_url?.toLowerCase().includes(query)
-        )
-    }));
-  }, [sponsors, levels, searchQuery]);
 
   return (
     <div className="w-full min-h-screen p-4 sm:p-6 lg:p-8">
@@ -645,7 +680,7 @@ export function Sponsors() {
           setIsAddingSponsor(false);
           setIsEditingSponsor(false);
           setSelectedSponsor(null);
-          resetSponsorForm();
+          resetForm();
         }}
         title={isEditingSponsor ? "Edit Sponsor" : "Add New Sponsor"}
       >
@@ -667,7 +702,7 @@ export function Sponsors() {
                 name="name"
                 id="name"
                 value={sponsorForm.name}
-                onChange={handleSponsorInputChange}
+                onChange={handleInputChange}
                 placeholder="Sponsor name"
                 className="input input-bordered w-full"
                 required
@@ -682,7 +717,7 @@ export function Sponsors() {
                 name="level_id"
                 id="level_id"
                 value={sponsorForm.level_id || ''}
-                onChange={handleSponsorInputChange}
+                onChange={handleInputChange}
                 className="select select-bordered w-full"
                 required
               >
@@ -704,7 +739,7 @@ export function Sponsors() {
                 name="website_url"
                 id="website_url"
                 value={sponsorForm.website_url}
-                onChange={handleSponsorInputChange}
+                onChange={handleInputChange}
                 placeholder="https://example.com"
                 className="input input-bordered w-full"
               />
@@ -744,7 +779,7 @@ export function Sponsors() {
                     name="logo_url"
                     id="logo_url"
                     value={sponsorForm.logo_url || ''}
-                    onChange={handleSponsorInputChange}
+                    onChange={handleInputChange}
                     placeholder="https://example.com/logo.png"
                     className="input input-bordered w-full"
                   />
@@ -783,7 +818,7 @@ export function Sponsors() {
                 name="description"
                 id="description"
                 value={sponsorForm.description}
-                onChange={handleSponsorInputChange}
+                onChange={handleInputChange}
                 placeholder="Describe the sponsor"
                 className="textarea textarea-bordered w-full h-24"
               />
@@ -798,7 +833,7 @@ export function Sponsors() {
                 setIsAddingSponsor(false);
                 setIsEditingSponsor(false);
                 setSelectedSponsor(null);
-                resetSponsorForm();
+                resetForm();
               }}
             >
               Cancel
