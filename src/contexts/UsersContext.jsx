@@ -64,12 +64,12 @@ export const UsersProvider = ({ children }) => {
 
     const transformGroupedUsersToFlat = (groupedUsers, allUsers) => {
         const userMap = new Map(); // Map to store unique users by ID
-        const roleMapping = {
-            "cb-attendee": "Participant",
-            "cb-speaker": "Speaker",
-            "cb-customization": "Admin",
-            "cb-organizer": "Organizer",
-            "cb-staff": "Staff",
+        const transformRole = (role) => {
+            if (role.startsWith('cb-')) {
+                const withoutPrefix = role.slice(3); // Remove 'cb-'
+                return withoutPrefix.charAt(0).toUpperCase() + withoutPrefix.slice(1);
+            }
+            return role;
         };
 
         // First, add all users to the map without roles
@@ -84,7 +84,7 @@ export const UsersProvider = ({ children }) => {
 
         // Then, add roles to users that have them
         Object.entries(groupedUsers).forEach(([roleKey, usersInRole]) => {
-            const roleName = roleMapping[roleKey] || roleKey;
+            const roleName = transformRole(roleKey);
 
             usersInRole.forEach((user) => {
                 const existingUser = userMap.get(user.id);

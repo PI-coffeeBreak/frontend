@@ -4,8 +4,9 @@ import { Modal } from "../common/Modal";
 import { useForm } from "../../hooks/useForm";
 import { useNotification } from "../../contexts/NotificationContext";
 import { useTranslation } from "react-i18next";
-import {useActivities} from "../../contexts/ActivitiesContext.jsx";
-export function CreateActivityTypeModal({ isOpen, onClose, onSubmit }) {
+import { useActivities } from "../../contexts/ActivitiesContext.jsx";
+
+export function CreateActivityTypeModal({ isOpen, onClose }) {
   const { t } = useTranslation();
   const initialValues = {
     type: "",
@@ -15,27 +16,37 @@ export function CreateActivityTypeModal({ isOpen, onClose, onSubmit }) {
   const { handleChange, values, resetForm, errors, setErrors } = useForm(initialValues);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const { showNotification } = useNotification();
-  const {activityTypes, deleteActivityType} = useActivities()
+  const { activityTypes, deleteActivityType, createActivityType, updateActivityType } = useActivities();
   const [activeTab, setActiveTab] = useState("create");
+  const [editingActivity, setEditingActivity] = useState(null);
 
   const handleDelete = async (id) => {
-    try {
-
-      await deleteActivityType(id);
-      showNotification(t("activities.types.deleteSuccess"), "success");
-    } catch (error) {
-      showNotification(
-        error?.response?.data?.message || t("activities.types.deleteError"),
-        "error"
-      );
+    if (window.confirm(t("activities.types.confirmDelete"))) {
+      try {
+        await deleteActivityType(id);
+        showNotification(t("activities.types.deleteSuccess"), "success");
+        onClose();
+      } catch (error) {
+        showNotification(
+          error?.response?.data?.message || t("activities.types.deleteError"),
+          "error"
+        );
+      }
     }
+  };
+
+  const handleEdit = (activity) => {
+    setEditingActivity(activity);
+    handleChange({ target: { name: "type", value: activity.type } });
+    handleChange({ target: { name: "color", value: activity.color } });
+    setActiveTab("create");
   };
 
   const validate = () => {
     const newErrors = {};
 
     if (!values.type.trim()) {
-      newErrors.type = "Activity type is required";
+      newErrors.type = t("activities.types.errors.nameRequired");
     }
 
     setErrors(newErrors);
@@ -50,13 +61,26 @@ export function CreateActivityTypeModal({ isOpen, onClose, onSubmit }) {
     setIsSubmitting(true);
 
     try {
-      await onSubmit({ type: values.type.trim(), color: values.color });
+      if (editingActivity) {
+        await updateActivityType(editingActivity.id, {
+          type: values.type.trim(),
+          color: values.color
+        });
+        showNotification(t("activities.types.updateSuccess"), "success");
+      } else {
+        await createActivityType({
+          type: values.type.trim(),
+          color: values.color
+        });
+        showNotification(t("activities.types.createSuccess"), "success");
+      }
       resetForm();
-      showNotification(t("activities.types.createSuccess"), "success");
+      setEditingActivity(null);
+      onClose();
     } catch (error) {
-      console.error("Error creating activity type:", error);
+      console.error("Error submitting activity type:", error);
       showNotification(
-        error.response?.data?.message || t("activities.types.createError"),
+        error.response?.data?.message || t("activities.types.submitError"),
         "error"
       );
     } finally {
@@ -67,32 +91,59 @@ export function CreateActivityTypeModal({ isOpen, onClose, onSubmit }) {
   const handleCloseModal = () => {
     resetForm();
     setErrors({});
+    setEditingActivity(null);
     onClose();
+  };
+
+  const handleTabChange = (tab) => {
+    setActiveTab(tab);
+    if (tab === "create") {
+      if (!editingActivity) {
+        resetForm();
+      }
+    } else {
+      setEditingActivity(null);
+      resetForm();
+    }
+  };
+
+  const getModalTitle = () => {
+    if (activeTab === "create") {
+      return editingActivity 
+        ? t("activities.types.editTab")
+        : t("activities.types.createTab");
+    }
+    return t("activities.types.listTab");
+  };
+
+  const getButtonText = () => {
+    if (isSubmitting) {
+      return editingActivity ? t("activities.types.saving") : t("activities.types.creating");
+    }
+    return editingActivity ? t("activities.types.saveButton") : t("activities.types.createButton");
   };
 
   return (
     <Modal
       isOpen={isOpen}
       onClose={handleCloseModal}
-      title={
-        activeTab === "create"
-          ? t("activities.types.createTab")
-          : t("activities.types.existingTab")
-      }
+      title={getModalTitle()}
     >
       <div className="">
         <div className="tabs mb-4">
           <button
             type="button"
             className={`tab tab-bordered ${activeTab === "create" ? "tab-active" : ""}`}
-            onClick={() => setActiveTab("create")}
-          >{t("activities.types.createTab")}
+            onClick={() => handleTabChange("create")}
+          >
+            {editingActivity ? t("activities.types.editTab") : t("activities.types.createTab")}
           </button>
           <button
             type="button"
             className={`tab tab-bordered ${activeTab === "list" ? "tab-active" : ""}`}
-            onClick={() => setActiveTab("list")}
-          >{t("activities.types.existingTab")}
+            onClick={() => handleTabChange("list")}
+          >
+            {t("activities.types.listTab")}
           </button>
         </div>
         <form onSubmit={handleSubmitForm}>
@@ -139,6 +190,18 @@ export function CreateActivityTypeModal({ isOpen, onClose, onSubmit }) {
               </div>
 
               <div className="flex justify-end gap-2 mt-6">
+                {editingActivity && (
+                  <button
+                    type="button"
+                    className="btn btn-ghost rounded-xl"
+                    onClick={() => {
+                      setEditingActivity(null);
+                      resetForm();
+                    }}
+                  >
+                    {t("common.actions.cancel")}
+                  </button>
+                )}
                 <button
                   type="submit"
                   className="btn btn-primary rounded-xl"
@@ -147,10 +210,10 @@ export function CreateActivityTypeModal({ isOpen, onClose, onSubmit }) {
                   {isSubmitting ? (
                     <>
                       <span className="loading loading-spinner loading-sm mr-2"></span>
-                      {t("activities.types.creating")}
+                      {getButtonText()}
                     </>
                   ) : (
-                    t("activities.types.createButton")
+                    getButtonText()
                   )}
                 </button>
               </div>
@@ -160,12 +223,19 @@ export function CreateActivityTypeModal({ isOpen, onClose, onSubmit }) {
             <div className="mb-6">
               <ul className="space-y-2">
                 {activityTypes.map((activity) => (
-                  <li key={activity.id} className="flex items-center justify-between rounded px-3 py-2">
+                  <li key={activity.id} className="flex items-center justify-between rounded px-3 py-2 hover:bg-base-200">
                     <div className="flex items-center gap-2">
                       <span className="w-4 h-4 inline-block rounded" style={{ backgroundColor: activity.color }}></span>
                       <span>{activity.type}</span>
                     </div>
                     <div className="flex gap-2">
+                      <button
+                        type="button"
+                        className="btn btn-sm btn-primary rounded-xl"
+                        onClick={() => handleEdit(activity)}
+                      >
+                        {t("common.actions.edit")}
+                      </button>
                       <button
                         type="button"
                         className="btn btn-sm btn-error rounded-xl"
@@ -188,5 +258,4 @@ export function CreateActivityTypeModal({ isOpen, onClose, onSubmit }) {
 CreateActivityTypeModal.propTypes = {
   isOpen: PropTypes.bool.isRequired,
   onClose: PropTypes.func.isRequired,
-  onSubmit: PropTypes.func.isRequired,
 }; 

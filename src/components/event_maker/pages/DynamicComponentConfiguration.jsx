@@ -506,7 +506,7 @@ export function DynamicComponentConfiguration({ id, componentData = { name: "", 
                 {renderComponentPreview()}
             </ColorThemeLayout>
 
-            {editableProperties.length > 0 && (
+            {editableProperties.length > 0 && schema?.properties && Object.keys(schema.properties).length > 3 && (
                 <>
                     <button
                         onClick={() => setIsCollapsed(!isCollapsed)}

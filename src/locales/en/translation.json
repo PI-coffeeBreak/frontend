@@ -273,12 +273,14 @@
       "namePlaceholder": "Enter activity type name",
       "color": "Color",
       "createButton": "Create Activity Type",
+      "saveButton": "Save",
       "creating": "Creating...",
+      "createTab": "Create Activity Type",
+      "listTab": "Edit/Delete Activity Types",
       "createSuccess": "Activity type created successfully",
       "createError": "Failed to create activity type",
-      "createTab": "Create Activity Type",
-      "existingTab": "Delete Activity Type",
-      "deleteSuccess": "Activity type deleted successfully"
+      "deleteSuccess": "Activity type deleted successfully",
+      "updateSuccess": "Activity type updated successfully"
     },
     "import": {
       "title": "Add with Excel file",

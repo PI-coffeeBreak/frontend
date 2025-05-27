@@ -1,10 +1,8 @@
 import { useState, useEffect, useRef } from "react";
 import { Link, useLocation, useNavigate } from "react-router-dom";
 import { VscLayoutSidebarLeft, VscLayoutSidebarLeftOff } from "react-icons/vsc";
-import { MdSettings } from "react-icons/md";
 import { 
-  FaHome, 
-  FaPen, 
+  FaHome,
   FaUser, 
   FaSignOutAlt, 
   FaUsers, 
@@ -198,7 +196,7 @@ export default function Sidebar() {
                 isVisible ? "opacity-100 w-auto" : "opacity-0 w-0"
               }`}
             >
-              <h1 className="font-bold text-lg">
+              <h1 className="font-bold text-lg truncate max-w-[180px]">
                 {eventLoading ? t('common.actions.loading') : eventInfo?.name || t('event.defaultTitle')}
               </h1>
               <p className="text-md text-base-content">
