@@ -7,6 +7,7 @@ export function Image({
     src = "https://via.placeholder.com/150",
     alt = "Placeholder",
     className = "",
+    maxHeight = "300px", // Default max height
 }) {
     const { getMediaUrl } = useMedia();
 
@@ -24,7 +25,18 @@ export function Image({
         imgSrc = src || "https://via.placeholder.com/150";
     }
 
-    return <img src={imgSrc} alt={alt} className={`rounded shadow ${className}`} />;
+    return (
+        <img 
+            src={imgSrc} 
+            alt={alt} 
+            className={`rounded shadow ${className}`}
+            style={{
+                maxHeight,
+                width: 'auto',
+                objectFit: 'contain'
+            }}
+        />
+    );
 }
 
 Image.propTypes = {
@@ -36,4 +48,5 @@ Image.propTypes = {
     ]),
     alt: PropTypes.string,
     className: PropTypes.string,
+    maxHeight: PropTypes.string,
 }; 
