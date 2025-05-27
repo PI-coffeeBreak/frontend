@@ -852,47 +852,4 @@ export function Sponsors() {
   );
 }
 
-// Add Level Modal Component
-function AddLevelModal({ isOpen, onClose, onSubmit, initialName = '' }) {
-  const [levelName, setLevelName] = useState(initialName);
-
-  useEffect(() => {
-    setLevelName(initialName);
-  }, [initialName]);
-
-  const handleSubmit = (e) => {
-    e.preventDefault();
-    onSubmit(levelName);
-  };
-
-  return (
-    <Modal isOpen={isOpen} onClose={onClose} title="Add Sponsor Level">
-      <form onSubmit={handleSubmit}>
-        <div className="mb-4">
-          <label className="block text-sm font-medium mb-1" htmlFor="levelName">
-            Level Name <span className="text-red-500">*</span>
-          </label>
-          <input
-            type="text"
-            id="levelName"
-            value={levelName}
-            onChange={(e) => setLevelName(e.target.value)}
-            placeholder="Enter level name"
-            className="input input-bordered w-full"
-            required
-          />
-        </div>
-        <div className="flex justify-end gap-2">
-          <button type="button" className="btn btn-outline" onClick={onClose}>
-            Cancel
-          </button>
-          <button type="submit" className="btn btn-primary" disabled={!levelName.trim()}>
-            Save
-          </button>
-        </div>
-      </form>
-    </Modal>
-  );
-}
-
 export default Sponsors;

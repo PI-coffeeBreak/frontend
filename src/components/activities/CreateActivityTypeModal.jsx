@@ -107,17 +107,27 @@ export function CreateActivityTypeModal({ isOpen, onClose }) {
     }
   };
 
+  const getModalTitle = () => {
+    if (activeTab === "create") {
+      return editingActivity 
+        ? t("activities.types.editTab")
+        : t("activities.types.createTab");
+    }
+    return t("activities.types.listTab");
+  };
+
+  const getButtonText = () => {
+    if (isSubmitting) {
+      return editingActivity ? t("activities.types.saving") : t("activities.types.creating");
+    }
+    return editingActivity ? t("activities.types.saveButton") : t("activities.types.createButton");
+  };
+
   return (
     <Modal
       isOpen={isOpen}
       onClose={handleCloseModal}
-      title={
-        activeTab === "create"
-          ? editingActivity 
-            ? t("activities.types.editTab")
-            : t("activities.types.createTab")
-          : t("activities.types.listTab")
-      }
+      title={getModalTitle()}
     >
       <div className="">
         <div className="tabs mb-4">
@@ -200,10 +210,10 @@ export function CreateActivityTypeModal({ isOpen, onClose }) {
                   {isSubmitting ? (
                     <>
                       <span className="loading loading-spinner loading-sm mr-2"></span>
-                      {editingActivity ? t("activities.types.saving") : t("activities.types.creating")}
+                      {getButtonText()}
                     </>
                   ) : (
-                    editingActivity ? t("activities.types.saveButton") : t("activities.types.createButton")
+                    getButtonText()
                   )}
                 </button>
               </div>
