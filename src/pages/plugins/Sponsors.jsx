@@ -25,8 +25,11 @@ export function Sponsors() {
   const [isAddingLevel, setIsAddingLevel] = useState(false);
   const [isAddingSponsor, setIsAddingSponsor] = useState(false);
   const [isEditingSponsor, setIsEditingSponsor] = useState(false);
+  const [isEditingLevel, setIsEditingLevel] = useState(false);
   const [newLevelName, setNewLevelName] = useState('');
   const [selectedSponsor, setSelectedSponsor] = useState(null);
+  const [editingLevel, setEditingLevel] = useState(null);
+  const [searchQuery, setSearchQuery] = useState('');
   
   // Form state for new/edit sponsor
   const [sponsorForm, setSponsorForm] = useState({
@@ -42,6 +45,9 @@ export function Sponsors() {
   const { showNotification } = useNotification();
   const { getMediaUrl, uploadMedia } = useMedia();
   const logoMediaRef = useRef(null);
+  const [logoInputType, setLogoInputType] = useState('url');
+  const [logoFile, setLogoFile] = useState(null);
+  const [logoPreview, setLogoPreview] = useState(null);
   
   // Fetch data on component mount
   useEffect(() => {
@@ -116,15 +122,21 @@ export function Sponsors() {
   };
   
   // Add new level
-  const handleAddLevel = async (levelName) => {
+  const handleAddLevel = async () => {
+    if (!newLevelName.trim()) {
+      showNotification("Level name cannot be empty", "error");
+      return;
+    }
+    
     setIsLoading(prev => ({ ...prev, levels: true }));
     try {
       const response = await axiosWithAuth(keycloak).post(`${API_ENDPOINTS.LEVELS}/`, {
-        name: levelName
+        name: newLevelName
       });
       
       setLevels(prevLevels => [...prevLevels, response.data]);
-      showNotification(`Level "${levelName}" created successfully`, "success");
+      showNotification(`Level "${newLevelName}" created successfully`, "success");
+      setNewLevelName('');
       setIsAddingLevel(false);
     } catch (err) {
       console.error("Error creating level:", err);
@@ -133,40 +145,37 @@ export function Sponsors() {
       setIsLoading(prev => ({ ...prev, levels: false }));
     }
   };
-  
-  // Delete sponsor level
-  const handleDeleteLevel = async (levelId) => {
-    const hasSponsors = sponsors.some(sponsor => sponsor.level_id === levelId);
-    
-    if (hasSponsors) {
-      showNotification("Cannot delete a level that has sponsors associated with it", "error");
+
+  // Handle edit level
+  const handleEditLevel = async () => {
+    if (!editingLevel?.name.trim()) {
+      showNotification("Level name cannot be empty", "error");
       return;
     }
     
-    if (window.confirm("Are you sure you want to delete this level?")) {
-      setIsLoading(prev => ({ ...prev, levels: true }));
-      try {
-        await axiosWithAuth(keycloak).delete(`${API_ENDPOINTS.LEVELS}/${levelId}`);
-        setLevels(prevLevels => prevLevels.filter(level => level.id !== levelId));
-        showNotification("Sponsor level deleted successfully", "success");
-      } catch (err) {
-        console.error("Error deleting level:", err);
-        
-        if (err.response) {
-          console.error("API Error Details:", {
-            status: err.response.status,
-            headers: err.response.headers,
-            data: err.response.data
-          });
-        }
-        
-        showNotification("Failed to delete sponsor level", "error");
-      } finally {
-        setIsLoading(prev => ({ ...prev, levels: false }));
-      }
+    setIsLoading(prev => ({ ...prev, levels: true }));
+    try {
+      const response = await axiosWithAuth(keycloak).put(
+        `${API_ENDPOINTS.LEVELS}/${editingLevel.id}`,
+        { name: editingLevel.name }
+      );
+      
+      setLevels(prevLevels => 
+        prevLevels.map(level => 
+          level.id === editingLevel.id ? response.data : level
+        )
+      );
+      showNotification(`Level "${editingLevel.name}" updated successfully`, "success");
+      setIsEditingLevel(false);
+      setEditingLevel(null);
+    } catch (err) {
+      console.error("Error updating level:", err);
+      showNotification("Failed to update sponsor level", "error");
+    } finally {
+      setIsLoading(prev => ({ ...prev, levels: false }));
     }
   };
-  
+
   // Input change handler for sponsor form
   const handleSponsorInputChange = (e) => {
     const { name, value } = e.target;
@@ -175,7 +184,7 @@ export function Sponsors() {
       [name]: value
     }));
   };
-  
+
   // Handle file selection
   const handleLogoFileChange = (e) => {
     const file = e.target.files[0];
@@ -197,15 +206,6 @@ export function Sponsors() {
         ...prev,
         logo_url: '' // Clear URL when file is selected
       }));
-    } else {
-      // Handle case when file is cleared
-      setLogoFile(null);
-      logoMediaRef.current = null;
-      setLogoPreview(null);
-      setSponsorForm(prev => ({
-        ...prev,
-        logo_url: ''
-      }));
     }
   };
 
@@ -218,7 +218,7 @@ export function Sponsors() {
       logo_url: ''
     }));
   };
-  
+
   // Reset sponsor form
   const resetSponsorForm = () => {
     setSponsorForm({
@@ -233,7 +233,7 @@ export function Sponsors() {
     setLogoPreview(null);
     setLogoInputType('url');
   };
-  
+
   // Helper function to get the correct logo URL
   const getLogoUrl = (url) => {
     if (!url) return '';
@@ -248,12 +248,22 @@ export function Sponsors() {
   };
 
   // Modify handleAddSponsor to handle file upload
-  const handleAddSponsor = async (formData, logoFile, logoInputType) => {
+  const handleAddSponsor = async () => {
+    if (!sponsorForm.name.trim()) {
+      showNotification("Sponsor name cannot be empty", "error");
+      return;
+    }
+
+    if (!sponsorForm.level_id) {
+      showNotification("Please select a sponsor level", "error");
+      return;
+    }
+
     setIsLoading(prev => ({ ...prev, sponsors: true }));
     try {
       const response = await axiosWithAuth(keycloak).post(`${API_ENDPOINTS.SPONSORS}/`, {
-        ...formData,
-        logo_url: logoInputType === 'file' ? '' : formData.logo_url
+        ...sponsorForm,
+        logo_url: logoInputType === 'file' ? '' : sponsorForm.logo_url
       });
 
       if (logoInputType === 'file' && logoFile && response.data.logo_url) {
@@ -266,7 +276,8 @@ export function Sponsors() {
       };
 
       setSponsors(prevSponsors => [...prevSponsors, updatedSponsor]);
-      showNotification(`Sponsor "${formData.name}" created successfully`, "success");
+      showNotification(`Sponsor "${sponsorForm.name}" created successfully`, "success");
+      resetSponsorForm();
       setIsAddingSponsor(false);
     } catch (err) {
       console.error("Error creating sponsor:", err);
@@ -275,21 +286,20 @@ export function Sponsors() {
       setIsLoading(prev => ({ ...prev, sponsors: false }));
     }
   };
-  
+
   // Update existing sponsor
-  const handleUpdateSponsor = async (formData, logoFile, logoInputType) => {
-    if (!selectedSponsor) return;
+  const handleUpdateSponsor = async () => {
+    if (!sponsorForm.name.trim()) {
+      showNotification("Sponsor name cannot be empty", "error");
+      return;
+    }
     
     setIsLoading(prev => ({ ...prev, sponsors: true }));
     try {
       const response = await axiosWithAuth(keycloak).put(
         `${API_ENDPOINTS.SPONSORS}/${selectedSponsor.id}`, 
-        formData
+        sponsorForm
       );
-
-      if (logoInputType === 'file' && logoFile && response.data.logo_url) {
-        await uploadMedia(response.data.logo_url, logoFile);
-      }
 
       const updatedSponsor = {
         ...response.data,
@@ -302,7 +312,8 @@ export function Sponsors() {
         )
       );
       
-      showNotification(`Sponsor "${formData.name}" updated successfully`, "success");
+      showNotification(`Sponsor "${sponsorForm.name}" updated successfully`, "success");
+      resetSponsorForm();
       setIsEditingSponsor(false);
       setSelectedSponsor(null);
     } catch (err) {
@@ -312,44 +323,25 @@ export function Sponsors() {
       setIsLoading(prev => ({ ...prev, sponsors: false }));
     }
   };
-  
-  // Delete sponsor
-  const handleDeleteSponsor = async (sponsorId) => {
-    if (window.confirm("Are you sure you want to delete this sponsor?")) {
-      setIsLoading(prev => ({ ...prev, sponsors: true }));
-      try {
-        await axiosWithAuth(keycloak).delete(`${API_ENDPOINTS.SPONSORS}/${sponsorId}`);
-        setSponsors(prevSponsors => prevSponsors.filter(sponsor => sponsor.id !== sponsorId));
-        showNotification("Sponsor deleted successfully", "success");
-      } catch (err) {
-        console.error("Error deleting sponsor:", err);
-        
-        if (err.response) {
-          console.error("API Error Details:", {
-            status: err.response.status,
-            headers: err.response.headers,
-            data: err.response.data
-          });
-        }
-        
-        showNotification("Failed to delete sponsor", "error");
-      } finally {
-        setIsLoading(prev => ({ ...prev, sponsors: false }));
-      }
-    }
-  };
-  
+
   // Edit sponsor - populate form with existing sponsor data
   const handleEditSponsor = (sponsor) => {
+    setSponsorForm({
+      name: sponsor.name,
+      logo_url: sponsor.logo_url || '',
+      website_url: sponsor.website_url || '',
+      description: sponsor.description || '',
+      level_id: sponsor.level_id
+    });
     setSelectedSponsor(sponsor);
-    setIsSponsorModalOpen(true);
+    setIsEditingSponsor(true);
   };
-  
-  const [logoInputType, setLogoInputType] = useState('url');
-  const [logoFile, setLogoFile] = useState(null);
-  const [logoPreview, setLogoPreview] = useState(null);
 
-  const [searchQuery, setSearchQuery] = useState('');
+  // Start editing level
+  const startEditingLevel = (level) => {
+    setEditingLevel(level);
+    setIsEditingLevel(true);
+  };
 
   // Filter sponsors based on search query
   const filteredSponsorsByLevel = useMemo(() => {
@@ -368,49 +360,11 @@ export function Sponsors() {
     }));
   }, [sponsors, levels, searchQuery]);
 
-  const [isEditingLevel, setIsEditingLevel] = useState(false);
-  const [editingLevel, setEditingLevel] = useState(null);
-
-  // Handle edit level
-  const handleEditLevel = async (levelName) => {
-    if (!editingLevel) return;
-    
-    setIsLoading(prev => ({ ...prev, levels: true }));
-    try {
-      const response = await axiosWithAuth(keycloak).put(
-        `${API_ENDPOINTS.LEVELS}/${editingLevel.id}`,
-        { name: levelName }
-      );
-      
-      setLevels(prevLevels => 
-        prevLevels.map(level => 
-          level.id === editingLevel.id ? response.data : level
-        )
-      );
-      showNotification(`Level "${levelName}" updated successfully`, "success");
-      setIsEditingLevel(false);
-      setEditingLevel(null);
-    } catch (err) {
-      console.error("Error updating level:", err);
-      showNotification("Failed to update sponsor level", "error");
-    } finally {
-      setIsLoading(prev => ({ ...prev, levels: false }));
-    }
-  };
-
-  // Start editing level
-  const startEditingLevel = (level) => {
-    setEditingLevel(level);
-    setIsLevelModalOpen(true);
-  };
-
-  const [isLevelModalOpen, setIsLevelModalOpen] = useState(false);
-  const [isSponsorModalOpen, setIsSponsorModalOpen] = useState(false);
-
   return (
     <div className="w-full min-h-screen p-4 sm:p-6 lg:p-8">
       <h1 className="text-3xl font-bold my-8">Sponsors Management</h1>
 
+      {/* Level Section */}
       <div className="mb-8 sm:mb-12">
         <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 sm:gap-0 mb-4">
           <h2 className="text-xl sm:text-2xl font-semibold">Sponsor Levels</h2>
@@ -418,7 +372,7 @@ export function Sponsors() {
             className="btn btn-primary rounded-xl w-full sm:w-auto"
             onClick={() => {
               setEditingLevel(null);
-              setIsLevelModalOpen(true);
+              setIsAddingLevel(true);
             }}
           >
             <FaPlus className="mr-2" /> Add Level
@@ -431,60 +385,6 @@ export function Sponsors() {
           </div>
         ) : (
           <>
-            {/* Edit Level Form */}
-            {isEditingLevel && editingLevel && (
-              <div className="bg-base-200 p-4 rounded-lg mb-4">
-                <h3 className="font-medium mb-2">Edit Level</h3>
-                <div className="flex gap-2">
-                  <input
-                    type="text"
-                    placeholder="Enter level name"
-                    className="input input-bordered flex-1"
-                    value={editingLevel.name}
-                    onChange={(e) => setEditingLevel(prev => ({ ...prev, name: e.target.value }))}
-                  />
-                  <div className="flex gap-2">
-                    <button 
-                      className="btn btn-primary"
-                      onClick={() => {
-                        setIsEditingLevel(false);
-                        setEditingLevel(null);
-                      }}
-                    >
-                      Cancel
-                    </button>
-                  </div>
-                </div>
-              </div>
-            )}
-
-            {/* Add Level Form */}
-            {isAddingLevel && (
-              <div className="bg-base-200 p-4 rounded-lg mb-4">
-                <h3 className="font-medium mb-2">Create New Level</h3>
-                <div className="flex gap-2">
-                  <input
-                    type="text"
-                    placeholder="Enter level name"
-                    className="input input-bordered flex-1"
-                    value={newLevelName}
-                    onChange={(e) => setNewLevelName(e.target.value)}
-                  />
-                  <div className="flex gap-2">
-                    <button 
-                      className="btn btn-primary"
-                      onClick={() => {
-                        setIsAddingLevel(false);
-                        setNewLevelName('');
-                      }}
-                    >
-                      Cancel
-                    </button>
-                  </div>
-                </div>
-              </div>
-            )}
-            
             {levels.length === 0 ? (
               <div className="text-center py-8 bg-base-200 rounded-lg">
                 <p className="text-lg text-gray-500">No sponsor levels found</p>
@@ -571,7 +471,7 @@ export function Sponsors() {
                   return;
                 }
                 setSelectedSponsor(null);
-                setIsSponsorModalOpen(true);
+                setIsAddingSponsor(true);
               }}
             >
               <FaPlus className="mr-2" /> Add Sponsor
@@ -585,165 +485,6 @@ export function Sponsors() {
           </div>
         ) : (
           <>
-            {/* Sponsor Form (Add/Edit) */}
-            {(isAddingSponsor || isEditingSponsor) && (
-              <div className="bg-base-200 p-4 sm:p-6 rounded-lg mb-6">
-                <h3 className="font-medium text-lg mb-4">
-                  {isEditingSponsor ? "Edit Sponsor" : "Add New Sponsor"}
-                </h3>
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                  <div>
-                    <label className="block text-sm font-medium mb-1" htmlFor="name">
-                      Name <span className="text-red-500">*</span>
-                    </label>
-                    <input
-                      type="text"
-                      name="name"
-                      id="name"
-                      value={sponsorForm.name}
-                      onChange={handleSponsorInputChange}
-                      placeholder="Sponsor name"
-                      className="input input-bordered w-full"
-                    />
-                  </div>
-                  
-                  <div>
-                    <label className="block text-sm font-medium mb-1" htmlFor="level_id">
-                      Level <span className="text-red-500">*</span>
-                    </label>
-                    <select
-                      name="level_id"
-                      id="level_id"
-                      value={sponsorForm.level_id || ''}
-                      onChange={handleSponsorInputChange}
-                      className="select select-bordered w-full"
-                    >
-                      <option value="" disabled>Select a level</option>
-                      {levels.map(level => (
-                        <option key={level.id} value={level.id}>
-                          {level.name}
-                        </option>
-                      ))}
-                    </select>
-                  </div>
-                  
-                  <div>
-                    <label className="block text-sm font-medium mb-1" htmlFor="website_url">
-                      Website URL
-                    </label>
-                    <input
-                      type="url"
-                      name="website_url"
-                      id="website_url"
-                      value={sponsorForm.website_url}
-                      onChange={handleSponsorInputChange}
-                      placeholder="https://example.com"
-                      className="input input-bordered w-full"
-                    />
-                  </div>
-                  
-                  <div>
-                    <label className="block text-sm font-medium mb-1" htmlFor="logo">
-                      Logo
-                    </label>
-                    <div className="flex flex-col gap-2">
-                      <div className="flex gap-2 mb-2">
-                        <button
-                          type="button"
-                          className={`btn btn-sm flex-1 ${logoInputType === 'url' ? 'btn-primary' : 'btn-outline'}`}
-                          onClick={() => {
-                            setLogoInputType('url');
-                            resetLogoState();
-                          }}
-                        >
-                          <FaLink className="mr-1" /> URL
-                        </button>
-                        <button
-                          type="button"
-                          className={`btn btn-sm flex-1 ${logoInputType === 'file' ? 'btn-primary' : 'btn-outline'}`}
-                          onClick={() => {
-                            setLogoInputType('file');
-                            setSponsorForm(prev => ({ ...prev, logo_url: '' }));
-                          }}
-                        >
-                          <FaUpload className="mr-1" /> Upload
-                        </button>
-                      </div>
-
-                      {logoInputType === 'url' ? (
-                        <input
-                          type="url"
-                          name="logo_url"
-                          id="logo_url"
-                          value={sponsorForm.logo_url || ''}
-                          onChange={handleSponsorInputChange}
-                          placeholder="https://example.com/logo.png"
-                          className="input input-bordered w-full"
-                        />
-                      ) : (
-                        <input
-                          type="file"
-                          name="logo"
-                          id="logo"
-                          accept="image/*"
-                          onChange={handleLogoFileChange}
-                          className="file-input file-input-bordered w-full"
-                        />
-                      )}
-
-                      {(sponsorForm.logo_url || logoPreview) && (
-                        <div className="mt-2">
-                          <img 
-                            src={logoPreview || sponsorForm.logo_url} 
-                            alt="Logo preview" 
-                            className="h-16 object-contain"
-                            onError={(e) => {
-                              e.target.onerror = null;
-                              e.target.src = "https://placehold.co/200x100?text=Invalid+Image";
-                            }}
-                          />
-                        </div>
-                      )}
-                    </div>
-                  </div>
-                  
-                  <div className="md:col-span-2">
-                    <label className="block text-sm font-medium mb-1" htmlFor="description">
-                      Description
-                    </label>
-                    <textarea
-                      name="description"
-                      id="description"
-                      value={sponsorForm.description}
-                      onChange={handleSponsorInputChange}
-                      placeholder="Describe the sponsor"
-                      className="textarea textarea-bordered w-full h-24"
-                    />
-                  </div>
-                </div>
-                
-                <div className="flex flex-col sm:flex-row justify-end gap-2 mt-4">
-                  <button 
-                    className="btn btn-outline w-full sm:w-auto"
-                    onClick={() => {
-                      setIsAddingSponsor(false);
-                      setIsEditingSponsor(false);
-                      setSelectedSponsor(null);
-                    }}
-                  >
-                    Cancel
-                  </button>
-                  <button 
-                    className="btn btn-primary w-full sm:w-auto"
-                    onClick={isEditingSponsor ? handleUpdateSponsor : handleAddSponsor}
-                  >
-                    {isEditingSponsor ? "Update" : "Save"} Sponsor
-                  </button>
-                </div>
-              </div>
-            )}
-            
-            {/* Sponsors Display */}
             {sponsors.length === 0 ? (
               <div className="text-center py-8 bg-base-200 rounded-lg">
                 <p className="text-lg text-gray-500">No sponsors found</p>
@@ -835,27 +576,243 @@ export function Sponsors() {
       </div>
 
       {/* Level Modal */}
-      <AddLevelModal
-        isOpen={isLevelModalOpen}
+      <Modal
+        isOpen={isAddingLevel || isEditingLevel}
         onClose={() => {
-          setIsLevelModalOpen(false);
+          setIsAddingLevel(false);
+          setIsEditingLevel(false);
           setEditingLevel(null);
+          setNewLevelName('');
         }}
-        onSubmit={editingLevel ? handleEditLevel : handleAddLevel}
-        initialName={editingLevel?.name || ''}
-      />
+        title={isEditingLevel ? "Edit Level" : "Add Level"}
+      >
+        <form onSubmit={(e) => {
+          e.preventDefault();
+          if (isEditingLevel) {
+            handleEditLevel();
+          } else {
+            handleAddLevel();
+          }
+        }}>
+          <div className="mb-4">
+            <label className="block text-sm font-medium mb-1" htmlFor="levelName">
+              Level Name <span className="text-red-500">*</span>
+            </label>
+            <input
+              type="text"
+              id="levelName"
+              value={isEditingLevel ? editingLevel?.name : newLevelName}
+              onChange={(e) => {
+                if (isEditingLevel) {
+                  setEditingLevel(prev => ({ ...prev, name: e.target.value }));
+                } else {
+                  setNewLevelName(e.target.value);
+                }
+              }}
+              placeholder="Enter level name"
+              className="input input-bordered w-full"
+              required
+            />
+          </div>
+          <div className="flex justify-end gap-2">
+            <button 
+              type="button" 
+              className="btn btn-outline"
+              onClick={() => {
+                setIsAddingLevel(false);
+                setIsEditingLevel(false);
+                setEditingLevel(null);
+                setNewLevelName('');
+              }}
+            >
+              Cancel
+            </button>
+            <button 
+              type="submit" 
+              className="btn btn-primary"
+              disabled={isEditingLevel ? !editingLevel?.name.trim() : !newLevelName.trim()}
+            >
+              {isEditingLevel ? "Update" : "Save"}
+            </button>
+          </div>
+        </form>
+      </Modal>
 
       {/* Sponsor Modal */}
-      <SponsorFormModal
-        isOpen={isSponsorModalOpen}
+      <Modal
+        isOpen={isAddingSponsor || isEditingSponsor}
         onClose={() => {
-          setIsSponsorModalOpen(false);
+          setIsAddingSponsor(false);
+          setIsEditingSponsor(false);
           setSelectedSponsor(null);
+          resetSponsorForm();
         }}
-        onSubmit={selectedSponsor ? handleUpdateSponsor : handleAddSponsor}
-        initialData={selectedSponsor}
-        levels={levels}
-      />
+        title={isEditingSponsor ? "Edit Sponsor" : "Add New Sponsor"}
+      >
+        <form onSubmit={(e) => {
+          e.preventDefault();
+          if (isEditingSponsor) {
+            handleUpdateSponsor();
+          } else {
+            handleAddSponsor();
+          }
+        }}>
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <div>
+              <label className="block text-sm font-medium mb-1" htmlFor="name">
+                Name <span className="text-red-500">*</span>
+              </label>
+              <input
+                type="text"
+                name="name"
+                id="name"
+                value={sponsorForm.name}
+                onChange={handleSponsorInputChange}
+                placeholder="Sponsor name"
+                className="input input-bordered w-full"
+                required
+              />
+            </div>
+            
+            <div>
+              <label className="block text-sm font-medium mb-1" htmlFor="level_id">
+                Level <span className="text-red-500">*</span>
+              </label>
+              <select
+                name="level_id"
+                id="level_id"
+                value={sponsorForm.level_id || ''}
+                onChange={handleSponsorInputChange}
+                className="select select-bordered w-full"
+                required
+              >
+                <option value="" disabled>Select a level</option>
+                {levels.map(level => (
+                  <option key={level.id} value={level.id}>
+                    {level.name}
+                  </option>
+                ))}
+              </select>
+            </div>
+            
+            <div>
+              <label className="block text-sm font-medium mb-1" htmlFor="website_url">
+                Website URL
+              </label>
+              <input
+                type="url"
+                name="website_url"
+                id="website_url"
+                value={sponsorForm.website_url}
+                onChange={handleSponsorInputChange}
+                placeholder="https://example.com"
+                className="input input-bordered w-full"
+              />
+            </div>
+            
+            <div>
+              <label className="block text-sm font-medium mb-1" htmlFor="logo">
+                Logo
+              </label>
+              <div className="flex flex-col gap-2">
+                <div className="flex gap-2 mb-2">
+                  <button
+                    type="button"
+                    className={`btn btn-sm flex-1 ${logoInputType === 'url' ? 'btn-primary' : 'btn-outline'}`}
+                    onClick={() => {
+                      setLogoInputType('url');
+                      resetLogoState();
+                    }}
+                  >
+                    <FaLink className="mr-1" /> URL
+                  </button>
+                  <button
+                    type="button"
+                    className={`btn btn-sm flex-1 ${logoInputType === 'file' ? 'btn-primary' : 'btn-outline'}`}
+                    onClick={() => {
+                      setLogoInputType('file');
+                      setSponsorForm(prev => ({ ...prev, logo_url: '' }));
+                    }}
+                  >
+                    <FaUpload className="mr-1" /> Upload
+                  </button>
+                </div>
+
+                {logoInputType === 'url' ? (
+                  <input
+                    type="url"
+                    name="logo_url"
+                    id="logo_url"
+                    value={sponsorForm.logo_url || ''}
+                    onChange={handleSponsorInputChange}
+                    placeholder="https://example.com/logo.png"
+                    className="input input-bordered w-full"
+                  />
+                ) : (
+                  <input
+                    type="file"
+                    name="logo"
+                    id="logo"
+                    accept="image/*"
+                    onChange={handleLogoFileChange}
+                    className="file-input file-input-bordered w-full"
+                  />
+                )}
+
+                {(sponsorForm.logo_url || logoPreview) && (
+                  <div className="mt-2">
+                    <img 
+                      src={logoPreview || sponsorForm.logo_url} 
+                      alt="Logo preview" 
+                      className="h-16 object-contain"
+                      onError={(e) => {
+                        e.target.onerror = null;
+                        e.target.src = "https://placehold.co/200x100?text=Invalid+Image";
+                      }}
+                    />
+                  </div>
+                )}
+              </div>
+            </div>
+            
+            <div className="md:col-span-2">
+              <label className="block text-sm font-medium mb-1" htmlFor="description">
+                Description
+              </label>
+              <textarea
+                name="description"
+                id="description"
+                value={sponsorForm.description}
+                onChange={handleSponsorInputChange}
+                placeholder="Describe the sponsor"
+                className="textarea textarea-bordered w-full h-24"
+              />
+            </div>
+          </div>
+          
+          <div className="flex justify-end gap-2 mt-6">
+            <button 
+              type="button"
+              className="btn btn-outline"
+              onClick={() => {
+                setIsAddingSponsor(false);
+                setIsEditingSponsor(false);
+                setSelectedSponsor(null);
+                resetSponsorForm();
+              }}
+            >
+              Cancel
+            </button>
+            <button 
+              type="submit"
+              className="btn btn-primary"
+              disabled={!sponsorForm.name.trim() || !sponsorForm.level_id}
+            >
+              {isEditingSponsor ? "Update" : "Save"} Sponsor
+            </button>
+          </div>
+        </form>
+      </Modal>
     </div>
   );
 }
