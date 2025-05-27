@@ -275,12 +275,14 @@
       "namePlaceholder": "Digite o nome do tipo de atividade",
       "color": "Cor",
       "createButton": "Criar Tipo de Atividade",
+      "saveButton": "Salvar",
       "creating": "Criando...",
+      "createTab": "Criar Tipo de Atividade",
+      "listTab": "Editar/Excluir Tipos de Atividade",
       "createSuccess": "Tipo de atividade criado com sucesso",
       "createError": "Falha ao criar tipo de atividade",
-      "createTab": "Criar Tipo de Atividade",
-      "existingTab": "Excluir Tipo de Atividade",
-      "deleteSucess": "Tipo de atividade excluído com sucesso"
+      "deleteSuccess": "Tipo de atividade excluído com sucesso",
+      "updateSuccess": "Tipo de atividade atualizado com sucesso"
     },
     "import": {
       "title": "Adicionar com arquivo Excel",

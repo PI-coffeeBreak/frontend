@@ -147,6 +147,29 @@ export const ActivitiesProvider = ({ children }) => {
         }
     };
 
+    const updateActivityType = async (typeId, typeData) => {
+        if (!initialized || !keycloak?.authenticated) {
+            console.log("Keycloak not initialized or user not authenticated");
+            return null;
+        }
+
+        setIsLoading(true);
+        setError(null);
+        try {
+            const response = await axiosWithAuth(keycloak).put(`${activityTypesBaseUrl}/${typeId}`, typeData);
+            setActivityTypes(prev => prev.map(type => 
+                type.id === typeId ? response.data : type
+            ));
+            return response.data;
+        } catch (error) {
+            console.error("Error updating activity type:", error);
+            setError("Failed to update activity type. Please try again.");
+            throw error;
+        } finally {
+            setIsLoading(false);
+        }
+    };
+
     const createActivitiesBatch = async (activitiesData) => {
         if (!initialized || !keycloak?.authenticated) {
             console.log("Keycloak not initialized or user not authenticated");
@@ -287,6 +310,7 @@ export const ActivitiesProvider = ({ children }) => {
             setCalendarActivities,
             setOutsideActivities,
             createActivityType,
+            updateActivityType,
             deleteActivity,
             deleteActivityType,
         }),
