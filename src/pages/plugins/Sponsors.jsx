@@ -314,6 +314,7 @@ export function Sponsors() {
           sponsor.description?.toLowerCase().includes(query) ||
           sponsor.website_url?.toLowerCase().includes(query)
         )
+        .sort((a, b) => a.name.localeCompare(b.name)) // Sort sponsors by name
     }));
   }, [sponsors, levels, searchQuery]);
 
