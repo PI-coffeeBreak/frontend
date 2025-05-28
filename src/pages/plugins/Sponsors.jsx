@@ -26,6 +26,7 @@ const useSponsorForm = (initialLevelId = 0) => {
   const [logoPreview, setLogoPreview] = useState(null);
   const logoMediaRef = useRef(null);
   const { showNotification } = useNotification();
+  const { getMediaUrl } = useMedia();
 
   const handleInputChange = (e) => {
     const { name, value } = e.target;
@@ -33,6 +34,11 @@ const useSponsorForm = (initialLevelId = 0) => {
       ...prev,
       [name]: value
     }));
+
+    // Update logo preview when logo_url changes
+    if (name === 'logo_url') {
+      setLogoPreview(value);
+    }
   };
 
   const handleLogoFileChange = (e) => {
@@ -84,13 +90,20 @@ const useSponsorForm = (initialLevelId = 0) => {
   const setFormData = (data) => {
     setSponsorForm({
       name: data.name,
-      logo_url: data.logo_url || '',
+      logo_url: data.logo_url && !data.logo_url.match(/^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i) ? data.logo_url : '',
       website_url: data.website_url || '',
       description: data.description || '',
       level_id: data.level_id
     });
     if (data.logo_url) {
-      setLogoPreview(data.logo_url);
+      // If it's a UUID (media), use getMediaUrl
+      if (data.logo_url.match(/^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i)) {
+        setLogoPreview(getMediaUrl(data.logo_url));
+        setLogoInputType('file'); // Set to file input type when it's a UUID
+      } else {
+        setLogoPreview(data.logo_url);
+        setLogoInputType('url'); // Set to URL input type when it's a regular URL
+      }
     }
   };
 
@@ -301,6 +314,7 @@ export function Sponsors() {
           sponsor.description?.toLowerCase().includes(query) ||
           sponsor.website_url?.toLowerCase().includes(query)
         )
+        .sort((a, b) => a.name.localeCompare(b.name)) // Sort sponsors by name
     }));
   }, [sponsors, levels, searchQuery]);
 
@@ -368,8 +382,15 @@ export function Sponsors() {
     try {
       const response = await axiosWithAuth(keycloak).put(
         `${API_ENDPOINTS.SPONSORS}/${selectedSponsor.id}`, 
-        sponsorForm
+        {
+          ...sponsorForm,
+          logo_url: logoInputType === 'file' ? '' : sponsorForm.logo_url
+        }
       );
+
+      if (logoInputType === 'file' && logoFile && response.data.logo_url) {
+        await uploadMedia(response.data.logo_url, logoFile);
+      }
 
       const updatedSponsor = {
         ...response.data,
@@ -391,6 +412,44 @@ export function Sponsors() {
       showNotification("Failed to update sponsor", "error");
     } finally {
       setIsLoading(prev => ({ ...prev, sponsors: false }));
+    }
+  };
+
+  // Delete sponsor
+  const handleDeleteSponsor = async (sponsorId) => {
+    if (!window.confirm("Are you sure you want to delete this sponsor?")) {
+      return;
+    }
+
+    setIsLoading(prev => ({ ...prev, sponsors: true }));
+    try {
+      await axiosWithAuth(keycloak).delete(`${API_ENDPOINTS.SPONSORS}/${sponsorId}`);
+      setSponsors(prevSponsors => prevSponsors.filter(sponsor => sponsor.id !== sponsorId));
+      showNotification("Sponsor deleted successfully", "success");
+    } catch (err) {
+      console.error("Error deleting sponsor:", err);
+      showNotification("Failed to delete sponsor", "error");
+    } finally {
+      setIsLoading(prev => ({ ...prev, sponsors: false }));
+    }
+  };
+
+  // Delete level
+  const handleDeleteLevel = async (levelId) => {
+    if (!window.confirm("Are you sure you want to delete this level? This action cannot be undone.")) {
+      return;
+    }
+
+    setIsLoading(prev => ({ ...prev, levels: true }));
+    try {
+      await axiosWithAuth(keycloak).delete(`${API_ENDPOINTS.LEVELS}/${levelId}`);
+      setLevels(prevLevels => prevLevels.filter(level => level.id !== levelId));
+      showNotification("Level deleted successfully", "success");
+    } catch (err) {
+      console.error("Error deleting level:", err);
+      showNotification("Failed to delete level", "error");
+    } finally {
+      setIsLoading(prev => ({ ...prev, levels: false }));
     }
   };
 
