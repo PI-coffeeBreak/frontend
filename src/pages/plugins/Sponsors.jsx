@@ -394,6 +394,44 @@ export function Sponsors() {
     }
   };
 
+  // Delete sponsor
+  const handleDeleteSponsor = async (sponsorId) => {
+    if (!window.confirm("Are you sure you want to delete this sponsor?")) {
+      return;
+    }
+
+    setIsLoading(prev => ({ ...prev, sponsors: true }));
+    try {
+      await axiosWithAuth(keycloak).delete(`${API_ENDPOINTS.SPONSORS}/${sponsorId}`);
+      setSponsors(prevSponsors => prevSponsors.filter(sponsor => sponsor.id !== sponsorId));
+      showNotification("Sponsor deleted successfully", "success");
+    } catch (err) {
+      console.error("Error deleting sponsor:", err);
+      showNotification("Failed to delete sponsor", "error");
+    } finally {
+      setIsLoading(prev => ({ ...prev, sponsors: false }));
+    }
+  };
+
+  // Delete level
+  const handleDeleteLevel = async (levelId) => {
+    if (!window.confirm("Are you sure you want to delete this level? This action cannot be undone.")) {
+      return;
+    }
+
+    setIsLoading(prev => ({ ...prev, levels: true }));
+    try {
+      await axiosWithAuth(keycloak).delete(`${API_ENDPOINTS.LEVELS}/${levelId}`);
+      setLevels(prevLevels => prevLevels.filter(level => level.id !== levelId));
+      showNotification("Level deleted successfully", "success");
+    } catch (err) {
+      console.error("Error deleting level:", err);
+      showNotification("Failed to delete level", "error");
+    } finally {
+      setIsLoading(prev => ({ ...prev, levels: false }));
+    }
+  };
+
   return (
     <div className="w-full min-h-screen p-4 sm:p-6 lg:p-8">
       <h1 className="text-3xl font-bold my-8">Sponsors Management</h1>
