@@ -26,6 +26,7 @@ const useSponsorForm = (initialLevelId = 0) => {
   const [logoPreview, setLogoPreview] = useState(null);
   const logoMediaRef = useRef(null);
   const { showNotification } = useNotification();
+  const { getMediaUrl } = useMedia();
 
   const handleInputChange = (e) => {
     const { name, value } = e.target;
@@ -90,7 +91,12 @@ const useSponsorForm = (initialLevelId = 0) => {
       level_id: data.level_id
     });
     if (data.logo_url) {
-      setLogoPreview(data.logo_url);
+      // If it's a UUID (media), use getMediaUrl
+      if (data.logo_url.match(/^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i)) {
+        setLogoPreview(getMediaUrl(data.logo_url));
+      } else {
+        setLogoPreview(data.logo_url);
+      }
     }
   };
 
