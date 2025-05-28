@@ -34,6 +34,11 @@ const useSponsorForm = (initialLevelId = 0) => {
       ...prev,
       [name]: value
     }));
+
+    // Update logo preview when logo_url changes
+    if (name === 'logo_url') {
+      setLogoPreview(value);
+    }
   };
 
   const handleLogoFileChange = (e) => {
@@ -85,7 +90,7 @@ const useSponsorForm = (initialLevelId = 0) => {
   const setFormData = (data) => {
     setSponsorForm({
       name: data.name,
-      logo_url: data.logo_url || '',
+      logo_url: data.logo_url && !data.logo_url.match(/^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i) ? data.logo_url : '',
       website_url: data.website_url || '',
       description: data.description || '',
       level_id: data.level_id
@@ -94,8 +99,10 @@ const useSponsorForm = (initialLevelId = 0) => {
       // If it's a UUID (media), use getMediaUrl
       if (data.logo_url.match(/^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i)) {
         setLogoPreview(getMediaUrl(data.logo_url));
+        setLogoInputType('file'); // Set to file input type when it's a UUID
       } else {
         setLogoPreview(data.logo_url);
+        setLogoInputType('url'); // Set to URL input type when it's a regular URL
       }
     }
   };
