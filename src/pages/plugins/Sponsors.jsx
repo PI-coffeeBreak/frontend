@@ -368,8 +368,15 @@ export function Sponsors() {
     try {
       const response = await axiosWithAuth(keycloak).put(
         `${API_ENDPOINTS.SPONSORS}/${selectedSponsor.id}`, 
-        sponsorForm
+        {
+          ...sponsorForm,
+          logo_url: logoInputType === 'file' ? '' : sponsorForm.logo_url
+        }
       );
+
+      if (logoInputType === 'file' && logoFile && response.data.logo_url) {
+        await uploadMedia(response.data.logo_url, logoFile);
+      }
 
       const updatedSponsor = {
         ...response.data,
