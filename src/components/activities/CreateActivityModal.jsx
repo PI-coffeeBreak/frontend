@@ -39,7 +39,7 @@ export function CreateActivityModal({ isOpen, onClose, onSubmit }) {
     handleChange(e);
   };
 
-  const { activityTypes, loading, createActivityType } = useActivities();
+  const { activityTypes, loading } = useActivities();
   const { showNotification } = useNotification();
   
   const initialValues = {
@@ -64,9 +64,6 @@ export function CreateActivityModal({ isOpen, onClose, onSubmit }) {
   
   const [imagePreview, setImagePreview] = useState(null);
   const [isSubmitting, setIsSubmitting] = useState(false);
-  const [isAddingTypeInline, setIsAddingTypeInline] = useState(false);
-  const [newTypeName, setNewTypeName] = useState("");
-  const [isAddingType, setIsAddingType] = useState(false);
   const fileInputRef = useRef(null);
 
   useEffect(() => {
@@ -80,7 +77,6 @@ export function CreateActivityModal({ isOpen, onClose, onSubmit }) {
     
     if (!values.name.trim()) newErrors.name = "Name is required";
     if (!values.description.trim()) newErrors.description = "Description is required";
-    if (!values.type_id) newErrors.type_id = "Type is required";
 
     if (values.date) {
       validateDate(values.date, newErrors);
@@ -134,7 +130,7 @@ export function CreateActivityModal({ isOpen, onClose, onSubmit }) {
       description: values.description,
       date: values.date ? localDatetimeLocalToUTC(values.date) : undefined,
       duration: parseInt(values.duration, 10),
-      type_id: typeof values.type_id === 'string' ? parseInt(values.type_id, 10) : values.type_id,
+      type_id: values.type_id ? (typeof values.type_id === 'string' ? parseInt(values.type_id, 10) : values.type_id) : null,
       topic: values.topic || "",
       ...(imagePreview && { image: values.image })
     };
@@ -170,33 +166,7 @@ export function CreateActivityModal({ isOpen, onClose, onSubmit }) {
     onClose();
   };
 
-  const handleSaveInlineType = async () => {
-    if (!newTypeName.trim()) return;
-    
-    setIsAddingType(true);
-    
-    try {
-      const typeData = { type: newTypeName.trim() };
-      const newType = await createActivityType(typeData);
-      
-      setFieldValue('type_id', newType.id);
-      setNewTypeName("");
-      setIsAddingTypeInline(false);
-      
-      showNotification(`Activity type "${newTypeName}" was created successfully`, "success");
-    } catch (error) {
-      console.error("Error creating activity type:", error);
-      showNotification("Failed to create activity type", "error");
-    } finally {
-      setIsAddingType(false);
-    }
-  };
-
   const renderTypeSelector = () => {
-    if (isAddingTypeInline) {
-      return renderTypeCreator();
-    }
-    
     return (
       <div className="">
         <select
@@ -213,41 +183,6 @@ export function CreateActivityModal({ isOpen, onClose, onSubmit }) {
             </option>
           ))}
         </select>
-      </div>
-    );
-  };
-
-  const renderTypeCreator = () => {
-    return (
-      <div className="flex items-center border rounded-lg overflow-hidden">
-        <input
-          type="text"
-          placeholder="Enter new type name"
-          value={newTypeName}
-          onChange={(e) => setNewTypeName(e.target.value)}
-          className="input input-sm flex-grow border-none focus:outline-none"
-        />
-        {isAddingType ? (
-          <span className="loading loading-spinner loading-sm mx-2"></span>
-        ) : (
-          <div className="flex border-l">
-            <button
-              type="button"
-              className="btn btn-sm btn-ghost px-2"
-              onClick={() => setIsAddingTypeInline(false)}
-            >
-              Cancel
-            </button>
-            <button
-              type="button"
-              className="btn btn-sm btn-primary px-2"
-              onClick={handleSaveInlineType}
-              disabled={!newTypeName.trim()}
-            >
-              Save
-            </button>
-          </div>
-        )}
       </div>
     );
   };
@@ -377,7 +312,7 @@ export function CreateActivityModal({ isOpen, onClose, onSubmit }) {
                 className={`textarea textarea-bordered w-full h-24 ${errors.description ? 'textarea-error' : ''}`}
               />
             </FormField>
-            <FormField label="Type" id="type_id" required error={errors.type_id}>
+            <FormField label="Type" id="type_id" error={errors.type_id}>
               <div className={`relative ${errors.type_id ? 'border-error' : 'border-base-300'}`}>
                 {renderTypeSelector()}
               </div>

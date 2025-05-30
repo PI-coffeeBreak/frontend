@@ -4,22 +4,15 @@ import { FaTrash, FaEdit } from 'react-icons/fa';
 import { useState, useEffect } from 'react';
 import { useMedia } from '../../contexts/MediaContext.jsx';
 
-export default function Activity({ id, title, description, image, category, type, onDelete, onEdit, mode, metadata, activityTypes}) {
-  const { t } = useTranslation();
+const ActivityImage = ({ image, id, t }) => {
   const { getMediaUrl } = useMedia();
   const [imageUrl, setImageUrl] = useState(null);
   const [imageError, setImageError] = useState(false);
 
-  // When image prop changes, update the image URL
   useEffect(() => {
     if (image) {
       const isImageLink = image.startsWith('http');
-      if (!isImageLink) {
-        const mediaUrl = getMediaUrl(image);
-        setImageUrl(mediaUrl);
-      } else {
-        setImageUrl(image);
-      }
+      setImageUrl(isImageLink ? image : getMediaUrl(image));
       setImageError(false);
     } else {
       setImageUrl(null);
@@ -27,122 +20,125 @@ export default function Activity({ id, title, description, image, category, type
     }
   }, [id, image, getMediaUrl]);
 
-  const handleImageLoad = () => {
-    setImageError(false);
-  };
+  if (!imageUrl || imageError) {
+    return (
+      <div className="w-full h-full bg-gray-200 rounded-xl flex items-center justify-center">
+        <span className="text-gray-400">{t('activities.noImage')}</span>
+      </div>
+    );
+  }
 
-  const handleImageError = () => {
-    setImageError(true);
-  };
-
-  const typeObj = activityTypes.find(t => t.type === type);
-
-  const badgeStyle = {
-  backgroundColor: typeObj?.color || '#3788d8',
-  borderColor: typeObj?.color || '#3788d8',
-  color: '#ffffff'
+  return (
+    <img
+      src={imageUrl}
+      alt={t('activities.imageAlt')}
+      className="w-full h-full object-cover rounded-md"
+      onError={() => setImageError(true)}
+      key={`activity-img-${id}-${imageUrl}`}
+    />
+  );
 };
+
+ActivityImage.propTypes = {
+  image: PropTypes.string,
+  id: PropTypes.oneOfType([PropTypes.string, PropTypes.number]).isRequired,
+  t: PropTypes.func.isRequired
+};
+
+const ActionButtons = ({ id, onEdit, onDelete, mode, t }) => {
+  if (mode !== 'both' && mode !== 'edit' && mode !== 'delete') return null;
+
+  return (
+    <div className="absolute top-2 right-2 flex gap-2">
+      {onEdit && (mode === 'both' || mode === 'edit') && (
+        <button
+          onClick={(e) => {
+            e.stopPropagation();
+            onEdit(id);
+          }}
+          className="p-2 text-gray-400 hover:text-primary rounded-full hover:bg-gray-100 transition-colors"
+          aria-label={t('activities.edit')}
+          type="button"
+        >
+          <FaEdit className="w-4 h-4" aria-hidden="true" />
+        </button>
+      )}
+      
+      {onDelete && (mode === 'both' || mode === 'delete') && (
+        <button
+          onClick={(e) => {
+            e.stopPropagation();
+            onDelete(id);
+          }}
+          className="p-2 text-gray-400 hover:text-error rounded-full hover:bg-gray-100 transition-colors"
+          aria-label={t('activities.delete')}
+          type="button"
+        >
+          <FaTrash className="w-4 h-4" aria-hidden="true" />
+        </button>
+      )}
+    </div>
+  );
+};
+
+ActionButtons.propTypes = {
+  id: PropTypes.oneOfType([PropTypes.string, PropTypes.number]).isRequired,
+  onEdit: PropTypes.func,
+  onDelete: PropTypes.func,
+  mode: PropTypes.oneOf(['edit', 'delete', 'both']),
+  t: PropTypes.func.isRequired
+};
+
+const getBadgeStyle = (typeObj) => ({
+  backgroundColor: typeObj?.color || 'var(--color-primary)',
+  borderColor: typeObj?.color || 'var(--color-primary)',
+  color: '#ffffff'
+});
+
+export default function Activity({ id, title, description, image, category, type, onDelete, onEdit, mode, metadata, activityTypes}) {
+  const { t } = useTranslation();
+  const typeObj = activityTypes.find(t => t.type === type);
 
   return (
     <div
-      className="fc-event cursor-pointer flex items-center w-full gap-4 h-36 p-4 rounded-xl bg-white relative"
+      className="fc-event cursor-pointer flex w-full gap-4 h-36 p-4 rounded-xl bg-white relative"
       data-id={id}
       data-title={title}
+      style={{ minHeight: '9rem' }}
     >
-      {mode === 'both' ? (
-        <div className="absolute top-2 right-2 flex gap-2">
-          {onEdit && (
-            <button
-              onClick={(e) => {
-                e.stopPropagation();
-                onEdit(id);
-              }}
-              className="p-2 text-gray-400 hover:text-primary rounded-full hover:bg-gray-100 transition-colors"
-              aria-label={t('activities.edit')}
-              type="button"
-            >
-              <FaEdit className="w-4 h-4" aria-hidden="true" />
-            </button>
-          )}
-          
-          {onDelete && (
-            <button
-              onClick={(e) => {
-                e.stopPropagation();
-                onDelete(id);
-              }}
-              className="p-2 text-gray-400 hover:text-error rounded-full hover:bg-gray-100 transition-colors"
-              aria-label={t('activities.delete')}
-              type="button"
-            >
-              <FaTrash className="w-4 h-4" aria-hidden="true" />
-            </button>
-          )}
-        </div>
-      ) : (
-        <>
-          {/* Single button mode (only edit or only delete) */}
-          {onDelete && mode === 'delete' && (
-            <button
-              onClick={(e) => {
-                e.stopPropagation();
-                onDelete(id);
-              }}
-              className="absolute top-2 right-2 p-2 text-gray-400 hover:text-error rounded-full hover:bg-gray-100 transition-colors"
-              aria-label={t('activities.delete')}
-              type="button"
-            >
-              <FaTrash className="w-4 h-4" aria-hidden="true" />
-            </button>
-          )}
-  
-          {onEdit && mode === 'edit' && (
-            <button
-              onClick={(e) => {
-                e.stopPropagation();
-                onEdit(id);
-              }}
-              className="absolute top-2 right-2 p-2 text-gray-400 hover:text-primary rounded-full hover:bg-gray-100 transition-colors"
-              aria-label={t('activities.edit')}
-              type="button"
-            >
-              <FaEdit className="w-4 h-4" aria-hidden="true" />
-            </button>
-          )}
-        </>
-      )}
+      <ActionButtons 
+        id={id}
+        onEdit={onEdit}
+        onDelete={onDelete}
+        mode={mode}
+        t={t}
+      />
 
       <div className="w-1/3 h-full items-center justify-center hidden sm:flex overflow-hidden">
-        {imageUrl && !imageError ? (
-          <img
-            src={imageUrl}
-            alt={t('activities.imageAlt')}
-            className="w-full h-full object-cover rounded-md"
-            onLoad={handleImageLoad}
-            onError={handleImageError}
-            key={`activity-img-${id}-${imageUrl}`} // Force image reload when URL changes
-          />
-        ) : (
-          <div className="w-full h-full bg-gray-200 rounded-xl flex items-center justify-center">
-            <span className="text-gray-400">{t('activities.noImage')}</span>
-          </div>
-        )}
+        <ActivityImage image={image} id={id} t={t} />
       </div>
 
-      <div className="w-2/3">
-        <h1 className="font-bold text-secondary text-sm">{title}</h1>
-        <p className="text-sm mt-2 text-gray-600">{description}</p>
-        <div className="mt-1 flex flex-wrap gap-2">
-          <span className="badge rounded-xl" style={badgeStyle}>
-            {type}
-          </span>
-          {category && <span className="badge badge-primary">{category}</span>}
+      <div className="w-2/3 flex flex-col h-full">
+        <div className="flex-1 overflow-hidden pb-6">
+          <h1 className="font-bold text-secondary text-sm pr-14 line-clamp-2">{title}</h1>
+          <p className={`text-sm mt-2 text-gray-600 break-words ${type ? 'line-clamp-2' : 'line-clamp-3'}`}>
+            {description}
+          </p>
+          {category && <span className="badge badge-primary mt-1">{category}</span>}
           {metadata?.is_restricted && (
-            <span className="badge badge-outline">
+            <span className="badge badge-outline mt-1">
               {metadata.registered} / {metadata.slots} {t('activities.slots.title')}
             </span>
           )}
         </div>
+        {/* Type badge */}
+        {typeObj && (
+          <div className="flex">
+            <span className="badge rounded-xl" style={getBadgeStyle(typeObj)}>
+              {typeObj.type}
+            </span>
+          </div>
+        )}
       </div>
     </div>
   );
@@ -168,7 +164,7 @@ Activity.propTypes = {
       type: PropTypes.string.isRequired,
       color: PropTypes.string
     })
-  )
+  ).isRequired
 };
 
 Activity.defaultProps = {
@@ -178,6 +174,5 @@ Activity.defaultProps = {
   onDelete: null,
   onEdit: null,
   mode: 'delete',
-  metadata: null,
-  activityTypes: []
+  metadata: null
 };
