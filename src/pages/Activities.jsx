@@ -63,7 +63,7 @@ export default function Activities() {
       activity.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
       activity.description?.toLowerCase().includes(searchQuery.toLowerCase());
       
-    const matchesType = !selectedType || activity.type_id.toString() === selectedType;
+    const matchesType = !selectedType || (activity.type_id && activity.type_id.toString() === selectedType);
     
     return matchesSearch && matchesType;
   });
