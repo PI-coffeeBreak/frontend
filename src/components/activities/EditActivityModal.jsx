@@ -108,7 +108,6 @@ export function EditActivityModal({ isOpen, onClose, activity }) {
     
     if (!formData.name.trim()) newErrors.name = t('validation.required');
     if (!formData.description.trim()) newErrors.description = t('validation.required');
-    if (!formData.type_id) newErrors.type_id = t('validation.required');
     
     if (formData.date) {
       const activityDate = new Date(formData.date);
@@ -157,7 +156,7 @@ export function EditActivityModal({ isOpen, onClose, activity }) {
     const payload = {
       name: formData.name,
       description: formData.description,
-      type_id: parseInt(formData.type_id, 10),
+      type_id: formData.type_id ? (parseInt(formData.type_id, 10) || null) : null,
       topic: formData.topic || "",
     };
 
@@ -368,8 +367,7 @@ export function EditActivityModal({ isOpen, onClose, activity }) {
           <div>
             <FormField 
               label={t('activities.type')} 
-              id="type_id" 
-              required 
+              id="type_id"  
               error={errors.type_id}
             >
               <select
@@ -378,7 +376,6 @@ export function EditActivityModal({ isOpen, onClose, activity }) {
                 value={formData.type_id}
                 onChange={handleChangeWithStop}
                 className="select select-bordered select-sm w-full"
-                required
               >
                 <option value="">{t('activities.selectType')}</option>
                 {activityTypes.map((type) => (
