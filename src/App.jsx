@@ -29,6 +29,7 @@ import SpeakerManagement from "./pages/plugins/SpeakerManagement.jsx";
 import ActivitySlotsPage from "./pages/plugins/ActivitiesSlotsPage.jsx";
 import ActivitiesFeedback from "./pages/plugins/ActivitiesFeedback.jsx";
 import { IconsEditor } from "./pages/IconsEditor.jsx";
+import ActivityClassification from "./pages/plugins/ActivityClassification.jsx";
 
 export default function App() {
   return (
@@ -76,6 +77,7 @@ export default function App() {
             <Route path="speaker-presentation-plugin" element={<SpeakerManagement />} />
             <Route path="registration-system-plugin" element={<ActivitySlotsPage />} />
             <Route path="activities-feedback-plugin" element={<ActivitiesFeedback />} />
+            <Route path="activity-classification-plugin" element={<ActivityClassification />} />
           </Route>
         </Route>
         <Route path="/auth-redirect" element={<AuthRedirect />} />
