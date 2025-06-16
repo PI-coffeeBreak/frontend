@@ -6,13 +6,19 @@ import axios from "axios";
 import { baseUrl } from "../../consts";
 import { FaRobot, FaSpinner } from "react-icons/fa";
 import { useNotification } from "../../contexts/NotificationContext";
+import { axiosWithAuth } from "../../utils/axiosWithAuth";
+import { useKeycloak } from "@react-keycloak/web";
+import { Modal } from "../../components/common/Modal";
 
 function ActivityClassification() {
     const { activities, activityTypes, fetchActivities } = useActivities();
     const [loadingId, setLoadingId] = useState(null);
     const [classifyingAll, setClassifyingAll] = useState(false);
+    const [showModal, setShowModal] = useState(false);
+    const [classificationResults, setClassificationResults] = useState(null);
     const { t } = useTranslation();
     const { showNotification } = useNotification();
+    const { keycloak } = useKeycloak();
 
     // Filter activities without a type
     const untypedActivities = activities.filter(a => !a.type_id);
@@ -21,7 +27,7 @@ function ActivityClassification() {
     const handleCategorize = async (activityId) => {
         setLoadingId(activityId);
         try {
-            await axios.get(`${baseUrl}/activity-classification-plugin/activity-classifications/${activityId}`);
+            await axiosWithAuth(keycloak).get(`${baseUrl}/activity-classification/${activityId}`);
             showNotification(t("Activity categorized successfully!"), "success");
             fetchActivities(); // Refresh the list
         } catch (err) {
@@ -31,22 +37,58 @@ function ActivityClassification() {
         setLoadingId(null);
     };
 
-    // Classify all untyped activities
+    // Polling helper
+    const pollStatus = async (taskId, onDone, onError) => {
+        let attempts = 0;
+        const maxAttempts = 60; // 2 minutes
+        const poll = async () => {
+            try {
+                const response = await axiosWithAuth(keycloak).get(`${baseUrl}/activity-classification/status/${taskId}`);
+                if (response.data.status === "done") {
+                    onDone(response.data.result);
+                } else if (response.data.status === "error") {
+                    onError(response.data.error || t("Error during classification."));
+                } else if (attempts < maxAttempts) {
+                    attempts++;
+                    setTimeout(poll, 2000);
+                } else {
+                    onError(t("Classification timed out."));
+                }
+            } catch (err) {
+                onError(err.response?.data?.detail || t("Error checking classification status."));
+            }
+        };
+        poll();
+    };
+
+    // Classify all untyped activities (background task)
     const handleClassifyAll = async () => {
         setClassifyingAll(true);
+        setClassificationResults(null);
         try {
-            await Promise.all(
-                untypedActivities.map(activity =>
-                    axios.get(`${baseUrl}/activity-classification-plugin/activity-classifications/${activity.id}`)
-                )
+            // Start the background task
+            const triggerResponse = await axiosWithAuth(keycloak).post(`${baseUrl}/activity-classification/trigger`);
+            const taskId = triggerResponse.data.task_id;
+            // Poll for status
+            pollStatus(
+                taskId,
+                (result) => {
+                    setClassificationResults(result);
+                    setShowModal(true);
+                    showNotification(t("All activities categorized successfully!"), "success");
+                    fetchActivities();
+                    setClassifyingAll(false);
+                },
+                (errorMsg) => {
+                    showNotification(errorMsg, "error");
+                    setClassifyingAll(false);
+                }
             );
-            showNotification(t("All activities categorized successfully!"), "success");
-            fetchActivities();
         } catch (err) {
-            const errorMessage = err.response?.data?.message || t("Error categorizing some activities.");
+            const errorMessage = err.response?.data?.message || t("Error starting classification task.");
             showNotification(errorMessage, "error");
+            setClassifyingAll(false);
         }
-        setClassifyingAll(false);
     };
 
     // Custom action renderer for ActivityList
@@ -123,6 +165,36 @@ function ActivityClassification() {
                     </div>
                 )}
             </div>
+            <Modal
+                isOpen={showModal || classifyingAll}
+                onClose={() => setShowModal(false)}
+                title={classifyingAll ? t("Classifying all...") : t("Classification Results")}
+                description={classifyingAll ? t("Please wait while activities are being classified. This may take a moment.") : t("The following activities were mapped to each type:")}
+            >
+                {classifyingAll ? (
+                    <div className="flex flex-col items-center justify-center py-8">
+                        <FaSpinner className="animate-spin text-3xl mb-4 text-primary" />
+                        <span className="text-gray-600">{t("Classifying all activities. Please wait...")}</span>
+                    </div>
+                ) : classificationResults && Object.keys(classificationResults).length > 0 ? (
+                    <div className="space-y-6">
+                        {Object.entries(classificationResults).map(([type, acts]) => (
+                            <div key={type}>
+                                <div className="font-bold text-primary mb-2">{type}</div>
+                                <ul className="list-disc ml-6">
+                                    {acts.map((act) => (
+                                        <li key={act.activity_id} className="text-gray-700">
+                                            {act.activity_name}
+                                        </li>
+                                    ))}
+                                </ul>
+                            </div>
+                        ))}
+                    </div>
+                ) : (
+                    <div className="text-gray-500">{t("No activities were classified.")}</div>
+                )}
+            </Modal>
         </div>
     );
 }

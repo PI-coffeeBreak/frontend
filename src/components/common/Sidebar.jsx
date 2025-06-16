@@ -90,6 +90,7 @@ export default function Sidebar() {
       path: `plugins/${plugin.title.toLowerCase()}`,
       icon: FaPuzzlePiece
     }));
+
   const hasEnabledPlugins = enabledPlugins.length > 0;
 
   const toggleSidebar = () => {
